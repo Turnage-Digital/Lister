@@ -1,5 +1,5 @@
-using Serilog;
 using Lister;
+using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()

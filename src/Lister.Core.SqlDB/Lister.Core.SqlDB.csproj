@@ -14,12 +14,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Core\Lister.Core.csproj" />
+        <ProjectReference Include="..\Lister.Core\Lister.Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\Application\" />
-      <Folder Include="Migrations\Lister\" />
+        <Folder Include="Migrations\Application\"/>
+        <Folder Include="Migrations\Lister\"/>
     </ItemGroup>
 
 </Project>

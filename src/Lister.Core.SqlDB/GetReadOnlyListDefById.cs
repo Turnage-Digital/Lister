@@ -1,6 +1,6 @@
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Lister.Core.SqlDB.Views;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 

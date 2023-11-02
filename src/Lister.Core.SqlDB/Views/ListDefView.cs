@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
 using Lister.Core.ValueObjects;
+using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB.Views;
 
@@ -13,7 +13,7 @@ public record ListDefView : IReadOnlyListDef
 
     [JsonProperty("columnDefs")]
     public ColumnDef[] ColumnDefs { get; set; } = null!;
-    
+
     [JsonProperty("createdBy")]
     public string CreatedBy { get; set; } = null!;
 

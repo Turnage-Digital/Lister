@@ -7,15 +7,11 @@ import {
   MenuItem,
   Toolbar,
 } from "@mui/material";
-import { AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
 
 import { useAuth } from "../../auth";
 
-interface Props {
-  onDrawerToggle: () => void;
-}
-
-const TopSection = ({ onDrawerToggle }: Props) => {
+const TopSection = () => {
   const { signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -42,18 +38,6 @@ const TopSection = ({ onDrawerToggle }: Props) => {
       })}
     >
       <Toolbar>
-        <IconButton
-          sx={(theme) => ({
-            marginRight: theme.spacing(2),
-            [theme.breakpoints.up("md")]: {
-              display: "none",
-            },
-          })}
-          onClick={onDrawerToggle}
-        >
-          <MenuIcon />
-        </IconButton>
-
         <Box sx={{ flexGrow: 1 }} />
 
         <IconButton
@@ -69,8 +53,7 @@ const TopSection = ({ onDrawerToggle }: Props) => {
           open={Boolean(anchorEl)}
           onClose={handleCloseMenu}
         >
-          {/* <MenuItem onClick={() => signOut()}>Sign Out</MenuItem> */}
-          <MenuItem onClick={() => {}}>Sign Out</MenuItem>
+          <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>

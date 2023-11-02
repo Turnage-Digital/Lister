@@ -1,7 +1,7 @@
-using MediatR;
 using Lister.Core;
 using Lister.Core.ValueObjects;
 using Lister.Domain.Events;
+using MediatR;
 
 namespace Lister.Domain;
 

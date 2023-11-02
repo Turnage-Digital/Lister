@@ -1,11 +1,11 @@
 using System.Text.Json.Serialization;
 using Lamar.Microsoft.DependencyInjection;
+using Lister.Core.SqlDB;
+using Lister.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Lister.Core.SqlDB;
-using Lister.Extensions;
 
 namespace Lister;
 

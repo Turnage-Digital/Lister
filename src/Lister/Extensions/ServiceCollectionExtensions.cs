@@ -1,5 +1,3 @@
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Lister.Application.Commands;
 using Lister.Application.Queries;
 using Lister.Core;
@@ -8,6 +6,8 @@ using Lister.Core.SqlDB.Configuration;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.SqlDB.Views;
 using Lister.Domain;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Extensions;
 

@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using MediatR;
 using Lister.Application.Commands;
 using Lister.Application.Queries;
 using Lister.Core.SqlDB.Views;
 using Lister.Extensions;
+using MediatR;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Lister;

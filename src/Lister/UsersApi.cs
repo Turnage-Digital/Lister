@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Lister.Models;
 using Microsoft.AspNetCore.Identity;
-using Claim = Lister.Models.Claim;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using Claim = Lister.Models.Claim;
 
 namespace Lister;
 
@@ -30,12 +30,12 @@ public static class UsersApi
                 }
 
                 var claims = claimsPrincipal.Claims
-                    .Select(x => new Models.Claim { Type = x.Type, Value = x.Value })
+                    .Select(x => new Claim { Type = x.Type, Value = x.Value })
                     .ToArray();
                 return Results.Json(new ClaimsResponse { Claims = claims });
             })
             .Produces(Status401Unauthorized)
-            .Produces<Models.Claim[]>();
+            .Produces<Claim[]>();
 
         return retval;
     }

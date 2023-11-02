@@ -1,1 +1,1 @@
-export { ContentSection, SideSection, TopSection } from "./user";
+export { ContentSection, TopSection } from "./user";

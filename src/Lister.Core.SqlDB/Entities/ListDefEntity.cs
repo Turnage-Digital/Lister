@@ -12,7 +12,7 @@ public class ListDefEntity : IWritableListDef
     public ICollection<StatusDefEntity> StatusDefs { get; set; } = null!;
 
     public ICollection<ColumnDefEntity> ColumnDefs { get; set; } = null!;
-    
+
     [Required]
     public string CreatedBy { get; set; } = null!;
 

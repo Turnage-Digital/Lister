@@ -1,7 +1,7 @@
 using AutoMapper;
 using Lister.Core;
-using MediatR;
 using Lister.Domain;
+using MediatR;
 
 namespace Lister.Application.Commands;
 
@@ -10,8 +10,8 @@ public class CreateListDefCommandHandler<TReadOnlyListDef, TWritableListDef>
     where TReadOnlyListDef : IReadOnlyListDef
     where TWritableListDef : IWritableListDef
 {
-    private readonly IMapper _mapper;
     private readonly ListDefAggregate<TWritableListDef> _listDefAggregate;
+    private readonly IMapper _mapper;
 
     public CreateListDefCommandHandler(
         ListDefAggregate<TWritableListDef> listDefAggregate,

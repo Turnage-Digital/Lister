@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Lister.Core.SqlDB.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
