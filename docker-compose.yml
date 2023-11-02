@@ -11,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: r00t#11
       MYSQL_USER: heath
       MYSQL_PASSWORD: h@@rulez
-      MYSQL_DATABASE: Lister
+      MYSQL_DATABASE: lister
 
 volumes:
   mysql:

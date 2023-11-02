@@ -1,0 +1,40 @@
+using AutoMapper;
+using Lister.Core;
+using MediatR;
+using Lister.Domain;
+
+namespace Lister.Application.Commands;
+
+public class CreateListDefCommandHandler<TReadOnlyListDef, TWritableListDef>
+    : IRequestHandler<CreateListDefCommand<TReadOnlyListDef>, TReadOnlyListDef>
+    where TReadOnlyListDef : IReadOnlyListDef
+    where TWritableListDef : IWritableListDef
+{
+    private readonly IMapper _mapper;
+    private readonly ListDefAggregate<TWritableListDef> _listDefAggregate;
+
+    public CreateListDefCommandHandler(
+        ListDefAggregate<TWritableListDef> listDefAggregate,
+        IMapper mapper
+    )
+    {
+        _listDefAggregate = listDefAggregate;
+        _mapper = mapper;
+    }
+
+    public async Task<TReadOnlyListDef> Handle(
+        CreateListDefCommand<TReadOnlyListDef> request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var created = await _listDefAggregate.CreateAsync(
+            request.CreatedBy,
+            request.Name,
+            request.StatusDefs,
+            request.ColumnDefs,
+            cancellationToken);
+
+        var retval = _mapper.Map<TReadOnlyListDef>(created);
+        return retval;
+    }
+}
