@@ -1,0 +1,17 @@
+version: '3.0.0'
+
+services:
+  database-mysql:
+    image: mysql/mysql-server:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: r00t#11
+      MYSQL_USER: heath
+      MYSQL_PASSWORD: h@@rulez
+      MYSQL_DATABASE: Lister
+
+volumes:
+  mysql:
