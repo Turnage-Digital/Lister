@@ -1,6 +1,6 @@
 ﻿{
   "profiles": {
-    "ThingMan": {
+    "Lister": {
       "commandName": "Project",
       "launchBrowser": false,
       "dotnetRunMessages": true,
