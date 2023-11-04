@@ -54,12 +54,12 @@ export const editListPageAction = async ({
 }: ActionFunctionArgs) => {
   const data = await request.formData();
   const serialized = data.get("serialized") as string;
-  const listDef = JSON.parse(serialized) as ListDef;
+  const parsed = JSON.parse(serialized) as ListDef;
 
   if (params.id) {
-    await listDefsApi.update(listDef);
+    await listDefsApi.update(parsed);
   } else {
-    await listDefsApi.create(listDef);
+    await listDefsApi.create(parsed);
   }
 
   return redirect(`/lists`);

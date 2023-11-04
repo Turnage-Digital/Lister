@@ -38,9 +38,8 @@ export class ListDefsApi implements IListDefsApi {
       method: "PUT",
       body: JSON.stringify(listDef),
     });
-    const response = await fetch(request);
-    const retval = await response.json();
-    return retval;
+    await fetch(request);
+    return listDef;
   }
 
   public async get(): Promise<ListDef[]> {

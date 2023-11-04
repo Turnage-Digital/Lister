@@ -28,7 +28,8 @@ public class ListDefsStore : IListDefsStore<ListDefEntity>
 
     public async Task<ListDefEntity?> ReadAsync(string id, CancellationToken cancellationToken = default)
     {
-        var retval = await _entityStore.ReadAsync(id, cancellationToken);
+        var parsed = Guid.Parse(id);
+        var retval = await _entityStore.ReadAsync(parsed, cancellationToken);
         return retval;
     }
 
@@ -72,7 +73,7 @@ public class ListDefsStore : IListDefsStore<ListDefEntity>
     {
         listDef.ColumnDefs = columnDefs
             .Select(pd => new ColumnDefEntity { Name = pd.Name, Type = pd.Type })
-            .ToArray();
+            .ToList();
         return Task.CompletedTask;
     }
 
