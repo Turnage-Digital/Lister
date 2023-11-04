@@ -17,9 +17,12 @@ public class GetReadOnlyListDefById : IGetReadOnlyListDefById<ListDefView>
 
     public async Task<ListDefView> GetByIdAsync(string userId, Guid id, CancellationToken cancellationToken = default)
     {
-        var entity = await _dbContext.ThingDefs
-            .Where(thingDef => thingDef.CreatedBy == userId)
-            .Where(thingDef => thingDef.Id == id)
+        var entity = await _dbContext.ListDefs
+            .Include(listDef => listDef.StatusDefs)
+            .Include(listDef => listDef.ColumnDefs)
+            .Where(listDef => listDef.CreatedBy == userId)
+            .Where(listDef => listDef.Id == id)
+            .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
         var retval = _mapper.Map<ListDefView>(entity);
         return retval;

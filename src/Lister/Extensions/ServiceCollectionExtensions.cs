@@ -8,6 +8,7 @@ using Lister.Core.SqlDB.Views;
 using Lister.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Lister.Extensions;
 
@@ -45,7 +46,8 @@ public static class ServiceCollectionExtensions
                 optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddDbContext<ListerDbContext>(options =>
             options.UseMySql(connectionString, serverVersion,
-                optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
+                optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName))
+                .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning)));
         services.AddScoped<IListerUnitOfWork<ListDefEntity>, ListerUnitOfWork>();
         services.AddStores();
         services.AddViews();

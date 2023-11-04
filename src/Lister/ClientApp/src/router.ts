@@ -9,7 +9,13 @@ const router = createBrowserRouter([
     Component: Shell,
     children: [
       {
-        path: "lists/create",
+        path: "create",
+        Component: EditListPage,
+        loader: editListPageLoader,
+        action: editListPageAction,
+      },
+      {
+        path: ":id/edit",
         Component: EditListPage,
         loader: editListPageLoader,
         action: editListPageAction,

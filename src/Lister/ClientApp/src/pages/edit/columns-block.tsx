@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 
-import { ColumnDef, ColumnType } from "../../../api";
+import { ColumnDef, ColumnType } from "../../api";
 
 interface Props {
   columnDefs: ColumnDef[] | null;

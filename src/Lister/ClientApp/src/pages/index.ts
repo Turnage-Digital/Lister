@@ -1,1 +1,1 @@
-export { EditListPage, editListPageLoader, editListPageAction } from "./lists";
+export { EditListPage, editListPageLoader, editListPageAction } from "./edit";

@@ -16,8 +16,8 @@ import {
   useSubmit,
 } from "react-router-dom";
 
-import { EditBlock } from "../../../components";
-import { IListDefsApi, ListDef, ListDefsApi } from "../../../api";
+import { EditBlock } from "../../components";
+import { IListDefsApi, ListDef, ListDefsApi } from "../../api";
 
 import NameBlock from "./name-block";
 import StatusesBlock from "./statuses-block";
