@@ -48,12 +48,19 @@ export const editListPageLoader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 // https://github.com/remix-run/react-router/discussions/9858#discussioncomment-4638753
-export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
+export const editListPageAction = async ({
+  params,
+  request,
+}: ActionFunctionArgs) => {
   const data = await request.formData();
   const serialized = data.get("serialized") as string;
-  const thingDef = JSON.parse(serialized) as ListDef;
+  const listDef = JSON.parse(serialized) as ListDef;
 
-  await listDefsApi.create(thingDef);
+  if (params.id) {
+    await listDefsApi.update(listDef);
+  } else {
+    await listDefsApi.create(listDef);
+  }
 
   return redirect(`/lists`);
 };

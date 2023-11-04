@@ -3,12 +3,12 @@ using MediatR;
 
 namespace Lister.Application.Queries;
 
-public class GetThingDefsQueryHandler<TListDef> : IRequestHandler<GetListDefsQuery<TListDef>, TListDef[]>
+public class GetListDefsQueryHandler<TListDef> : IRequestHandler<GetListDefsQuery<TListDef>, TListDef[]>
     where TListDef : IReadOnlyListDef
 {
     private readonly IGetReadOnlyListDefs<TListDef> _getReadOnlyListDefs;
 
-    public GetThingDefsQueryHandler(IGetReadOnlyListDefs<TListDef> getReadOnlyListDefs)
+    public GetListDefsQueryHandler(IGetReadOnlyListDefs<TListDef> getReadOnlyListDefs)
     {
         _getReadOnlyListDefs = getReadOnlyListDefs;
     }

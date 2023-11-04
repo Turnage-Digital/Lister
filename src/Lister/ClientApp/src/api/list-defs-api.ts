@@ -1,7 +1,9 @@
 import { ListDef } from "./models";
 
 export interface IListDefsApi {
-  create(thingDef: ListDef): Promise<ListDef>;
+  create(listDef: ListDef): Promise<ListDef>;
+
+  update(listDef: ListDef): Promise<ListDef>;
 
   get(): Promise<ListDef[]>;
 
@@ -15,13 +17,26 @@ export class ListDefsApi implements IListDefsApi {
     this.baseUrl = baseUrl;
   }
 
-  public async create(thingDef: ListDef): Promise<ListDef> {
+  public async create(listDef: ListDef): Promise<ListDef> {
     const request = new Request(`${this.baseUrl}/create`, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify(thingDef),
+      body: JSON.stringify(listDef),
+    });
+    const response = await fetch(request);
+    const retval = await response.json();
+    return retval;
+  }
+
+  public async update(listDef: ListDef): Promise<ListDef> {
+    const request = new Request(`${this.baseUrl}/update`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify(listDef),
     });
     const response = await fetch(request);
     const retval = await response.json();

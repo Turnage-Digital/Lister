@@ -30,10 +30,12 @@ public static class ServiceCollectionExtensions
             config.RegisterServicesFromAssembly(applicationAssemblyName));
         services.AddTransient<IRequestHandler<CreateListDefCommand<ListDefView>, ListDefView>,
             CreateListDefCommandHandler<ListDefView, ListDefEntity>>();
+        services.AddTransient<IRequestHandler<UpdateListDefCommand>,
+            UpdateListDefCommandHandler<ListDefEntity>>();
         services.AddTransient<IRequestHandler<GetListDefByIdQuery<ListDefView>, ListDefView>,
             GetListDefByIdQueryHandler<ListDefView>>();
         services.AddTransient<IRequestHandler<GetListDefsQuery<ListDefView>, ListDefView[]>,
-            GetThingDefsQueryHandler<ListDefView>>();
+            GetListDefsQueryHandler<ListDefView>>();
         return services;
     }
 
@@ -46,7 +48,7 @@ public static class ServiceCollectionExtensions
                 optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddDbContext<ListerDbContext>(options =>
             options.UseMySql(connectionString, serverVersion,
-                optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName))
+                    optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName))
                 .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning)));
         services.AddScoped<IListerUnitOfWork<ListDefEntity>, ListerUnitOfWork>();
         services.AddStores();

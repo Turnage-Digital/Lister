@@ -14,7 +14,8 @@ public static class ListDefsApi
     {
         var retval = endpoints
             .MapGroup("/api/list-defs")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithTags("ListDefs");
 
         retval.MapGet("", async (
                 IMediator mediator,

@@ -5,19 +5,19 @@ using MediatR;
 
 namespace Lister.Domain;
 
-public class ListDefAggregate<TThingDef>
-    where TThingDef : IWritableListDef
+public class ListDefAggregate<TListDef>
+    where TListDef : IWritableListDef
 {
     private readonly IMediator _mediator;
-    private readonly IListerUnitOfWork<TThingDef> _unitOfWork;
+    private readonly IListerUnitOfWork<TListDef> _unitOfWork;
 
-    public ListDefAggregate(IListerUnitOfWork<TThingDef> unitOfWork, IMediator mediator)
+    public ListDefAggregate(IListerUnitOfWork<TListDef> unitOfWork, IMediator mediator)
     {
         _unitOfWork = unitOfWork;
         _mediator = mediator;
     }
 
-    public async Task<TThingDef> CreateAsync(
+    public async Task<TListDef> CreateAsync(
         string createdBy,
         string name,
         StatusDef[] statusDefs,
@@ -40,5 +40,26 @@ public class ListDefAggregate<TThingDef>
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return retval;
+    }
+
+    public async Task UpdateAsync(
+        string id,
+        string name,
+        StatusDef[] statusDefs,
+        ColumnDef[] columnDefs,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var listDef = await _unitOfWork.ListDefsStore.ReadAsync(id, cancellationToken);
+        if (listDef == null)
+        {
+            throw new InvalidOperationException($"ListDef with id {id} not found.");
+        }
+
+        await _unitOfWork.ListDefsStore.SetNameAsync(listDef, name, cancellationToken);
+        await _unitOfWork.ListDefsStore.SetStatusDefsAsync(listDef, statusDefs, cancellationToken);
+        await _unitOfWork.ListDefsStore.SetColumnDefsAsync(listDef, columnDefs, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
