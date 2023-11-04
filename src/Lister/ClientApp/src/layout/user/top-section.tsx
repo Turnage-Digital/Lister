@@ -31,10 +31,6 @@ const TopSection = () => {
       sx={(theme) => ({
         backgroundColor: theme.palette.background.paper,
         borderBottom: `1px solid ${theme.palette.divider}`,
-        [theme.breakpoints.up("md")]: {
-          width: `calc(100% - ${drawerWidth}px)`,
-          ml: `${drawerWidth}px`,
-        },
       })}
     >
       <Toolbar>

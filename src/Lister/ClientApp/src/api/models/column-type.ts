@@ -1,6 +1,6 @@
 export enum ColumnType {
   Number = "Number",
-  String = "String",
+  Text = "Text",
   Boolean = "Boolean",
   Date = "Date",
 }

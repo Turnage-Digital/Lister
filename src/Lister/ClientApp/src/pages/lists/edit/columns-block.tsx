@@ -21,31 +21,31 @@ import { Delete } from "@mui/icons-material";
 import { ColumnDef, ColumnType } from "../../../api";
 
 interface Props {
-  propertyDefs: ColumnDef[] | null;
-  updatePropertyDefs: (propertyDefs: ColumnDef[]) => void;
+  columnDefs: ColumnDef[] | null;
+  updateColumnDefs: (propertyDefs: ColumnDef[]) => void;
 }
 
-const ColumnsBlock = ({ propertyDefs, updatePropertyDefs }: Props) => {
+const ColumnsBlock = ({ columnDefs, updateColumnDefs }: Props) => {
   const [propertyName, setPropertyName] = useState<string | null>(null);
   const [propertyType, setPropertyType] = useState<ColumnType | null>(null);
 
   const handleAddClicked = () => {
-    const notNull = propertyDefs ?? [];
+    const notNull = columnDefs ?? [];
     const added = [...notNull, { name: propertyName!, type: propertyType! }];
 
     setPropertyName(null);
     setPropertyType(null);
-    updatePropertyDefs(added);
+    updateColumnDefs(added);
   };
 
   const handleRemoveClicked = (name: string) => {
-    const notNull = propertyDefs ?? [];
+    const notNull = columnDefs ?? [];
     const updated = notNull.filter((pd) => pd.name !== name);
 
-    updatePropertyDefs(updated);
+    updateColumnDefs(updated);
   };
 
-  const propertyTypeList = Object.values(ColumnType);
+  const columnTypeList = Object.values(ColumnType);
 
   return (
     <Stack spacing={2}>
@@ -77,7 +77,7 @@ const ColumnsBlock = ({ propertyDefs, updatePropertyDefs }: Props) => {
               background: "white",
             }}
           >
-            {propertyTypeList.map((propertyType) => (
+            {columnTypeList.map((propertyType) => (
               <MenuItem key={propertyType} value={propertyType}>
                 {propertyType}
               </MenuItem>
@@ -97,7 +97,7 @@ const ColumnsBlock = ({ propertyDefs, updatePropertyDefs }: Props) => {
         </Box>
       </Stack>
 
-      {propertyDefs && propertyDefs.length > 0 && (
+      {columnDefs && columnDefs.length > 0 && (
         <TableContainer>
           <Table>
             <TableHead>
@@ -108,7 +108,7 @@ const ColumnsBlock = ({ propertyDefs, updatePropertyDefs }: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {propertyDefs.map((propertyDef) => (
+              {columnDefs.map((propertyDef) => (
                 <TableRow key={propertyDef.name}>
                   <TableCell>{propertyDef.name}</TableCell>
                   <TableCell>{propertyDef.type}</TableCell>

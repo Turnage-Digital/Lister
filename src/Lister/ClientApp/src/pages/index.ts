@@ -1,5 +1,1 @@
-export {
-  ThingDefsEditPage,
-  listDefsEditPageLoader,
-  listDefsEditPageAction,
-} from "./list-defs";
+export { EditListPage, editListPageLoader, editListPageAction } from "./lists";

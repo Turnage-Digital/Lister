@@ -6,5 +6,5 @@ export interface ListDef {
   userId: string;
   name: string;
   statusDefs: StatusDef[];
-  propertyDefs: ColumnDef[];
+  columnDefs: ColumnDef[];
 }

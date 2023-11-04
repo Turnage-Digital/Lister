@@ -1,11 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import Shell from "./shell";
-import {
-  listDefsEditPageAction,
-  listDefsEditPageLoader,
-  ThingDefsEditPage,
-} from "./pages";
+import { EditListPage, editListPageAction, editListPageLoader } from "./pages";
 
 const router = createBrowserRouter([
   {
@@ -13,10 +9,10 @@ const router = createBrowserRouter([
     Component: Shell,
     children: [
       {
-        path: "list-defs/create",
-        Component: ThingDefsEditPage,
-        loader: listDefsEditPageLoader,
-        action: listDefsEditPageAction,
+        path: "lists/create",
+        Component: EditListPage,
+        loader: editListPageLoader,
+        action: editListPageAction,
       },
     ],
   },
