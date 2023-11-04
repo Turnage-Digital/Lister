@@ -64,6 +64,21 @@ public static class ListDefsApi
             .Produces<ListDefView>(Status201Created)
             .Produces(Status500InternalServerError);
 
+        retval.MapPut("/update", async (
+                UpdateListDefCommand command,
+                IMediator mediator,
+                ClaimsPrincipal claimsPrincipal
+            ) =>
+            {
+                var identity = (ClaimsIdentity)claimsPrincipal.Identity!;
+                var userId = identity.GetUserId();
+                command.UpdatedBy = userId;
+                await mediator.Send(command);
+                return Results.Ok();
+            })
+            .Produces(Status401Unauthorized)
+            .Produces(Status500InternalServerError);
+
         return retval;
     }
 }

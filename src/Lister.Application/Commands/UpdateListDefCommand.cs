@@ -6,6 +6,9 @@ namespace Lister.Application.Commands;
 
 public class UpdateListDefCommand : IRequest
 {
+    [JsonIgnore]
+    public string UpdatedBy { get; set; } = null!;
+
     [JsonProperty("id")]
     public string Id { get; set; } = null!;
 

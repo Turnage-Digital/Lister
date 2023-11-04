@@ -18,6 +18,7 @@ public class UpdateListDefCommandHandler<TWritableListDef>
     public async Task Handle(UpdateListDefCommand request, CancellationToken cancellationToken = default)
     {
         await _listDefAggregate.UpdateAsync(
+            request.UpdatedBy,
             request.Id,
             request.Name,
             request.StatusDefs,

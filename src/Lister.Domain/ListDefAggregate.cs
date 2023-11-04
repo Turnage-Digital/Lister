@@ -43,6 +43,7 @@ public class ListDefAggregate<TListDef>
     }
 
     public async Task UpdateAsync(
+        string updatedBy,
         string id,
         string name,
         StatusDef[] statusDefs,
@@ -54,6 +55,12 @@ public class ListDefAggregate<TListDef>
         if (listDef == null)
         {
             throw new InvalidOperationException($"ListDef with id {id} not found.");
+        }
+
+        var createdBy = await _unitOfWork.ListDefsStore.GetCreatedByAsync(listDef, cancellationToken);
+        if (createdBy != updatedBy)
+        {
+            throw new InvalidOperationException($"ListDef with id {id} can only be updated by {createdBy}.");
         }
 
         await _unitOfWork.ListDefsStore.SetNameAsync(listDef, name, cancellationToken);
