@@ -9,12 +9,12 @@ public class CoreMappingProfile : Profile
 {
     public CoreMappingProfile()
     {
-        CreateMap<ListDefEntity, ListDefView>();
+        CreateMap<ListEntity, ListView>();
 
-        CreateMap<ListDefEntity, IReadOnlyListDef>()
-            .As<ListDefView>();
+        CreateMap<ListEntity, IReadOnlyList>()
+            .As<ListView>();
 
-        CreateMap<StatusDefEntity, StatusDef>();
-        CreateMap<ColumnDefEntity, ColumnDef>();
+        CreateMap<StatusEntity, Status>();
+        CreateMap<ColumnEntity, Column>();
     }
 }

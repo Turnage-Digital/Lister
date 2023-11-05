@@ -16,26 +16,24 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        var domainAssemblyName = typeof(ListDefAggregate<>).Assembly;
+        var domainAssemblyName = typeof(ListAggregate<>).Assembly;
         services.AddMediatR(config =>
             config.RegisterServicesFromAssembly(domainAssemblyName));
-        services.AddSingleton<ListDefAggregate<ListDefEntity>>();
+        services.AddSingleton<ListAggregate<ListEntity>>();
         return services;
     }
 
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        var applicationAssemblyName = typeof(CreateListDefCommand<>).Assembly;
+        var applicationAssemblyName = typeof(CreateListCommand<>).Assembly;
         services.AddMediatR(config =>
             config.RegisterServicesFromAssembly(applicationAssemblyName));
-        services.AddTransient<IRequestHandler<CreateListDefCommand<ListDefView>, ListDefView>,
-            CreateListDefCommandHandler<ListDefView, ListDefEntity>>();
-        services.AddTransient<IRequestHandler<UpdateListDefCommand>,
-            UpdateListDefCommandHandler<ListDefEntity>>();
-        services.AddTransient<IRequestHandler<GetListDefByIdQuery<ListDefView>, ListDefView>,
-            GetListDefByIdQueryHandler<ListDefView>>();
-        services.AddTransient<IRequestHandler<GetListDefsQuery<ListDefView>, ListDefView[]>,
-            GetListDefsQueryHandler<ListDefView>>();
+        services.AddTransient<IRequestHandler<CreateListCommand<ListView>, ListView>,
+            CreateListCommandHandler<ListView, ListEntity>>();
+        services.AddTransient<IRequestHandler<GetListByIdQuery<ListView>, ListView>,
+            GetListByIdQueryHandler<ListView>>();
+        services.AddTransient<IRequestHandler<GetListsQuery<ListView>, ListView[]>,
+            GetListsQueryHandler<ListView>>();
         return services;
     }
 
@@ -50,7 +48,7 @@ public static class ServiceCollectionExtensions
             options.UseMySql(connectionString, serverVersion,
                     optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName))
                 .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning)));
-        services.AddScoped<IListerUnitOfWork<ListDefEntity>, ListerUnitOfWork>();
+        services.AddScoped<IListerUnitOfWork<ListEntity>, ListerUnitOfWork>();
         services.AddStores();
         services.AddViews();
         services.AddAutoMapper(config =>
@@ -60,14 +58,14 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddStores(this IServiceCollection services)
     {
-        services.AddScoped<IListDefsStore<ListDefEntity>, ListDefsStore>();
+        services.AddScoped<IListsStore<ListEntity>, ListsStore>();
         return services;
     }
 
     private static IServiceCollection AddViews(this IServiceCollection services)
     {
-        services.AddScoped<IGetReadOnlyListDefById<ListDefView>, GetReadOnlyListDefById>();
-        services.AddScoped<IGetReadOnlyListDefs<ListDefView>, GetReadOnlyListDefs>();
+        services.AddScoped<IGetReadOnlyListById<ListView>, GetReadOnlyListById>();
+        services.AddScoped<IGetReadOnlyLists<ListView>, GetReadOnlyLists>();
         return services;
     }
 }

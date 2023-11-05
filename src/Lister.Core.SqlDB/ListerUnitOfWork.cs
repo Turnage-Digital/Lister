@@ -2,7 +2,7 @@ using Lister.Core.SqlDB.Entities;
 
 namespace Lister.Core.SqlDB;
 
-public class ListerUnitOfWork : UnitOfWork<ListerDbContext>, IListerUnitOfWork<ListDefEntity>
+public class ListerUnitOfWork : UnitOfWork<ListerDbContext>, IListerUnitOfWork<ListEntity>
 {
     private readonly ListerDbContext _dbContext;
 
@@ -12,5 +12,5 @@ public class ListerUnitOfWork : UnitOfWork<ListerDbContext>, IListerUnitOfWork<L
         _dbContext = dbContext;
     }
 
-    public IListDefsStore<ListDefEntity> ListDefsStore => new ListDefsStore(_dbContext);
+    public IListsStore<ListEntity> ListsStore => new ListsStore(_dbContext);
 }

@@ -1,7 +1,7 @@
 namespace Lister.Core;
 
-public interface IListerUnitOfWork<TListDef> : IUnitOfWork
-    where TListDef : IWritableListDef
+public interface IListerUnitOfWork<TList> : IUnitOfWork
+    where TList : IWritableList
 {
-    IListDefsStore<TListDef> ListDefsStore { get; }
+    IListsStore<TList> ListsStore { get; }
 }

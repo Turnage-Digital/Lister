@@ -9,7 +9,7 @@ public static class WebApplicationExtensions
             SeedData.EnsureSeedData(app);
         }
 
-        app.MapListDefsApi();
+        app.MapListsApi();
         app.MapUserApi();
         return app;
     }

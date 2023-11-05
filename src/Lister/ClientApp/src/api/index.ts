@@ -1,8 +1,8 @@
 export { UsersApi } from "./users-api";
 export type { IUsersApi } from "./users-api";
 
-export { ListDefsApi } from "./list-defs-api";
-export type { IListDefsApi } from "./list-defs-api";
+export { ListsApi } from "./lists-api";
+export type { IListsApi } from "./lists-api";
 
-export type { Claim, ColumnDef, StatusDef, ListDef } from "./models";
+export type { Claim, Column, Status, List } from "./models";
 export { ColumnType } from "./models";

@@ -1,2 +1,2 @@
-export { default as EditBlock } from "./edit-block";
+export { default as FormBlock } from "./form-block";
 export { default as Loading } from "./loading";

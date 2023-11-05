@@ -1,19 +1,17 @@
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 
-import { IListDefsApi, ListDef, ListDefsApi } from "../../api";
+import { IListsApi, List, ListsApi } from "../../api";
 
-const listDefsApi: IListDefsApi = new ListDefsApi(
-  `${process.env.PUBLIC_URL}/api/list-defs`
-);
+const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 export const listsPageLoader = async () => {
-  const retval = await listDefsApi.get();
+  const retval = await listsApi.get();
   return retval;
 };
 
 const ListsPage = () => {
-  const loaded = useLoaderData() as ListDef[];
+  const loaded = useLoaderData() as List[];
 
   return <div>Lists Page</div>;
 };

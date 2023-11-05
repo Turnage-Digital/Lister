@@ -2,14 +2,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class UnitOfWork<TContext> : IUnitOfWork
+public abstract class UnitOfWork<TContext> : IUnitOfWork
     where TContext : DbContext
 {
     private readonly TContext _dbContext;
 
     private bool _disposed;
 
-    public UnitOfWork(TContext dbContext)
+    protected UnitOfWork(TContext dbContext)
     {
         _dbContext = dbContext;
     }
