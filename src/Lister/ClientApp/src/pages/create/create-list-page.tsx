@@ -45,7 +45,7 @@ export const createListPageAction = async ({ request }: ActionFunctionArgs) => {
 
   await listsApi.create(parsed);
 
-  return redirect(`/lists`);
+  return redirect(`/`);
 };
 
 const CreateListPage = () => {

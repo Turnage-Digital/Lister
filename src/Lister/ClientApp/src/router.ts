@@ -5,6 +5,8 @@ import {
   CreateListPage,
   createListPageAction,
   createListPageLoader,
+  MainPage,
+  mainPageLoader,
 } from "./pages";
 
 const router = createBrowserRouter([
@@ -12,6 +14,11 @@ const router = createBrowserRouter([
     path: "/",
     Component: Shell,
     children: [
+      {
+        index: true,
+        Component: MainPage,
+        loader: mainPageLoader,
+      },
       {
         path: "create",
         Component: CreateListPage,

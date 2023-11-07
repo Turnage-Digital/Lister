@@ -9,9 +9,9 @@ public class ListEntity : IWritableList
     [Required]
     public string Name { get; set; } = null!;
 
-    public ICollection<StatusEntity> Statuses { get; set; } = null!;
-
     public ICollection<ColumnEntity> Columns { get; set; } = null!;
+
+    public ICollection<StatusEntity> Statuses { get; set; } = null!;
 
     [Required]
     public string CreatedBy { get; set; } = null!;

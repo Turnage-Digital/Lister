@@ -32,6 +32,17 @@ public static class ListsApi
             .Produces<ListView[]>()
             .Produces(Status500InternalServerError);
 
+        retval.MapGet("/names", async (
+                IMediator mediator,
+                ClaimsPrincipal claimsPrincipal
+            ) =>
+            {
+                
+            })
+            .Produces(Status401Unauthorized)
+            .Produces<ListNameView[]>()
+            .Produces(Status500InternalServerError);
+
         retval.MapGet("/{id}", async (
                 Guid id,
                 IMediator mediator,

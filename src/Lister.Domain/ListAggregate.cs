@@ -29,8 +29,8 @@ public class ListAggregate<TList>
 
         await _unitOfWork.ListsStore.SetCreatedByAsync(retval, createdBy, cancellationToken);
         await _unitOfWork.ListsStore.SetNameAsync(retval, name, cancellationToken);
-        await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         await _unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
+        await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
 
         await _unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
 

@@ -45,26 +45,6 @@ public class ListsStore : IListsStore<ListEntity>
         return Task.FromResult(retval);
     }
 
-    public Task SetStatusesAsync(
-        ListEntity list,
-        Status[] statuses,
-        CancellationToken cancellationToken = default
-    )
-    {
-        list.Statuses = statuses
-            .Select(sd => new StatusEntity { Name = sd.Name, Color = sd.Color })
-            .ToList();
-        return Task.CompletedTask;
-    }
-
-    public Task<Status[]> GetStatusesAsync(ListEntity list, CancellationToken cancellationToken = default)
-    {
-        var retval = list.Statuses
-            .Select(sd => new Status { Name = sd.Name, Color = sd.Color })
-            .ToArray();
-        return Task.FromResult(retval);
-    }
-
     public Task SetColumnsAsync(
         ListEntity list,
         Column[] columns,
@@ -81,6 +61,26 @@ public class ListsStore : IListsStore<ListEntity>
     {
         var retval = list.Columns
             .Select(pd => new Column { Name = pd.Name, Type = pd.Type })
+            .ToArray();
+        return Task.FromResult(retval);
+    }
+
+    public Task SetStatusesAsync(
+        ListEntity list,
+        Status[] statuses,
+        CancellationToken cancellationToken = default
+    )
+    {
+        list.Statuses = statuses
+            .Select(sd => new StatusEntity { Name = sd.Name, Color = sd.Color })
+            .ToList();
+        return Task.CompletedTask;
+    }
+
+    public Task<Status[]> GetStatusesAsync(ListEntity list, CancellationToken cancellationToken = default)
+    {
+        var retval = list.Statuses
+            .Select(sd => new Status { Name = sd.Name, Color = sd.Color })
             .ToArray();
         return Task.FromResult(retval);
     }

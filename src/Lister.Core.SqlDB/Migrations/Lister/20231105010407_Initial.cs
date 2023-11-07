@@ -1,101 +1,96 @@
-﻿using System;
+﻿#nullable disable
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
+namespace Lister.Core.SqlDB.Migrations.Lister;
 
-namespace Lister.Core.SqlDB.Migrations.Lister
+/// <inheritdoc />
+public partial class Initial : Migration
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
+        migrationBuilder.AlterDatabase()
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Lists",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Lists",
+                table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Id = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>("longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    CreatedOn = table.Column<DateTime>("datetime(6)", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lists", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                constraints: table => { table.PrimaryKey("PK_Lists", x => x.Id); })
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Columns",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Columns",
+                table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ListEntityId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Id = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListEntityId = table.Column<Guid>("char(36)", nullable: true, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<int>("int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Columns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Columns_Lists_ListEntityId",
-                        column: x => x.ListEntityId,
-                        principalTable: "Lists",
-                        principalColumn: "Id");
+                        "FK_Columns_Lists_ListEntityId",
+                        x => x.ListEntityId,
+                        "Lists",
+                        "Id");
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Statuses",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Statuses",
+                table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ListEntityId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Id = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListEntityId = table.Column<Guid>("char(36)", nullable: true, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Color = table.Column<string>(type: "longtext", nullable: false)
+                    Color = table.Column<string>("longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Statuses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Statuses_Lists_ListEntityId",
-                        column: x => x.ListEntityId,
-                        principalTable: "Lists",
-                        principalColumn: "Id");
+                        "FK_Statuses_Lists_ListEntityId",
+                        x => x.ListEntityId,
+                        "Lists",
+                        "Id");
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Columns_ListEntityId",
-                table: "Columns",
-                column: "ListEntityId");
+        migrationBuilder.CreateIndex(
+            "IX_Columns_ListEntityId",
+            "Columns",
+            "ListEntityId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Statuses_ListEntityId",
-                table: "Statuses",
-                column: "ListEntityId");
-        }
+        migrationBuilder.CreateIndex(
+            "IX_Statuses_ListEntityId",
+            "Statuses",
+            "ListEntityId");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Columns");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            "Columns");
 
-            migrationBuilder.DropTable(
-                name: "Statuses");
+        migrationBuilder.DropTable(
+            "Statuses");
 
-            migrationBuilder.DropTable(
-                name: "Lists");
-        }
+        migrationBuilder.DropTable(
+            "Lists");
     }
 }
