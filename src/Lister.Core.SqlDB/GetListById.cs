@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class GetReadOnlyListById : IGetReadOnlyListById<ListView>
+public class GetListById : IGetListById<ListView>
 {
     private readonly ListerDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public GetReadOnlyListById(ListerDbContext dbContext, IMapper mapper)
+    public GetListById(ListerDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;

@@ -6,11 +6,11 @@ namespace Lister.Application.Queries;
 public class GetListsQueryHandler<TList> : IRequestHandler<GetListsQuery<TList>, TList[]>
     where TList : IReadOnlyList
 {
-    private readonly IGetReadOnlyLists<TList> _getReadOnlyLists;
+    private readonly IGetLists<TList> _getLists;
 
-    public GetListsQueryHandler(IGetReadOnlyLists<TList> getReadOnlyLists)
+    public GetListsQueryHandler(IGetLists<TList> getLists)
     {
-        _getReadOnlyLists = getReadOnlyLists;
+        _getLists = getLists;
     }
 
     public async Task<TList[]> Handle(
@@ -18,7 +18,7 @@ public class GetListsQueryHandler<TList> : IRequestHandler<GetListsQuery<TList>,
         CancellationToken cancellationToken = default
     )
     {
-        var retval = await _getReadOnlyLists.GetAsync(request.UserId, cancellationToken);
+        var retval = await _getLists.GetAsync(request.UserId, cancellationToken);
         return retval;
     }
 }

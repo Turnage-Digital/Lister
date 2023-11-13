@@ -6,11 +6,11 @@ namespace Lister.Application.Queries;
 public class GetListByIdQueryHandler<TList> : IRequestHandler<GetListByIdQuery<TList>, TList>
     where TList : IReadOnlyList
 {
-    private readonly IGetReadOnlyListById<TList> _getReadOnlyListById;
+    private readonly IGetListById<TList> _getListById;
 
-    public GetListByIdQueryHandler(IGetReadOnlyListById<TList> getReadOnlyListById)
+    public GetListByIdQueryHandler(IGetListById<TList> getListById)
     {
-        _getReadOnlyListById = getReadOnlyListById;
+        _getListById = getListById;
     }
 
     public async Task<TList> Handle(
@@ -18,7 +18,7 @@ public class GetListByIdQueryHandler<TList> : IRequestHandler<GetListByIdQuery<T
         CancellationToken cancellationToken = default
     )
     {
-        var retval = await _getReadOnlyListById.GetAsync(request.UserId, request.Id, cancellationToken);
+        var retval = await _getListById.GetAsync(request.UserId, request.Id, cancellationToken);
         return retval;
     }
 }

@@ -17,7 +17,7 @@ public class GetListNames : IGetListNames<ListNameView>
 
     public async Task<ListNameView[]> GetAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var entities = await _dbContext.Lists
+        var retval = await _dbContext.Lists
             .Where(list => list.CreatedBy == userId)
             .Select(list => new ListNameView
             {
@@ -25,7 +25,6 @@ public class GetListNames : IGetListNames<ListNameView>
                 Name = list.Name
             })
             .ToArrayAsync(cancellationToken);
-        var retval = _mapper.Map<ListNameView[]>(entities);
         return retval;
     }
 }

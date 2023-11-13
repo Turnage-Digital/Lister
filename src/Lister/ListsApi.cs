@@ -17,7 +17,7 @@ public static class ListsApi
             .RequireAuthorization()
             .WithTags("Lists");
 
-        retval.MapGet("", async (
+        retval.MapGet("/", async (
                 IMediator mediator,
                 ClaimsPrincipal claimsPrincipal
             ) =>
@@ -30,17 +30,6 @@ public static class ListsApi
             })
             .Produces(Status401Unauthorized)
             .Produces<ListView[]>()
-            .Produces(Status500InternalServerError);
-
-        retval.MapGet("/names", async (
-                IMediator mediator,
-                ClaimsPrincipal claimsPrincipal
-            ) =>
-            {
-                
-            })
-            .Produces(Status401Unauthorized)
-            .Produces<ListNameView[]>()
             .Produces(Status500InternalServerError);
 
         retval.MapGet("/{id}", async (
@@ -57,6 +46,21 @@ public static class ListsApi
             })
             .Produces(Status401Unauthorized)
             .Produces<ListView>()
+            .Produces(Status500InternalServerError);
+        
+        retval.MapGet("/names", async (
+                IMediator mediator,
+                ClaimsPrincipal claimsPrincipal
+            ) =>
+            {
+                var identity = (ClaimsIdentity)claimsPrincipal.Identity!;
+                var userId = identity.GetUserId();
+                GetListNamesQuery<ListNameView> query = new(userId);
+                var result = await mediator.Send(query);
+                return Results.Ok(result);
+            })
+            .Produces(Status401Unauthorized)
+            .Produces<ListNameView[]>()
             .Produces(Status500InternalServerError);
 
         retval.MapPost("/create", async (

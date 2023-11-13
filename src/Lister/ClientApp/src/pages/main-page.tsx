@@ -7,7 +7,7 @@ import { IListsApi, List, ListsApi } from "../api";
 const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 export const mainPageLoader = async () => {
-  const retval = await listsApi.get();
+  const retval = await listsApi.getNames();
   return retval;
 };
 

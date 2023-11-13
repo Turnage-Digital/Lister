@@ -34,6 +34,8 @@ public static class ServiceCollectionExtensions
             GetListByIdQueryHandler<ListView>>();
         services.AddTransient<IRequestHandler<GetListsQuery<ListView>, ListView[]>,
             GetListsQueryHandler<ListView>>();
+        services.AddTransient<IRequestHandler<GetListNamesQuery<ListNameView>, ListNameView[]>,
+            GetListNamesQueryHandler<ListNameView>>();
         return services;
     }
 
@@ -64,8 +66,9 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddViews(this IServiceCollection services)
     {
-        services.AddScoped<IGetReadOnlyListById<ListView>, GetReadOnlyListById>();
-        services.AddScoped<IGetReadOnlyLists<ListView>, GetReadOnlyLists>();
+        services.AddScoped<IGetListById<ListView>, GetListById>();
+        services.AddScoped<IGetLists<ListView>, GetLists>();
+        services.AddScoped<IGetListNames<ListNameView>, GetListNames>();
         return services;
     }
 }

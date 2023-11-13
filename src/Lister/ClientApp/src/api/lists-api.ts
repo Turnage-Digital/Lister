@@ -1,9 +1,11 @@
-import { List } from "./models";
+import { List, ListName } from "./models";
 
 export interface IListsApi {
   create(list: List): Promise<List>;
 
   get(): Promise<List[]>;
+
+  getNames(): Promise<ListName>;
 
   getById(id: string): Promise<List>;
 }
@@ -30,6 +32,15 @@ export class ListsApi implements IListsApi {
 
   public async get(): Promise<List[]> {
     const request = new Request(`${this.baseUrl}`, {
+      method: "GET",
+    });
+    const response = await fetch(request);
+    const retval = await response.json();
+    return retval;
+  }
+
+  public async getNames(): Promise<ListName> {
+    const request = new Request(`${this.baseUrl}/names`, {
       method: "GET",
     });
     const response = await fetch(request);

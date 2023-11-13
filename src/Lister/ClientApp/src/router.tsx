@@ -17,7 +17,7 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: MainPage,
-        loader: mainPageLoader,
+        // loader: mainPageLoader,
       },
       {
         path: "create",

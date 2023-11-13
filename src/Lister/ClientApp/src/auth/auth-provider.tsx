@@ -1,56 +1,33 @@
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { PropsWithChildren, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Claim, IUsersApi, UsersApi } from "../api";
-import { Loading } from "../components";
 
 import AuthContext from "./auth-context";
-import SignInForm from "./sign-in-form";
 
 type Props = PropsWithChildren;
 
 const userApi: IUsersApi = new UsersApi(`${process.env.PUBLIC_URL}/api/users`);
 
 const AuthProvider = ({ children }: Props) => {
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      try {
-        const result = await userApi.getClaims();
-
-        if (result.succeeded) {
-          setSignedIn(true);
-          setClaims(result.claims);
-        }
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [signedIn]);
-
   const signIn = async (username: string, password: string) => {
     setLoading(true);
-    const result = await userApi.signIn(username, password);
-    if (result.succeeded) {
-      setSignedIn(result.succeeded);
+
+    const { succeeded } = await userApi.signIn(username, password);
+    if (succeeded) {
+      setSignedIn(true);
+
+      const claimsResult = await userApi.getClaims();
+      setClaims(claimsResult.claims);
     } else {
       setError("Invalid username or password.");
     }
+
     setLoading(false);
   };
 
@@ -58,30 +35,24 @@ const AuthProvider = ({ children }: Props) => {
     setLoading(true);
     await userApi.signOut();
     setSignedIn(false);
+    setClaims([]);
     setLoading(false);
   };
 
-  let content: ReactElement;
-
-  if (signedIn) {
-    content = <>{children}</>;
-  } else if (loading) {
-    content = <Loading />;
-  } else {
-    content = <SignInForm signIn={signIn} error={error} />;
-  }
-
   const authContextValue = useMemo(() => {
     return {
+      loading,
+      error,
       signedIn,
       claims,
+      signIn,
       signOut,
     };
-  }, [signedIn, claims]);
+  }, [loading, error, signedIn, claims]);
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      {content}
+      {children}
     </AuthContext.Provider>
   );
 };

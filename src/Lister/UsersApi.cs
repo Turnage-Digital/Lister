@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Lister.Models;
 using Microsoft.AspNetCore.Identity;
-using static Microsoft.AspNetCore.Http.StatusCodes;
 using Claim = Lister.Models.Claim;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Lister;
 
@@ -22,20 +22,25 @@ public static class UsersApi
             })
             .Produces<SignInResponse>();
 
+        retval.MapPost("/sign-out", async (SignInManager<IdentityUser> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return Results.Ok();
+            })
+            .Produces(Status200OK)
+            .Produces(Status401Unauthorized)
+            .RequireAuthorization();
+
         retval.MapGet("/claims", (ClaimsPrincipal claimsPrincipal) =>
             {
-                if (claimsPrincipal.Identity?.IsAuthenticated != true)
-                {
-                    return Results.Unauthorized();
-                }
-
                 var claims = claimsPrincipal.Claims
                     .Select(x => new Claim { Type = x.Type, Value = x.Value })
                     .ToArray();
                 return Results.Json(new ClaimsResponse { Claims = claims });
             })
+            .Produces<Claim[]>()
             .Produces(Status401Unauthorized)
-            .Produces<Claim[]>();
+            .RequireAuthorization();
 
         return retval;
     }
