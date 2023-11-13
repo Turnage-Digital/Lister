@@ -37,21 +37,14 @@ export class UsersApi implements IUsersApi {
       method: "GET",
     });
     const response = await fetch(request);
-    if (response.status === 401) {
-      return { claims: [] };
-    }
     const claims = await response.json();
-    const retval = { claims };
-    return retval;
+    return { claims };
   }
 
   public async signOut(): Promise<void> {
     const request = new Request(`${this.baseUrl}/sign-out`, {
       method: "POST",
     });
-    const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error("Failed to sign out.");
-    }
+    await fetch(request);
   }
 }

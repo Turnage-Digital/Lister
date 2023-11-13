@@ -20,7 +20,8 @@ public static class UsersApi
                     true, false);
                 return Results.Json(new SignInResponse { Succeeded = result.Succeeded });
             })
-            .Produces<SignInResponse>();
+            .Produces<SignInResponse>()
+            .AllowAnonymous();
 
         retval.MapPost("/sign-out", async (SignInManager<IdentityUser> signInManager) =>
             {
