@@ -1,5 +1,4 @@
 import React, { PropsWithChildren, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import { Claim, IUsersApi, UsersApi } from "../api";
 
@@ -29,6 +28,7 @@ const AuthProvider = ({ children }: Props) => {
     }
 
     setLoading(false);
+    return succeeded;
   };
 
   const signOut = async () => {

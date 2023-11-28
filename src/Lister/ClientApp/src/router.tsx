@@ -7,6 +7,7 @@ import {
   createListPageLoader,
   MainPage,
   mainPageLoader,
+  SignInPage,
 } from "./pages";
 
 const router = createBrowserRouter([
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: MainPage,
-        // loader: mainPageLoader,
+        loader: mainPageLoader,
       },
       {
         path: "create",
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
         action: createListPageAction,
       },
     ],
+  },
+  {
+    path: "/sign-in",
+    Component: SignInPage,
   },
 ]);
 

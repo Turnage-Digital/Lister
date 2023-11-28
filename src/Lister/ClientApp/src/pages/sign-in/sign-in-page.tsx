@@ -8,21 +8,32 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { ActionFunctionArgs, useLocation, useNavigate } from "react-router-dom";
 
-interface Props {
-  signIn: (username: string, password: string) => Promise<void>;
-  error: string | null;
-}
+import { useAuth } from "../../auth";
+import { Loading } from "../../components";
 
-const SignInForm = ({ signIn, error }: Props) => {
+const SignInPage = () => {
+  const { loading, error, signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async () => {
     if (username && password) {
-      await signIn(username, password);
+      const succeeded = await signIn(username, password);
+
+      if (succeeded) {
+        const params = new URLSearchParams(location.search);
+
+        navigate(params.get("callbackUrl") || "/");
+      }
     }
   };
+
+  if (loading) return <Loading />;
 
   return (
     <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
@@ -74,4 +85,4 @@ const SignInForm = ({ signIn, error }: Props) => {
   );
 };
 
-export default SignInForm;
+export default SignInPage;
