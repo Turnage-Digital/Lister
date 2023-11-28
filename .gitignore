@@ -1,0 +1,17 @@
+.vscode
+.idea/*
+!.idea/rcb-settings.xml
+.vs
+.fleet
+.idea
+
+.DS_Store
+
+bin
+obj
+node_modules
+
+*.user
+
+lister.db*
+.env.development.local
