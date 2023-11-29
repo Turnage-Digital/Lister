@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Alert,
-  Box,
   Button,
   Container,
   Stack,
@@ -34,13 +33,16 @@ export const signInPageAction = async ({ request }: ActionFunctionArgs) => {
   }
 
   const input = { username, password };
-  const postRequest = new Request(`${process.env.PUBLIC_URL}/sign-in`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+  const postRequest = new Request(
+    `${process.env.PUBLIC_URL}/api/users/sign-in`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(input),
+    }
+  );
   const response = await fetch(postRequest);
   const { succeeded } = await response.json();
   if (!succeeded) {
@@ -55,7 +57,8 @@ export const signInPageAction = async ({ request }: ActionFunctionArgs) => {
 
 const SignInPage = () => {
   const location = useLocation();
-  const redirectTo = location.state?.redirectTo ?? "/";
+  const params = new URLSearchParams(location.search);
+  const redirectTo = params.get("callbackUrl") ?? "/";
 
   const actionData = useActionData() as { error: string } | undefined;
 

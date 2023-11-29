@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import React from "react";
 
-import Shell from "./shell";
+import Shell, { shellLoader } from "./shell";
 import {
   CreateListPage,
   createListPageAction,
@@ -11,25 +10,21 @@ import {
   SignInPage,
   signInPageAction,
 } from "./pages";
-import { AuthProvider } from "./auth";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AuthProvider>
-        <Shell />
-      </AuthProvider>
-    ),
+    Component: Shell,
+    loader: shellLoader,
     children: [
       {
         index: true,
-        element: <MainPage />,
+        Component: MainPage,
         loader: mainPageLoader,
       },
       {
         path: "create",
-        element: <CreateListPage />,
+        Component: CreateListPage,
         loader: createListPageLoader,
         action: createListPageAction,
       },
@@ -37,7 +32,7 @@ const router = createBrowserRouter([
   },
   {
     path: "sign-in",
-    element: <SignInPage />,
+    Component: SignInPage,
     action: signInPageAction,
   },
 ]);

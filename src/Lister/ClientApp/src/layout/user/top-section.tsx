@@ -9,10 +9,7 @@ import {
 } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 
-import { useAuth } from "../../auth";
-
 const TopSection = () => {
-  const { signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenMenu = (element: HTMLButtonElement): void => {
@@ -47,7 +44,13 @@ const TopSection = () => {
           open={Boolean(anchorEl)}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
+          <MenuItem
+            onClick={() => {
+              // signOut();
+            }}
+          >
+            Sign Out
+          </MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
