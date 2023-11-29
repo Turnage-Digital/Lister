@@ -38,13 +38,13 @@ internal static class HostingExtensions
                 {
                     options.Cookie.HttpOnly = true;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    
-                    options.Events.OnRedirectToAccessDenied =  
-                    options.Events.OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.CompletedTask;
-                    };
+
+                    options.Events.OnRedirectToAccessDenied =
+                        options.Events.OnRedirectToLogin = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        };
                 });
 
             registry.AddAuthorization();

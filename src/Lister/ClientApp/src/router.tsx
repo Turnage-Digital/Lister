@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import React from "react";
 
 import Shell from "./shell";
 import {
@@ -8,29 +9,36 @@ import {
   MainPage,
   mainPageLoader,
   SignInPage,
+  signInPageAction,
 } from "./pages";
+import { AuthProvider } from "./auth";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Shell,
+    element: (
+      <AuthProvider>
+        <Shell />
+      </AuthProvider>
+    ),
     children: [
       {
         index: true,
-        Component: MainPage,
+        element: <MainPage />,
         loader: mainPageLoader,
       },
       {
         path: "create",
-        Component: CreateListPage,
+        element: <CreateListPage />,
         loader: createListPageLoader,
         action: createListPageAction,
       },
     ],
   },
   {
-    path: "/sign-in",
-    Component: SignInPage,
+    path: "sign-in",
+    element: <SignInPage />,
+    action: signInPageAction,
   },
 ]);
 

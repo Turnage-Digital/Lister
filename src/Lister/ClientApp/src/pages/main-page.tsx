@@ -1,16 +1,16 @@
 import React from "react";
-import { redirect, useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { Container } from "@mui/material";
 
-import { List } from "../api";
+import { List } from "../models";
 
 export const mainPageLoader = async () => {
-  const request = new Request(`${process.env.PUBLIC_URL}/api/lists/names`, {
+  const getRequest = new Request(`${process.env.PUBLIC_URL}/api/lists/names`, {
     method: "GET",
   });
-  const response = await fetch(request);
+  const response = await fetch(getRequest);
   if (response.status === 401) {
-    return redirect("/sign-in?callbackUrl=/");
+    return [] as List[];
   }
   const retval = await response.json();
   return retval;

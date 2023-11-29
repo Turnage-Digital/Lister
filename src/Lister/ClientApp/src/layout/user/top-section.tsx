@@ -23,8 +23,6 @@ const TopSection = () => {
     setAnchorEl(null);
   };
 
-  const drawerWidth: 240 = 240;
-
   return (
     <AppBar
       elevation={0}

@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Lister.Models;
 using Microsoft.AspNetCore.Identity;
-using Claim = Lister.Models.Claim;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using Claim = Lister.Models.Claim;
 
 namespace Lister;
 
