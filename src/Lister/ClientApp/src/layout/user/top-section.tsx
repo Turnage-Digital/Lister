@@ -1,24 +1,9 @@
-import React, { useState } from "react";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-} from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import React from "react";
+import { AppBar, Box, Button, Toolbar } from "@mui/material";
+import { useFetcher } from "react-router-dom";
 
 const TopSection = () => {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleOpenMenu = (element: HTMLButtonElement): void => {
-    setAnchorEl(element);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+  const fetcher = useFetcher();
 
   return (
     <AppBar
@@ -31,27 +16,9 @@ const TopSection = () => {
       <Toolbar>
         <Box sx={{ flexGrow: 1 }} />
 
-        <IconButton
-          color="default"
-          onClick={(event) => handleOpenMenu(event.currentTarget)}
-        >
-          <AccountCircle />
-        </IconButton>
-
-        <Menu
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleCloseMenu}
-        >
-          <MenuItem
-            onClick={() => {
-              // signOut();
-            }}
-          >
-            Sign Out
-          </MenuItem>
-        </Menu>
+        <fetcher.Form method="post" action="/sign-out">
+          <Button type="submit">Sign Out</Button>
+        </fetcher.Form>
       </Toolbar>
     </AppBar>
   );

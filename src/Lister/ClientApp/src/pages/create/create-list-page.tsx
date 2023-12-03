@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import {
   Box,
   Button,
@@ -41,13 +41,16 @@ export const createListPageAction = async ({ request }: ActionFunctionArgs) => {
   const serialized = data.get("serialized") as string;
   const parsed = JSON.parse(serialized) as List;
 
-  const postRequest = new Request(`${process.env.PUBLIC_URL}/create`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify(parsed),
-  });
+  const postRequest = new Request(
+    `${process.env.PUBLIC_URL}/api/lists/create`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(parsed),
+    }
+  );
   await fetch(postRequest);
 
   return redirect(`/`);
@@ -62,7 +65,9 @@ const CreateListPage = () => {
     setUpdated((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
     const data = {
       serialized: JSON.stringify(updated),
     };
@@ -73,7 +78,7 @@ const CreateListPage = () => {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ p: 4 }}>
         <Box alignItems="center" sx={{ display: "flex" }}>
           <Box sx={{ flexGrow: 1 }}>
@@ -83,56 +88,54 @@ const CreateListPage = () => {
           </Box>
         </Box>
 
-        <Box component="form" onSubmit={handleSubmit}>
-          <FormBlock
-            title="Name"
-            blurb="Blurb about naming a list."
-            content={
-              <NameBlock
-                name={updated.name}
-                onNameChanged={(name) => update("name", name)}
-              />
-            }
-          />
+        <FormBlock
+          title="Name"
+          blurb="Blurb about naming a list."
+          content={
+            <NameBlock
+              name={updated.name}
+              onNameChanged={(name) => update("name", name)}
+            />
+          }
+        />
 
-          <FormBlock
-            title="Columns"
-            blurb="Blurb about columns for a list."
-            content={
-              <ColumnsBlock
-                columns={updated.columns}
-                onColumnsChanged={(columns) => update("columns", columns)}
-              />
-            }
-          />
+        <FormBlock
+          title="Columns"
+          blurb="Blurb about columns for a list."
+          content={
+            <ColumnsBlock
+              columns={updated.columns}
+              onColumnsChanged={(columns) => update("columns", columns)}
+            />
+          }
+        />
 
-          <FormBlock
-            title="Statuses"
-            blurb="Blurb about statuses for a list item."
-            content={
-              <StatusesBlock
-                statuses={updated.statuses}
-                onStatusesChanged={(statuses) => update("statuses", statuses)}
-              />
-            }
-          />
+        <FormBlock
+          title="Statuses"
+          blurb="Blurb about statuses for a list item."
+          content={
+            <StatusesBlock
+              statuses={updated.statuses}
+              onStatusesChanged={(statuses) => update("statuses", statuses)}
+            />
+          }
+        />
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "center", md: "flex-end" },
-            }}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "center", md: "flex-end" },
+          }}
+        >
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            startIcon={<Save />}
+            sx={{ width: { xs: "100%", md: "auto" } }}
           >
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              startIcon={<Save />}
-              sx={{ width: { xs: "100%", md: "auto" } }}
-            >
-              Submit
-            </Button>
-          </Box>
+            Submit
+          </Button>
         </Box>
       </Stack>
     </Container>

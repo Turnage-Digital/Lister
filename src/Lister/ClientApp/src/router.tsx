@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 
 import Shell, { shellLoader } from "./shell";
 import {
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         loader: mainPageLoader,
       },
       {
-        path: "create",
+        path: "/create",
         Component: CreateListPage,
         loader: createListPageLoader,
         action: createListPageAction,
@@ -31,9 +31,16 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "sign-in",
+    path: "/sign-in",
     Component: SignInPage,
     action: signInPageAction,
+  },
+  {
+    path: "/sign-out",
+    action: async () => {
+      await fetch("/api/users/sign-out", { method: "POST" });
+      return redirect("/");
+    },
   },
 ]);
 
