@@ -2,9 +2,10 @@ import React from "react";
 import { Box } from "@mui/material";
 import { LoaderFunctionArgs, redirect } from "react-router-dom";
 
-import { ContentSection, TopSection } from "./layout";
+import TopSection from "./top-section";
+import ContentSection from "./content-section";
 
-export const shellLoader = async ({ request }: LoaderFunctionArgs) => {
+export const layoutLoader = async ({ request }: LoaderFunctionArgs) => {
   const postRequest = new Request(
     `${process.env.PUBLIC_URL}/api/users/claims`,
     {
@@ -21,7 +22,7 @@ export const shellLoader = async ({ request }: LoaderFunctionArgs) => {
   return retval;
 };
 
-const Shell = () => {
+const Layout = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <TopSection />
@@ -30,4 +31,4 @@ const Shell = () => {
   );
 };
 
-export default Shell;
+export default Layout;

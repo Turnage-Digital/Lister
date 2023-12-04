@@ -5,3 +5,6 @@ export type { List } from "./list";
 export type { ListName } from "./list-name";
 
 export { ColumnType } from "./column-type";
+
+export type { StatusColor } from "./status-colors";
+export { statusColors } from "./status-colors";

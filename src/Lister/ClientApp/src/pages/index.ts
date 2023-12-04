@@ -4,6 +4,8 @@ export {
   createListPageAction,
 } from "./create";
 
+export { MainPage, mainPageLoader } from "./main";
+
 export { SignInPage, signInPageAction } from "./sign-in";
 
-export { default as MainPage, mainPageLoader } from "./main-page";
+export { Layout, layoutLoader } from "./shared";

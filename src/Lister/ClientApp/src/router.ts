@@ -1,6 +1,5 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 
-import Shell, { shellLoader } from "./shell";
 import {
   CreateListPage,
   createListPageAction,
@@ -9,13 +8,15 @@ import {
   mainPageLoader,
   SignInPage,
   signInPageAction,
+  Layout,
+  layoutLoader,
 } from "./pages";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Shell,
-    loader: shellLoader,
+    Component: Layout,
+    loader: layoutLoader,
     children: [
       {
         index: true,

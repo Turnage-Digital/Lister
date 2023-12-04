@@ -2,7 +2,7 @@ import React from "react";
 import { useLoaderData } from "react-router-dom";
 import { Container } from "@mui/material";
 
-import { List } from "../models";
+import { List } from "../../models";
 
 export const mainPageLoader = async () => {
   const getRequest = new Request(`${process.env.PUBLIC_URL}/api/lists/names`, {

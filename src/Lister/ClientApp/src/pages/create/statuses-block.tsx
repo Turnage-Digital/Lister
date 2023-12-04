@@ -15,8 +15,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { statusColors } from "../../status-colors";
-import { Status } from "../../models";
+import { Status, statusColors } from "../../models";
 
 import StatusBullet from "./status-bullet";
 

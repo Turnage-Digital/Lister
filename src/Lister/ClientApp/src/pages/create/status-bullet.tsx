@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 
-import { StatusColor } from "../../status-colors";
+import { StatusColor } from "../../models";
 
 interface Props {
   statusColor: StatusColor;
