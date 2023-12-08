@@ -8,4 +8,4 @@ export { MainPage, mainPageLoader } from "./main";
 
 export { SignInPage, signInPageAction } from "./sign-in";
 
-export { Layout, layoutLoader } from "./shared";
+export { default as Layout, layoutLoader } from "./layout";

@@ -4,12 +4,12 @@ import {
   CreateListPage,
   createListPageAction,
   createListPageLoader,
+  Layout,
+  layoutLoader,
   MainPage,
   mainPageLoader,
   SignInPage,
   signInPageAction,
-  Layout,
-  layoutLoader,
 } from "./pages";
 
 const router = createBrowserRouter([
