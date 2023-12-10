@@ -4,8 +4,10 @@ export {
   editListPageAction,
 } from "./edit-list";
 
-export { ListsPage, listsPageLoader, IdPage } from "./lists";
+export { IdPage, idPageLoader } from "./id";
+
+export { ListsPage, listsPageLoader } from "./lists";
 
 export { SignInPage, signInPageAction } from "./sign-in";
 
-export { default as Layout, layoutLoader } from "./layout";
+export { default as Root, rootLoader } from "./root";

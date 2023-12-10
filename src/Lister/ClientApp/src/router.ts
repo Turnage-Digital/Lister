@@ -6,17 +6,19 @@ import {
   EditListPage,
   editListPageAction,
   editListPageLoader,
-  Layout,
-  layoutLoader,
+  Root,
+  rootLoader,
   SignInPage,
   signInPageAction,
   IdPage,
+  idPageLoader,
 } from "./pages";
 
 const router = createBrowserRouter([
   {
-    Component: Layout,
-    loader: layoutLoader,
+    id: "root",
+    Component: Root,
+    loader: rootLoader,
     children: [
       {
         path: "/",
@@ -26,6 +28,7 @@ const router = createBrowserRouter([
           {
             path: "/:id",
             Component: IdPage,
+            loader: idPageLoader,
           },
         ],
       },

@@ -15,7 +15,7 @@ import {
 } from "react-router-dom";
 import { AccountCircle } from "@mui/icons-material";
 
-export const layoutLoader = async ({ request }: LoaderFunctionArgs) => {
+export const rootLoader = async ({ request }: LoaderFunctionArgs) => {
   const postRequest = new Request(
     `${process.env.PUBLIC_URL}/api/users/claims`,
     {
@@ -32,7 +32,7 @@ export const layoutLoader = async ({ request }: LoaderFunctionArgs) => {
   return retval;
 };
 
-const Layout = () => {
+const Root = () => {
   const fetcher = useFetcher();
 
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
@@ -88,4 +88,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default Root;
