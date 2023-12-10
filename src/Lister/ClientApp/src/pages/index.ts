@@ -1,10 +1,10 @@
-export { DashboardPage, dashboardPageLoader } from "./dashboard";
-
 export {
   EditListPage,
   editListPageLoader,
   editListPageAction,
 } from "./edit-list";
+
+export { ListsPage, listsPageLoader } from "./lists";
 
 export { SignInPage, signInPageAction } from "./sign-in";
 

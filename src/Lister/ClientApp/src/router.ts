@@ -1,8 +1,8 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 
 import {
-  DashboardPage,
-  dashboardPageLoader,
+  ListsPage,
+  listsPageLoader,
   EditListPage,
   editListPageAction,
   editListPageLoader,
@@ -14,14 +14,18 @@ import {
 
 const router = createBrowserRouter([
   {
-    path: "/",
     Component: Layout,
     loader: layoutLoader,
     children: [
       {
-        index: true,
-        Component: DashboardPage,
-        loader: dashboardPageLoader,
+        path: "/",
+        Component: ListsPage,
+        loader: listsPageLoader,
+        children: [
+          {
+            path: "/:id",
+          },
+        ],
       },
       {
         path: "/create-list",
