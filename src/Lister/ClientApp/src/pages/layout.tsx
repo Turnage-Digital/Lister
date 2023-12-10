@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from "react";
+import React, { MouseEvent, useState } from "react";
 import {
   AppBar,
   Box,

@@ -1,13 +1,13 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 
 import {
-  CreateListPage,
-  createListPageAction,
-  createListPageLoader,
+  DashboardPage,
+  dashboardPageLoader,
+  EditListPage,
+  editListPageAction,
+  editListPageLoader,
   Layout,
   layoutLoader,
-  MainPage,
-  mainPageLoader,
   SignInPage,
   signInPageAction,
 } from "./pages";
@@ -20,14 +20,20 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: MainPage,
-        loader: mainPageLoader,
+        Component: DashboardPage,
+        loader: dashboardPageLoader,
       },
       {
-        path: "/create",
-        Component: CreateListPage,
-        loader: createListPageLoader,
-        action: createListPageAction,
+        path: "/create-list",
+        Component: EditListPage,
+        loader: editListPageLoader,
+        action: editListPageAction,
+      },
+      {
+        path: ":id/edit-list",
+        Component: EditListPage,
+        loader: editListPageLoader,
+        action: editListPageAction,
       },
     ],
   },
