@@ -4,7 +4,7 @@ export {
   editListPageAction,
 } from "./edit-list";
 
-export { ListsPage, listsPageLoader } from "./lists";
+export { ListsPage, listsPageLoader, IdPage } from "./lists";
 
 export { SignInPage, signInPageAction } from "./sign-in";
 

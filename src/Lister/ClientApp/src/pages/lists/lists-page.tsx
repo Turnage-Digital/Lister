@@ -1,5 +1,10 @@
 import React, { MouseEvent, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import {
+  Outlet,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   Box,
   Button,
@@ -34,16 +39,25 @@ export const listsPageLoader = async () => {
 };
 
 const ListsPage = () => {
+  const params = useParams();
+  const navigate = useNavigate();
+
   const loaded = useLoaderData() as List[];
-  const [selectedList, setSelectedList] = useState<List | null>(loaded[0]);
+  const selectedList =
+    loaded.find((list) => list.id === params.id) ?? loaded[0];
+
+  const handleSelectedListChanged = (list: List) => {
+    navigate(`/${list.id}`);
+  };
 
   const content = selectedList ? (
-    <Stack spacing={4} divider={<Divider />} sx={{ p: 4 }}>
+    <Stack spacing={4} sx={{ p: 4 }}>
       <ListsPageToolbar
         lists={loaded}
         selectedList={selectedList}
-        onSelectedListChanged={setSelectedList}
+        onSelectedListChanged={handleSelectedListChanged}
       />
+      <Outlet />
     </Stack>
   ) : (
     <></>

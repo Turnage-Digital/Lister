@@ -10,6 +10,7 @@ import {
   layoutLoader,
   SignInPage,
   signInPageAction,
+  IdPage,
 } from "./pages";
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/:id",
+            Component: IdPage,
           },
         ],
       },
