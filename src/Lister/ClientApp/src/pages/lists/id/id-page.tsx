@@ -1,7 +1,8 @@
 import React from "react";
+import { Box } from "@mui/material";
 
 const IdPage = () => {
-  return <>Id Page</>;
+  return <Box>Id Page</Box>;
 };
 
 export default IdPage;

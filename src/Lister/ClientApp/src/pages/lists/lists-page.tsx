@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from "react";
+import React, { MouseEvent, useEffect, useState } from "react";
 import {
   Outlet,
   useLoaderData,
@@ -43,8 +43,13 @@ const ListsPage = () => {
   const navigate = useNavigate();
 
   const loaded = useLoaderData() as List[];
-  const selectedList =
-    loaded.find((list) => list.id === params.id) ?? loaded[0];
+  const selectedList = loaded.find((list) => list.id === params.id);
+
+  useEffect(() => {
+    if (!selectedList && loaded.length > 0) {
+      navigate(`/${loaded[0].id}`);
+    }
+  }, [loaded, navigate, selectedList]);
 
   const handleSelectedListChanged = (list: List) => {
     navigate(`/${list.id}`);
@@ -57,6 +62,7 @@ const ListsPage = () => {
         selectedList={selectedList}
         onSelectedListChanged={handleSelectedListChanged}
       />
+
       <Outlet />
     </Stack>
   ) : (
