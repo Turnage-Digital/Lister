@@ -64,9 +64,11 @@ export const editListPageAction = async ({
       body: JSON.stringify(parsed),
     }
   );
-  await fetch(postRequest);
+  const response = await fetch(postRequest);
+  const json = await response.json();
+  const id = json.id;
 
-  return redirect(`/`);
+  return redirect(`/${id}`);
 };
 
 const EditListPage = () => {

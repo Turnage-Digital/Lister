@@ -1,26 +1,11 @@
-import React, { MouseEvent, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Outlet,
   useLoaderData,
   useNavigate,
   useParams,
 } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Hidden,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
-import { AddCircle, ExpandCircleDown, PlaylistAdd } from "@mui/icons-material";
+import { Container, Stack } from "@mui/material";
 
 import { List } from "../../models";
 

@@ -20,9 +20,9 @@ const NameBlock = ({ name, onNameChanged }: Props) => {
         onChange={(event) => {
           onNameChanged(event.target.value);
         }}
-        sx={{
-          background: "white",
-        }}
+        // sx={{
+        //   background: "white",
+        // }}
       />
     </Stack>
   );

@@ -78,9 +78,9 @@ const SignInPage = () => {
             id="username"
             label="Username"
             autoComplete="username"
-            sx={{
-              background: "white",
-            }}
+            // sx={{
+            //   background: "white",
+            // }}
           />
 
           <TextField
@@ -92,9 +92,9 @@ const SignInPage = () => {
             label="Password"
             type="password"
             autoComplete="current-password"
-            sx={{
-              background: "white",
-            }}
+            // sx={{
+            //   background: "white",
+            // }}
           />
 
           <Button

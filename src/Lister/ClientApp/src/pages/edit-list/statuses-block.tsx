@@ -86,9 +86,9 @@ const StatusesBlock = ({ statuses, onStatusesChanged }: Props) => {
                   </IconButton>
                 </InputAdornment>
               }
-              sx={{
-                background: "white",
-              }}
+              // sx={{
+              //   background: "white",
+              // }}
             />
           </FormControl>
 

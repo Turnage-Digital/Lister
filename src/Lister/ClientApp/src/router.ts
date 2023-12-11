@@ -1,17 +1,17 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 
 import {
-  ListsPage,
-  listsPageLoader,
   EditListPage,
   editListPageAction,
   editListPageLoader,
+  IdPage,
+  idPageLoader,
+  ListsPage,
+  listsPageLoader,
   Root,
   rootLoader,
   SignInPage,
   signInPageAction,
-  IdPage,
-  idPageLoader,
 } from "./pages";
 
 const router = createBrowserRouter([

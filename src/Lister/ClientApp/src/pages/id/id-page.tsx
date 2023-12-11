@@ -28,17 +28,22 @@ const IdPage = () => {
   const loaded = useLoaderData() as List;
 
   const columns: GridColDef[] = loaded.columns.map((column) => ({
-    field: "",
+    field: column.name,
     headerName: column.name,
     width: 150,
   }));
+  columns.push({
+    field: "status",
+    headerName: "Status",
+    width: 150,
+  });
 
   return (
     <Paper>
       <DataGrid
         columns={columns}
         rows={[]}
-        // getRowId={(row) => row.id}
+        getRowId={(row) => row.id}
         // rowCount={count}
         // paginationMode="server"
         // paginationModel={pagination}
@@ -47,9 +52,9 @@ const IdPage = () => {
         // sortingMode="server"
         // sortModel={sort}
         // onSortModelChange={setSort}
-        // disableColumnFilter
-        // disableColumnSelector
-        // disableRowSelectionOnClick
+        disableColumnFilter
+        disableColumnSelector
+        disableRowSelectionOnClick
       />
     </Paper>
   );
