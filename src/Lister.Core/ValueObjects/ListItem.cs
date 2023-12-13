@@ -1,6 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+
 namespace Lister.Core.ValueObjects;
 
-public class ListItem
+public record ListItem
 {
-    
+    [JsonProperty("bag")]
+    [Required]
+    public object Bag { get; set; } = null!;
 }
