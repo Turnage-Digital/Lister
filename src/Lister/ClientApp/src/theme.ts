@@ -4,14 +4,11 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#0c95bf",
+      main: "#ffc107",
     },
     secondary: {
-      main: "#0c95bf",
+      main: "#0745ff",
     },
-    // background: {
-    //   default: "#F5F5F5",
-    // },
   },
   typography: {
     fontFamily: "Inter, sans-serif",

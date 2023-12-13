@@ -7,13 +7,13 @@ import {
   MenuItem,
   Toolbar,
 } from "@mui/material";
+import { AccountCircle } from "@mui/icons-material";
 import {
   LoaderFunctionArgs,
   Outlet,
   redirect,
   useFetcher,
 } from "react-router-dom";
-import { AccountCircle } from "@mui/icons-material";
 
 export const rootLoader = async ({ request }: LoaderFunctionArgs) => {
   const postRequest = new Request(

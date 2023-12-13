@@ -58,9 +58,6 @@ const ColumnsBlock = ({ columns, onColumnsChanged }: Props) => {
           fullWidth
           value={columnName ?? ""}
           onChange={(event) => setColumnName(event.target.value)}
-          // sx={{
-          //   background: "white",
-          // }}
         />
 
         <FormControl variant="outlined" margin="normal" fullWidth>
@@ -73,9 +70,6 @@ const ColumnsBlock = ({ columns, onColumnsChanged }: Props) => {
             onChange={(event) =>
               setColumnType(event.target.value as ColumnType)
             }
-            // sx={{
-            //   background: "white",
-            // }}
           >
             {columnTypeList.map((columnType) => (
               <MenuItem key={columnType} value={columnType}>
