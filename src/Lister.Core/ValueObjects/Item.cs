@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Lister.Core.ValueObjects;
 
-public record ListItem
+public record Item
 {
     [JsonProperty("bag")]
     [Required]

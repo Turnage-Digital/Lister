@@ -20,6 +20,7 @@ public class GetListById : IGetListById<ListView>
         var entity = await _dbContext.Lists
             .Include(list => list.Statuses)
             .Include(list => list.Columns)
+            .Include(list => list.Items)
             .Where(list => list.CreatedBy == userId)
             .Where(list => list.Id == id)
             .AsSplitQuery()

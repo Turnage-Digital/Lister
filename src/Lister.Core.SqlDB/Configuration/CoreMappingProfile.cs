@@ -13,8 +13,5 @@ public class CoreMappingProfile : Profile
 
         CreateMap<ListEntity, IReadOnlyList>()
             .As<ListView>();
-
-        CreateMap<StatusEntity, Status>();
-        CreateMap<ColumnEntity, Column>();
     }
 }
