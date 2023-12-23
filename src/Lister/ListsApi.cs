@@ -79,7 +79,7 @@ public static class ListsApi
             .Produces<ListView>(Status201Created)
             .Produces(Status500InternalServerError);
 
-        retval.MapPost("/{id}/create-item", async (
+        retval.MapPatch("/{id}/create-item", async (
                 Guid id,
                 CreateListItemCommand command,
                 IMediator mediator,

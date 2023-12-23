@@ -58,7 +58,7 @@ internal static class HostingExtensions
                         options.SwaggerDoc("v1", new OpenApiInfo
                         {
                             Version = "v1",
-                            Title = "ThingMan"
+                            Title = "Lister API"
                         });
                     });
             }

@@ -7,10 +7,10 @@ namespace Lister.Core.ValueObjects;
 public record Column
 {
     [JsonProperty("name")]
-    [Required]
+    
     public string Name { get; set; } = null!;
 
     [JsonProperty("type")]
-    [Required]
+    
     public ColumnType Type { get; set; }
 }
