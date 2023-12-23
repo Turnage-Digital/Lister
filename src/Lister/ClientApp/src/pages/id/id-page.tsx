@@ -20,6 +20,9 @@ export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
   if (response.status === 401) {
     return null;
   }
+  if (response.status === 404) {
+    return null;
+  }
   const retval = await response.json();
   return retval;
 };

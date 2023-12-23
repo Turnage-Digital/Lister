@@ -96,12 +96,12 @@ public class ListerDbContext : DbContext
 
             entity.HasKey(e => e.Id)
                 .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
-            
+
             entity.Property(e => e.Bag)
                 .HasColumnType("JSON")
                 .HasConversion(
-                e => JsonConvert.SerializeObject(e),
-                e => JsonConvert.DeserializeObject<object>(e)!)
+                    e => JsonConvert.SerializeObject(e),
+                    e => JsonConvert.DeserializeObject<object>(e)!)
                 .IsRequired();
 
             entity.Property(e => e.ListId)

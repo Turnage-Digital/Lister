@@ -8,11 +8,14 @@ public record ListView : IReadOnlyList
     [JsonProperty("name")]
     public string Name { get; set; } = null!;
 
+    [JsonProperty("columns")]
+    public Column[] Columns { get; set; } = null!;
+
     [JsonProperty("statuses")]
     public Status[] Statuses { get; set; } = null!;
 
-    [JsonProperty("columns")]
-    public Column[] Columns { get; set; } = null!;
+    [JsonProperty("items")]
+    public Item[] Items { get; set; } = null!;
 
     [JsonProperty("createdBy")]
     public string CreatedBy { get; set; } = null!;

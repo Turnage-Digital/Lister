@@ -42,7 +42,7 @@ public static class ListsApi
                 var userId = identity.GetUserId();
                 GetListByIdQuery<ListView> query = new(userId, id);
                 var result = await mediator.Send(query);
-                return Results.Ok(result);
+                return result == null ? Results.NotFound() : Results.Ok(result);
             })
             .Produces(Status401Unauthorized)
             .Produces<ListView>()
@@ -77,6 +77,24 @@ public static class ListsApi
             })
             .Produces(Status401Unauthorized)
             .Produces<ListView>(Status201Created)
+            .Produces(Status500InternalServerError);
+
+        retval.MapPost("/{id}/create-item", async (
+                Guid id,
+                CreateListItemCommand command,
+                IMediator mediator,
+                ClaimsPrincipal claimsPrincipal
+            ) =>
+            {
+                var identity = (ClaimsIdentity)claimsPrincipal.Identity!;
+                var userId = identity.GetUserId();
+                command.CreatedBy = userId;
+                command.ListId = id;
+                await mediator.Send(command);
+                return Results.Ok();
+            })
+            .Produces(Status401Unauthorized)
+            .Produces(Status200OK)
             .Produces(Status500InternalServerError);
 
         return retval;

@@ -1,7 +1,6 @@
 using AutoMapper;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.SqlDB.Views;
-using Lister.Core.ValueObjects;
 
 namespace Lister.Core.SqlDB.Configuration;
 
