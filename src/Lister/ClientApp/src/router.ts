@@ -1,6 +1,9 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 
 import {
+  EditListItemPage,
+  editListItemPageAction,
+  editListItemPageLoader,
   EditListPage,
   editListPageAction,
   editListPageLoader,
@@ -13,13 +16,6 @@ import {
   SignInPage,
   signInPageAction,
 } from "./pages";
-
-// https://localhost:3000/sign-in -> SignInPage
-// https://localhost:3000/sign-out -> Root
-
-// https://localhost:3000/1 -> IdPage
-// https://localhost:3000/create -> EditListPage
-// https://localhost:3000/1/edit -> EditListPage
 
 const router = createBrowserRouter([
   {
@@ -40,17 +36,17 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // {
-      //   path: "/:listId/items/create",
-      //   // Component: EditListPage,
-      //   // loader: editListPageLoader,
-      //   // action: editListPageAction,
-      // },
+      {
+        path: "/:listId/items/create",
+        Component: EditListItemPage,
+        loader: editListItemPageLoader,
+        action: editListItemPageAction,
+      },
       // {
       //   path: "/:listId/items/:itemId/edit",
-      //   // Component: EditListPage,
-      //   // loader: editListPageLoader,
-      //   // action: editListPageAction,
+      //   Component: EditListItemPage,
+      //   loader: editListItemPageLoader,
+      //   action: editListItemPageAction,
       // },
       {
         path: "/create",

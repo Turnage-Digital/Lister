@@ -33,7 +33,7 @@ const defaultList: List = {
 
 // https://github.com/Turnage-Digital/Lister/commit/39ea265921d6b1ee47aebaf9f338b752990d7981#diff-3f13125f89541809d55b48493178ab0570736a71c6dc6e7b73f0f9aa6a22b40c
 export const editListPageLoader = async ({ params }: LoaderFunctionArgs) => {
-  if (params.id) {
+  if (params.listId) {
     //
   }
 
@@ -46,7 +46,7 @@ export const editListPageAction = async ({
   params,
   request,
 }: ActionFunctionArgs) => {
-  if (params.id) {
+  if (params.listId) {
     //
   }
 
@@ -66,9 +66,9 @@ export const editListPageAction = async ({
   );
   const response = await fetch(postRequest);
   const json = await response.json();
-  const id = json.id;
+  const listId = json.id;
 
-  return redirect(`/${id}`);
+  return redirect(`/${listId}`);
 };
 
 const EditListPage = () => {

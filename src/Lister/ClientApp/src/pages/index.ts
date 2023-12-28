@@ -4,6 +4,12 @@ export {
   editListPageAction,
 } from "./edit-list";
 
+export {
+  EditListItemPage,
+  editListItemPageLoader,
+  editListItemPageAction,
+} from "./edit-list-item";
+
 export { IdPage, idPageLoader } from "./id";
 
 export { ListsPage, listsPageLoader } from "./lists";
