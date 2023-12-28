@@ -7,4 +7,10 @@ export interface List {
   name: string;
   statuses: Status[];
   columns: Column[];
+  items: Item[];
+}
+
+export interface Item {
+  id: string | null;
+  bag: any;
 }

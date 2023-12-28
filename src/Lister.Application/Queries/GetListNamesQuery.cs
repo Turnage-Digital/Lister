@@ -1,8 +1,10 @@
+using Lister.Core;
 using MediatR;
 
 namespace Lister.Application.Queries;
 
-public class GetListNamesQuery<T> : IRequest<T[]>
+public class GetListNamesQuery<TList> : IRequest<TList[]>
+    where TList : IReadOnlyList
 {
     public GetListNamesQuery(string userId)
     {

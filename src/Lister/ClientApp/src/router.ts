@@ -42,24 +42,12 @@ const router = createBrowserRouter([
         loader: editListItemPageLoader,
         action: editListItemPageAction,
       },
-      // {
-      //   path: "/:listId/items/:itemId/edit",
-      //   Component: EditListItemPage,
-      //   loader: editListItemPageLoader,
-      //   action: editListItemPageAction,
-      // },
       {
         path: "/create",
         Component: EditListPage,
         loader: editListPageLoader,
         action: editListPageAction,
       },
-      // {
-      //   path: "/:listId/edit",
-      //   Component: EditListPage,
-      //   loader: editListPageLoader,
-      //   action: editListPageAction,
-      // },
     ],
   },
   {

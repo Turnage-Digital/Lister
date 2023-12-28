@@ -7,12 +7,10 @@ namespace Lister.Core.SqlDB;
 public class GetListNames : IGetListNames<ListNameView>
 {
     private readonly ListerDbContext _dbContext;
-    private readonly IMapper _mapper;
 
-    public GetListNames(ListerDbContext dbContext, IMapper mapper)
+    public GetListNames(ListerDbContext dbContext)
     {
         _dbContext = dbContext;
-        _mapper = mapper;
     }
 
     public async Task<ListNameView[]> GetAsync(string userId, CancellationToken cancellationToken = default)

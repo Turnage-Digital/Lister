@@ -29,27 +29,15 @@ const defaultList: List = {
   name: "",
   statuses: [],
   columns: [],
+  items: [],
 };
 
-// https://github.com/Turnage-Digital/Lister/commit/39ea265921d6b1ee47aebaf9f338b752990d7981#diff-3f13125f89541809d55b48493178ab0570736a71c6dc6e7b73f0f9aa6a22b40c
-export const editListPageLoader = async ({ params }: LoaderFunctionArgs) => {
-  if (params.listId) {
-    //
-  }
-
+export const editListPageLoader = async () => {
   const retval = defaultList;
   return retval;
 };
 
-// https://github.com/remix-run/react-router/discussions/9858#discussioncomment-4638753
-export const editListPageAction = async ({
-  params,
-  request,
-}: ActionFunctionArgs) => {
-  if (params.listId) {
-    //
-  }
-
+export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const data = await request.formData();
   const serialized = data.get("serialized") as string;
   const parsed = JSON.parse(serialized) as List;

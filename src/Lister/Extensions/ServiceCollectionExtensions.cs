@@ -67,8 +67,9 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddViews(this IServiceCollection services)
     {
         services.AddScoped<IGetListById<ListView>, GetListById>();
-        services.AddScoped<IGetLists<ListView>, GetLists>();
+        services.AddScoped<IGetListItemDefinitionById<ListItemDefinitionView>, GetListItemDefinitionById>();
         services.AddScoped<IGetListNames<ListNameView>, GetListNames>();
+        services.AddScoped<IGetLists<ListView>, GetLists>();
         return services;
     }
 }

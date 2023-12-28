@@ -3,16 +3,17 @@ using MediatR;
 
 namespace Lister.Application.Queries;
 
-public class GetListNamesQueryHandler<T> : IRequestHandler<GetListNamesQuery<T>, T[]>
+public class GetListNamesQueryHandler<TList> : IRequestHandler<GetListNamesQuery<TList>, TList[]>
+    where TList : IReadOnlyList
 {
-    private readonly IGetListNames<T> _getListNames;
+    private readonly IGetListNames<TList> _getListNames;
 
-    public GetListNamesQueryHandler(IGetListNames<T> getListNames)
+    public GetListNamesQueryHandler(IGetListNames<TList> getListNames)
     {
         _getListNames = getListNames;
     }
 
-    public async Task<T[]> Handle(GetListNamesQuery<T> request, CancellationToken cancellationToken)
+    public async Task<TList[]> Handle(GetListNamesQuery<TList> request, CancellationToken cancellationToken)
     {
         var retval = await _getListNames.GetAsync(request.UserId, cancellationToken);
         return retval;

@@ -1,6 +1,7 @@
 namespace Lister.Core;
 
-public interface IGetListNames<T>
+public interface IGetListNames<TList>
+    where TList : IReadOnlyList
 {
-    Task<T[]> GetAsync(string userId, CancellationToken cancellationToken = default);
+    Task<TList[]> GetAsync(string userId, CancellationToken cancellationToken = default);
 }

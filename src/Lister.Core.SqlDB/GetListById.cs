@@ -24,7 +24,7 @@ public class GetListById : IGetListById<ListView>
             .Where(list => list.CreatedBy == userId)
             .Where(list => list.Id == id)
             .AsSplitQuery()
-            .SingleOrDefaultAsync(cancellationToken);
+            .SingleAsync(cancellationToken);
         var retval = _mapper.Map<ListView>(entity);
         return retval;
     }

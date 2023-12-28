@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB.Views;
 
-public record ListNameView
+public record ListNameView : IReadOnlyList
 {
     [JsonProperty("name")]
     public string Name { get; set; } = null!;
