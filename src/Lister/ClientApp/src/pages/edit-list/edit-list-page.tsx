@@ -72,8 +72,8 @@ export const editListPageAction = async ({
 };
 
 const EditListPage = () => {
-  const submit = useSubmit();
   const loaded = useLoaderData() as List;
+  const submit = useSubmit();
   const [updated, setUpdated] = useState<List>(loaded);
 
   const update = (key: keyof List, value: any) => {

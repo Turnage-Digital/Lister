@@ -78,7 +78,7 @@ const ListsPageToolbar = ({
             </MenuItem>
           ))}
           <Divider />
-          <MenuItem onClick={() => navigate("/create-list")}>
+          <MenuItem onClick={() => navigate("/create")}>
             <ListItemIcon>
               <PlaylistAdd fontSize="small" />
             </ListItemIcon>

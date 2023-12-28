@@ -12,7 +12,6 @@ public class CreateListCommand<TList> : IRequest<TList>
     public string CreatedBy { get; set; } = null!;
 
     [JsonProperty("name")]
-
     public string Name { get; set; } = null!;
 
     [JsonProperty("statuses")]

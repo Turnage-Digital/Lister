@@ -6,12 +6,12 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { List } from "../../models";
 
 export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
-  if (!params.id) {
+  if (!params.listId) {
     return null;
   }
 
   const getRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/lists/${params.id}`,
+    `${process.env.PUBLIC_URL}/api/lists/${params.listId}`,
     {
       method: "GET",
     }

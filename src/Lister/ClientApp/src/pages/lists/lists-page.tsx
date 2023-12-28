@@ -28,7 +28,7 @@ const ListsPage = () => {
   const navigate = useNavigate();
 
   const loaded = useLoaderData() as List[];
-  const selectedList = loaded.find((list) => list.id === params.id);
+  const selectedList = loaded.find((list) => list.id === params.listId);
 
   useEffect(() => {
     if (!selectedList && loaded.length > 0) {

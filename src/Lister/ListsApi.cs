@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Lister.Application.Commands;
 using Lister.Application.Queries;
 using Lister.Core.SqlDB.Views;
+using Lister.Core.ValueObjects;
 using Lister.Extensions;
 using MediatR;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -79,7 +80,7 @@ public static class ListsApi
             .Produces<ListView>(Status201Created)
             .Produces(Status500InternalServerError);
 
-        retval.MapPatch("/{id}/create-item", async (
+        retval.MapPost("/{id}/items/create", async (
                 Guid id,
                 CreateListItemCommand command,
                 IMediator mediator,
@@ -90,11 +91,11 @@ public static class ListsApi
                 var userId = identity.GetUserId();
                 command.CreatedBy = userId;
                 command.ListId = id;
-                await mediator.Send(command);
-                return Results.Ok();
+                var result = await mediator.Send(command);
+                return Results.Created($"/{id}/items/{result.Id}", result);
             })
             .Produces(Status401Unauthorized)
-            .Produces(Status200OK)
+            .Produces<Item>(Status201Created)
             .Produces(Status500InternalServerError);
 
         return retval;
