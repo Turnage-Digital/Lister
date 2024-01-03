@@ -82,7 +82,7 @@ internal static class HostingExtensions
             app.UseExceptionHandler();
             app.UseHsts();
         }
-
+        
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();

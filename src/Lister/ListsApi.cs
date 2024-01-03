@@ -64,6 +64,22 @@ public static class ListsApi
             .Produces<ListNameView[]>()
             .Produces(Status500InternalServerError);
 
+        retval.MapGet("/{id}/itemDefinition", async (
+                Guid id,
+                IMediator mediator,
+                ClaimsPrincipal claimsPrincipal
+            ) =>
+            {
+                var identity = (ClaimsIdentity)claimsPrincipal.Identity!;
+                var userId = identity.GetUserId();
+                GetListItemDefinitionByIdQuery<ListItemDefinitionView> query = new(userId, id);
+                var result = await mediator.Send(query);
+                return Results.Ok(result);
+            })
+            .Produces(Status401Unauthorized)
+            .Produces<ListItemDefinitionView[]>()
+            .Produces(Status500InternalServerError);
+
         retval.MapPost("/create", async (
                 CreateListCommand<ListView> command,
                 IMediator mediator,

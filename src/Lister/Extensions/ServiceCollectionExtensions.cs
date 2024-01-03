@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ListAggregate<ListEntity>>();
         return services;
     }
-
+    
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         var applicationAssemblyName = typeof(CreateListCommand<>).Assembly;
