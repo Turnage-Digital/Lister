@@ -25,7 +25,7 @@ public class CreateListController : Controller
     [ProducesResponseType(typeof(ListView), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Post(CreateListCommand<ListView> command)
+    public async Task<IActionResult> Post([FromBody] CreateListCommand<ListView> command)
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();

@@ -5,6 +5,8 @@ using Lister.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace Lister;
@@ -21,7 +23,12 @@ internal static class HostingExtensions
 
         builder.Host.UseLamar(registry =>
         {
-            registry.AddControllers();
+            registry.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
             registry.AddCore(connectionString);
