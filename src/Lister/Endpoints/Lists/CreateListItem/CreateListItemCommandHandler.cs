@@ -1,11 +1,11 @@
 using Lister.Core.ValueObjects;
 using MediatR;
 
-namespace Lister.Application.Commands;
+namespace Lister.Endpoints.Lists.CreateListItem;
 
 public class CreateListItemCommandHandler : IRequestHandler<CreateListItemCommand, Item>
 {
-    public async Task<Item> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
+    public Task<Item> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

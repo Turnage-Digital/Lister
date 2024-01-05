@@ -10,7 +10,7 @@ public record ListItemDefinitionView : IReadOnlyList
 
     [JsonProperty("statuses")]
     public Status[] Statuses { get; set; } = null!;
-    
+
     [JsonProperty("id")]
     public Guid? Id { get; set; }
 }

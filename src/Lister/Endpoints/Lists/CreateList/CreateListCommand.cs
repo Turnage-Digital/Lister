@@ -3,13 +3,13 @@ using Lister.Core.ValueObjects;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Lister.Application.Commands;
+namespace Lister.Endpoints.Lists.CreateList;
 
 public class CreateListCommand<TList> : IRequest<TList>
     where TList : IReadOnlyList
 {
     [JsonIgnore]
-    public string CreatedBy { get; set; } = null!;
+    public string? CreatedBy { get; set; }
 
     [JsonProperty("name")]
     public string Name { get; set; } = null!;

@@ -10,7 +10,6 @@ import {
 import { Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
-  LoaderFunctionArgs,
   redirect,
   useLoaderData,
   useSubmit,

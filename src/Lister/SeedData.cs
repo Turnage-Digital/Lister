@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Lister;
 
-internal class SeedData
+internal static class SeedData
 {
     public static void EnsureSeedData(WebApplication app)
     {

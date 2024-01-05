@@ -20,15 +20,13 @@ public class ListAggregate<TList>
     public async Task<TList> CreateAsync(
         string createdBy,
         string name,
-        Status[] statuses,
-        Column[] columns,
+        IEnumerable<Status> statuses,
+        IEnumerable<Column> columns,
         CancellationToken cancellationToken = default
     )
     {
-        var retval = await _unitOfWork.ListsStore.InitAsync(cancellationToken);
+        var retval = await _unitOfWork.ListsStore.InitAsync(createdBy, name, cancellationToken);
 
-        await _unitOfWork.ListsStore.SetCreatedByAsync(retval, createdBy, cancellationToken);
-        await _unitOfWork.ListsStore.SetNameAsync(retval, name, cancellationToken);
         await _unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
         await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
 

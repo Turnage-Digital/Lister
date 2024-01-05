@@ -8,7 +8,8 @@ public class CoreMappingProfile : Profile
 {
     public CoreMappingProfile()
     {
-        CreateMap<ListEntity, ListView>();
+        CreateMap<ListEntity, ListView>()
+            .ReverseMap();
 
         CreateMap<ListEntity, IReadOnlyList>()
             .As<ListView>();

@@ -1,19 +1,6 @@
 import React from "react";
-import {
-  Alert,
-  Button,
-  Container,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  ActionFunctionArgs,
-  Form,
-  redirect,
-  useActionData,
-  useLocation,
-} from "react-router-dom";
+import { Alert, Button, Container, Stack, TextField, Typography } from "@mui/material";
+import { ActionFunctionArgs, Form, redirect, useActionData, useLocation } from "react-router-dom";
 
 export const signInPageAction = async ({ request }: ActionFunctionArgs) => {
   const data = await request.formData();
@@ -21,14 +8,14 @@ export const signInPageAction = async ({ request }: ActionFunctionArgs) => {
   const username = data.get("username") as string | null;
   if (!username) {
     return {
-      error: "You must provide a username to log in",
+      error: "You must provide a username to log in"
     };
   }
 
   const password = data.get("password") as string | null;
   if (!password) {
     return {
-      error: "You must provide a password to log in",
+      error: "You must provide a password to log in"
     };
   }
 
@@ -37,17 +24,17 @@ export const signInPageAction = async ({ request }: ActionFunctionArgs) => {
     `${process.env.PUBLIC_URL}/api/users/sign-in`,
     {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       method: "POST",
-      body: JSON.stringify(input),
+      body: JSON.stringify(input)
     }
   );
   const response = await fetch(postRequest);
   const { succeeded } = await response.json();
   if (!succeeded) {
     return {
-      error: "Invalid username or password",
+      error: "Invalid username or password"
     };
   }
 

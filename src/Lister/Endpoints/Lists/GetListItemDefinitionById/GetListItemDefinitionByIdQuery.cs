@@ -1,7 +1,7 @@
 using Lister.Core;
 using MediatR;
 
-namespace Lister.Application.Queries;
+namespace Lister.Endpoints.Lists.GetListItemDefinitionById;
 
 public class GetListItemDefinitionByIdQuery<TList> : IRequest<TList>
     where TList : IReadOnlyList

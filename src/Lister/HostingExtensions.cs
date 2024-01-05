@@ -21,10 +21,13 @@ internal static class HostingExtensions
 
         builder.Host.UseLamar(registry =>
         {
+            registry.AddControllers();
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
             registry.AddCore(connectionString);
-            registry.AddDomain();
-            registry.AddApplication();
+
+            registry.AddMediatR(config =>
+                config.RegisterServicesFromAssembly(typeof(HostingExtensions).Assembly));
 
             registry.Configure<JsonOptions>(options =>
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -76,13 +79,14 @@ internal static class HostingExtensions
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
+            SeedData.EnsureSeedData(app);
         }
         else
         {
             app.UseExceptionHandler();
             app.UseHsts();
         }
-        
+
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
@@ -91,7 +95,7 @@ internal static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseApp();
+        app.MapControllers();
 
         return app;
     }
