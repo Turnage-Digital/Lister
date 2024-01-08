@@ -16,6 +16,12 @@ public class ListAggregate<TList>
         _unitOfWork = unitOfWork;
         _mediator = mediator;
     }
+    
+    public async Task<TList?> ReadAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var retval = await _unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
+        return retval;
+    }
 
     public async Task<TList> CreateAsync(
         string createdBy,
@@ -38,5 +44,14 @@ public class ListAggregate<TList>
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return retval;
+    }
+
+    public async Task<Item> CreateItemAsync(TList list, CancellationToken cancellationToken = default)
+    {
+        var item = await _unitOfWork.ListsStore.InitItemAsync(list, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return item;
     }
 }

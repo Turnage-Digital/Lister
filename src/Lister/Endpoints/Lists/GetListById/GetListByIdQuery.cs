@@ -6,7 +6,7 @@ namespace Lister.Endpoints.Lists.GetListById;
 public class GetListByIdQuery<TList> : IRequest<TList>
     where TList : IReadOnlyList
 {
-    public GetListByIdQuery(string userId, Guid id)
+    public GetListByIdQuery(string userId, string id)
     {
         Id = id;
         UserId = userId;
@@ -14,5 +14,5 @@ public class GetListByIdQuery<TList> : IRequest<TList>
 
     public string UserId { get; }
 
-    public Guid Id { get; }
+    public string Id { get; }
 }

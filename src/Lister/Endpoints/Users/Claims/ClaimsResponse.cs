@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Lister.Models;
+namespace Lister.Endpoints.Users.Claims;
 
 public record ClaimsResponse
 {

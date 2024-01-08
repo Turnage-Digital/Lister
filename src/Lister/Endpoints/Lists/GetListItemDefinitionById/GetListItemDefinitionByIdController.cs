@@ -21,12 +21,12 @@ public class GetListItemDefinitionByIdController : Controller
         _mediator = mediator;
     }
 
-    [HttpGet("{id:guid}/itemDefinition")]
+    [HttpGet("{id}/itemDefinition")]
     [ProducesResponseType(typeof(ListItemDefinitionView), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Get(Guid id)
+    public async Task<IActionResult> Get(string id)
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();

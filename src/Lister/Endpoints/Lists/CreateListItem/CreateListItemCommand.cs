@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Lister.Core.ValueObjects;
 using MediatR;
 using Newtonsoft.Json;
@@ -10,8 +11,10 @@ public class CreateListItemCommand : IRequest<Item>
     public string? CreatedBy { get; set; }
 
     [JsonProperty("listId")]
-    public Guid ListId { get; set; }
+    [Required]
+    public string ListId { get; set; } = null!;
 
     [JsonProperty("bag")]
+    [Required]
     public object Bag { get; set; } = null!;
 }

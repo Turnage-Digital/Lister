@@ -1,26 +1,12 @@
+using System.Security.Claims;
+using Lister.Core.ValueObjects;
+using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Lister.Endpoints.Lists.CreateListItem;
-
-// retval.MapPost("/{id}/items/create", async (
-//         Guid id,
-//         CreateListItemCommand command,
-//         IMediator mediator,
-//         ClaimsPrincipal claimsPrincipal
-//     ) =>
-//     {
-//         var identity = (ClaimsIdentity)claimsPrincipal.Identity!;
-//         var userId = identity.GetUserId();
-//         command.CreatedBy = userId;
-//         command.ListId = id;
-//         var result = await mediator.Send(command);
-//         return Results.Created($"/{id}/items/{result.Id}", result);
-//     })
-//     .Produces(Status401Unauthorized)
-//     .Produces<Item>(Status201Created)
-//     .Produces(Status500InternalServerError);
 
 [ApiController]
 [Authorize]
@@ -35,5 +21,17 @@ public class CreateListItemController : Controller
         _mediator = mediator;
     }
 
-    // [HttpPost("/{id}/items/create")]
+    [HttpPost("{id}/items/create")]
+    [ProducesResponseType(typeof(Item), Status201Created)]
+    [ProducesResponseType(Status401Unauthorized)]
+    [ProducesResponseType(Status500InternalServerError)]
+    public async Task<IActionResult> Post(string id, [FromBody] CreateListItemCommand command)
+    {
+        var identity = (ClaimsIdentity)User.Identity!;
+        var userId = identity.GetUserId();
+        command.CreatedBy = userId;
+        command.ListId = id;
+        var result = await _mediator.Send(command);
+        return Created($"/{id}/items/{result.Id}", result);
+    }
 }

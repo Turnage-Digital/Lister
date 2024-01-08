@@ -22,9 +22,10 @@ public class GetListItemDefinitionByIdQueryHandler
         CancellationToken cancellationToken
     )
     {
+        var parsed = Guid.Parse(request.Id);
         var retval = await _dbContext.Lists
             .Where(list => list.CreatedBy == request.UserId)
-            .Where(list => list.Id == request.Id)
+            .Where(list => list.Id == parsed)
             .Select(list => new ListItemDefinitionView
             {
                 Columns = list.Columns

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace Lister.Models;
+namespace Lister.Endpoints.Users.SignIn;
 
 public record SignInRequest
 {

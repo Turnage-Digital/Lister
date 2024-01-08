@@ -20,12 +20,13 @@ public class GetListByIdQueryHandler : GetListByIdQueryHandler<ListView>
 
     public override async Task<ListView> Handle(GetListByIdQuery<ListView> request, CancellationToken cancellationToken)
     {
+        var parsed = Guid.Parse(request.Id);
         var entity = await _dbContext.Lists
             .Include(list => list.Statuses)
             .Include(list => list.Columns)
             .Include(list => list.Items)
             .Where(list => list.CreatedBy == request.UserId)
-            .Where(list => list.Id == request.Id)
+            .Where(list => list.Id == parsed)
             .AsSplitQuery()
             .SingleAsync(cancellationToken);
         var retval = _mapper.Map<ListView>(entity);
