@@ -28,8 +28,7 @@ public class CreateListCommandHandler : CreateListCommandHandler<ListView>
     {
         if (request.CreatedBy is null)
         {
-            const string argName = nameof(request);
-            throw new ArgumentNullException(argName, $"CreatedBy in {argName} is null");
+            throw new ArgumentNullException(nameof(request), "CreatedBy is null");
         }
 
         var created = await _listAggregate.CreateAsync(

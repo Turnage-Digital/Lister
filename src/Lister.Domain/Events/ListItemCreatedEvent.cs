@@ -2,9 +2,9 @@ using MediatR;
 
 namespace Lister.Domain.Events;
 
-public class ListCreatedEvent : INotification
+public class ListItemCreatedEvent : INotification
 {
-    public ListCreatedEvent(string id)
+    public ListItemCreatedEvent(string id)
     {
         Id = id;
     }

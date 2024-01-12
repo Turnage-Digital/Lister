@@ -102,9 +102,9 @@ public class ListsStore : IListsStore<ListEntity>
         var retval = list.CreatedOn;
         return Task.FromResult(retval);
     }
-    
-    public async Task<Item> InitItemAsync(ListEntity list, CancellationToken cancellationToken)
+
+    public Task<Item> InitItemAsync(ListEntity list, object bag, CancellationToken cancellationToken)
     {
-        return new ItemEntity();
+        return Task.FromResult<Item>(new ItemEntity { Bag = bag, List = list, ListId = list.Id });
     }
 }

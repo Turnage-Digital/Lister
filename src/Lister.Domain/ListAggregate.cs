@@ -2,6 +2,7 @@ using Lister.Core;
 using Lister.Core.ValueObjects;
 using Lister.Domain.Events;
 using MediatR;
+using Serilog;
 
 namespace Lister.Domain;
 
@@ -16,7 +17,7 @@ public class ListAggregate<TList>
         _unitOfWork = unitOfWork;
         _mediator = mediator;
     }
-    
+
     public async Task<TList?> ReadAsync(string id, CancellationToken cancellationToken = default)
     {
         var retval = await _unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
@@ -32,26 +33,27 @@ public class ListAggregate<TList>
     )
     {
         var retval = await _unitOfWork.ListsStore.InitAsync(createdBy, name, cancellationToken);
-
         await _unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
         await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
-
         await _unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
-
-        await _mediator.Publish(new ListCreatedEvent { Id = retval.Id!.Value },
-            cancellationToken);
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var id = retval.GetId();
+        Log.Information("Created list: {id}", id);
+        
+        await _mediator.Publish(new ListCreatedEvent(id), cancellationToken);
         return retval;
     }
 
-    public async Task<Item> CreateItemAsync(TList list, CancellationToken cancellationToken = default)
+    public async Task<Item> CreateItemAsync(TList list, object bag, CancellationToken cancellationToken = default)
     {
-        var item = await _unitOfWork.ListsStore.InitItemAsync(list, cancellationToken);
-
+        var retval = await _unitOfWork.ListsStore.InitItemAsync(list, bag, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return item;
+        var id = retval.GetId();
+        Log.Information("Created list item: {id}", id);
+        
+        await _mediator.Publish(new ListItemCreatedEvent(id), cancellationToken);
+        return retval;
     }
 }
