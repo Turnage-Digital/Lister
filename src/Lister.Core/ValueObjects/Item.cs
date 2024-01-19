@@ -9,6 +9,9 @@ public record Item
 
     [JsonProperty("id")]
     public Guid? Id { get; set; }
-    
-    public string GetId() => Id?.ToString() ?? throw new InvalidOperationException();
+
+    public string GetId()
+    {
+        return Id?.ToString() ?? throw new InvalidOperationException();
+    }
 }

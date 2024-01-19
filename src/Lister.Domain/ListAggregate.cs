@@ -40,7 +40,7 @@ public class ListAggregate<TList>
 
         var id = retval.GetId();
         Log.Information("Created list: {id}", id);
-        
+
         await _mediator.Publish(new ListCreatedEvent(id), cancellationToken);
         return retval;
     }

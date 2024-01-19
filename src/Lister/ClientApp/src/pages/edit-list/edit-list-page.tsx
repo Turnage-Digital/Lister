@@ -16,19 +16,16 @@ import {
 } from "react-router-dom";
 
 import { FormBlock } from "../../components";
-import { List } from "../../models";
+import { Column, Item, List, Status } from "../../models";
 
 import NameBlock from "./name-block";
 import StatusesBlock from "./statuses-block";
 import ColumnsBlock from "./columns-block";
 
-const defaultList: List = {
-  id: null,
-  userId: "",
+const defaultList = {
   name: "",
-  statuses: [],
   columns: [],
-  items: [],
+  statuses: [],
 };
 
 export const editListPageLoader = async () => {
@@ -39,7 +36,6 @@ export const editListPageLoader = async () => {
 export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const data = await request.formData();
   const serialized = data.get("serialized") as string;
-  const parsed = JSON.parse(serialized) as List;
 
   const postRequest = new Request(
     `${process.env.PUBLIC_URL}/api/lists/create`,
@@ -48,7 +44,7 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify(parsed),
+      body: serialized,
     }
   );
   const response = await fetch(postRequest);
@@ -81,7 +77,7 @@ const EditListPage = () => {
 
   return (
     <Container component="form" onSubmit={handleSubmit}>
-      <Stack spacing={4} divider={<Divider />} sx={{ p: 4 }}>
+      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <Box alignItems="center" sx={{ display: "flex" }}>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h5" component="h1" gutterBottom>
@@ -114,7 +110,7 @@ const EditListPage = () => {
 
         <FormBlock
           title="Statuses"
-          blurb="Blurb about statuses for a list item."
+          blurb="Blurb about statuses for an item."
           content={
             <StatusesBlock
               statuses={updated.statuses}
@@ -132,7 +128,6 @@ const EditListPage = () => {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             startIcon={<Save />}
             sx={{ width: { xs: "100%", md: "auto" } }}
           >

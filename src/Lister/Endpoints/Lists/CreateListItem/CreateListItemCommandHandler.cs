@@ -16,7 +16,7 @@ public class CreateListItemCommandHandler : IRequestHandler<CreateListItemComman
 
     public async Task<Item> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
     {
-        var list = await _listAggregate.ReadAsync(request.ListId, cancellationToken);
+        var list = await _listAggregate.ReadAsync(request.ListId!, cancellationToken);
         if (list is null)
         {
             throw new ArgumentNullException(nameof(request), $"List with id {request.ListId} does not exist");

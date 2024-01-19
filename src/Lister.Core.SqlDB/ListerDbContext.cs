@@ -11,6 +11,8 @@ public class ListerDbContext : DbContext
         : base(options) { }
 
     public virtual DbSet<ListEntity> Lists { get; set; } = null!;
+    
+    public virtual DbSet<ItemEntity> Items { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

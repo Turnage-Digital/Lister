@@ -15,18 +15,18 @@ import Grid from "@mui/material/Unstable_Grid2";
 import { AddCircle, ExpandCircleDown, PlaylistAdd } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-import { List } from "../../models";
+import { ListName } from "../../models";
 
 interface Props {
-  lists: List[];
-  selectedList: List;
-  onSelectedListChanged: (list: List) => void;
+  listNames: ListName[];
+  selectedListName: ListName;
+  onSelectedListNameChanged: (list: ListName) => void;
 }
 
 const ListsPageToolbar = ({
-  lists,
-  selectedList,
-  onSelectedListChanged,
+  listNames,
+  selectedListName,
+  onSelectedListNameChanged,
 }: Props) => {
   const navigate = useNavigate();
 
@@ -37,9 +37,9 @@ const ListsPageToolbar = ({
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuItemClick = (list: List) => {
+  const handleMenuItemClick = (list: ListName) => {
     setAnchorEl(null);
-    onSelectedListChanged(list);
+    onSelectedListNameChanged(list);
   };
 
   const handleMenuClose = () => {
@@ -52,7 +52,7 @@ const ListsPageToolbar = ({
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid>
             <Typography variant="h4" component="h1">
-              {selectedList.name}
+              {selectedListName.name}
             </Typography>
           </Grid>
           <Grid>
@@ -68,10 +68,10 @@ const ListsPageToolbar = ({
         </Grid>
 
         <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-          {lists.map((list) => (
+          {listNames.map((list) => (
             <MenuItem
               key={list.id}
-              selected={list.id === selectedList.id}
+              selected={list.id === selectedListName.id}
               onClick={() => handleMenuItemClick(list)}
             >
               {list.name}
@@ -95,7 +95,11 @@ const ListsPageToolbar = ({
             justifyContent: "flex-end",
           }}
         >
-          <Button variant="contained" startIcon={<AddCircle />}>
+          <Button
+            variant="contained"
+            startIcon={<AddCircle />}
+            onClick={() => navigate(`/${selectedListName.id}/items/create`)}
+          >
             Create an Item
           </Button>
         </Box>

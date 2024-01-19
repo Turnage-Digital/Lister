@@ -5,12 +5,10 @@ namespace Lister.Core.SqlDB;
 
 public class ListsStore : IListsStore<ListEntity>
 {
-    private readonly ListerDbContext _dbContext;
     private readonly EntityStore<ListEntity> _entityStore;
 
     public ListsStore(ListerDbContext dbContext)
     {
-        _dbContext = dbContext;
         _entityStore = new EntityStore<ListEntity>(dbContext);
     }
 
@@ -105,6 +103,8 @@ public class ListsStore : IListsStore<ListEntity>
 
     public Task<Item> InitItemAsync(ListEntity list, object bag, CancellationToken cancellationToken)
     {
-        return Task.FromResult<Item>(new ItemEntity { Bag = bag, List = list, ListId = list.Id });
+        var itemEntity = new ItemEntity { Bag = bag, List = list, ListId = list.Id };
+        list.Items.Add(itemEntity);
+        return Task.FromResult<Item>(itemEntity);
     }
 }

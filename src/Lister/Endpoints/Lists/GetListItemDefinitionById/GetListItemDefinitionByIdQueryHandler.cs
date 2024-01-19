@@ -28,6 +28,7 @@ public class GetListItemDefinitionByIdQueryHandler
             .Where(list => list.Id == parsed)
             .Select(list => new ListItemDefinitionView
             {
+                Id = list.Id,
                 Columns = list.Columns
                     .Select(column => new Column
                     {

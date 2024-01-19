@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { Container, Stack } from "@mui/material";
 
-import { List } from "../../models";
+import { ListName } from "../../models";
 
 import ListsPageToolbar from "./lists-page-toolbar";
 
@@ -17,7 +17,7 @@ export const listsPageLoader = async () => {
   });
   const response = await fetch(getRequest);
   if (response.status === 401) {
-    return [] as List[];
+    return [] as ListName[];
   }
   const retval = await response.json();
   return retval;
@@ -27,25 +27,25 @@ const ListsPage = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const loaded = useLoaderData() as List[];
-  const selectedList = loaded.find((list) => list.id === params.listId);
+  const loaded = useLoaderData() as ListName[];
+  const selectedListName = loaded.find((list) => list.id === params.listId);
 
   useEffect(() => {
-    if (!selectedList && loaded.length > 0) {
+    if (!selectedListName && loaded.length > 0) {
       navigate(`/${loaded[0].id}`);
     }
-  }, [loaded, navigate, selectedList]);
+  }, [loaded, navigate, selectedListName]);
 
-  const handleSelectedListChanged = (list: List) => {
-    navigate(`/${list.id}`);
+  const handleSelectedListChanged = (listName: ListName) => {
+    navigate(`/${listName.id}`);
   };
 
-  const content = selectedList ? (
-    <Stack spacing={4} sx={{ p: 4 }}>
+  const content = selectedListName ? (
+    <Stack spacing={4} sx={{ px: 2, py: 4 }}>
       <ListsPageToolbar
-        lists={loaded}
-        selectedList={selectedList}
-        onSelectedListChanged={handleSelectedListChanged}
+        listNames={loaded}
+        selectedListName={selectedListName}
+        onSelectedListNameChanged={handleSelectedListChanged}
       />
 
       <Outlet />

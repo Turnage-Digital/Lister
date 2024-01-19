@@ -1,16 +1,14 @@
 import { Column } from "./column";
 import { Status } from "./status";
+import { Item } from "./item";
 
 export interface List {
   id: string | null;
-  userId: string;
   name: string;
-  statuses: Status[];
   columns: Column[];
+  statuses: Status[];
   items: Item[];
-}
-
-export interface Item {
-  id: string | null;
-  bag: any;
+  count: number;
+  createdBy: string;
+  createdOn: Date;
 }

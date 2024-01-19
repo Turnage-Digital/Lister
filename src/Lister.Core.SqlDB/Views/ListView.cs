@@ -16,6 +16,9 @@ public record ListView : IReadOnlyList
 
     [JsonProperty("items")]
     public Item[] Items { get; set; } = null!;
+    
+    [JsonProperty("count")]
+    public int Count { get; set; }
 
     [JsonProperty("createdBy")]
     public string CreatedBy { get; set; } = null!;

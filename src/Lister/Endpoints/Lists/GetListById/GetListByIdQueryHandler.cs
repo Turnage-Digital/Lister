@@ -21,15 +21,22 @@ public class GetListByIdQueryHandler : GetListByIdQueryHandler<ListView>
     public override async Task<ListView> Handle(GetListByIdQuery<ListView> request, CancellationToken cancellationToken)
     {
         var parsed = Guid.Parse(request.Id);
+        var pageNumber = request.PageNumber ?? 1;
+        var pageSize = request.PageSize ?? 10;
         var entity = await _dbContext.Lists
             .Include(list => list.Statuses)
             .Include(list => list.Columns)
-            .Include(list => list.Items)
+            .Include(list => list.Items
+                .OrderBy(item => item.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize))
             .Where(list => list.CreatedBy == request.UserId)
             .Where(list => list.Id == parsed)
             .AsSplitQuery()
             .SingleAsync(cancellationToken);
         var retval = _mapper.Map<ListView>(entity);
+        retval.Count = await _dbContext.Items
+            .CountAsync(item => item.ListId == parsed, cancellationToken);
         return retval;
     }
 }

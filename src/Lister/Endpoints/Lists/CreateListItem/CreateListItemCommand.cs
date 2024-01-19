@@ -10,9 +10,8 @@ public class CreateListItemCommand : IRequest<Item>
     [JsonIgnore]
     public string? CreatedBy { get; set; }
 
-    [JsonProperty("listId")]
-    [Required]
-    public string ListId { get; set; } = null!;
+    [JsonIgnore]
+    public string? ListId { get; set; }
 
     [JsonProperty("bag")]
     [Required]

@@ -2,5 +2,8 @@ namespace Lister.Core;
 
 public interface IWritableList : IList
 {
-    public string GetId() => Id?.ToString() ?? throw new InvalidOperationException();
+    public string GetId()
+    {
+        return Id?.ToString() ?? throw new InvalidOperationException();
+    }
 }
