@@ -22,9 +22,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.ColumnEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("ListId")
                         .IsRequired()
@@ -49,9 +49,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.ItemEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Bag")
                         .IsRequired()
@@ -97,9 +97,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.StatusEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Color")
                         .IsRequired()

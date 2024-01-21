@@ -7,9 +7,10 @@ public record Column
 {
     [JsonProperty("name")]
     public string Name { get; set; } = null!;
-    
+
     [JsonProperty("property")]
-    public string Property {
+    public string Property
+    {
         get
         {
             var nameWithoutSpaces = Name.Replace(" ", string.Empty);

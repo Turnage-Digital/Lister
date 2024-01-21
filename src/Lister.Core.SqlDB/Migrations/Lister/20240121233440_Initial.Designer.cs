@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Core.SqlDB.Migrations.Lister
 {
     [DbContext(typeof(ListerDbContext))]
-    [Migration("20231213210053_Initial")]
+    [Migration("20240121233440_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,9 +25,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.ColumnEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("ListId")
                         .IsRequired()
@@ -52,9 +52,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.ItemEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Bag")
                         .IsRequired()
@@ -100,9 +100,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.StatusEntity", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Color")
                         .IsRequired()

@@ -5,7 +5,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from "react-router-dom";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 
 import { List } from "../../models";
 
@@ -14,12 +14,15 @@ export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
     return null;
   }
 
+  const page = Number(params.page ?? "1");
+  const pageSize = Number(params.pageSize ?? "10");
   const getRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/lists/${params.listId}`,
+    `${process.env.PUBLIC_URL}/api/lists/${params.listId}?page=${page}&pageSize=${pageSize}`,
     {
       method: "GET",
     }
   );
+
   const response = await fetch(getRequest);
   if (response.status === 401) {
     return null;
@@ -34,11 +37,6 @@ export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
 const IdPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const loaded = useLoaderData() as List;
-
-  const pagination = {
-    page: Number(searchParams.get("page") ?? "1"),
-    pageSize: Number(searchParams.get("pageSize") ?? "10"),
-  };
 
   const columns: GridColDef[] = loaded.columns.map((column) => ({
     field: column.property!,
@@ -56,17 +54,32 @@ const IdPage = () => {
     ...item.bag,
   }));
 
+  const pagination = {
+    page: Number(searchParams.get("page") ?? "1"),
+    pageSize: Number(searchParams.get("pageSize") ?? "10"),
+  };
+
+  const handlePaginationChange = (model: GridPaginationModel) => {
+    const page = model.page;
+    const pageSize = model.pageSize;
+
+    searchParams.set("page", page.toString());
+    searchParams.set("pageSize", pageSize.toString());
+
+    setSearchParams(searchParams);
+  };
+
   return (
     <Paper>
       <DataGrid
         columns={columns}
         rows={rows}
         getRowId={(row) => row.id}
-        // rowCount={count}
+        rowCount={loaded.count}
         paginationMode="server"
         paginationModel={pagination}
         pageSizeOptions={[10, 25, 50]}
-        // onPaginationModelChange={setPagination}
+        onPaginationModelChange={handlePaginationChange}
         // sortingMode="server"
         // sortModel={sort}
         // onSortModelChange={setSort}

@@ -8,10 +8,5 @@ public record Item
     public object Bag { get; set; } = null!;
 
     [JsonProperty("id")]
-    public Guid? Id { get; set; }
-
-    public string GetId()
-    {
-        return Id?.ToString() ?? throw new InvalidOperationException();
-    }
+    public int? Id { get; set; }
 }

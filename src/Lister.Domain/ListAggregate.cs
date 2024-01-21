@@ -37,11 +37,9 @@ public class ListAggregate<TList>
         await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         await _unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        var id = retval.GetId();
-        Log.Information("Created list: {id}", id);
-
-        await _mediator.Publish(new ListCreatedEvent(id), cancellationToken);
+        
+        Log.Information("Created list: {id}", retval.Id);
+        await _mediator.Publish(new ListCreatedEvent(retval.Id!.Value), cancellationToken);
         return retval;
     }
 
@@ -50,10 +48,8 @@ public class ListAggregate<TList>
         var retval = await _unitOfWork.ListsStore.InitItemAsync(list, bag, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var id = retval.GetId();
-        Log.Information("Created list item: {id}", id);
-        
-        await _mediator.Publish(new ListItemCreatedEvent(id), cancellationToken);
+        Log.Information("Created list item: {id}", retval.Id);
+        await _mediator.Publish(new ListItemCreatedEvent(retval.Id!.Value), cancellationToken);
         return retval;
     }
 }

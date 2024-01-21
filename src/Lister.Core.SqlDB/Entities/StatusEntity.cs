@@ -4,7 +4,7 @@ namespace Lister.Core.SqlDB.Entities;
 
 public record StatusEntity : Status
 {
-    public Guid? Id { get; set; }
+    public int? Id { get; set; }
 
     public ListEntity List { get; set; } = null!;
 

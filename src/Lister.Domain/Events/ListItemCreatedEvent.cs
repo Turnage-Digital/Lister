@@ -4,10 +4,10 @@ namespace Lister.Domain.Events;
 
 public class ListItemCreatedEvent : INotification
 {
-    public ListItemCreatedEvent(string id)
+    public ListItemCreatedEvent(int id)
     {
         Id = id;
     }
 
-    public string Id { get; }
+    public int Id { get; }
 }
