@@ -10,7 +10,6 @@ import {
   Select,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import {
@@ -22,7 +21,7 @@ import {
 } from "react-router-dom";
 
 import { Item, ListItemDefinition } from "../../models";
-import { FormBlock } from "../../components";
+import { FormBlock, FormHeader } from "../../components";
 
 const defaultListItem = {
   bag: {},
@@ -71,7 +70,7 @@ export const editListItemPageAction = async ({
   );
 
   await fetch(postRequest);
-  return redirect(`/${params.listId}`);
+  return redirect(`/${params.listId}?page=1&pageSize=10`);
 };
 
 const EditListItemPage = () => {
@@ -138,13 +137,10 @@ const EditListItemPage = () => {
   return (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Box alignItems="center" sx={{ display: "flex" }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h5" component="h1" gutterBottom>
-              Create an Item
-            </Typography>
-          </Box>
-        </Box>
+        <FormHeader
+          currentHeader="Create an Item"
+          previousHeader={loaded.listItemDefinition.name}
+        />
 
         <FormBlock
           title="Columns"

@@ -51,7 +51,12 @@ const ListsPageToolbar = ({
       <Box sx={{ flexGrow: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid>
-            <Typography variant="h4" component="h1">
+            <Typography
+              color="primary"
+              fontWeight="medium"
+              variant="h4"
+              component="h1"
+            >
               {selectedListName.name}
             </Typography>
           </Grid>

@@ -13,7 +13,7 @@ const FormBlock = ({ title, blurb, content }: Props) => {
     <Grid container spacing={2}>
       <Grid xs={12} md={4}>
         <Stack spacing={2}>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography color="primary" fontWeight="medium" variant="h6">
             {title}
           </Typography>
           <Typography variant="body1" sx={{ color: "text.secondary" }}>

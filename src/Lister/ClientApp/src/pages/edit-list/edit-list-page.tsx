@@ -1,28 +1,33 @@
 import React, { FormEvent, useState } from "react";
 import {
   Box,
+  Breadcrumbs,
   Button,
   Container,
   Divider,
+  Link,
   Stack,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import { Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
   redirect,
+  useLinkClickHandler,
   useLoaderData,
   useSubmit,
 } from "react-router-dom";
 
-import { FormBlock } from "../../components";
-import { Column, Item, List, Status } from "../../models";
+import { FormBlock, FormHeader } from "../../components";
+import { List, ListItemDefinition } from "../../models";
 
 import NameBlock from "./name-block";
 import StatusesBlock from "./statuses-block";
 import ColumnsBlock from "./columns-block";
 
-const defaultList = {
+const defaultList: ListItemDefinition = {
+  id: null,
   name: "",
   columns: [],
   statuses: [],
@@ -51,13 +56,13 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const json = await response.json();
   const listId = json.id;
 
-  return redirect(`/${listId}`);
+  return redirect(`/${listId}?page=1&pageSize=10`);
 };
 
 const EditListPage = () => {
-  const loaded = useLoaderData() as List;
+  const loaded = useLoaderData() as ListItemDefinition;
   const submit = useSubmit();
-  const [updated, setUpdated] = useState<List>(loaded);
+  const [updated, setUpdated] = useState<ListItemDefinition>(loaded);
 
   const update = (key: keyof List, value: any) => {
     setUpdated((prev) => ({ ...prev, [key]: value }));
@@ -78,13 +83,7 @@ const EditListPage = () => {
   return (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Box alignItems="center" sx={{ display: "flex" }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h5" component="h1" gutterBottom>
-              Create a List
-            </Typography>
-          </Box>
-        </Box>
+        <FormHeader currentHeader="Create a List" previousHeader="Lists" />
 
         <FormBlock
           title="Name"
