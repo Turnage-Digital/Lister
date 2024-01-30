@@ -2,9 +2,11 @@ import React, { MouseEvent, useState } from "react";
 import {
   AppBar,
   Box,
+  Container,
   IconButton,
   Menu,
   MenuItem,
+  Stack,
   Toolbar,
 } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
@@ -49,7 +51,12 @@ const Root = () => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Stack
+      sx={{
+        minWidth: "100%",
+        height: "100vh",
+      }}
+    >
       <AppBar
         elevation={0}
         sx={(theme) => ({
@@ -74,17 +81,11 @@ const Root = () => {
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="main"
-        sx={(theme) => ({
-          background: theme.palette.background.default,
-          flexGrow: 1,
-        })}
-      >
+      <Container maxWidth="xl">
         <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
         <Outlet />
-      </Box>
-    </Box>
+      </Container>
+    </Stack>
   );
 };
 

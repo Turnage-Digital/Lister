@@ -54,7 +54,7 @@ const ListsPage = () => {
     <></>
   );
 
-  return <Container>{content}</Container>;
+  return <>{content}</>;
 };
 
 export default ListsPage;

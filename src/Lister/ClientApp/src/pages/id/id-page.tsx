@@ -7,7 +7,8 @@ import {
 } from "react-router-dom";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 
-import { List } from "../../models";
+import { List, Status } from "../../models";
+import { StatusChip } from "../../components";
 
 export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.listId) {
@@ -41,12 +42,16 @@ const IdPage = () => {
   const columns: GridColDef[] = loaded.columns.map((column) => ({
     field: column.property!,
     headerName: column.name,
-    width: 150,
+    flex: 1,
   }));
   columns.push({
     field: "status",
     headerName: "Status",
-    width: 150,
+    disableColumnMenu: true,
+    sortable: false,
+    renderCell: (params) => (
+      <StatusChip status={getStatusFromName(params.value)} />
+    ),
   });
 
   const rows = loaded.items.map((item) => ({
@@ -55,8 +60,16 @@ const IdPage = () => {
   }));
 
   const pagination = {
-    page: Number(searchParams.get("page") ?? "1"),
+    page: Number(searchParams.get("page") ?? "0"),
     pageSize: Number(searchParams.get("pageSize") ?? "10"),
+  };
+
+  const getStatusFromName = (name: string): Status => {
+    const retval = loaded.statuses.find((status) => status.name === name);
+    if (!retval) {
+      throw new Error(`Status with name ${name} not found`);
+    }
+    return retval;
   };
 
   const handlePaginationChange = (model: GridPaginationModel) => {

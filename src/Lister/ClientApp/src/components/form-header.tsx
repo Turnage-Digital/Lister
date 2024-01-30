@@ -18,7 +18,7 @@ const FormHeader = ({ currentHeader, previousHeader }: Props) => {
   const handleLinkClick = useLinkClickHandler(previousUrl);
 
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <Grid xs={12}>
         <Typography
           color="primary"
