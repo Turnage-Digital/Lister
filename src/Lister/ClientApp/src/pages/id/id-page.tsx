@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import {
   LoaderFunctionArgs,
   useLoaderData,
@@ -10,13 +10,14 @@ import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { List, Status } from "../../models";
 import { StatusChip } from "../../components";
 
-export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
+export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!params.listId) {
     return null;
   }
 
-  const page = Number(params.page ?? "1");
-  const pageSize = Number(params.pageSize ?? "10");
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page") ?? "0");
+  const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
   const getRequest = new Request(
     `${process.env.PUBLIC_URL}/api/lists/${params.listId}?page=${page}&pageSize=${pageSize}`,
     {
@@ -36,7 +37,10 @@ export const idPageLoader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 const IdPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: "0",
+    pageSize: "10",
+  });
   const loaded = useLoaderData() as List;
 
   const columns: GridColDef[] = loaded.columns.map((column) => ({
@@ -47,6 +51,7 @@ const IdPage = () => {
   columns.push({
     field: "status",
     headerName: "Status",
+    width: 150,
     disableColumnMenu: true,
     sortable: false,
     renderCell: (params) => (
@@ -60,8 +65,8 @@ const IdPage = () => {
   }));
 
   const pagination = {
-    page: Number(searchParams.get("page") ?? "0"),
-    pageSize: Number(searchParams.get("pageSize") ?? "10"),
+    page: Number(searchParams.get("page")),
+    pageSize: Number(searchParams.get("pageSize")),
   };
 
   const getStatusFromName = (name: string): Status => {

@@ -9,7 +9,7 @@ public class GetListByIdQuery<TList> : IRequest<TList>
     public GetListByIdQuery(
         string userId,
         string id,
-        int? pageNumber,
+        int? page,
         int? pageSize,
         string? sortColumn,
         string? sortOrder
@@ -17,7 +17,7 @@ public class GetListByIdQuery<TList> : IRequest<TList>
     {
         Id = id;
         UserId = userId;
-        PageNumber = pageNumber;
+        Page = page;
         PageSize = pageSize;
         SortColumn = sortColumn;
         SortOrder = sortOrder;
@@ -27,7 +27,7 @@ public class GetListByIdQuery<TList> : IRequest<TList>
 
     public string Id { get; }
 
-    public int? PageNumber { get; }
+    public int? Page { get; }
 
     public int? PageSize { get; }
 

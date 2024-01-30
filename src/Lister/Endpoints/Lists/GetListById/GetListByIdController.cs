@@ -28,7 +28,7 @@ public class GetListByIdController : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Get(
         string id,
-        [FromQuery] int? pageNumber,
+        [FromQuery] int? page,
         [FromQuery] int? pageSize,
         [FromQuery] string? sortColumn,
         [FromQuery] string? sortOrder
@@ -36,7 +36,7 @@ public class GetListByIdController : Controller
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();
-        GetListByIdQuery<ListView> query = new(userId, id, pageNumber, pageSize, sortColumn, sortOrder);
+        GetListByIdQuery<ListView> query = new(userId, id, page, pageSize, sortColumn, sortOrder);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

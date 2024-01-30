@@ -70,7 +70,7 @@ export const editListItemPageAction = async ({
   );
 
   await fetch(postRequest);
-  return redirect(`/${params.listId}?page=1&pageSize=10`);
+  return redirect(`/${params.listId}`);
 };
 
 const EditListItemPage = () => {

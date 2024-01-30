@@ -21,7 +21,7 @@ public class GetListByIdQueryHandler : GetListByIdQueryHandler<ListView>
     public override async Task<ListView> Handle(GetListByIdQuery<ListView> request, CancellationToken cancellationToken)
     {
         var parsed = Guid.Parse(request.Id);
-        var pageNumber = request.PageNumber ?? 0;
+        var pageNumber = request.Page ?? 0;
         var pageSize = request.PageSize ?? 10;
         var entity = await _dbContext.Lists
             .Include(list => list.Statuses)

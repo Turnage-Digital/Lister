@@ -45,7 +45,7 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const json = await response.json();
   const listId = json.id;
 
-  return redirect(`/${listId}?page=1&pageSize=10`);
+  return redirect(`/${listId}`);
 };
 
 const EditListPage = () => {

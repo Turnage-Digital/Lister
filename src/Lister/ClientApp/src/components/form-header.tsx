@@ -10,11 +10,7 @@ interface Props {
 
 const FormHeader = ({ currentHeader, previousHeader }: Props) => {
   const params = useParams();
-
-  const previousUrl = params.listId
-    ? `/${params.listId}?page=1&pageSize=10`
-    : "/";
-
+  const previousUrl = params.listId ? `/${params.listId}` : "/";
   const handleLinkClick = useLinkClickHandler(previousUrl);
 
   return (
