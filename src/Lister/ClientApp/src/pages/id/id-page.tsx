@@ -1,11 +1,15 @@
 import React from "react";
-import { Box, Paper } from "@mui/material";
 import {
   LoaderFunctionArgs,
   useLoaderData,
   useSearchParams,
 } from "react-router-dom";
-import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 
 import { List, Status } from "../../models";
 import { StatusChip } from "../../components";
@@ -37,49 +41,33 @@ export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 const IdPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams({
-    page: "0",
-    pageSize: "10",
-  });
   const loaded = useLoaderData() as List;
-
-  const columns: GridColDef[] = loaded.columns.map((column) => ({
-    field: column.property!,
-    headerName: column.name,
-    flex: 1,
-  }));
-  columns.push({
-    field: "status",
-    headerName: "Status",
-    width: 150,
-    disableColumnMenu: true,
-    sortable: false,
-    renderCell: (params) => (
-      <StatusChip status={getStatusFromName(params.value)} />
-    ),
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const rows = loaded.items.map((item) => ({
     id: item.id,
     ...item.bag,
   }));
 
-  const pagination = {
-    page: Number(searchParams.get("page")),
-    pageSize: Number(searchParams.get("pageSize")),
-  };
+  const gridColDefs: GridColDef[] = loaded.columns.map((column) => ({
+    field: column.property!,
+    headerName: column.name,
+    flex: 1,
+  }));
+  gridColDefs.push({
+    field: "status",
+    headerName: "Status",
+    width: 150,
+    disableColumnMenu: true,
+    sortable: false,
+    renderCell: (params) => (
+      <StatusChip status={getStatusFromName(loaded.statuses, params.value)} />
+    ),
+  });
 
-  const getStatusFromName = (name: string): Status => {
-    const retval = loaded.statuses.find((status) => status.name === name);
-    if (!retval) {
-      throw new Error(`Status with name ${name} not found`);
-    }
-    return retval;
-  };
-
-  const handlePaginationChange = (model: GridPaginationModel) => {
-    const page = model.page;
-    const pageSize = model.pageSize;
+  const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
+    const page = gridPaginationModel.page;
+    const pageSize = gridPaginationModel.pageSize;
 
     searchParams.set("page", page.toString());
     searchParams.set("pageSize", pageSize.toString());
@@ -87,26 +75,69 @@ const IdPage = () => {
     setSearchParams(searchParams);
   };
 
+  const handleSortChange = (gridSortModel: GridSortModel) => {
+    if (gridSortModel.length === 0) {
+      searchParams.delete("field");
+      searchParams.delete("sort");
+    } else {
+      const field = gridSortModel[0].field;
+      const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
+
+      searchParams.set("field", field);
+      searchParams.set("sort", sort);
+    }
+
+    setSearchParams(searchParams);
+  };
+
   return (
-    <Paper>
-      <DataGrid
-        columns={columns}
-        rows={rows}
-        getRowId={(row) => row.id}
-        rowCount={loaded.count}
-        paginationMode="server"
-        paginationModel={pagination}
-        pageSizeOptions={[10, 25, 50]}
-        onPaginationModelChange={handlePaginationChange}
-        // sortingMode="server"
-        // sortModel={sort}
-        // onSortModelChange={setSort}
-        disableColumnFilter
-        disableColumnSelector
-        disableRowSelectionOnClick
-      />
-    </Paper>
+    <DataGrid
+      columns={gridColDefs}
+      rows={rows}
+      getRowId={(row) => row.id}
+      rowCount={loaded.count}
+      paginationMode="server"
+      paginationModel={getPaginationFromSearchParams(searchParams)}
+      pageSizeOptions={[10, 25, 50]}
+      onPaginationModelChange={handlePaginationChange}
+      sortingMode="server"
+      sortModel={getSortFromSearchParams(searchParams)}
+      onSortModelChange={handleSortChange}
+      disableColumnFilter
+      disableColumnSelector
+      disableRowSelectionOnClick
+    />
   );
+};
+
+const getStatusFromName = (statuses: Status[], name: string): Status => {
+  const retval = statuses.find((status) => status.name === name);
+  if (!retval) {
+    throw new Error(`Status with name ${name} not found`);
+  }
+  return retval;
+};
+
+const getPaginationFromSearchParams = (
+  searchParams: URLSearchParams
+): GridPaginationModel => {
+  const page = Number(searchParams.get("page") ?? "0");
+  const pageSize = Number(searchParams.get("pageSize") ?? "10");
+
+  return { page, pageSize };
+};
+
+const getSortFromSearchParams = (
+  searchParams: URLSearchParams
+): GridSortModel => {
+  if (!searchParams.has("field")) {
+    return [];
+  }
+
+  const field = searchParams.get("field") ?? "id";
+  const sort = searchParams.get("sort") === "desc" ? "desc" : "asc";
+
+  return [{ field, sort }];
 };
 
 export default IdPage;

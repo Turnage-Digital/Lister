@@ -24,10 +24,10 @@ export const listsPageLoader = async () => {
 };
 
 const ListsPage = () => {
+  const loaded = useLoaderData() as ListName[];
   const params = useParams();
   const navigate = useNavigate();
 
-  const loaded = useLoaderData() as ListName[];
   const selectedListName = loaded.find((list) => list.id === params.listId);
 
   useEffect(() => {
