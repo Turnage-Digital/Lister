@@ -14,7 +14,7 @@ import {
 import { Paper } from "@mui/material";
 
 import { Column, Item, ListItemDefinition, Status } from "../../models";
-import { StatusChip } from "../../components";
+import { Loading, StatusChip } from "../../components";
 
 export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!params.listId) {
@@ -123,7 +123,7 @@ const IdPage = () => {
     ...item.bag,
   }));
 
-  return (
+  return listItemDefinition ? (
     <Paper>
       <DataGrid
         columns={gridColDefs}
@@ -142,6 +142,8 @@ const IdPage = () => {
         disableRowSelectionOnClick
       />
     </Paper>
+  ) : (
+    <Loading />
   );
 };
 
