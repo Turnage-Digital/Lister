@@ -11,6 +11,8 @@ public interface IListsStore<TList>
 
     Task<TList?> ReadAsync(string id, CancellationToken cancellationToken);
 
+    Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken);
+
     Task SetNameAsync(TList list, string name, CancellationToken cancellationToken);
 
     Task<string> GetNameAsync(TList list, CancellationToken cancellationToken);

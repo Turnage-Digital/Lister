@@ -1,4 +1,8 @@
 using System.Security.Claims;
+using Lister.Core.Enums;
+using Lister.Core.SqlDB.Entities;
+using Lister.Core.ValueObjects;
+using Lister.Domain;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
@@ -13,6 +17,7 @@ internal static class SeedData
         using var scope = app.Services
             .GetRequiredService<IServiceScopeFactory>()
             .CreateScope();
+
         var userManager = scope.ServiceProvider
             .GetRequiredService<UserManager<IdentityUser>>();
 
@@ -36,6 +41,184 @@ internal static class SeedData
         else
         {
             Log.Debug("erika already exists");
+        }
+
+        var listAggregate = scope.ServiceProvider
+            .GetRequiredService<ListAggregate<ListEntity>>();
+
+        var list = listAggregate.FindByNameAsync("Trailer Park Boys").Result;
+        if (list == null)
+        {
+            list = listAggregate.CreateAsync(
+                heath!.Id,
+                "Trailer Park Boys",
+                new[]
+                {
+                    new Status
+                    {
+                        Name = "Active",
+                        Color = "#FFCA28"
+                    },
+                    new Status
+                    {
+                        Name = "Inactive",
+                        Color = "#607d8b"
+                    }
+                },
+                new[]
+                {
+                    new Column
+                    {
+                        Name = "Name",
+                        Type = ColumnType.Text
+                    },
+                    new Column
+                    {
+                        Name = "Address",
+                        Type = ColumnType.Text
+                    },
+                    new Column
+                    {
+                        Name = "City",
+                        Type = ColumnType.Text
+                    },
+                    new Column
+                    {
+                        Name = "State",
+                        Type = ColumnType.Text
+                    },
+                    new Column
+                    {
+                        Name = "Zip Code",
+                        Type = ColumnType.Text
+                    },
+                    new Column
+                    {
+                        Name = "Date Of Birth",
+                        Type = ColumnType.Date
+                    }
+                }
+            ).Result;
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Ricky Lafluer",
+                    state = "FL",
+                    status = "Active",
+                    address = "100 Maple Lane",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Julian",
+                    state = "FL",
+                    status = "Active",
+                    address = "101 Sunnyvale Lane",
+                    zipCode = "34707",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Bubbles",
+                    state = "FL",
+                    status = "Active",
+                    address = "The Shed",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Columbia",
+                    name = "Shitty Bill",
+                    state = "SC",
+                    status = "Active",
+                    address = "202 No Way",
+                    zipCode = "29212",
+                    dateOfBirth = "2/2/1945"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Columbia",
+                    name = "Ray Lafluer",
+                    state = "SC",
+                    status = "Inactive",
+                    address = "The Dump",
+                    zipCode = "29212",
+                    dateOfBirth = "1/1/1950"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "?",
+                    name = "Trevor",
+                    state = "?",
+                    status = "Inactive",
+                    address = "Unknown",
+                    zipCode = "?",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Corey",
+                    state = "FL",
+                    status = "Active",
+                    address = "101 Other Way",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Lucy Lafluer",
+                    state = " FL",
+                    status = "Inactive",
+                    address = "100 Maple Lane",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Sara",
+                    state = "FL",
+                    status = "Active",
+                    address = "100 Maple Lane",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1970"
+                }
+            ).Wait();
+
+            listAggregate.CreateItemAsync(list, new
+                {
+                    city = "Spring Hill",
+                    name = "Trinity Lafluer",
+                    state = "FL",
+                    status = "Active",
+                    address = "100 Maple Lane",
+                    zipCode = "34609",
+                    dateOfBirth = "1/1/1980"
+                }
+            ).Wait();
         }
 
         Log.Information("Done seeding database. Exiting.");

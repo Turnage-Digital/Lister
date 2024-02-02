@@ -5,7 +5,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { Container, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 
 import { ListName } from "../../models";
 

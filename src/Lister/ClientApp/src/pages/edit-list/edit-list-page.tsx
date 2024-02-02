@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 import { FormBlock, FormHeader } from "../../components";
-import { List, ListItemDefinition } from "../../models";
+import { ListItemDefinition } from "../../models";
 
 import NameBlock from "./name-block";
 import StatusesBlock from "./statuses-block";
@@ -53,7 +53,7 @@ const EditListPage = () => {
   const submit = useSubmit();
   const [updated, setUpdated] = useState<ListItemDefinition>(loaded);
 
-  const update = (key: keyof List, value: any) => {
+  const update = (key: keyof ListItemDefinition, value: any) => {
     setUpdated((prev) => ({ ...prev, [key]: value }));
   };
 

@@ -1,28 +1,28 @@
 using System.Security.Claims;
-using Lister.Core.SqlDB.Views;
+using Lister.Core.ValueObjects;
 using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Endpoints.Lists.GetListById;
+namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListByIdController : Controller
+public class GetListItemsByListIdController : Controller
 {
     private readonly IMediator _mediator;
 
-    public GetListByIdController(IMediator mediator)
+    public GetListItemsByListIdController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ListView), Status200OK)]
+    [HttpGet("{id}/items")]
+    [ProducesResponseType(typeof(Item[]), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
@@ -36,7 +36,7 @@ public class GetListByIdController : Controller
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();
-        GetListByIdQuery<ListView> query = new(userId, id, page, pageSize, sortColumn, sortOrder);
+        GetListItemsByListIdQuery query = new(userId, id, page, pageSize, sortColumn, sortOrder);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

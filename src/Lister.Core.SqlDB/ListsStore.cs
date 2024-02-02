@@ -1,15 +1,18 @@
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
 public class ListsStore : IListsStore<ListEntity>
 {
+    private readonly ListerDbContext _dbContext;
     private readonly EntityStore<ListEntity> _entityStore;
 
     public ListsStore(ListerDbContext dbContext)
     {
         _entityStore = new EntityStore<ListEntity>(dbContext);
+        _dbContext = dbContext;
     }
 
     public Task<ListEntity> InitAsync(string createdBy, string name, CancellationToken cancellationToken)
@@ -28,6 +31,13 @@ public class ListsStore : IListsStore<ListEntity>
     {
         var parsed = Guid.Parse(id);
         var retval = await _entityStore.ReadAsync(parsed, cancellationToken);
+        return retval;
+    }
+
+    public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)
+    {
+        var retval = await _dbContext.Lists
+            .SingleOrDefaultAsync(l => l.Name == name, cancellationToken);
         return retval;
     }
 

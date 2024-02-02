@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   LoaderFunctionArgs,
   useLoaderData,
+  useParams,
   useSearchParams,
 } from "react-router-dom";
 import {
@@ -10,8 +11,9 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
+import { Paper } from "@mui/material";
 
-import { List, Status } from "../../models";
+import { Column, Item, ListItemDefinition, Status } from "../../models";
 import { StatusChip } from "../../components";
 
 export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -23,7 +25,7 @@ export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   const page = Number(url.searchParams.get("page") ?? "0");
   const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
   const getRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/lists/${params.listId}?page=${page}&pageSize=${pageSize}`,
+    `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`,
     {
       method: "GET",
     }
@@ -41,29 +43,55 @@ export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 const IdPage = () => {
-  const loaded = useLoaderData() as List;
+  const loaded = useLoaderData() as { items: Item[]; count: number };
+  const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [listItemDefinition, setListItemDefinition] =
+    useState<ListItemDefinition | null>(null);
 
-  const rows = loaded.items.map((item) => ({
-    id: item.id,
-    ...item.bag,
-  }));
+  useEffect(() => {
+    const request = new Request(`/api/lists/${params.listId}/itemDefinition`, {
+      method: "GET",
+    });
 
-  const gridColDefs: GridColDef[] = loaded.columns.map((column) => ({
-    field: column.property!,
-    headerName: column.name,
-    flex: 1,
-  }));
-  gridColDefs.push({
-    field: "status",
-    headerName: "Status",
-    width: 150,
-    disableColumnMenu: true,
-    sortable: false,
-    renderCell: (params) => (
-      <StatusChip status={getStatusFromName(loaded.statuses, params.value)} />
-    ),
-  });
+    const fetchData = async () => {
+      const response = await fetch(request);
+      const data = await response.json();
+
+      setListItemDefinition(data);
+    };
+
+    fetchData();
+  }, [params.listId]);
+
+  const gridColDefs: GridColDef[] = useMemo(() => {
+    if (!listItemDefinition) {
+      return [];
+    }
+
+    const retval: GridColDef[] = listItemDefinition.columns.map(
+      (column: Column) => ({
+        field: column.property!,
+        headerName: column.name,
+        flex: 1,
+      })
+    );
+
+    retval.push({
+      field: "status",
+      headerName: "Status",
+      width: 150,
+      disableColumnMenu: true,
+      sortable: false,
+      renderCell: (params) => (
+        <StatusChip
+          status={getStatusFromName(listItemDefinition.statuses, params.value)}
+        />
+      ),
+    });
+
+    return retval;
+  }, [listItemDefinition]);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
@@ -90,23 +118,30 @@ const IdPage = () => {
     setSearchParams(searchParams);
   };
 
+  const rows = loaded.items.map((item) => ({
+    id: item.id,
+    ...item.bag,
+  }));
+
   return (
-    <DataGrid
-      columns={gridColDefs}
-      rows={rows}
-      getRowId={(row) => row.id}
-      rowCount={loaded.count}
-      paginationMode="server"
-      paginationModel={getPaginationFromSearchParams(searchParams)}
-      pageSizeOptions={[10, 25, 50]}
-      onPaginationModelChange={handlePaginationChange}
-      sortingMode="server"
-      sortModel={getSortFromSearchParams(searchParams)}
-      onSortModelChange={handleSortChange}
-      disableColumnFilter
-      disableColumnSelector
-      disableRowSelectionOnClick
-    />
+    <Paper>
+      <DataGrid
+        columns={gridColDefs}
+        rows={rows}
+        getRowId={(row) => row.id}
+        rowCount={loaded.count}
+        paginationMode="server"
+        paginationModel={getPaginationFromSearchParams(searchParams)}
+        pageSizeOptions={[10, 25, 50]}
+        onPaginationModelChange={handlePaginationChange}
+        sortingMode="server"
+        sortModel={getSortFromSearchParams(searchParams)}
+        onSortModelChange={handleSortChange}
+        disableColumnFilter
+        disableColumnSelector
+        disableRowSelectionOnClick
+      />
+    </Paper>
   );
 };
 
@@ -134,7 +169,7 @@ const getSortFromSearchParams = (
     return [];
   }
 
-  const field = searchParams.get("field") ?? "id";
+  const field = searchParams.get("field")!;
   const sort = searchParams.get("sort") === "desc" ? "desc" : "asc";
 
   return [{ field, sort }];

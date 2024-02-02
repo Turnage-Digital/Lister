@@ -1,136 +1,131 @@
-﻿using System;
+﻿#nullable disable
+
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
+namespace Lister.Core.SqlDB.Migrations.Lister;
 
-namespace Lister.Core.SqlDB.Migrations.Lister
+/// <inheritdoc />
+public partial class Initial : Migration
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
+        migrationBuilder.AlterDatabase()
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Lists",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Lists",
+                table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Id = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedBy = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    CreatedBy = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    CreatedOn = table.Column<DateTime>("datetime(6)", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lists", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                constraints: table => { table.PrimaryKey("PK_Lists", x => x.Id); })
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Columns",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Columns",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<int>("int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Columns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Columns_Lists_ListId",
-                        column: x => x.ListId,
-                        principalTable: "Lists",
-                        principalColumn: "Id",
+                        "FK_Columns_Lists_ListId",
+                        x => x.ListId,
+                        "Lists",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Items",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Items",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Bag = table.Column<string>(type: "JSON", nullable: false)
+                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Bag = table.Column<string>("JSON", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Items_Lists_ListId",
-                        column: x => x.ListId,
-                        principalTable: "Lists",
-                        principalColumn: "Id",
+                        "FK_Items_Lists_ListId",
+                        x => x.ListId,
+                        "Lists",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Statuses",
-                columns: table => new
+        migrationBuilder.CreateTable(
+                "Statuses",
+                table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Color = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Color = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Statuses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Statuses_Lists_ListId",
-                        column: x => x.ListId,
-                        principalTable: "Lists",
-                        principalColumn: "Id",
+                        "FK_Statuses_Lists_ListId",
+                        x => x.ListId,
+                        "Lists",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Columns_ListId",
-                table: "Columns",
-                column: "ListId");
+        migrationBuilder.CreateIndex(
+            "IX_Columns_ListId",
+            "Columns",
+            "ListId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Items_ListId",
-                table: "Items",
-                column: "ListId");
+        migrationBuilder.CreateIndex(
+            "IX_Items_ListId",
+            "Items",
+            "ListId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Statuses_ListId",
-                table: "Statuses",
-                column: "ListId");
-        }
+        migrationBuilder.CreateIndex(
+            "IX_Statuses_ListId",
+            "Statuses",
+            "ListId");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Columns");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            "Columns");
 
-            migrationBuilder.DropTable(
-                name: "Items");
+        migrationBuilder.DropTable(
+            "Items");
 
-            migrationBuilder.DropTable(
-                name: "Statuses");
+        migrationBuilder.DropTable(
+            "Statuses");
 
-            migrationBuilder.DropTable(
-                name: "Lists");
-        }
+        migrationBuilder.DropTable(
+            "Lists");
     }
 }

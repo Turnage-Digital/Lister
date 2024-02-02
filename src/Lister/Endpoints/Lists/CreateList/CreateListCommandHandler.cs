@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Lister.Endpoints.Lists.CreateList;
 
-public class CreateListCommandHandler : CreateListCommandHandler<ListView>
+public class CreateListCommandHandler : CreateListCommandHandler<ListItemDefinitionView>
 {
     private readonly ListAggregate<ListEntity> _listAggregate;
     private readonly IMapper _mapper;
@@ -21,8 +21,8 @@ public class CreateListCommandHandler : CreateListCommandHandler<ListView>
         _mapper = mapper;
     }
 
-    public override async Task<ListView> Handle(
-        CreateListCommand<ListView> request,
+    public override async Task<ListItemDefinitionView> Handle(
+        CreateListCommand<ListItemDefinitionView> request,
         CancellationToken cancellationToken = default
     )
     {
@@ -38,7 +38,7 @@ public class CreateListCommandHandler : CreateListCommandHandler<ListView>
             request.Columns,
             cancellationToken);
 
-        var retval = _mapper.Map<ListView>(created);
+        var retval = _mapper.Map<ListItemDefinitionView>(created);
         return retval;
     }
 }

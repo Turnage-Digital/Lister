@@ -18,12 +18,6 @@ public class ListAggregate<TList>
         _mediator = mediator;
     }
 
-    public async Task<TList?> ReadAsync(string id, CancellationToken cancellationToken = default)
-    {
-        var retval = await _unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
-        return retval;
-    }
-
     public async Task<TList> CreateAsync(
         string createdBy,
         string name,
@@ -37,9 +31,21 @@ public class ListAggregate<TList>
         await _unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         await _unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         Log.Information("Created list: {id}", retval.Id);
         await _mediator.Publish(new ListCreatedEvent(retval.Id!.Value), cancellationToken);
+        return retval;
+    }
+
+    public async Task<TList?> ReadAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var retval = await _unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
+        return retval;
+    }
+
+    public async Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        var retval = await _unitOfWork.ListsStore.FindByNameAsync(name, cancellationToken);
         return retval;
     }
 

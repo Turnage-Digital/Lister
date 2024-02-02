@@ -1,12 +1,10 @@
-using Lister.Core;
 using MediatR;
 
-namespace Lister.Endpoints.Lists.GetListById;
+namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
-public class GetListByIdQuery<TList> : IRequest<TList>
-    where TList : IReadOnlyList
+public class GetListItemsByListIdQuery : IRequest<GetListItemsByListIdResponse>
 {
-    public GetListByIdQuery(
+    public GetListItemsByListIdQuery(
         string userId,
         string id,
         int? page,

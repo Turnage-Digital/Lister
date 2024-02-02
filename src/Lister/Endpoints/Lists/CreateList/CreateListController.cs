@@ -22,10 +22,10 @@ public class CreateListController : Controller
     }
 
     [HttpPost("create")]
-    [ProducesResponseType(typeof(ListView), Status201Created)]
+    [ProducesResponseType(typeof(ListItemDefinitionView), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Post([FromBody] CreateListCommand<ListView> command)
+    public async Task<IActionResult> Post([FromBody] CreateListCommand<ListItemDefinitionView> command)
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();

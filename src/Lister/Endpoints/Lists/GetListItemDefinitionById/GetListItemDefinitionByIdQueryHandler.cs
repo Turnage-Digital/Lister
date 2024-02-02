@@ -42,7 +42,9 @@ public class GetListItemDefinitionByIdQueryHandler
                         Name = status.Name,
                         Color = status.Color
                     }).ToArray()
-            }).SingleAsync(cancellationToken);
+            })
+            .AsSplitQuery()
+            .SingleAsync(cancellationToken);
         return retval;
     }
 }
