@@ -15,6 +15,7 @@ import { Paper } from "@mui/material";
 
 import { Column, Item, ListItemDefinition, Status } from "../../models";
 import { Loading, StatusChip } from "../../components";
+import { getStatusFromName } from "../../status-fns";
 
 export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!params.listId) {
@@ -145,14 +146,6 @@ const IdPage = () => {
   ) : (
     <Loading />
   );
-};
-
-const getStatusFromName = (statuses: Status[], name: string): Status => {
-  const retval = statuses.find((status) => status.name === name);
-  if (!retval) {
-    throw new Error(`Status with name ${name} not found`);
-  }
-  return retval;
 };
 
 const getPaginationFromSearchParams = (

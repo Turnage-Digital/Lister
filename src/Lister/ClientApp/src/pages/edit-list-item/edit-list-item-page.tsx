@@ -21,7 +21,8 @@ import {
 } from "react-router-dom";
 
 import { Item, ListItemDefinition } from "../../models";
-import { FormBlock, FormHeader } from "../../components";
+import { FormBlock, FormHeader, StatusChip } from "../../components";
+import { getStatusFromName } from "../../status-fns";
 
 const defaultListItem = {
   bag: {},
@@ -121,6 +122,14 @@ const EditListItemPage = () => {
           name="status"
           id="status"
           label="Status"
+          renderValue={(value) => (
+            <StatusChip
+              status={getStatusFromName(
+                loaded.listItemDefinition.statuses,
+                value
+              )}
+            />
+          )}
           value={updated.bag.status ?? ""}
           onChange={(event) => update("status", event.target.value)}
         >
