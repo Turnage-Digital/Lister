@@ -30,13 +30,13 @@ public class GetListItemsByListIdController : Controller
         string id,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
-        [FromQuery] string? sortColumn,
-        [FromQuery] string? sortOrder
+        [FromQuery] string? field,
+        [FromQuery] string? sort
     )
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();
-        GetListItemsByListIdQuery query = new(userId, id, page, pageSize, sortColumn, sortOrder);
+        GetListItemsByListIdQuery query = new(userId, id, page, pageSize, field, sort);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

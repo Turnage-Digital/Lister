@@ -14,6 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78"/>
         <PackageReference Include="Lamar.Microsoft.DependencyInjection" Version="12.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.9"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.14"/>

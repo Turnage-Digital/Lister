@@ -6,30 +6,30 @@ public class GetListItemsByListIdQuery : IRequest<GetListItemsByListIdResponse>
 {
     public GetListItemsByListIdQuery(
         string userId,
-        string id,
+        string listId,
         int? page,
         int? pageSize,
-        string? sortColumn,
-        string? sortOrder
+        string? field,
+        string? sort
     )
     {
-        Id = id;
+        ListId = listId;
         UserId = userId;
         Page = page;
         PageSize = pageSize;
-        SortColumn = sortColumn;
-        SortOrder = sortOrder;
+        Field = field;
+        Sort = sort;
     }
 
     public string UserId { get; }
 
-    public string Id { get; }
+    public string ListId { get; }
 
     public int? Page { get; }
 
     public int? PageSize { get; }
 
-    public string? SortColumn { get; set; }
+    public string? Field { get; }
 
-    public string? SortOrder { get; set; }
+    public string? Sort { get; }
 }

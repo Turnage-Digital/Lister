@@ -25,12 +25,16 @@ export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page") ?? "0");
   const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
-  const getRequest = new Request(
-    `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`,
-    {
-      method: "GET",
-    }
-  );
+  const field = url.searchParams.get("field");
+  const sort = url.searchParams.get("sort");
+
+  let route = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
+  if (field && sort) {
+    route += `&field=${field}&sort=${sort}`;
+  }
+  const getRequest = new Request(route, {
+    method: "GET",
+  });
 
   const response = await fetch(getRequest);
   if (response.status === 401) {

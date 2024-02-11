@@ -4,7 +4,7 @@ namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
 public class GetListItemsByListIdResponse
 {
-    public GetListItemsByListIdResponse(IEnumerable<Item> items, int count)
+    public GetListItemsByListIdResponse(IEnumerable<Item> items, long count)
     {
         Items = items;
         Count = count;
@@ -12,5 +12,5 @@ public class GetListItemsByListIdResponse
 
     public IEnumerable<Item> Items { get; set; }
 
-    public int Count { get; set; }
+    public long Count { get; set; }
 }
