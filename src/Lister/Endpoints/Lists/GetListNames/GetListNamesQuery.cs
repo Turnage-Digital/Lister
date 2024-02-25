@@ -1,5 +1,4 @@
 using Lister.Core;
-using MediatR;
 
 namespace Lister.Endpoints.Lists.GetListNames;
 

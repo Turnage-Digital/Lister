@@ -12,8 +12,8 @@ import { FormBlock, FormHeader } from "../../components";
 import { ListItemDefinition } from "../../models";
 
 import NameBlock from "./name-block";
-import StatusesBlock from "./statuses-block";
-import ColumnsBlock from "./columns-block";
+import StatusesContent from "./statuses-content";
+import ColumnsContent from "./columns-content";
 
 const defaultList: ListItemDefinition = {
   id: null,
@@ -51,6 +51,7 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 const EditListPage = () => {
   const loaded = useLoaderData() as ListItemDefinition;
   const submit = useSubmit();
+
   const [updated, setUpdated] = useState<ListItemDefinition>(() => {
     const item = window.sessionStorage.getItem("updated_list");
     return item ? JSON.parse(item) : loaded;
@@ -98,7 +99,7 @@ const EditListPage = () => {
           title="Columns"
           blurb="Blurb about columns for a list."
           content={
-            <ColumnsBlock
+            <ColumnsContent
               columns={updated.columns}
               onColumnsChanged={(columns) => update("columns", columns)}
             />
@@ -109,7 +110,7 @@ const EditListPage = () => {
           title="Statuses"
           blurb="Blurb about statuses for an item."
           content={
-            <StatusesBlock
+            <StatusesContent
               statuses={updated.statuses}
               onStatusesChanged={(statuses) => update("statuses", statuses)}
             />

@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
 public class GetListItemsByListIdQuery : RequestBase<GetListItemsByListIdResponse>

@@ -36,21 +36,21 @@ public class GetListByIdQueryHandler : IRequestHandler<GetListItemsByListIdQuery
         sql += request.PageSize is not null
             ? " LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();"
             : "; SELECT FOUND_ROWS();";
-        
+
         var parameters = new
         {
             listId = request.ListId,
             pageSize = request.PageSize,
             offset = request.Page * request.PageSize
         };
-        
+
         var template = builder.AddTemplate(sql, parameters);
 
         var orderBy = request.Field is not null
             ? $"JSON_EXTRACT(i.Bag, '$.{request.Field}') {request.Sort}"
             : "i.Id asc";
         builder.OrderBy(orderBy);
-        
+
         var connection = _dbContext.Database.GetDbConnection();
         var multi = await connection.QueryMultipleAsync(template.RawSql, template.Parameters);
 

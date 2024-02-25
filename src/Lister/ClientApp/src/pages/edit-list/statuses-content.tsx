@@ -23,7 +23,7 @@ interface Props {
   onStatusesChanged: (statuses: Status[]) => void;
 }
 
-const StatusesBlock = ({ statuses, onStatusesChanged }: Props) => {
+const StatusesContent = ({ statuses, onStatusesChanged }: Props) => {
   const [statusName, setStatusName] = useState<string | null>(null);
   const [statusColor, setStatusColor] = useState(statusColors[0]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -133,4 +133,4 @@ const StatusesBlock = ({ statuses, onStatusesChanged }: Props) => {
   );
 };
 
-export default StatusesBlock;
+export default StatusesContent;

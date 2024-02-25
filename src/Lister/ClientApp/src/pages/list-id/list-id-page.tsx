@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   LoaderFunctionArgs,
   useLoaderData,
@@ -15,9 +15,10 @@ import {
 import { Paper } from "@mui/material";
 import { MoreVert, Visibility } from "@mui/icons-material";
 
-import { Column, Item, ListItemDefinition } from "../../models";
+import { Column, Item } from "../../models";
 import { Loading, StatusChip } from "../../components";
 import { getStatusFromName } from "../../status-fns";
+import { useListItemDefinition } from "../../hooks";
 
 export const listIdPageLoader = async ({
   request,
@@ -27,17 +28,17 @@ export const listIdPageLoader = async ({
     return null;
   }
 
-  const url = new URL(request.url);
-  const page = Number(url.searchParams.get("page") ?? "0");
-  const pageSize = Number(url.searchParams.get("pageSize") ?? "10");
-  const field = url.searchParams.get("field");
-  const sort = url.searchParams.get("sort");
+  const searchParams = new URL(request.url).searchParams;
+  const page = Number(searchParams.get("page") ?? "0");
+  const pageSize = Number(searchParams.get("pageSize") ?? "10");
+  const field = searchParams.get("field");
+  const sort = searchParams.get("sort");
 
-  let route = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
+  let url = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
   if (field && sort) {
-    route += `&field=${field}&sort=${sort}`;
+    url += `&field=${field}&sort=${sort}`;
   }
-  const getRequest = new Request(route, {
+  const getRequest = new Request(url, {
     method: "GET",
   });
 
@@ -54,25 +55,10 @@ export const listIdPageLoader = async ({
 
 const ListIdPage = () => {
   const loaded = useLoaderData() as { items: Item[]; count: number };
-  const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [listItemDefinition, setListItemDefinition] =
-    useState<ListItemDefinition | null>(null);
 
-  useEffect(() => {
-    const request = new Request(`/api/lists/${params.listId}/itemDefinition`, {
-      method: "GET",
-    });
-
-    const fetchData = async () => {
-      const response = await fetch(request);
-      const data = await response.json();
-
-      setListItemDefinition(data);
-    };
-
-    fetchData();
-  }, [params.listId]);
+  const params = useParams();
+  const { listItemDefinition, loading } = useListItemDefinition(params.listId);
 
   const gridColDefs: GridColDef[] = useMemo(() => {
     if (!listItemDefinition) {
@@ -156,7 +142,9 @@ const ListIdPage = () => {
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
-  return listItemDefinition ? (
+  return loading ? (
+    <Loading />
+  ) : (
     <Paper>
       <DataGrid
         columns={gridColDefs}
@@ -175,8 +163,6 @@ const ListIdPage = () => {
         disableRowSelectionOnClick
       />
     </Paper>
-  ) : (
-    <Loading />
   );
 };
 

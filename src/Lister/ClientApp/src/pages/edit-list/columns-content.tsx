@@ -25,7 +25,7 @@ interface Props {
   onColumnsChanged: (columns: Column[]) => void;
 }
 
-const ColumnsBlock = ({ columns, onColumnsChanged }: Props) => {
+const ColumnsContent = ({ columns, onColumnsChanged }: Props) => {
   const [columnName, setColumnName] = useState<string | null>(null);
   const [columnType, setColumnType] = useState<ColumnType | null>(null);
 
@@ -123,4 +123,4 @@ const ColumnsBlock = ({ columns, onColumnsChanged }: Props) => {
   );
 };
 
-export default ColumnsBlock;
+export default ColumnsContent;

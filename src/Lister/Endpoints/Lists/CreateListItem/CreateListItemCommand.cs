@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Lister.Core.ValueObjects;
-using MediatR;
 using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.CreateListItem;

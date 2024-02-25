@@ -1,55 +1,31 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
-  LoaderFunctionArgs,
   redirect,
   useLoaderData,
+  useParams,
   useSubmit,
 } from "react-router-dom";
 
-import { Item, ListItemDefinition } from "../../models";
-import { FormBlock, FormHeader, StatusChip } from "../../components";
-import { getStatusFromName } from "../../status-fns";
+import { Item } from "../../models";
+import { FormBlock, FormHeader, Loading } from "../../components";
+import { useListItemDefinition } from "../../hooks";
 
-const defaultListItem = {
+import StatusesContent from "./statuses-content";
+import ColumnContent from "./column-content";
+
+const defaultListItem: Item = {
+  id: null,
+  listId: null,
+  serialNumber: null,
   bag: {},
 };
 
-export const editListItemPageLoader = async ({
-  params,
-}: LoaderFunctionArgs) => {
-  if (!params.listId) {
-    return null;
-  }
-
-  const getRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/lists/${params.listId}/itemDefinition`,
-    {
-      method: "GET",
-    }
-  );
-  const response = await fetch(getRequest);
-  if (response.status === 401) {
-    return null;
-  }
-  if (response.status === 404) {
-    return null;
-  }
-  const listItemDefinition = await response.json();
-  return { listItemDefinition, defaultListItem };
+export const editListItemPageLoader = async () => {
+  const retval = defaultListItem;
+  return retval;
 };
 
 export const editListItemPageAction = async ({
@@ -75,14 +51,15 @@ export const editListItemPageAction = async ({
 };
 
 const EditListItemPage = () => {
-  const loaded = useLoaderData() as {
-    listItemDefinition: ListItemDefinition;
-    defaultListItem: Item;
-  };
+  const loaded = useLoaderData() as Item;
   const submit = useSubmit();
+
+  const params = useParams();
+  const { listItemDefinition, loading } = useListItemDefinition(params.listId);
+
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem("updated_item");
-    return item ? JSON.parse(item) : loaded.defaultListItem;
+    return item ? JSON.parse(item) : loaded;
   });
 
   useEffect(() => {
@@ -108,68 +85,38 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
-  const columnContent = (
-    <Stack spacing={2}>
-      {loaded.listItemDefinition.columns.map((column) => {
-        return (
-          <TextField
-            key={column.name}
-            label={column.name}
-            value={updated.bag[column.property!] ?? ""}
-            onChange={(e) => update(column.property!, e.target.value)}
-          />
-        );
-      })}
-    </Stack>
-  );
-
-  const statusesContent = (
-    <Stack spacing={2}>
-      <FormControl variant="outlined" margin="normal" fullWidth>
-        <InputLabel htmlFor="status">Status</InputLabel>
-        <Select
-          name="status"
-          id="status"
-          label="Status"
-          renderValue={(value) => (
-            <StatusChip
-              status={getStatusFromName(
-                loaded.listItemDefinition.statuses,
-                value
-              )}
-            />
-          )}
-          value={updated.bag.status ?? ""}
-          onChange={(event) => update("status", event.target.value)}
-        >
-          {loaded.listItemDefinition.statuses.map((status) => (
-            <MenuItem key={status.name} value={status.name}>
-              {status.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Stack>
-  );
-
-  return (
+  return loading || listItemDefinition == null ? (
+    <Loading />
+  ) : (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
           currentHeader="Create an Item"
-          previousHeader={loaded.listItemDefinition.name}
+          previousHeader={listItemDefinition.name}
         />
 
         <FormBlock
           title="Columns"
           blurb="Blurb about columns for an item."
-          content={<Stack spacing={2}>{columnContent}</Stack>}
+          content={
+            <ColumnContent
+              listItemDefinition={listItemDefinition}
+              item={updated}
+              onItemUpdated={update}
+            />
+          }
         />
 
         <FormBlock
           title="Status"
           blurb="Blurb about a status for an item."
-          content={statusesContent}
+          content={
+            <StatusesContent
+              listItemDefinition={listItemDefinition}
+              item={updated}
+              onItemUpdated={update}
+            />
+          }
         />
 
         <Box
