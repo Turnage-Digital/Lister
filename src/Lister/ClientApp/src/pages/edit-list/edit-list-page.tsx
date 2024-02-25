@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { Box, Button, Container, Divider, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import {
@@ -51,7 +51,14 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 const EditListPage = () => {
   const loaded = useLoaderData() as ListItemDefinition;
   const submit = useSubmit();
-  const [updated, setUpdated] = useState<ListItemDefinition>(loaded);
+  const [updated, setUpdated] = useState<ListItemDefinition>(() => {
+    const item = window.sessionStorage.getItem("updated_list");
+    return item ? JSON.parse(item) : loaded;
+  });
+
+  useEffect(() => {
+    window.sessionStorage.setItem("updated_list", JSON.stringify(updated));
+  }, [updated]);
 
   const update = (key: keyof ListItemDefinition, value: any) => {
     setUpdated((prev) => ({ ...prev, [key]: value }));
@@ -67,6 +74,8 @@ const EditListPage = () => {
     submit(data, {
       method: "post",
     });
+
+    window.sessionStorage.removeItem("updated_list");
   };
 
   return (
