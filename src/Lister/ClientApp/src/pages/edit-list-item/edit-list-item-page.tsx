@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -80,7 +80,14 @@ const EditListItemPage = () => {
     defaultListItem: Item;
   };
   const submit = useSubmit();
-  const [updated, setUpdated] = useState<Item>(loaded.defaultListItem);
+  const [updated, setUpdated] = useState<Item>(() => {
+    const item = window.sessionStorage.getItem("updated_item");
+    return item ? JSON.parse(item) : loaded.defaultListItem;
+  });
+
+  useEffect(() => {
+    window.sessionStorage.setItem("updated_item", JSON.stringify(updated));
+  }, [updated]);
 
   const update = (key: string, value: any) => {
     const newBag = { ...updated.bag, [key]: value };
@@ -97,6 +104,8 @@ const EditListItemPage = () => {
     submit(data, {
       method: "post",
     });
+
+    window.sessionStorage.removeItem("updated_item");
   };
 
   const columnContent = (

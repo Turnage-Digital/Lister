@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.CreateListItem;
 
-public class CreateListItemCommand : IRequest<Item>
+public class CreateListItemCommand : RequestBase<Item>
 {
     [JsonIgnore]
     public string? CreatedBy { get; set; }

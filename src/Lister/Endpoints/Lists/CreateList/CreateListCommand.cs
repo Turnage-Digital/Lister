@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Lister.Core;
 using Lister.Core.ValueObjects;
-using MediatR;
 using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.CreateList;
 
-public class CreateListCommand<TList> : IRequest<TList>
+public class CreateListCommand<TList> : RequestBase<TList>
     where TList : IReadOnlyList
 {
     [JsonIgnore]

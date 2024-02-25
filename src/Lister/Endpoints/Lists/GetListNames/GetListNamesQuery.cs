@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Lister.Endpoints.Lists.GetListNames;
 
-public class GetListNamesQuery<TList> : IRequest<TList[]>
+public class GetListNamesQuery<TList> : RequestBase<TList[]>
     where TList : IReadOnlyList
 {
     public GetListNamesQuery(string userId)

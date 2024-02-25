@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Lamar.Microsoft.DependencyInjection;
 using Lister.Core.SqlDB;
 using Lister.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -35,6 +36,9 @@ internal static class HostingExtensions
 
             registry.AddMediatR(config =>
                 config.RegisterServicesFromAssembly(typeof(HostingExtensions).Assembly));
+
+            registry.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(LoggingBehavior<,>));
 
             registry.Configure<JsonOptions>(options =>
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -86,7 +90,8 @@ internal static class HostingExtensions
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
-            SeedData.EnsureSeedData(app);
+
+            // SeedData.EnsureSeedData(app);
         }
         else
         {

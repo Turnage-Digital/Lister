@@ -7,8 +7,8 @@ import {
   EditListPage,
   editListPageAction,
   editListPageLoader,
-  IdPage,
-  idPageLoader,
+  ListIdPage,
+  listIdPageLoader,
   ListsPage,
   listsPageLoader,
   Root,
@@ -31,8 +31,8 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/:listId",
-            Component: IdPage,
-            loader: idPageLoader,
+            Component: ListIdPage,
+            loader: listIdPageLoader,
           },
         ],
       },

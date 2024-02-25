@@ -26,6 +26,7 @@ internal static class SeedData
         {
             CreateUser(userManager, "heath", "heath@email.com", "Pass123$", "Heath Turnage",
                 "Heath", "Turnage", "https://thingman.com");
+            heath = userManager.FindByNameAsync("heath").Result;
         }
         else
         {
@@ -162,12 +163,12 @@ internal static class SeedData
 
             listAggregate.CreateItemAsync(list, new
                 {
-                    city = "?",
+                    city = "New York",
                     name = "Trevor",
-                    state = "?",
+                    state = "NY",
                     status = "Inactive",
                     address = "Unknown",
-                    zipCode = "?",
+                    zipCode = "10001",
                     dateOfBirth = "1/1/1970"
                 }
             ).Wait();

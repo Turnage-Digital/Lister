@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
-public class GetListItemsByListIdQuery : IRequest<GetListItemsByListIdResponse>
+public class GetListItemsByListIdQuery : RequestBase<GetListItemsByListIdResponse>
 {
     public GetListItemsByListIdQuery(
         string userId,

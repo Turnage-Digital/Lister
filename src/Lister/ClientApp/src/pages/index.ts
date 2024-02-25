@@ -10,7 +10,7 @@ export {
   editListItemPageAction,
 } from "./edit-list-item";
 
-export { IdPage, idPageLoader } from "./id";
+export { ListIdPage, listIdPageLoader } from "./list-id";
 
 export { ListsPage, listsPageLoader } from "./lists";
 

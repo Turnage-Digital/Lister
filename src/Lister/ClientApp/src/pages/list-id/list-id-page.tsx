@@ -7,17 +7,22 @@ import {
 } from "react-router-dom";
 import {
   DataGrid,
+  GridActionsCellItem,
   GridColDef,
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
 import { Paper } from "@mui/material";
+import { MoreVert, Visibility } from "@mui/icons-material";
 
-import { Column, Item, ListItemDefinition, Status } from "../../models";
+import { Column, Item, ListItemDefinition } from "../../models";
 import { Loading, StatusChip } from "../../components";
 import { getStatusFromName } from "../../status-fns";
 
-export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
+export const listIdPageLoader = async ({
+  request,
+  params,
+}: LoaderFunctionArgs) => {
   if (!params.listId) {
     return null;
   }
@@ -47,7 +52,7 @@ export const idPageLoader = async ({ request, params }: LoaderFunctionArgs) => {
   return retval;
 };
 
-const IdPage = () => {
+const ListIdPage = () => {
   const loaded = useLoaderData() as { items: Item[]; count: number };
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,13 +91,33 @@ const IdPage = () => {
       field: "status",
       headerName: "Status",
       width: 150,
-      disableColumnMenu: true,
-      sortable: false,
       renderCell: (params) => (
         <StatusChip
           status={getStatusFromName(listItemDefinition.statuses, params.value)}
         />
       ),
+    });
+
+    retval.push({
+      field: "actions",
+      type: "actions",
+      headerName: "",
+      width: 100,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            key={`${id}-view`}
+            icon={<Visibility />}
+            label="View"
+          />,
+          <GridActionsCellItem
+            key={`${id}-delete`}
+            icon={<MoreVert />}
+            label="Delete"
+          />,
+        ];
+      },
     });
 
     return retval;
@@ -128,6 +153,9 @@ const IdPage = () => {
     ...item.bag,
   }));
 
+  const pagination = getPaginationFromSearchParams(searchParams);
+  const sort = getSortFromSearchParams(searchParams);
+
   return listItemDefinition ? (
     <Paper>
       <DataGrid
@@ -136,11 +164,11 @@ const IdPage = () => {
         getRowId={(row) => row.id}
         rowCount={loaded.count}
         paginationMode="server"
-        paginationModel={getPaginationFromSearchParams(searchParams)}
+        paginationModel={pagination}
         pageSizeOptions={[10, 25, 50]}
         onPaginationModelChange={handlePaginationChange}
         sortingMode="server"
-        sortModel={getSortFromSearchParams(searchParams)}
+        sortModel={sort}
         onSortModelChange={handleSortChange}
         disableColumnFilter
         disableColumnSelector
@@ -174,4 +202,4 @@ const getSortFromSearchParams = (
   return [{ field, sort }];
 };
 
-export default IdPage;
+export default ListIdPage;
