@@ -1,10 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  Outlet,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import React from "react";
+import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
 
 import { ListName } from "../../models";
@@ -25,36 +20,22 @@ export const listsPageLoader = async () => {
 
 const ListsPage = () => {
   const loaded = useLoaderData() as ListName[];
-  const params = useParams();
   const navigate = useNavigate();
-
-  const selectedListName = loaded.find((list) => list.id === params.listId);
-
-  useEffect(() => {
-    if (!selectedListName && loaded.length > 0) {
-      navigate(`/${loaded[0].id}`);
-    }
-  }, [loaded, navigate, selectedListName]);
 
   const handleSelectedListChanged = (listName: ListName) => {
     navigate(`/${listName.id}`);
   };
 
-  const content = selectedListName ? (
+  return (
     <Stack spacing={4} sx={{ px: 2, py: 4 }}>
       <ListsPageToolbar
         listNames={loaded}
-        selectedListName={selectedListName}
         onSelectedListNameChanged={handleSelectedListChanged}
       />
 
       <Outlet />
     </Stack>
-  ) : (
-    <></>
   );
-
-  return <>{content}</>;
 };
 
 export default ListsPage;

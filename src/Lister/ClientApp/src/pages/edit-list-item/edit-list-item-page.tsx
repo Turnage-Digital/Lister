@@ -3,15 +3,14 @@ import { Box, Button, Container, Divider, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
+  LoaderFunctionArgs,
   redirect,
   useLoaderData,
-  useParams,
   useSubmit,
 } from "react-router-dom";
 
-import { Item } from "../../models";
-import { FormBlock, FormHeader, Loading } from "../../components";
-import { useListItemDefinition } from "../../hooks";
+import { Item, ListItemDefinition } from "../../models";
+import { FormBlock, FormHeader } from "../../components";
 
 import StatusesContent from "./statuses-content";
 import ColumnContent from "./column-content";
@@ -23,9 +22,28 @@ const defaultListItem: Item = {
   bag: {},
 };
 
-export const editListItemPageLoader = async () => {
-  const retval = defaultListItem;
-  return retval;
+export const editListItemPageLoader = async ({
+  params,
+}: LoaderFunctionArgs) => {
+  if (!params.listId) {
+    return null;
+  }
+
+  const getRequest = new Request(
+    `${process.env.PUBLIC_URL}/api/lists/${params.listId}/itemDefinition`,
+    {
+      method: "GET",
+    }
+  );
+  const response = await fetch(getRequest);
+  if (response.status === 401) {
+    return null;
+  }
+  if (response.status === 404) {
+    return null;
+  }
+  const listItemDefinition = await response.json();
+  return { listItemDefinition, defaultListItem };
 };
 
 export const editListItemPageAction = async ({
@@ -51,15 +69,15 @@ export const editListItemPageAction = async ({
 };
 
 const EditListItemPage = () => {
-  const loaded = useLoaderData() as Item;
+  const loaded = useLoaderData() as {
+    listItemDefinition: ListItemDefinition;
+    defaultListItem: Item;
+  };
   const submit = useSubmit();
-
-  const params = useParams();
-  const { listItemDefinition, loading } = useListItemDefinition(params.listId);
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem("updated_item");
-    return item ? JSON.parse(item) : loaded;
+    return item ? JSON.parse(item) : loaded.defaultListItem;
   });
 
   useEffect(() => {
@@ -85,14 +103,12 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
-  return loading || listItemDefinition == null ? (
-    <Loading />
-  ) : (
+  return loaded.listItemDefinition ? (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
           currentHeader="Create an Item"
-          previousHeader={listItemDefinition.name}
+          previousHeader={loaded.listItemDefinition.name}
         />
 
         <FormBlock
@@ -100,7 +116,7 @@ const EditListItemPage = () => {
           blurb="Blurb about columns for an item."
           content={
             <ColumnContent
-              listItemDefinition={listItemDefinition}
+              listItemDefinition={loaded.listItemDefinition}
               item={updated}
               onItemUpdated={update}
             />
@@ -112,7 +128,7 @@ const EditListItemPage = () => {
           blurb="Blurb about a status for an item."
           content={
             <StatusesContent
-              listItemDefinition={listItemDefinition}
+              listItemDefinition={loaded.listItemDefinition}
               item={updated}
               onItemUpdated={update}
             />
@@ -137,7 +153,7 @@ const EditListItemPage = () => {
         </Box>
       </Stack>
     </Container>
-  );
+  ) : null;
 };
 
 export default EditListItemPage;

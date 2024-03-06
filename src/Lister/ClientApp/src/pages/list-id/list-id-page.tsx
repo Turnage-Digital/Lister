@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import {
   LoaderFunctionArgs,
   useLoaderData,
+  useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
@@ -15,10 +16,9 @@ import {
 import { Paper } from "@mui/material";
 import { MoreVert, Visibility } from "@mui/icons-material";
 
-import { Column, Item } from "../../models";
-import { Loading, StatusChip } from "../../components";
+import { Column, Item, ListItemDefinition } from "../../models";
+import { StatusChip } from "../../components";
 import { getStatusFromName } from "../../status-fns";
-import { useListItemDefinition } from "../../hooks";
 
 export const listIdPageLoader = async ({
   request,
@@ -34,38 +34,37 @@ export const listIdPageLoader = async ({
   const field = searchParams.get("field");
   const sort = searchParams.get("sort");
 
-  let url = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
+  let getItemsUrl = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
   if (field && sort) {
-    url += `&field=${field}&sort=${sort}`;
+    getItemsUrl += `&field=${field}&sort=${sort}`;
   }
-  const getRequest = new Request(url, {
-    method: "GET",
-  });
 
-  const response = await fetch(getRequest);
-  if (response.status === 401) {
-    return null;
-  }
-  if (response.status === 404) {
-    return null;
-  }
-  const retval = await response.json();
-  return retval;
+  const [listItemDefinitionResponse, itemsResponse] = await Promise.all([
+    fetch(`/api/lists/${params.listId}/itemDefinition`),
+    fetch(getItemsUrl),
+  ]);
+
+  const listItemDefinition = await listItemDefinitionResponse.json();
+  const data = await itemsResponse.json();
+
+  return { listItemDefinition, data };
 };
 
 const ListIdPage = () => {
-  const loaded = useLoaderData() as { items: Item[]; count: number };
-  const [searchParams, setSearchParams] = useSearchParams();
+  const loaded = useLoaderData() as {
+    listItemDefinition: ListItemDefinition;
+    data: { items: Item[]; count: number };
+  };
 
   const params = useParams();
-  const { listItemDefinition, loading } = useListItemDefinition(params.listId);
+  const navigate = useNavigate();
 
   const gridColDefs: GridColDef[] = useMemo(() => {
-    if (!listItemDefinition) {
+    if (!loaded.listItemDefinition) {
       return [];
     }
 
-    const retval: GridColDef[] = listItemDefinition.columns.map(
+    const retval: GridColDef[] = loaded.listItemDefinition.columns.map(
       (column: Column) => ({
         field: column.property!,
         headerName: column.name,
@@ -79,7 +78,10 @@ const ListIdPage = () => {
       width: 150,
       renderCell: (params) => (
         <StatusChip
-          status={getStatusFromName(listItemDefinition.statuses, params.value)}
+          status={getStatusFromName(
+            loaded.listItemDefinition.statuses,
+            params.value
+          )}
         />
       ),
     });
@@ -96,6 +98,7 @@ const ListIdPage = () => {
             key={`${id}-view`}
             icon={<Visibility />}
             label="View"
+            onClick={() => navigate(`/${params.listId}/items/${id}`)}
           />,
           <GridActionsCellItem
             key={`${id}-delete`}
@@ -107,7 +110,11 @@ const ListIdPage = () => {
     });
 
     return retval;
-  }, [listItemDefinition]);
+  }, [loaded.listItemDefinition, navigate, params]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pagination = getPaginationFromSearchParams(searchParams);
+  const sort = getSortFromSearchParams(searchParams);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
@@ -134,23 +141,18 @@ const ListIdPage = () => {
     setSearchParams(searchParams);
   };
 
-  const rows = loaded.items.map((item) => ({
+  const rows = loaded.data.items.map((item: Item) => ({
     id: item.id,
     ...item.bag,
   }));
 
-  const pagination = getPaginationFromSearchParams(searchParams);
-  const sort = getSortFromSearchParams(searchParams);
-
-  return loading ? (
-    <Loading />
-  ) : (
+  return (
     <Paper>
       <DataGrid
         columns={gridColDefs}
         rows={rows}
         getRowId={(row) => row.id}
-        rowCount={loaded.count}
+        rowCount={loaded.data.count}
         paginationMode="server"
         paginationModel={pagination}
         pageSizeOptions={[10, 25, 50]}

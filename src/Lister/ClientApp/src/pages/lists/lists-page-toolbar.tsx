@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useEffect } from "react";
 import {
   Box,
   Button,
@@ -13,22 +13,26 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { AddCircle, ExpandCircleDown, PlaylistAdd } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { ListName } from "../../models";
 
 interface Props {
   listNames: ListName[];
-  selectedListName: ListName;
   onSelectedListNameChanged: (list: ListName) => void;
 }
 
-const ListsPageToolbar = ({
-  listNames,
-  selectedListName,
-  onSelectedListNameChanged,
-}: Props) => {
+const ListsPageToolbar = ({ listNames, onSelectedListNameChanged }: Props) => {
+  const params = useParams();
   const navigate = useNavigate();
+
+  const selectedListName = listNames.find((list) => list.id === params.listId);
+
+  useEffect(() => {
+    if (!selectedListName && listNames.length > 0) {
+      navigate(`/${listNames[0].id}`);
+    }
+  }, [listNames, navigate, selectedListName]);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -46,7 +50,7 @@ const ListsPageToolbar = ({
     setAnchorEl(null);
   };
 
-  return (
+  return selectedListName ? (
     <Box alignItems="center" sx={{ display: "flex" }}>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
@@ -110,7 +114,7 @@ const ListsPageToolbar = ({
         </Box>
       </Hidden>
     </Box>
-  );
+  ) : null;
 };
 
 export default ListsPageToolbar;
