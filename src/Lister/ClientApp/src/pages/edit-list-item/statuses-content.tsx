@@ -29,6 +29,9 @@ const StatusesContent = ({
         name="status"
         id="status"
         label="Status"
+        sx={{
+          background: "white",
+        }}
         renderValue={(value) => (
           <StatusChip
             status={getStatusFromName(listItemDefinition.statuses, value)}

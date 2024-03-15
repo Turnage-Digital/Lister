@@ -21,13 +21,13 @@ public class GetListItemsByListIdController : Controller
         _mediator = mediator;
     }
 
-    [HttpGet("{id}/items")]
+    [HttpGet("{listId}/items")]
     [ProducesResponseType(typeof(Item[]), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Get(
-        string id,
+        string listId,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
         [FromQuery] string? field,
@@ -36,7 +36,7 @@ public class GetListItemsByListIdController : Controller
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var userId = identity.GetUserId();
-        GetListItemsByListIdQuery query = new(userId, id, page, pageSize, field, sort);
+        GetListItemsByListIdQuery query = new(userId, listId, page, pageSize, field, sort);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

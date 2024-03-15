@@ -7,11 +7,11 @@ using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.GetListItemsByListId;
 
-public class GetListByIdQueryHandler : IRequestHandler<GetListItemsByListIdQuery, GetListItemsByListIdResponse>
+public class GetListItemsByListIdQueryHandler : IRequestHandler<GetListItemsByListIdQuery, GetListItemsByListIdResponse>
 {
     private readonly ListerDbContext _dbContext;
 
-    public GetListByIdQueryHandler(ListerDbContext dbContext)
+    public GetListItemsByListIdQueryHandler(ListerDbContext dbContext)
     {
         _dbContext = dbContext;
     }

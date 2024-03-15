@@ -43,10 +43,6 @@
         <ProjectReference Include="..\Lister.Domain\Lister.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Endpoints\Lists\GetListItemById\"/>
-    </ItemGroup>
-
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
         <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>

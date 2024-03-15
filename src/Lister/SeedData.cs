@@ -109,7 +109,9 @@ internal static class SeedData
                     status = "Active",
                     address = "100 Maple Lane",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -121,7 +123,9 @@ internal static class SeedData
                     status = "Active",
                     address = "101 Sunnyvale Lane",
                     zipCode = "34707",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -133,7 +137,9 @@ internal static class SeedData
                     status = "Active",
                     address = "The Shed",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -145,7 +151,9 @@ internal static class SeedData
                     status = "Active",
                     address = "202 No Way",
                     zipCode = "29212",
-                    dateOfBirth = "2/2/1945"
+                    dateOfBirth = DateTime.Parse("2/1/1945")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -157,7 +165,9 @@ internal static class SeedData
                     status = "Inactive",
                     address = "The Dump",
                     zipCode = "29212",
-                    dateOfBirth = "1/1/1950"
+                    dateOfBirth = DateTime.Parse("1/1/1950")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -169,7 +179,9 @@ internal static class SeedData
                     status = "Inactive",
                     address = "Unknown",
                     zipCode = "10001",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -181,7 +193,9 @@ internal static class SeedData
                     status = "Active",
                     address = "101 Other Way",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -193,7 +207,9 @@ internal static class SeedData
                     status = "Inactive",
                     address = "100 Maple Lane",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -205,7 +221,9 @@ internal static class SeedData
                     status = "Active",
                     address = "100 Maple Lane",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1970"
+                    dateOfBirth = DateTime.Parse("1/1/1970")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
 
@@ -217,7 +235,9 @@ internal static class SeedData
                     status = "Active",
                     address = "100 Maple Lane",
                     zipCode = "34609",
-                    dateOfBirth = "1/1/1980"
+                    dateOfBirth = DateTime.Parse("1/1/1990")
+                        .ToUniversalTime()
+                        .ToString("O")
                 }
             ).Wait();
         }
@@ -262,6 +282,14 @@ internal static class SeedData
         }
 
         Log.Debug($"{userName} created");
+    }
+    
+    private static long GetJavascriptTimestamp(string dateTime)
+    {
+        var parsed = DateTime.Parse(dateTime);
+        var retval = (long)(parsed - new DateTime(1970, 1, 1))
+            .TotalMilliseconds;
+        return retval;
     }
 
     private static class JwtClaimTypes

@@ -65,11 +65,22 @@ const ListIdPage = () => {
     }
 
     const retval: GridColDef[] = loaded.listItemDefinition.columns.map(
-      (column: Column) => ({
-        field: column.property!,
-        headerName: column.name,
-        flex: 1,
-      })
+      (column: Column) => {
+        const retval: GridColDef = {
+          field: column.property!,
+          headerName: column.name,
+          flex: 1,
+        };
+
+        if (column.type === "Date") {
+          retval.valueFormatter = (params) => {
+            const date = new Date(params.value);
+            const retval = date.toLocaleDateString();
+            return retval;
+          };
+        }
+        return retval;
+      }
     );
 
     retval.push({

@@ -10,6 +10,7 @@ import {
   ListIdPage,
   listIdPageLoader,
   ListItemIdPage,
+  listItemIdPageLoader,
   ListsPage,
   listsPageLoader,
   Root,
@@ -50,8 +51,9 @@ const router = createBrowserRouter([
         action: editListItemPageAction,
       },
       {
-        path: "/:listId/items/:listItemId",
+        path: "/:listId/items/:itemId",
         Component: ListItemIdPage,
+        loader: listItemIdPageLoader,
       },
     ],
   },

@@ -56,6 +56,9 @@ const ColumnsContent = ({ columns, onColumnsChanged }: Props) => {
           label="Name"
           margin="normal"
           fullWidth
+          sx={{
+            background: "white",
+          }}
           value={columnName ?? ""}
           onChange={(event) => setColumnName(event.target.value)}
         />
@@ -66,6 +69,9 @@ const ColumnsContent = ({ columns, onColumnsChanged }: Props) => {
             name="type"
             id="type"
             label="Type"
+            sx={{
+              background: "white",
+            }}
             value={columnType ?? ""}
             onChange={(event) =>
               setColumnType(event.target.value as ColumnType)

@@ -29,20 +29,10 @@ export const editListItemPageLoader = async ({
     return null;
   }
 
-  const getRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/lists/${params.listId}/itemDefinition`,
-    {
-      method: "GET",
-    }
+  const getListItemDefinitionResponse = await fetch(
+    `${process.env.PUBLIC_URL}/api/lists/${params.listId}/itemDefinition`
   );
-  const response = await fetch(getRequest);
-  if (response.status === 401) {
-    return null;
-  }
-  if (response.status === 404) {
-    return null;
-  }
-  const listItemDefinition = await response.json();
+  const listItemDefinition = await getListItemDefinitionResponse.json();
   return { listItemDefinition, defaultListItem };
 };
 

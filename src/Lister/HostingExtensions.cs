@@ -91,7 +91,7 @@ internal static class HostingExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // SeedData.EnsureSeedData(app);
+            SeedData.EnsureSeedData(app);
         }
         else
         {

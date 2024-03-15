@@ -72,6 +72,9 @@ const StatusesContent = ({ statuses, onStatusesChanged }: Props) => {
               name="statusName"
               type="text"
               label="Status"
+              sx={{
+                background: "white",
+              }}
               value={statusName ?? ""}
               onChange={(event) => setStatusName(event.target.value)}
               endAdornment={

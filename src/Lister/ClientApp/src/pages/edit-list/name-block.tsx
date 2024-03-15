@@ -16,6 +16,9 @@ const NameBlock = ({ name, onNameChanged }: Props) => {
         margin="normal"
         required
         fullWidth
+        sx={{
+          background: "white",
+        }}
         value={name ?? ""}
         onChange={(event) => {
           onNameChanged(event.target.value);
