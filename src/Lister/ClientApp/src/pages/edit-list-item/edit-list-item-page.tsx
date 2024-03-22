@@ -59,7 +59,7 @@ export const editListItemPageAction = async ({
 };
 
 const EditListItemPage = () => {
-  const loaded = useLoaderData() as {
+  const { listItemDefinition, defaultListItem } = useLoaderData() as {
     listItemDefinition: ListItemDefinition;
     defaultListItem: Item;
   };
@@ -67,7 +67,7 @@ const EditListItemPage = () => {
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem("updated_item");
-    return item ? JSON.parse(item) : loaded.defaultListItem;
+    return item ? JSON.parse(item) : defaultListItem;
   });
 
   useEffect(() => {
@@ -93,12 +93,13 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
-  return loaded.listItemDefinition ? (
+  return listItemDefinition ? (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
-          currentHeader="Create an Item"
-          previousHeader={loaded.listItemDefinition.name}
+          header={`${listItemDefinition.name} - Create an Item`}
+          currentRoute="Create"
+          previousRoute="List"
         />
 
         <FormBlock
@@ -106,7 +107,7 @@ const EditListItemPage = () => {
           blurb="Blurb about columns for an item."
           content={
             <ColumnContent
-              listItemDefinition={loaded.listItemDefinition}
+              listItemDefinition={listItemDefinition}
               item={updated}
               onItemUpdated={update}
             />
@@ -118,7 +119,7 @@ const EditListItemPage = () => {
           blurb="Blurb about a status for an item."
           content={
             <StatusesContent
-              listItemDefinition={loaded.listItemDefinition}
+              listItemDefinition={listItemDefinition}
               item={updated}
               onItemUpdated={update}
             />

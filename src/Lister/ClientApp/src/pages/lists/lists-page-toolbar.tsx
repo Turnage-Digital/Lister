@@ -51,69 +51,49 @@ const ListsPageToolbar = ({ listNames, onSelectedListNameChanged }: Props) => {
   };
 
   return selectedListName ? (
-    <Box alignItems="center" sx={{ display: "flex" }}>
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container direction="row" alignItems="center" spacing={2}>
-          <Grid>
-            <Typography
-              color="primary"
-              fontWeight="medium"
-              variant="h4"
-              component="h1"
-            >
-              {selectedListName.name}
-            </Typography>
-          </Grid>
-          <Grid>
-            <IconButton
-              color="primary"
-              size="large"
-              onClick={handleButtonClick}
-              sx={{ ml: 2 }}
-            >
-              <ExpandCircleDown />
-            </IconButton>
-          </Grid>
-        </Grid>
-
-        <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-          {listNames.map((list) => (
-            <MenuItem
-              key={list.id}
-              selected={list.id === selectedListName.id}
-              onClick={() => handleMenuItemClick(list)}
-            >
-              {list.name}
-            </MenuItem>
-          ))}
-          <Divider />
-          <MenuItem onClick={() => navigate("/create")}>
-            <ListItemIcon>
-              <PlaylistAdd fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Create a List</ListItemText>
-          </MenuItem>
-        </Menu>
-      </Box>
-
-      <Hidden mdDown>
-        <Box
-          sx={{
-            flexGrow: 2,
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<AddCircle />}
-            onClick={() => navigate(`/${selectedListName.id}/items/create`)}
+    <>
+      <Grid container direction="row" alignItems="center">
+        <Grid>
+          <Typography
+            color="primary"
+            fontWeight="medium"
+            variant="h4"
+            component="h1"
           >
-            Create an Item
-          </Button>
-        </Box>
-      </Hidden>
-    </Box>
+            {selectedListName.name}
+          </Typography>
+        </Grid>
+        <Grid>
+          <IconButton
+            color="primary"
+            size="large"
+            onClick={handleButtonClick}
+            sx={{ ml: 1 }}
+          >
+            <ExpandCircleDown />
+          </IconButton>
+        </Grid>
+      </Grid>
+
+      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+        {listNames.map((list) => (
+          <MenuItem
+            key={list.id}
+            selected={list.id === selectedListName.id}
+            onClick={() => handleMenuItemClick(list)}
+          >
+            {list.name}
+          </MenuItem>
+        ))}
+        <Divider />
+        <MenuItem onClick={() => navigate("/create")}>
+          <ListItemIcon>
+            <PlaylistAdd fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Create a List</ListItemText>
+        </MenuItem>
+      </Menu>
+    </>
   ) : null;
 };
 

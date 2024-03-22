@@ -13,8 +13,9 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { Paper } from "@mui/material";
-import { MoreVert, Visibility } from "@mui/icons-material";
+import { Box, Button, Paper } from "@mui/material";
+import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
+import Grid from "@mui/material/Unstable_Grid2";
 
 import { Column, Item, ListItemDefinition } from "../../models";
 import { StatusChip } from "../../components";
@@ -64,24 +65,34 @@ const ListIdPage = () => {
       return [];
     }
 
-    const retval: GridColDef[] = loaded.listItemDefinition.columns.map(
-      (column: Column) => {
-        const retval: GridColDef = {
-          field: column.property!,
-          headerName: column.name,
-          flex: 1,
-        };
+    const retval: GridColDef[] = [];
 
-        if (column.type === "Date") {
-          retval.valueFormatter = (params) => {
-            const date = new Date(params.value);
-            const retval = date.toLocaleDateString();
-            return retval;
-          };
-        }
-        return retval;
+    retval.push({
+      field: "id",
+      headerName: "Item #",
+      width: 100,
+      sortable: false,
+      disableColumnMenu: true,
+    });
+
+    const mapped = loaded.listItemDefinition.columns.map((column: Column) => {
+      const retval: GridColDef = {
+        field: column.property!,
+        headerName: column.name,
+        flex: 1,
+      };
+
+      if (column.type === "Date") {
+        retval.valueFormatter = (params) => {
+          const date = new Date(params.value);
+          const retval = date.toLocaleDateString();
+          return retval;
+        };
       }
-    );
+      return retval;
+    });
+
+    retval.push(...mapped);
 
     retval.push({
       field: "status",
@@ -109,12 +120,14 @@ const ListIdPage = () => {
             key={`${id}-view`}
             icon={<Visibility />}
             label="View"
+            color="primary"
             onClick={() => navigate(`/${params.listId}/items/${id}`)}
           />,
           <GridActionsCellItem
             key={`${id}-delete`}
             icon={<MoreVert />}
-            label="Delete"
+            label="More"
+            color="primary"
           />,
         ];
       },
@@ -158,24 +171,40 @@ const ListIdPage = () => {
   }));
 
   return (
-    <Paper>
-      <DataGrid
-        columns={gridColDefs}
-        rows={rows}
-        getRowId={(row) => row.id}
-        rowCount={loaded.data.count}
-        paginationMode="server"
-        paginationModel={pagination}
-        pageSizeOptions={[10, 25, 50]}
-        onPaginationModelChange={handlePaginationChange}
-        sortingMode="server"
-        sortModel={sort}
-        onSortModelChange={handleSortChange}
-        disableColumnFilter
-        disableColumnSelector
-        disableRowSelectionOnClick
-      />
-    </Paper>
+    <>
+      <Grid container direction="row" alignItems="center">
+        <Grid flex={1} />
+
+        <Grid>
+          <Button
+            variant="contained"
+            startIcon={<AddCircle />}
+            // onClick={() => navigate(`/${selectedListName.id}/items/create`)}
+          >
+            Create an Item
+          </Button>
+        </Grid>
+      </Grid>
+
+      <Paper>
+        <DataGrid
+          columns={gridColDefs}
+          rows={rows}
+          getRowId={(row) => row.id}
+          rowCount={loaded.data.count}
+          paginationMode="server"
+          paginationModel={pagination}
+          pageSizeOptions={[10, 25, 50]}
+          onPaginationModelChange={handlePaginationChange}
+          sortingMode="server"
+          sortModel={sort}
+          onSortModelChange={handleSortChange}
+          disableColumnFilter
+          disableColumnSelector
+          disableRowSelectionOnClick
+        />
+      </Paper>
+    </>
   );
 };
 

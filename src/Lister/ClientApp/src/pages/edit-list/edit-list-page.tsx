@@ -82,7 +82,11 @@ const EditListPage = () => {
   return (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <FormHeader currentHeader="Create a List" previousHeader="Lists" />
+        <FormHeader
+          header="Create a List"
+          currentRoute="Create"
+          previousRoute="List"
+        />
 
         <FormBlock
           title="Name"

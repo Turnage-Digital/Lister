@@ -4,13 +4,14 @@ import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { useLinkClickHandler, useParams } from "react-router-dom";
 
 interface Props {
-  currentHeader: string;
-  previousHeader: string;
+  header: string;
+  currentRoute: string;
+  previousRoute: string;
 }
 
-const FormHeader = ({ currentHeader, previousHeader }: Props) => {
+const FormHeader = ({ header, currentRoute, previousRoute }: Props) => {
   const params = useParams();
-  const previousUrl = params.listId ? `/${params.listId}` : "/";
+  const previousUrl = params.listId ? `/${params.listId}` : `/`;
   const handleLinkClick = useLinkClickHandler(previousUrl);
 
   return (
@@ -23,19 +24,21 @@ const FormHeader = ({ currentHeader, previousHeader }: Props) => {
           component="h1"
           gutterBottom
         >
-          {currentHeader}
+          {header}
         </Typography>
       </Grid>
+
       <Grid xs={12}>
-        <Breadcrumbs color="primary">
+        <Breadcrumbs>
           <Link
             underline="hover"
+            color="inherit"
             onClick={handleLinkClick}
             sx={{ cursor: "pointer" }}
           >
-            {previousHeader}
+            {previousRoute}
           </Link>
-          <Typography color="text.primary">Create</Typography>
+          <Typography color="text.disabled">{currentRoute}</Typography>
         </Breadcrumbs>
       </Grid>
     </Grid>

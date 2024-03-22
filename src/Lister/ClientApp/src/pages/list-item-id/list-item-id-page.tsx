@@ -1,5 +1,22 @@
 import React from "react";
-import { LoaderFunctionArgs } from "react-router-dom";
+import {
+  LoaderFunctionArgs,
+  useLinkClickHandler,
+  useLoaderData,
+  useParams,
+} from "react-router-dom";
+import {
+  Breadcrumbs,
+  Container,
+  Divider,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+
+import { FormHeader } from "../../components";
+import { Item, ListItemDefinition } from "../../models";
 
 export const listItemIdPageLoader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.listId || !params.itemId) {
@@ -20,7 +37,22 @@ export const listItemIdPageLoader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 const ListItemIdPage = () => {
-  return <div>ListItemIdPage</div>;
+  const { listItemDefinition, item } = useLoaderData() as {
+    listItemDefinition: ListItemDefinition;
+    item: Item;
+  };
+
+  return (
+    <Container>
+      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+        <FormHeader
+          header={`Item # ${item.id}`}
+          currentRoute={item.id ?? ""}
+          previousRoute="List"
+        />
+      </Stack>
+    </Container>
+  );
 };
 
 export default ListItemIdPage;
