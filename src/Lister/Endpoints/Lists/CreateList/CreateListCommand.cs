@@ -8,9 +8,6 @@ namespace Lister.Endpoints.Lists.CreateList;
 public class CreateListCommand<TList> : RequestBase<TList>
     where TList : IReadOnlyList
 {
-    [JsonIgnore]
-    public string? CreatedBy { get; set; }
-
     [JsonProperty("name")]
     [Required]
     public string Name { get; set; } = null!;

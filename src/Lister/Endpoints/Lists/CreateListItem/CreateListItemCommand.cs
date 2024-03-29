@@ -7,9 +7,6 @@ namespace Lister.Endpoints.Lists.CreateListItem;
 public class CreateListItemCommand : RequestBase<Item>
 {
     [JsonIgnore]
-    public string? CreatedBy { get; set; }
-
-    [JsonIgnore]
     public string? ListId { get; set; }
 
     [JsonProperty("bag")]

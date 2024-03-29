@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using Lister.Core.ValueObjects;
-using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +25,6 @@ public class CreateListItemController : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Post(string id, [FromBody] CreateListItemCommand command)
     {
-        var identity = (ClaimsIdentity)User.Identity!;
-        var userId = identity.GetUserId();
-        command.CreatedBy = userId;
         command.ListId = id;
         var result = await _mediator.Send(command);
         return Created($"/{id}/items/{result.Id}", result);

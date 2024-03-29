@@ -1,31 +1,31 @@
-using Lister.Core.SqlDB.Views;
+using Lister.Core.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Endpoints.Lists.CreateList;
+namespace Lister.Endpoints.Lists.ConvertTextToListItem;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class CreateListController : Controller
+public class ConvertTextToListItemController : Controller
 {
     private readonly IMediator _mediator;
 
-    public CreateListController(IMediator mediator)
+    public ConvertTextToListItemController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    [HttpPost("create")]
-    [ProducesResponseType(typeof(ListItemDefinitionView), Status201Created)]
+    [HttpPost("convert-text-to-list-item")]
+    [ProducesResponseType(typeof(Item), 200)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Post([FromBody] CreateListCommand<ListItemDefinitionView> command)
+    public async Task<IActionResult> Post([FromBody] ConvertTextToListItemCommand command)
     {
         var result = await _mediator.Send(command);
-        return Created($"/{result.Id}", result);
+        return Ok(result);
     }
 }

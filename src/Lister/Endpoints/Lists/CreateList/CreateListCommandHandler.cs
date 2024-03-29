@@ -26,13 +26,13 @@ public class CreateListCommandHandler : CreateListCommandHandler<ListItemDefinit
         CancellationToken cancellationToken = default
     )
     {
-        if (request.CreatedBy is null)
+        if (request.UserId is null)
         {
-            throw new ArgumentNullException(nameof(request), "CreatedBy is null");
+            throw new ArgumentNullException(nameof(request), "UserId is null");
         }
 
         var created = await _listAggregate.CreateAsync(
-            request.CreatedBy,
+            request.UserId,
             request.Name,
             request.Statuses,
             request.Columns,
@@ -43,12 +43,12 @@ public class CreateListCommandHandler : CreateListCommandHandler<ListItemDefinit
     }
 }
 
-public abstract class CreateListCommandHandler<TReadOnlyList>
-    : IRequestHandler<CreateListCommand<TReadOnlyList>, TReadOnlyList>
-    where TReadOnlyList : IReadOnlyList
+public abstract class CreateListCommandHandler<TList>
+    : IRequestHandler<CreateListCommand<TList>, TList>
+    where TList : IReadOnlyList
 {
-    public abstract Task<TReadOnlyList> Handle(
-        CreateListCommand<TReadOnlyList> request,
+    public abstract Task<TList> Handle(
+        CreateListCommand<TList> request,
         CancellationToken cancellationToken = default
     );
 }

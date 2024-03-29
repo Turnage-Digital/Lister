@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using Lister.Core.ValueObjects;
-using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,9 +32,7 @@ public class GetListItemsByListIdController : Controller
         [FromQuery] string? sort
     )
     {
-        var identity = (ClaimsIdentity)User.Identity!;
-        var userId = identity.GetUserId();
-        GetListItemsByListIdQuery query = new(userId, listId, page, pageSize, field, sort);
+        GetListItemsByListIdQuery query = new(listId, page, pageSize, field, sort);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

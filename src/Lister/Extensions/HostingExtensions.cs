@@ -1,16 +1,14 @@
-using System.Text.Json.Serialization;
 using Lamar.Microsoft.DependencyInjection;
 using Lister.Core.SqlDB;
-using Lister.Extensions;
+using Lister.Services.OpenAi;
 using MediatR;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
 
-namespace Lister;
+namespace Lister.Extensions;
 
 internal static class HostingExtensions
 {
@@ -31,17 +29,18 @@ internal static class HostingExtensions
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
+            // registry.Configure<JsonOptions>(options =>
+            //     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
             registry.AddCore(connectionString);
 
             registry.AddMediatR(config =>
                 config.RegisterServicesFromAssembly(typeof(HostingExtensions).Assembly));
-
+            registry.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(AssignUserBehavior<,>));
             registry.AddTransient(typeof(IPipelineBehavior<,>),
                 typeof(LoggingBehavior<,>));
-
-            registry.Configure<JsonOptions>(options =>
-                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             registry
                 .AddDefaultIdentity<IdentityUser>()
@@ -62,6 +61,10 @@ internal static class HostingExtensions
                 });
 
             registry.AddAuthorization();
+
+            registry.Configure<OpenAIOptions>(
+                builder.Configuration.GetSection("OpenAI"));
+            registry.AddHttpClient<IOpenAIService, OpenAIService>();
 
             if (builder.Environment.IsDevelopment())
             {

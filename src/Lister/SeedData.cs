@@ -283,7 +283,7 @@ internal static class SeedData
 
         Log.Debug($"{userName} created");
     }
-    
+
     private static long GetJavascriptTimestamp(string dateTime)
     {
         var parsed = DateTime.Parse(dateTime);

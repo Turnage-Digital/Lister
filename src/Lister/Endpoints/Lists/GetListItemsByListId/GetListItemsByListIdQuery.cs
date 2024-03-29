@@ -3,7 +3,6 @@ namespace Lister.Endpoints.Lists.GetListItemsByListId;
 public class GetListItemsByListIdQuery : RequestBase<GetListItemsByListIdResponse>
 {
     public GetListItemsByListIdQuery(
-        string userId,
         string listId,
         int? page,
         int? pageSize,
@@ -12,14 +11,11 @@ public class GetListItemsByListIdQuery : RequestBase<GetListItemsByListIdRespons
     )
     {
         ListId = listId;
-        UserId = userId;
         Page = page;
         PageSize = pageSize;
         Field = field;
         Sort = sort;
     }
-
-    public string UserId { get; }
 
     public string ListId { get; }
 

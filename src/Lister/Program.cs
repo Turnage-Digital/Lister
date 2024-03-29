@@ -1,4 +1,4 @@
-using Lister;
+using Lister.Extensions;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()

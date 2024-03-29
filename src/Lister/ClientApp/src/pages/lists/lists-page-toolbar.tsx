@@ -1,9 +1,7 @@
 import React, { MouseEvent, useEffect } from "react";
 import {
-  Box,
   Button,
   Divider,
-  Hidden,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -72,6 +70,16 @@ const ListsPageToolbar = ({ listNames, onSelectedListNameChanged }: Props) => {
           >
             <ExpandCircleDown />
           </IconButton>
+        </Grid>
+
+        <Grid flex={1} display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            startIcon={<AddCircle />}
+            onClick={() => navigate(`/${selectedListName.id}/items/create`)}
+          >
+            Create an Item
+          </Button>
         </Grid>
       </Grid>
 

@@ -8,12 +8,12 @@ namespace Lister.Endpoints.Lists.GetListItemById;
 public class GetListItemByIdQueryHandler : IRequestHandler<GetListItemByIdQuery, Item>
 {
     private readonly ListerDbContext _dbContext;
-    
+
     public GetListItemByIdQueryHandler(ListerDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task<Item> Handle(GetListItemByIdQuery request, CancellationToken cancellationToken)
     {
         var parsedListId = Guid.Parse(request.ListId);

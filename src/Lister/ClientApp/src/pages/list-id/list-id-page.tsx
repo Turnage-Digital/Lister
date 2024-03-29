@@ -13,9 +13,8 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { Box, Button, Paper } from "@mui/material";
-import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Paper } from "@mui/material";
+import { MoreVert, Visibility } from "@mui/icons-material";
 
 import { Column, Item, ListItemDefinition } from "../../models";
 import { StatusChip } from "../../components";
@@ -121,7 +120,7 @@ const ListIdPage = () => {
             icon={<Visibility />}
             label="View"
             color="primary"
-            onClick={() => navigate(`/${params.listId}/items/${id}`)}
+            // onClick={() => navigate(`/${params.listId}/items/${id}`)}
           />,
           <GridActionsCellItem
             key={`${id}-delete`}
@@ -134,7 +133,7 @@ const ListIdPage = () => {
     });
 
     return retval;
-  }, [loaded.listItemDefinition, navigate, params]);
+  }, [loaded.listItemDefinition]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pagination = getPaginationFromSearchParams(searchParams);
@@ -171,40 +170,24 @@ const ListIdPage = () => {
   }));
 
   return (
-    <>
-      <Grid container direction="row" alignItems="center">
-        <Grid flex={1} />
-
-        <Grid>
-          <Button
-            variant="contained"
-            startIcon={<AddCircle />}
-            // onClick={() => navigate(`/${selectedListName.id}/items/create`)}
-          >
-            Create an Item
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Paper>
-        <DataGrid
-          columns={gridColDefs}
-          rows={rows}
-          getRowId={(row) => row.id}
-          rowCount={loaded.data.count}
-          paginationMode="server"
-          paginationModel={pagination}
-          pageSizeOptions={[10, 25, 50]}
-          onPaginationModelChange={handlePaginationChange}
-          sortingMode="server"
-          sortModel={sort}
-          onSortModelChange={handleSortChange}
-          disableColumnFilter
-          disableColumnSelector
-          disableRowSelectionOnClick
-        />
-      </Paper>
-    </>
+    <Paper>
+      <DataGrid
+        columns={gridColDefs}
+        rows={rows}
+        getRowId={(row) => row.id}
+        rowCount={loaded.data.count}
+        paginationMode="server"
+        paginationModel={pagination}
+        pageSizeOptions={[10, 25, 50]}
+        onPaginationModelChange={handlePaginationChange}
+        sortingMode="server"
+        sortModel={sort}
+        onSortModelChange={handleSortChange}
+        disableColumnFilter
+        disableColumnSelector
+        disableRowSelectionOnClick
+      />
+    </Paper>
   );
 };
 

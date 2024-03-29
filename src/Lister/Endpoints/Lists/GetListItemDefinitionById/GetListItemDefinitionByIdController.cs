@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using Lister.Core.SqlDB.Views;
-using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +26,7 @@ public class GetListItemDefinitionByIdController : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Get(string id)
     {
-        var identity = (ClaimsIdentity)User.Identity!;
-        var userId = identity.GetUserId();
-        GetListItemDefinitionByIdQuery<ListItemDefinitionView> query = new(userId, id);
+        GetListItemDefinitionByIdQuery<ListItemDefinitionView> query = new(id);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }
