@@ -99,7 +99,7 @@ const EditListItemPage = () => {
         <FormHeader
           header={`${listItemDefinition.name} - Create an Item`}
           currentRoute="Create"
-          previousRoute="List"
+          previousRoute="Home"
         />
 
         <FormBlock

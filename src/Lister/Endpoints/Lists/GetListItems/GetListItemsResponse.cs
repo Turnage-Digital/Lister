@@ -1,10 +1,10 @@
 using Lister.Core.ValueObjects;
 
-namespace Lister.Endpoints.Lists.GetListItemsByListId;
+namespace Lister.Endpoints.Lists.GetListItems;
 
-public class GetListItemsByListIdResponse
+public class GetListItemsResponse
 {
-    public GetListItemsByListIdResponse(IEnumerable<Item> items, long count)
+    public GetListItemsResponse(IEnumerable<Item> items, long count)
     {
         Items = items;
         Count = count;

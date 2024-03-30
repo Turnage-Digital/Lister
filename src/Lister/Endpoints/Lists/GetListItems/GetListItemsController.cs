@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Endpoints.Lists.GetListItemsByListId;
+namespace Lister.Endpoints.Lists.GetListItems;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemsByListIdController : Controller
+public class GetListItemsController : Controller
 {
     private readonly IMediator _mediator;
 
-    public GetListItemsByListIdController(IMediator mediator)
+    public GetListItemsController(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -32,7 +32,7 @@ public class GetListItemsByListIdController : Controller
         [FromQuery] string? sort
     )
     {
-        GetListItemsByListIdQuery query = new(listId, page, pageSize, field, sort);
+        GetListItemsQuery query = new(listId, page, pageSize, field, sort);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

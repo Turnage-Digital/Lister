@@ -1,6 +1,7 @@
 using Lamar.Microsoft.DependencyInjection;
+using Lister.Behaviors;
 using Lister.Core.SqlDB;
-using Lister.Services.OpenAi;
+using Lister.Services.OpenAI;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;

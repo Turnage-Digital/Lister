@@ -5,19 +5,19 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Lister.Endpoints.Lists.GetListItemsByListId;
+namespace Lister.Endpoints.Lists.GetListItems;
 
-public class GetListItemsByListIdQueryHandler : IRequestHandler<GetListItemsByListIdQuery, GetListItemsByListIdResponse>
+public class GetListItemsQueryHandler : IRequestHandler<GetListItemsQuery, GetListItemsResponse>
 {
     private readonly ListerDbContext _dbContext;
 
-    public GetListItemsByListIdQueryHandler(ListerDbContext dbContext)
+    public GetListItemsQueryHandler(ListerDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<GetListItemsByListIdResponse> Handle(
-        GetListItemsByListIdQuery request,
+    public async Task<GetListItemsResponse> Handle(
+        GetListItemsQuery request,
         CancellationToken cancellationToken
     )
     {
@@ -62,7 +62,7 @@ public class GetListItemsByListIdQueryHandler : IRequestHandler<GetListItemsByLi
         }).ToList();
 
         var count = await multi.ReadSingleAsync<long>();
-        var retval = new GetListItemsByListIdResponse(items, count);
+        var retval = new GetListItemsResponse(items, count);
         return retval;
     }
 }

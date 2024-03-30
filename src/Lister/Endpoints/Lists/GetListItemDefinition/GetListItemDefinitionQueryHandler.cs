@@ -5,24 +5,24 @@ using Lister.Core.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Endpoints.Lists.GetListItemDefinitionById;
+namespace Lister.Endpoints.Lists.GetListItemDefinition;
 
-public class GetListItemDefinitionByIdQueryHandler
+public class GetListItemDefinitionQueryHandler
     : GetListItemDefinitionByIdQueryHandler<ListItemDefinitionView>
 {
     private readonly ListerDbContext _dbContext;
 
-    public GetListItemDefinitionByIdQueryHandler(ListerDbContext dbContext)
+    public GetListItemDefinitionQueryHandler(ListerDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
     public override async Task<ListItemDefinitionView> Handle(
-        GetListItemDefinitionByIdQuery<ListItemDefinitionView> request,
+        GetListItemDefinitionQuery<ListItemDefinitionView> request,
         CancellationToken cancellationToken
     )
     {
-        var parsed = Guid.Parse(request.Id);
+        var parsed = Guid.Parse(request.ListId);
         var retval = await _dbContext.Lists
             .Where(list => list.CreatedBy == request.UserId)
             .Where(list => list.Id == parsed)
@@ -50,11 +50,11 @@ public class GetListItemDefinitionByIdQueryHandler
 }
 
 public abstract class GetListItemDefinitionByIdQueryHandler<TList>
-    : IRequestHandler<GetListItemDefinitionByIdQuery<TList>, TList>
+    : IRequestHandler<GetListItemDefinitionQuery<TList>, TList>
     where TList : IReadOnlyList
 {
     public abstract Task<TList> Handle(
-        GetListItemDefinitionByIdQuery<TList> request,
+        GetListItemDefinitionQuery<TList> request,
         CancellationToken cancellationToken
     );
 }

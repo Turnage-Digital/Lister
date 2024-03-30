@@ -85,7 +85,7 @@ const EditListPage = () => {
         <FormHeader
           header="Create a List"
           currentRoute="Create"
-          previousRoute="List"
+          previousRoute="Home"
         />
 
         <FormBlock

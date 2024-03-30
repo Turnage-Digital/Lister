@@ -1,8 +1,8 @@
-namespace Lister.Endpoints.Lists.GetListItemsByListId;
+namespace Lister.Endpoints.Lists.GetListItems;
 
-public class GetListItemsByListIdQuery : RequestBase<GetListItemsByListIdResponse>
+public class GetListItemsQuery : RequestBase<GetListItemsResponse>
 {
-    public GetListItemsByListIdQuery(
+    public GetListItemsQuery(
         string listId,
         int? page,
         int? pageSize,

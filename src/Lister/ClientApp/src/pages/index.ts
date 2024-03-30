@@ -12,6 +12,8 @@ export {
 
 export { ListIdPage, listIdPageLoader } from "./list-id";
 
+export { ListItemIdPage, listItemIdPageLoader } from "./list-item-id";
+
 export { ListsPage, listsPageLoader } from "./lists";
 
 export { SignInPage, signInPageAction } from "./sign-in";

@@ -120,7 +120,7 @@ const ListIdPage = () => {
             icon={<Visibility />}
             label="View"
             color="primary"
-            // onClick={() => navigate(`/${params.listId}/items/${id}`)}
+            onClick={() => navigate(`/${params.listId}/items/${id}`)}
           />,
           <GridActionsCellItem
             key={`${id}-delete`}
@@ -133,7 +133,7 @@ const ListIdPage = () => {
     });
 
     return retval;
-  }, [loaded.listItemDefinition]);
+  }, [loaded.listItemDefinition, navigate, params]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pagination = getPaginationFromSearchParams(searchParams);

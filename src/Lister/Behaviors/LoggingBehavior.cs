@@ -1,7 +1,7 @@
 using MediatR;
 using Serilog;
 
-namespace Lister;
+namespace Lister.Behaviors;
 
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

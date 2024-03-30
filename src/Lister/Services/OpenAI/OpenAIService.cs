@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Lister.Services.OpenAi;
+namespace Lister.Services.OpenAI;
 
 public class OpenAIService : IOpenAIService
 {

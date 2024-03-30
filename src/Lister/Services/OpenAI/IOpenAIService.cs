@@ -1,4 +1,4 @@
-namespace Lister.Services.OpenAi;
+namespace Lister.Services.OpenAI;
 
 public interface IOpenAIService
 {

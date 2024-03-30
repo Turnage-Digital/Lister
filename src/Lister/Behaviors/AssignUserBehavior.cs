@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Lister.Extensions;
 using MediatR;
 
-namespace Lister;
+namespace Lister.Behaviors;
 
 public class AssignUserBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

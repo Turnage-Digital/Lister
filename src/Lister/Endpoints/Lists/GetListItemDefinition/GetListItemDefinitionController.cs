@@ -1,32 +1,32 @@
-using Lister.Core.ValueObjects;
+using Lister.Core.SqlDB.Views;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Endpoints.Lists.GetListItemById;
+namespace Lister.Endpoints.Lists.GetListItemDefinition;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemByIdController : Controller
+public class GetListItemDefinitionController : Controller
 {
     private readonly IMediator _mediator;
 
-    public GetListItemByIdController(IMediator mediator)
+    public GetListItemDefinitionController(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    [HttpGet("{listId}/items/{itemId}")]
-    [ProducesResponseType(typeof(Item), Status200OK)]
+    [HttpGet("{listId}/itemDefinition")]
+    [ProducesResponseType(typeof(ListItemDefinitionView), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Get(string listId, string itemId)
+    public async Task<IActionResult> Get(string listId)
     {
-        GetListItemByIdQuery query = new(listId, itemId);
+        GetListItemDefinitionQuery<ListItemDefinitionView> query = new(listId);
         var result = await _mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }

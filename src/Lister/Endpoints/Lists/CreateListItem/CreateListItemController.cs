@@ -19,14 +19,14 @@ public class CreateListItemController : Controller
         _mediator = mediator;
     }
 
-    [HttpPost("{id}/items/create")]
+    [HttpPost("{listId}/items/create")]
     [ProducesResponseType(typeof(Item), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Post(string id, [FromBody] CreateListItemCommand command)
+    public async Task<IActionResult> Post(string listId, [FromBody] CreateListItemCommand command)
     {
-        command.ListId = id;
+        command.ListId = listId;
         var result = await _mediator.Send(command);
-        return Created($"/{id}/items/{result.Id}", result);
+        return Created($"/{listId}/items/{result.Id}", result);
     }
 }
