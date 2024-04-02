@@ -1,7 +1,7 @@
 using Lamar.Microsoft.DependencyInjection;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
-using Lister.Services.OpenAI;
+using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
 
-namespace Lister.Extensions;
+namespace Lister;
 
 internal static class HostingExtensions
 {
@@ -65,7 +65,6 @@ internal static class HostingExtensions
 
             registry.Configure<OpenAIOptions>(
                 builder.Configuration.GetSection("OpenAI"));
-            registry.AddHttpClient<IOpenAIService, OpenAIService>();
 
             if (builder.Environment.IsDevelopment())
             {

@@ -1,4 +1,4 @@
-namespace Lister.Services.OpenAI;
+namespace Lister;
 
 public class OpenAIOptions
 {
