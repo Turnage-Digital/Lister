@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
@@ -10,7 +11,6 @@
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
         <SpaProxyServerUrl>https://localhost:3000</SpaProxyServerUrl>
         <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
-        <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>1e58f085-a832-4eca-be11-eb71f1d64a11</UserSecretsId>
     </PropertyGroup>
 
@@ -40,8 +40,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Lister.App\Lister.App.csproj" />
         <ProjectReference Include="..\Lister.Core.SqlDB\Lister.Core.SqlDB.csproj"/>
-        <ProjectReference Include="..\Lister.Domain\Lister.Domain.csproj"/>
     </ItemGroup>
 
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">

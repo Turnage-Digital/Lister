@@ -1,3 +1,5 @@
+using Lister.App;
+
 namespace Lister.Endpoints.Lists.GetListItems;
 
 public class GetListItemsQuery(

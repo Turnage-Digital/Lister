@@ -1,4 +1,5 @@
 using Lamar.Microsoft.DependencyInjection;
+using Lister.App;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
 using Lister.Extensions;

@@ -21,6 +21,6 @@ public class GetListItemDefinitionController(IMediator mediator) : Controller
     {
         GetListItemDefinitionQuery<ListItemDefinitionView> query = new(listId);
         var result = await mediator.Send(query);
-        return result == null ? NotFound() : Ok(result);
+        return Ok(result);
     }
 }

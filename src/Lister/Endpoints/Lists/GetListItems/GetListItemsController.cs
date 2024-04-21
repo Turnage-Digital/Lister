@@ -27,6 +27,6 @@ public class GetListItemsController(IMediator mediator) : Controller
     {
         GetListItemsQuery query = new(listId, page, pageSize, field, sort);
         var result = await mediator.Send(query);
-        return result == null ? NotFound() : Ok(result);
+        return Ok(result);
     }
 }

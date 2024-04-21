@@ -1,3 +1,4 @@
+using Lister.App;
 using Lister.Core.ValueObjects;
 
 namespace Lister.Endpoints.Lists.GetListItem;

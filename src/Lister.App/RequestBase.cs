@@ -1,9 +1,9 @@
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Lister;
+namespace Lister.App;
 
-public class RequestBase<T> : IRequest<T>
+public abstract class RequestBase<T> : IRequest<T>
 {
     [JsonIgnore]
     public string? UserId { get; set; }

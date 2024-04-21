@@ -1,3 +1,4 @@
+using Lister.App;
 using Lister.Core;
 
 namespace Lister.Endpoints.Lists.GetListItemDefinition;
