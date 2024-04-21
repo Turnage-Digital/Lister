@@ -4,20 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class ListsStore : IListsStore<ListEntity>
+public class ListsStore(ListerDbContext dbContext) : IListsStore<ListEntity>
 {
-    private readonly ListerDbContext _dbContext;
-    private readonly EntityStore<ListEntity> _entityStore;
-
-    public ListsStore(ListerDbContext dbContext)
-    {
-        _entityStore = new EntityStore<ListEntity>(dbContext);
-        _dbContext = dbContext;
-    }
+    private readonly EntityStore<ListEntity> _entityStore = new(dbContext);
 
     public Task<ListEntity> InitAsync(string createdBy, string name, CancellationToken cancellationToken)
     {
-        var retval = new ListEntity { Name = name, CreatedBy = createdBy };
+        var retval = new ListEntity
+        {
+            Name = name,
+            CreatedBy = createdBy,
+            CreatedOn = DateTime.UtcNow
+        };
         return Task.FromResult(retval);
     }
 
@@ -36,7 +34,7 @@ public class ListsStore : IListsStore<ListEntity>
 
     public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)
     {
-        var retval = await _dbContext.Lists
+        var retval = await dbContext.Lists
             .SingleOrDefaultAsync(l => l.Name == name, cancellationToken);
         return retval;
     }
@@ -111,9 +109,16 @@ public class ListsStore : IListsStore<ListEntity>
         return Task.FromResult(retval);
     }
 
-    public Task<Item> InitItemAsync(ListEntity list, object bag, CancellationToken cancellationToken)
+    public Task<Item> InitItemAsync(ListEntity list, string createdBy, object bag, CancellationToken cancellationToken)
     {
-        var itemEntity = new ItemEntity { Bag = bag, List = list, ListId = list.Id };
+        var itemEntity = new ItemEntity
+        {
+            Bag = bag,
+            CreatedBy = createdBy,
+            CreatedOn = DateTime.UtcNow,
+            List = list,
+            ListId = list.Id
+        };
         list.Items.Add(itemEntity);
         return Task.FromResult<Item>(itemEntity);
     }

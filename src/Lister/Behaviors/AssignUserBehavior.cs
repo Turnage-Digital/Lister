@@ -4,16 +4,10 @@ using MediatR;
 
 namespace Lister.Behaviors;
 
-public class AssignUserBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpContextAccessor)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AssignUserBehavior(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
@@ -22,7 +16,7 @@ public class AssignUserBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
     {
         if (request is RequestBase<TResponse> requestBase)
         {
-            var user = _httpContextAccessor.HttpContext!.User;
+            var user = httpContextAccessor.HttpContext!.User;
             var identity = (ClaimsIdentity)user.Identity!;
             var userId = identity.GetUserId();
             requestBase.UserId = userId;

@@ -7,15 +7,9 @@ using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.GetListItems;
 
-public class GetListItemsQueryHandler : IRequestHandler<GetListItemsQuery, GetListItemsResponse>
+public class GetListItemsQueryHandler(ListerDbContext dbContext)
+    : IRequestHandler<GetListItemsQuery, GetListItemsResponse>
 {
-    private readonly ListerDbContext _dbContext;
-
-    public GetListItemsQueryHandler(ListerDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<GetListItemsResponse> Handle(
         GetListItemsQuery request,
         CancellationToken cancellationToken
@@ -51,7 +45,7 @@ public class GetListItemsQueryHandler : IRequestHandler<GetListItemsQuery, GetLi
             : "i.Id asc";
         builder.OrderBy(orderBy);
 
-        var connection = _dbContext.Database.GetDbConnection();
+        var connection = dbContext.Database.GetDbConnection();
         var multi = await connection.QueryMultipleAsync(template.RawSql, template.Parameters);
 
         var data = await multi.ReadAsync<dynamic>();

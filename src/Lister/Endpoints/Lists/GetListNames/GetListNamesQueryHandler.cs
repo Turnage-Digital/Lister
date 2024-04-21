@@ -6,21 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Endpoints.Lists.GetListNames;
 
-public class GetListNamesQueryHandler : GetListNamesQueryHandler<ListNameView>
+public class GetListNamesQueryHandler(ListerDbContext dbContext) : GetListNamesQueryHandler<ListNameView>
 {
-    private readonly ListerDbContext _dbContext;
-
-    public GetListNamesQueryHandler(ListerDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public override async Task<ListNameView[]> Handle(
         GetListNamesQuery<ListNameView> request,
         CancellationToken cancellationToken
     )
     {
-        var retval = await _dbContext.Lists
+        var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == request.UserId)
             .Select(list => new ListNameView
             {

@@ -10,22 +10,13 @@ using Newtonsoft.Json;
 
 namespace Lister.Endpoints.Lists.ConvertTextToListItem;
 
-public class ConvertTextToListItemCommandHandler : IRequestHandler<ConvertTextToListItemCommand, Item>
+public class ConvertTextToListItemCommandHandler(
+    ListAggregate<ListEntity> listAggregate,
+    ListerDbContext dbContext,
+    IOptions<OpenAIOptions> options)
+    : IRequestHandler<ConvertTextToListItemCommand, Item>
 {
-    private readonly string _apiKey;
-    private readonly ListerDbContext _dbContext;
-    private readonly ListAggregate<ListEntity> _listAggregate;
-
-    public ConvertTextToListItemCommandHandler(
-        ListAggregate<ListEntity> listAggregate,
-        ListerDbContext dbContext,
-        IOptions<OpenAIOptions> options
-    )
-    {
-        _listAggregate = listAggregate;
-        _dbContext = dbContext;
-        _apiKey = options.Value.ApiKey;
-    }
+    private readonly string _apiKey = options.Value.ApiKey;
 
     public async Task<Item> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
     {
@@ -33,13 +24,13 @@ public class ConvertTextToListItemCommandHandler : IRequestHandler<ConvertTextTo
         {
             var parsed = Guid.Parse(request.ListId);
             var list = await GetListAsync(parsed, request.UserId, cancellationToken);
-            
-            var exampleBag = await _listAggregate.CreateExampleBagAsync(list, cancellationToken);
+
+            var exampleBag = await listAggregate.CreateExampleBagAsync(list, cancellationToken);
             var exampleJson = JsonConvert.SerializeObject(exampleBag);
-            
+
             var completedJson = await GetCompletedJsonAsync(exampleJson, request.Text, cancellationToken);
             var completedBag = JsonConvert.DeserializeObject(completedJson);
-            
+
             var retval = new Item { Bag = completedBag ?? new object() };
             return retval;
         }
@@ -55,7 +46,7 @@ public class ConvertTextToListItemCommandHandler : IRequestHandler<ConvertTextTo
         CancellationToken cancellationToken
     )
     {
-        var retval = await _dbContext.Lists
+        var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == userId)
             .Where(list => list.Id == listId)
             .Include(l => l.Columns)

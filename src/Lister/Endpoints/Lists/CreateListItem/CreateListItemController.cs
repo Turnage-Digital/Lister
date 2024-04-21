@@ -10,15 +10,8 @@ namespace Lister.Endpoints.Lists.CreateListItem;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class CreateListItemController : Controller
+public class CreateListItemController(IMediator mediator) : Controller
 {
-    private readonly IMediator _mediator;
-
-    public CreateListItemController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("{listId}/items/create")]
     [ProducesResponseType(typeof(Item), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
@@ -26,7 +19,7 @@ public class CreateListItemController : Controller
     public async Task<IActionResult> Post(string listId, [FromBody] CreateListItemCommand command)
     {
         command.ListId = listId;
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Created($"/{listId}/items/{result.Id}", result);
     }
 }

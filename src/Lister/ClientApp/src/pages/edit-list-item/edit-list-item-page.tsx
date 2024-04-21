@@ -97,8 +97,9 @@ const EditListItemPage = () => {
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
-          header={`${listItemDefinition.name} - Create an Item`}
-          currentRoute="Create"
+          header="Create an Item"
+          subheader={listItemDefinition.name}
+          currentRoute={["Items", "Create"]}
           previousRoute="Home"
         />
 

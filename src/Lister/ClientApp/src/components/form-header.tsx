@@ -5,40 +5,56 @@ import { useLinkClickHandler, useParams } from "react-router-dom";
 
 interface Props {
   header: string;
-  currentRoute: string;
+  subheader?: string;
+  currentRoute: string[];
   previousRoute: string;
 }
 
-const FormHeader = ({ header, currentRoute, previousRoute }: Props) => {
+const FormHeader = ({
+  header,
+  subheader,
+  currentRoute,
+  previousRoute,
+}: Props) => {
   const params = useParams();
   const previousUrl = params.listId ? `/${params.listId}` : `/`;
   const handleLinkClick = useLinkClickHandler(previousUrl);
 
   return (
-    <Grid container>
+    <Grid container spacing={2}>
       <Grid xs={12}>
         <Typography
           color="primary"
           fontWeight="medium"
           variant="h4"
           component="h1"
-          gutterBottom
         >
           {header}
         </Typography>
       </Grid>
 
+      {subheader && (
+        <Grid xs={12}>
+          <Typography color="primary" fontWeight="medium" variant="subtitle1">
+            {subheader}
+          </Typography>
+        </Grid>
+      )}
+
       <Grid xs={12}>
         <Breadcrumbs>
           <Link
             underline="hover"
-            color="inherit"
             onClick={handleLinkClick}
             sx={{ cursor: "pointer" }}
           >
             {previousRoute}
           </Link>
-          <Typography color="text.disabled">{currentRoute}</Typography>
+          {currentRoute.map((route) => (
+            <Typography key={route} color="text.primary">
+              {route}
+            </Typography>
+          ))}
         </Breadcrumbs>
       </Grid>
     </Grid>

@@ -10,15 +10,8 @@ namespace Lister.Endpoints.Lists.GetListItem;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemController : Controller
+public class GetListItemController(IMediator mediator) : Controller
 {
-    private readonly IMediator _mediator;
-
-    public GetListItemController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet("{listId}/items/{itemId}")]
     [ProducesResponseType(typeof(Item), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -27,7 +20,7 @@ public class GetListItemController : Controller
     public async Task<IActionResult> Get(string listId, string itemId)
     {
         GetListItemQuery query = new(listId, itemId);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }
 }

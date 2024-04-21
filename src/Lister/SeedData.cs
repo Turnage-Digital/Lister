@@ -35,14 +35,10 @@ internal static class SeedData
 
         var erika = userManager.FindByNameAsync("erika").Result;
         if (erika == null)
-        {
             CreateUser(userManager, "erika", "erika@email.com", "Pass123$", "Erika Turnage",
                 "Erika", "Turnage", "https://thingman.com");
-        }
         else
-        {
             Log.Debug("erika already exists");
-        }
 
         var listAggregate = scope.ServiceProvider
             .GetRequiredService<ListAggregate<ListEntity>>();
@@ -101,7 +97,7 @@ internal static class SeedData
                 }
             ).Result;
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Ricky Lafluer",
@@ -115,7 +111,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Julian",
@@ -129,7 +125,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Bubbles",
@@ -143,7 +139,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Columbia",
                     name = "Shitty Bill",
@@ -157,7 +153,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Columbia",
                     name = "Ray Lafluer",
@@ -171,7 +167,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "New York",
                     name = "Trevor",
@@ -185,7 +181,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Corey",
@@ -199,7 +195,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Lucy Lafluer",
@@ -213,7 +209,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Sara",
@@ -227,7 +223,7 @@ internal static class SeedData
                 }
             ).Wait();
 
-            listAggregate.CreateItemAsync(list, new
+            listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Spring Hill",
                     name = "Trinity Lafluer",
@@ -264,10 +260,7 @@ internal static class SeedData
         };
 
         var result = userManager.CreateAsync(user, password).Result;
-        if (!result.Succeeded)
-        {
-            throw new Exception(result.Errors.First().Description);
-        }
+        if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
 
         result = userManager.AddClaimsAsync(user, new Claim[]
         {
@@ -276,10 +269,7 @@ internal static class SeedData
             new(JwtClaimTypes.FamilyName, familyName),
             new(JwtClaimTypes.WebSite, website)
         }).Result;
-        if (!result.Succeeded)
-        {
-            throw new Exception(result.Errors.First().Description);
-        }
+        if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
 
         Log.Debug($"{userName} created");
     }

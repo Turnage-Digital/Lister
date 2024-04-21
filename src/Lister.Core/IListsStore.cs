@@ -31,5 +31,5 @@ public interface IListsStore<TList>
 
     Task<DateTime> GetCreatedOnAsync(TList list, CancellationToken cancellationToken);
 
-    Task<Item> InitItemAsync(TList list, object bag, CancellationToken cancellationToken);
+    Task<Item> InitItemAsync(TList list, string createdBy, object bag, CancellationToken cancellationToken);
 }

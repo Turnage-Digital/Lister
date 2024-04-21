@@ -84,7 +84,7 @@ const EditListPage = () => {
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
           header="Create a List"
-          currentRoute="Create"
+          currentRoute={["Create"]}
           previousRoute="Home"
         />
 

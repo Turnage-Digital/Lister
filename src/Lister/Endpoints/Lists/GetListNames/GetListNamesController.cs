@@ -10,15 +10,8 @@ namespace Lister.Endpoints.Lists.GetListNames;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListNamesController : Controller
+public class GetListNamesController(IMediator mediator) : Controller
 {
-    private readonly IMediator _mediator;
-
-    public GetListNamesController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet("names")]
     [ProducesResponseType(typeof(ListNameView[]), Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
@@ -26,7 +19,7 @@ public class GetListNamesController : Controller
     public async Task<IActionResult> Get()
     {
         GetListNamesQuery<ListNameView> query = new();
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(result);
     }
 }

@@ -2,25 +2,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public abstract class UnitOfWork<TContext> : IUnitOfWork
+public abstract class UnitOfWork<TContext>(TContext dbContext) : IUnitOfWork
     where TContext : DbContext
 {
-    private readonly TContext _dbContext;
-
     private bool _disposed;
-
-    protected UnitOfWork(TContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            var retval = await _dbContext.SaveChangesAsync(cancellationToken);
+            var retval = await dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
             return retval;
         }
@@ -44,12 +37,8 @@ public abstract class UnitOfWork<TContext> : IUnitOfWork
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
-        {
             if (disposing)
-            {
-                _dbContext.Dispose();
-            }
-        }
+                dbContext.Dispose();
 
         _disposed = true;
     }

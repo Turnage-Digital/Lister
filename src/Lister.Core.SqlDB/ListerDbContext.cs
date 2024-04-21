@@ -5,11 +5,8 @@ using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB;
 
-public class ListerDbContext : DbContext
+public class ListerDbContext(DbContextOptions<ListerDbContext> options) : DbContext(options)
 {
-    public ListerDbContext(DbContextOptions<ListerDbContext> options)
-        : base(options) { }
-
     public virtual DbSet<ListEntity> Lists { get; set; } = null!;
 
     public virtual DbSet<ItemEntity> Items { get; set; } = null!;
@@ -104,6 +101,13 @@ public class ListerDbContext : DbContext
                 .HasConversion(
                     e => JsonConvert.SerializeObject(e),
                     e => JsonConvert.DeserializeObject<object>(e)!)
+                .IsRequired();
+
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.CreatedOn)
                 .IsRequired();
 
             entity.Property(e => e.ListId)

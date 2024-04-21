@@ -2,13 +2,8 @@ using Lister.Core;
 
 namespace Lister.Endpoints.Lists.GetListItemDefinition;
 
-public class GetListItemDefinitionQuery<TList> : RequestBase<TList>
+public class GetListItemDefinitionQuery<TList>(string listId) : RequestBase<TList>
     where TList : IReadOnlyList
 {
-    public GetListItemDefinitionQuery(string listId)
-    {
-        ListId = listId;
-    }
-
-    public string ListId { get; }
+    public string ListId { get; } = listId;
 }

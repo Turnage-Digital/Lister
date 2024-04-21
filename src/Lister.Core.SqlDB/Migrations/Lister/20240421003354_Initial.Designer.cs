@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Lister.Core.SqlDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Core.SqlDB.Migrations.Lister
 {
     [DbContext(typeof(ListerDbContext))]
-    [Migration("20240121233440_Initial")]
+    [Migration("20240421003354_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,8 +21,10 @@ namespace Lister.Core.SqlDB.Migrations.Lister
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Lister.Core.SqlDB.Entities.ColumnEntity", b =>
                 {
@@ -29,8 +32,9 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
                     b.Property<Guid?>("ListId")
-                        .IsRequired()
                         .HasColumnType("char(36)")
                         .HasColumnName("ListId");
 
@@ -56,12 +60,21 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
                     b.Property<string>("Bag")
                         .IsRequired()
                         .HasColumnType("JSON");
 
-                    b.Property<Guid?>("ListId")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ListId")
                         .HasColumnType("char(36)")
                         .HasColumnName("ListId");
 
@@ -104,13 +117,14 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
                     b.Property<Guid?>("ListId")
-                        .IsRequired()
                         .HasColumnType("char(36)")
                         .HasColumnName("ListId");
 
@@ -131,9 +145,7 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                 {
                     b.HasOne("Lister.Core.SqlDB.Entities.ListEntity", "List")
                         .WithMany("Columns")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ListId");
 
                     b.Navigation("List");
                 });
@@ -142,9 +154,7 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                 {
                     b.HasOne("Lister.Core.SqlDB.Entities.ListEntity", "List")
                         .WithMany("Items")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ListId");
 
                     b.Navigation("List");
                 });
@@ -153,9 +163,7 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                 {
                     b.HasOne("Lister.Core.SqlDB.Entities.ListEntity", "List")
                         .WithMany("Statuses")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ListId");
 
                     b.Navigation("List");
                 });

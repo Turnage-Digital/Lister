@@ -7,23 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Endpoints.Lists.GetListItemDefinition;
 
-public class GetListItemDefinitionQueryHandler
+public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext)
     : GetListItemDefinitionByIdQueryHandler<ListItemDefinitionView>
 {
-    private readonly ListerDbContext _dbContext;
-
-    public GetListItemDefinitionQueryHandler(ListerDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public override async Task<ListItemDefinitionView> Handle(
         GetListItemDefinitionQuery<ListItemDefinitionView> request,
         CancellationToken cancellationToken
     )
     {
         var parsed = Guid.Parse(request.ListId);
-        var retval = await _dbContext.Lists
+        var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == request.UserId)
             .Where(list => list.Id == parsed)
             .Select(list => new ListItemDefinitionView

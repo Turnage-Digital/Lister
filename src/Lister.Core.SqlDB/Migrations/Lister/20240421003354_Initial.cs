@@ -34,7 +34,7 @@ public partial class Initial : Migration
                 {
                     Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListId = table.Column<Guid>("char(36)", nullable: true, collation: "ascii_general_ci"),
                     Name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<int>("int", nullable: false)
@@ -46,8 +46,7 @@ public partial class Initial : Migration
                         "FK_Columns_Lists_ListId",
                         x => x.ListId,
                         "Lists",
-                        "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        "Id");
                 })
             .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -57,9 +56,12 @@ public partial class Initial : Migration
                 {
                     Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListId = table.Column<Guid>("char(36)", nullable: true, collation: "ascii_general_ci"),
                     Bag = table.Column<string>("JSON", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedBy = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedOn = table.Column<DateTime>("datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,8 +70,7 @@ public partial class Initial : Migration
                         "FK_Items_Lists_ListId",
                         x => x.ListId,
                         "Lists",
-                        "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        "Id");
                 })
             .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -79,7 +80,7 @@ public partial class Initial : Migration
                 {
                     Id = table.Column<int>("int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ListId = table.Column<Guid>("char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListId = table.Column<Guid>("char(36)", nullable: true, collation: "ascii_general_ci"),
                     Name = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Color = table.Column<string>("varchar(50)", maxLength: 50, nullable: false)
@@ -92,8 +93,7 @@ public partial class Initial : Migration
                         "FK_Statuses_Lists_ListId",
                         x => x.ListId,
                         "Lists",
-                        "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        "Id");
                 })
             .Annotation("MySql:CharSet", "utf8mb4");
 

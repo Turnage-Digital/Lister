@@ -2,15 +2,9 @@ using Lister.Core.ValueObjects;
 
 namespace Lister.Endpoints.Lists.GetListItem;
 
-public class GetListItemQuery : RequestBase<Item>
+public class GetListItemQuery(string listId, string itemId) : RequestBase<Item>
 {
-    public GetListItemQuery(string listId, string itemId)
-    {
-        ItemId = itemId;
-        ListId = listId;
-    }
+    public string ListId { get; } = listId;
 
-    public string ListId { get; }
-
-    public string ItemId { get; }
+    public string ItemId { get; } = itemId;
 }

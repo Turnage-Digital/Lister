@@ -10,15 +10,8 @@ namespace Lister.Endpoints.Lists.GetListItems;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemsController : Controller
+public class GetListItemsController(IMediator mediator) : Controller
 {
-    private readonly IMediator _mediator;
-
-    public GetListItemsController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet("{listId}/items")]
     [ProducesResponseType(typeof(Item[]), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
@@ -33,7 +26,7 @@ public class GetListItemsController : Controller
     )
     {
         GetListItemsQuery query = new(listId, page, pageSize, field, sort);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return result == null ? NotFound() : Ok(result);
     }
 }

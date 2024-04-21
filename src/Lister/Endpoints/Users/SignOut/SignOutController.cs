@@ -9,22 +9,15 @@ namespace Lister.Endpoints.Users.SignOut;
 [Authorize]
 [Tags("Users")]
 [Route("api/users")]
-public class SignOutController : Controller
+public class SignOutController(SignInManager<IdentityUser> signInManager) : Controller
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
-
-    public SignOutController(SignInManager<IdentityUser> signInManager)
-    {
-        _signInManager = signInManager;
-    }
-
     [HttpPost("sign-out")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Post()
     {
-        await _signInManager.SignOutAsync();
+        await signInManager.SignOutAsync();
         return Ok();
     }
 }

@@ -23,7 +23,7 @@ const StatusesContent = ({
   onItemUpdated,
 }: Props) => (
   <Stack spacing={2}>
-    <FormControl variant="outlined" margin="normal" fullWidth>
+    <FormControl variant="outlined" fullWidth>
       <InputLabel htmlFor="status">Status</InputLabel>
       <Select
         name="status"

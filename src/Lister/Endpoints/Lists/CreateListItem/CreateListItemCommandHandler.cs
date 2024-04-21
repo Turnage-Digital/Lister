@@ -5,24 +5,19 @@ using MediatR;
 
 namespace Lister.Endpoints.Lists.CreateListItem;
 
-public class CreateListItemCommandHandler : IRequestHandler<CreateListItemCommand, Item>
+public class CreateListItemCommandHandler(ListAggregate<ListEntity> listAggregate)
+    : IRequestHandler<CreateListItemCommand, Item>
 {
-    private readonly ListAggregate<ListEntity> _listAggregate;
-
-    public CreateListItemCommandHandler(ListAggregate<ListEntity> listAggregate)
-    {
-        _listAggregate = listAggregate;
-    }
-
     public async Task<Item> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
     {
-        var list = await _listAggregate.ReadAsync(request.ListId!, cancellationToken);
+        var list = await listAggregate.ReadAsync(request.ListId!, cancellationToken);
         if (list is null)
-        {
             throw new ArgumentNullException(nameof(request), $"List with id {request.ListId} does not exist");
-        }
 
-        var retval = await _listAggregate.CreateItemAsync(list, request.Bag, cancellationToken);
+        if (request.UserId is null)
+            throw new ArgumentNullException(nameof(request), "UserId is null");
+
+        var retval = await listAggregate.CreateItemAsync(list, request.UserId, request.Bag, cancellationToken);
         return retval;
     }
 }

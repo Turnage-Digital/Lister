@@ -1,29 +1,20 @@
 namespace Lister.Endpoints.Lists.GetListItems;
 
-public class GetListItemsQuery : RequestBase<GetListItemsResponse>
+public class GetListItemsQuery(
+    string listId,
+    int? page,
+    int? pageSize,
+    string? field,
+    string? sort)
+    : RequestBase<GetListItemsResponse>
 {
-    public GetListItemsQuery(
-        string listId,
-        int? page,
-        int? pageSize,
-        string? field,
-        string? sort
-    )
-    {
-        ListId = listId;
-        Page = page;
-        PageSize = pageSize;
-        Field = field;
-        Sort = sort;
-    }
+    public string ListId { get; } = listId;
 
-    public string ListId { get; }
+    public int? Page { get; } = page;
 
-    public int? Page { get; }
+    public int? PageSize { get; } = pageSize;
 
-    public int? PageSize { get; }
+    public string? Field { get; } = field;
 
-    public string? Field { get; }
-
-    public string? Sort { get; }
+    public string? Sort { get; } = sort;
 }

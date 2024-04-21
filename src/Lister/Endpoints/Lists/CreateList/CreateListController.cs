@@ -10,22 +10,15 @@ namespace Lister.Endpoints.Lists.CreateList;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class CreateListController : Controller
+public class CreateListController(IMediator mediator) : Controller
 {
-    private readonly IMediator _mediator;
-
-    public CreateListController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("create")]
     [ProducesResponseType(typeof(ListItemDefinitionView), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Post([FromBody] CreateListCommand<ListItemDefinitionView> command)
     {
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Created($"/{result.Id}", result);
     }
 }
