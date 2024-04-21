@@ -5,17 +5,12 @@ import { useLinkClickHandler, useParams } from "react-router-dom";
 
 interface Props {
   header: string;
-  subheader?: string;
+
   currentRoute: string[];
   previousRoute: string;
 }
 
-const FormHeader = ({
-  header,
-  subheader,
-  currentRoute,
-  previousRoute,
-}: Props) => {
+const FormHeader = ({ header, currentRoute, previousRoute }: Props) => {
   const params = useParams();
   const previousUrl = params.listId ? `/${params.listId}` : `/`;
   const handleLinkClick = useLinkClickHandler(previousUrl);
@@ -32,14 +27,6 @@ const FormHeader = ({
           {header}
         </Typography>
       </Grid>
-
-      {subheader && (
-        <Grid xs={12}>
-          <Typography color="primary" fontWeight="medium" variant="subtitle1">
-            {subheader}
-          </Typography>
-        </Grid>
-      )}
 
       <Grid xs={12}>
         <Breadcrumbs>

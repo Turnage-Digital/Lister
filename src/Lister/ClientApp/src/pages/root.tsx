@@ -17,6 +17,8 @@ import {
   useFetcher,
 } from "react-router-dom";
 
+import { SideDrawer } from "../components";
+
 export const rootLoader = async ({ request }: LoaderFunctionArgs) => {
   const postRequest = new Request(
     `${process.env.PUBLIC_URL}/api/users/claims`,
@@ -51,41 +53,39 @@ const Root = () => {
   };
 
   return (
-    <Stack
-      sx={{
-        minWidth: "100%",
-        height: "100vh",
-      }}
-    >
-      <AppBar
-        elevation={0}
-        sx={(theme) => ({
-          backgroundColor: theme.palette.background.paper,
-          borderBottom: `1px solid ${theme.palette.divider}`,
-        })}
+    <>
+      <Stack
+        sx={{
+          minWidth: "100%",
+          height: "100vh",
+        }}
       >
-        <Toolbar>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ flexGrow: 0 }}>
-            <IconButton color="primary" onClick={handleOpenUserMenu}>
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              anchorEl={userMenuAnchorElement}
-              open={Boolean(userMenuAnchorElement)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem onClick={handleLogoutClick}>Sign Out</MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </AppBar>
+        <AppBar>
+          <Toolbar>
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton color="inherit" onClick={handleOpenUserMenu}>
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                anchorEl={userMenuAnchorElement}
+                open={Boolean(userMenuAnchorElement)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleLogoutClick}>Sign Out</MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+        </AppBar>
 
-      <Container maxWidth="xl">
-        <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
-        <Outlet />
-      </Container>
-    </Stack>
+        <Container maxWidth="xl">
+          <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
+          <Outlet />
+        </Container>
+      </Stack>
+
+      <SideDrawer />
+    </>
   );
 };
 

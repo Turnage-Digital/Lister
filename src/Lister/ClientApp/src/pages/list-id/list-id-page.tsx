@@ -1,5 +1,8 @@
 import React, { useMemo } from "react";
 import {
+  Await,
+  defer,
+  json,
   LoaderFunctionArgs,
   useLoaderData,
   useNavigate,
@@ -17,7 +20,7 @@ import { Paper } from "@mui/material";
 import { MoreVert, Visibility } from "@mui/icons-material";
 
 import { Column, Item, ListItemDefinition } from "../../models";
-import { StatusChip } from "../../components";
+import { Loading, StatusChip } from "../../components";
 import { getStatusFromName } from "../../status-fns";
 
 export const listIdPageLoader = async ({
@@ -39,28 +42,29 @@ export const listIdPageLoader = async ({
     getItemsUrl += `&field=${field}&sort=${sort}`;
   }
 
-  const [listItemDefinitionResponse, itemsResponse] = await Promise.all([
-    fetch(`/api/lists/${params.listId}/itemDefinition`),
-    fetch(getItemsUrl),
-  ]);
+  const listItemDefinition = await (
+    await fetch(`/api/lists/${params.listId}/itemDefinition`)
+  ).json();
 
-  const listItemDefinition = await listItemDefinitionResponse.json();
-  const data = await itemsResponse.json();
+  const itemsResponse = fetch(getItemsUrl);
 
-  return { listItemDefinition, data };
+  return defer({
+    listItemDefinition,
+    items: itemsResponse.then((res) => res.json()),
+  });
 };
 
 const ListIdPage = () => {
-  const loaded = useLoaderData() as {
+  const { listItemDefinition, items } = useLoaderData() as {
     listItemDefinition: ListItemDefinition;
-    data: { items: Item[]; count: number };
+    items: { items: Item[]; count: number };
   };
 
   const params = useParams();
   const navigate = useNavigate();
 
   const gridColDefs: GridColDef[] = useMemo(() => {
-    if (!loaded.listItemDefinition) {
+    if (!listItemDefinition) {
       return [];
     }
 
@@ -74,7 +78,7 @@ const ListIdPage = () => {
       disableColumnMenu: true,
     });
 
-    const mapped = loaded.listItemDefinition.columns.map((column: Column) => {
+    const mapped = listItemDefinition.columns.map((column: Column) => {
       const retval: GridColDef = {
         field: column.property!,
         headerName: column.name,
@@ -99,10 +103,7 @@ const ListIdPage = () => {
       width: 150,
       renderCell: (params) => (
         <StatusChip
-          status={getStatusFromName(
-            loaded.listItemDefinition.statuses,
-            params.value
-          )}
+          status={getStatusFromName(listItemDefinition.statuses, params.value)}
         />
       ),
     });
@@ -133,7 +134,7 @@ const ListIdPage = () => {
     });
 
     return retval;
-  }, [loaded.listItemDefinition, navigate, params]);
+  }, [listItemDefinition, navigate, params]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pagination = getPaginationFromSearchParams(searchParams);
@@ -164,30 +165,38 @@ const ListIdPage = () => {
     setSearchParams(searchParams);
   };
 
-  const rows = loaded.data.items.map((item: Item) => ({
-    id: item.id,
-    ...item.bag,
-  }));
-
   return (
-    <Paper>
-      <DataGrid
-        columns={gridColDefs}
-        rows={rows}
-        getRowId={(row) => row.id}
-        rowCount={loaded.data.count}
-        paginationMode="server"
-        paginationModel={pagination}
-        pageSizeOptions={[10, 25, 50]}
-        onPaginationModelChange={handlePaginationChange}
-        sortingMode="server"
-        sortModel={sort}
-        onSortModelChange={handleSortChange}
-        disableColumnFilter
-        disableColumnSelector
-        disableRowSelectionOnClick
-      />
-    </Paper>
+    <React.Suspense fallback={<Loading />}>
+      <Await resolve={items}>
+        {(data) => {
+          const rows = data.items.map((item: Item) => ({
+            id: item.id,
+            ...item.bag,
+          }));
+
+          return (
+            <Paper>
+              <DataGrid
+                columns={gridColDefs}
+                rows={rows}
+                getRowId={(row) => row.id}
+                rowCount={items.count}
+                paginationMode="server"
+                paginationModel={pagination}
+                pageSizeOptions={[10, 25, 50]}
+                onPaginationModelChange={handlePaginationChange}
+                sortingMode="server"
+                sortModel={sort}
+                onSortModelChange={handleSortChange}
+                disableColumnFilter
+                disableColumnSelector
+                disableRowSelectionOnClick
+              />
+            </Paper>
+          );
+        }}
+      </Await>
+    </React.Suspense>
   );
 };
 

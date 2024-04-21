@@ -66,13 +66,18 @@ const EditListItemPage = () => {
   const submit = useSubmit();
 
   const [updated, setUpdated] = useState<Item>(() => {
-    const item = window.sessionStorage.getItem("updated_item");
+    const item = window.sessionStorage.getItem(
+      listItemDefinition.id ?? "updated_item"
+    );
     return item ? JSON.parse(item) : defaultListItem;
   });
 
   useEffect(() => {
-    window.sessionStorage.setItem("updated_item", JSON.stringify(updated));
-  }, [updated]);
+    window.sessionStorage.setItem(
+      listItemDefinition.id ?? "updated_item",
+      JSON.stringify(updated)
+    );
+  }, [listItemDefinition, updated]);
 
   const update = (key: string, value: any) => {
     const newBag = { ...updated.bag, [key]: value };
@@ -97,8 +102,7 @@ const EditListItemPage = () => {
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
-          header="Create an Item"
-          subheader={listItemDefinition.name}
+          header={`Create - ${listItemDefinition.name}`}
           currentRoute={["Items", "Create"]}
           previousRoute="Home"
         />

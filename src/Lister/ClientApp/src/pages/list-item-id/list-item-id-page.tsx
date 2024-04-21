@@ -33,8 +33,7 @@ const ListItemIdPage = () => {
     <Container>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
-          header={`Item ${item.id}`}
-          subheader={listItemDefinition.name}
+          header={`Item #${item.id} - ${listItemDefinition.name}`}
           currentRoute={["Items", item.id ?? ""]}
           previousRoute="Home"
         />
