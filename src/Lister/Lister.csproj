@@ -40,7 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.App\Lister.App.csproj" />
+        <ProjectReference Include="..\Lister.App\Lister.App.csproj"/>
         <ProjectReference Include="..\Lister.Core.SqlDB\Lister.Core.SqlDB.csproj"/>
     </ItemGroup>
 

@@ -4,11 +4,15 @@ import { Chip } from "@mui/material";
 import { Status } from "../models";
 
 interface Props {
-  status: Status;
+  status?: Status;
   onDelete?: () => void;
 }
 
 const StatusChip = ({ status, onDelete }: Props) => {
+  if (!status) {
+    return null;
+  }
+
   return (
     <Chip
       label={status.name}

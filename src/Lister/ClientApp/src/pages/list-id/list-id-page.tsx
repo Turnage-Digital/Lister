@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import {
   Await,
   defer,
-  json,
   LoaderFunctionArgs,
   useLoaderData,
   useNavigate,
@@ -180,7 +179,7 @@ const ListIdPage = () => {
                 columns={gridColDefs}
                 rows={rows}
                 getRowId={(row) => row.id}
-                rowCount={items.count}
+                rowCount={data.count}
                 paginationMode="server"
                 paginationModel={pagination}
                 pageSizeOptions={[10, 25, 50]}
