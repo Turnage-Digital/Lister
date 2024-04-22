@@ -50,30 +50,32 @@ const ListsPageToolbar = ({ listNames, onSelectedListNameChanged }: Props) => {
 
   return selectedListName ? (
     <>
-      <Grid container direction="row" alignItems="center">
-        <Grid>
-          <Typography
-            color="primary"
-            fontWeight="medium"
-            variant="h4"
-            component="h1"
-          >
-            {selectedListName.name}
-          </Typography>
+      <Grid container alignItems="center">
+        <Grid xs={12} md={9} container direction="row" alignItems="center">
+          <Grid>
+            <Typography
+              color="primary"
+              fontWeight="medium"
+              variant="h4"
+              component="h1"
+            >
+              {selectedListName.name}
+            </Typography>
+          </Grid>
+
+          <Grid>
+            <IconButton
+              color="primary"
+              size="large"
+              onClick={handleButtonClick}
+              sx={{ ml: 1 }}
+            >
+              <ExpandCircleDown />
+            </IconButton>
+          </Grid>
         </Grid>
 
-        <Grid>
-          <IconButton
-            color="primary"
-            size="large"
-            onClick={handleButtonClick}
-            sx={{ ml: 1 }}
-          >
-            <ExpandCircleDown />
-          </IconButton>
-        </Grid>
-
-        <Grid flex={1} display="flex" justifyContent="flex-end">
+        <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
             startIcon={<AddCircle />}

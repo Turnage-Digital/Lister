@@ -65,8 +65,9 @@ const EditListItemPage = () => {
     listItemDefinition: ListItemDefinition;
     defaultListItem: Item;
   };
+
   const submit = useSubmit();
-  const { openDrawer, closeDrawer } = useSideDrawer();
+  const { openDrawer } = useSideDrawer();
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem(
@@ -104,8 +105,8 @@ const EditListItemPage = () => {
   return listItemDefinition ? (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Grid container direction="row" alignItems="center">
-          <Grid xs={12} md={6}>
+        <Grid container alignItems="center">
+          <Grid xs={12} md={9}>
             <FormHeader
               header={`Create - ${listItemDefinition.name}`}
               currentRoute={["Items", "Create"]}
@@ -113,7 +114,7 @@ const EditListItemPage = () => {
             />
           </Grid>
 
-          <Grid xs={12} md={6} display="flex" justifyContent="flex-end">
+          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
             <Button
               variant="contained"
               startIcon={<ContentPaste />}
