@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Box, Button, Container, Divider, Stack } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import { ContentPaste, Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -8,12 +8,14 @@ import {
   useLoaderData,
   useSubmit,
 } from "react-router-dom";
+import Grid from "@mui/material/Unstable_Grid2";
 
 import { Item, ListItemDefinition } from "../../models";
-import { FormBlock, FormHeader } from "../../components";
+import { FormBlock, FormHeader, useSideDrawer } from "../../components";
 
 import StatusesContent from "./statuses-content";
 import ColumnContent from "./column-content";
+import SmartPasteDialog from "./smart-paste-dialog";
 
 const defaultListItem: Item = {
   id: null,
@@ -64,6 +66,7 @@ const EditListItemPage = () => {
     defaultListItem: Item;
   };
   const submit = useSubmit();
+  const { openDrawer, closeDrawer } = useSideDrawer();
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem(
@@ -101,11 +104,25 @@ const EditListItemPage = () => {
   return listItemDefinition ? (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <FormHeader
-          header={`Create - ${listItemDefinition.name}`}
-          currentRoute={["Items", "Create"]}
-          previousRoute="Home"
-        />
+        <Grid container direction="row" alignItems="center">
+          <Grid xs={12} md={6}>
+            <FormHeader
+              header={`Create - ${listItemDefinition.name}`}
+              currentRoute={["Items", "Create"]}
+              previousRoute="Home"
+            />
+          </Grid>
+
+          <Grid xs={12} md={6} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              startIcon={<ContentPaste />}
+              onClick={() => openDrawer("Smart Paste", <SmartPasteDialog />)}
+            >
+              Smart Paste
+            </Button>
+          </Grid>
+        </Grid>
 
         <FormBlock
           title="Columns"

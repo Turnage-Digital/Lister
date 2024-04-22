@@ -61,6 +61,7 @@ const ListsPageToolbar = ({ listNames, onSelectedListNameChanged }: Props) => {
             {selectedListName.name}
           </Typography>
         </Grid>
+
         <Grid>
           <IconButton
             color="primary"

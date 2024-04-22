@@ -11,7 +11,7 @@ import { RouterProvider } from "react-router-dom";
 
 import router from "./router";
 import theme from "./theme";
-import { Loading } from "./components";
+import { Loading, SideDrawerProvider } from "./components";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement!);
@@ -21,7 +21,9 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <RouterProvider router={router} fallbackElement={<Loading />} />
+        <SideDrawerProvider>
+          <RouterProvider router={router} fallbackElement={<Loading />} />
+        </SideDrawerProvider>
       </LocalizationProvider>
     </ThemeProvider>
   </StyledEngineProvider>

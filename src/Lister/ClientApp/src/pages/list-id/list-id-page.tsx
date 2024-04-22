@@ -41,15 +41,14 @@ export const listIdPageLoader = async ({
     getItemsUrl += `&field=${field}&sort=${sort}`;
   }
 
-  const listItemDefinition = await (
-    await fetch(`/api/lists/${params.listId}/itemDefinition`)
-  ).json();
-
-  const itemsResponse = fetch(getItemsUrl);
+  const getListItemDefinitionResponse = await fetch(
+    `/api/lists/${params.listId}/itemDefinition`
+  );
+  const getItemResponse = fetch(getItemsUrl);
 
   return defer({
-    listItemDefinition,
-    items: itemsResponse.then((res) => res.json()),
+    listItemDefinition: await getListItemDefinitionResponse.json(),
+    items: getItemResponse.then((res) => res.json()),
   });
 };
 
