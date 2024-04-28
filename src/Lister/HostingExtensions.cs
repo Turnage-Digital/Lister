@@ -1,10 +1,13 @@
-using System.Text.Json.Serialization;
 using Lamar.Microsoft.DependencyInjection;
+using Lister.App;
+using Lister.Behaviors;
 using Lister.Core.SqlDB;
 using Lister.Extensions;
-using Microsoft.AspNetCore.Http.Json;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace Lister;
@@ -21,13 +24,25 @@ internal static class HostingExtensions
 
         builder.Host.UseLamar(registry =>
         {
+            registry.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
+
+            // registry.Configure<JsonOptions>(options =>
+            //     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
             registry.AddCore(connectionString);
-            registry.AddDomain();
-            registry.AddApplication();
 
-            registry.Configure<JsonOptions>(options =>
-                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            registry.AddMediatR(config =>
+                config.RegisterServicesFromAssembly(typeof(HostingExtensions).Assembly));
+            registry.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(AssignUserBehavior<,>));
+            registry.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(LoggingBehavior<,>));
 
             registry
                 .AddDefaultIdentity<IdentityUser>()
@@ -38,19 +53,21 @@ internal static class HostingExtensions
                 {
                     options.Cookie.HttpOnly = true;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    
-                    options.Events.OnRedirectToAccessDenied =  
-                    options.Events.OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.CompletedTask;
-                    };
+
+                    options.Events.OnRedirectToAccessDenied =
+                        options.Events.OnRedirectToLogin = context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        };
                 });
 
             registry.AddAuthorization();
 
+            registry.Configure<OpenAIOptions>(
+                builder.Configuration.GetSection("OpenAI"));
+
             if (builder.Environment.IsDevelopment())
-            {
                 registry
                     .AddEndpointsApiExplorer()
                     .AddSwaggerGen(options =>
@@ -58,10 +75,9 @@ internal static class HostingExtensions
                         options.SwaggerDoc("v1", new OpenApiInfo
                         {
                             Version = "v1",
-                            Title = "ThingMan"
+                            Title = "Lister API"
                         });
                     });
-            }
         });
 
         return builder.Build();
@@ -76,6 +92,8 @@ internal static class HostingExtensions
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            SeedData.EnsureSeedData(app);
         }
         else
         {
@@ -91,7 +109,7 @@ internal static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseApp();
+        app.MapControllers();
 
         return app;
     }

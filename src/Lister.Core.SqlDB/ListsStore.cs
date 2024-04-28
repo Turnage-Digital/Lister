@@ -1,22 +1,21 @@
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class ListsStore : IListsStore<ListEntity>
+public class ListsStore(ListerDbContext dbContext) : IListsStore<ListEntity>
 {
-    private readonly ListerDbContext _dbContext;
-    private readonly EntityStore<ListEntity> _entityStore;
+    private readonly EntityStore<ListEntity> _entityStore = new(dbContext);
 
-    public ListsStore(ListerDbContext dbContext)
+    public Task<ListEntity> InitAsync(string createdBy, string name, CancellationToken cancellationToken)
     {
-        _dbContext = dbContext;
-        _entityStore = new EntityStore<ListEntity>(dbContext);
-    }
-
-    public Task<ListEntity> InitAsync(CancellationToken cancellationToken = default)
-    {
-        var retval = new ListEntity();
+        var retval = new ListEntity
+        {
+            Name = name,
+            CreatedBy = createdBy,
+            CreatedOn = DateTime.UtcNow
+        };
         return Task.FromResult(retval);
     }
 
@@ -30,6 +29,13 @@ public class ListsStore : IListsStore<ListEntity>
     {
         var parsed = Guid.Parse(id);
         var retval = await _entityStore.ReadAsync(parsed, cancellationToken);
+        return retval;
+    }
+
+    public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)
+    {
+        var retval = await dbContext.Lists
+            .SingleOrDefaultAsync(l => l.Name == name, cancellationToken);
         return retval;
     }
 
@@ -47,12 +53,12 @@ public class ListsStore : IListsStore<ListEntity>
 
     public Task SetColumnsAsync(
         ListEntity list,
-        Column[] columns,
+        IEnumerable<Column> columns,
         CancellationToken cancellationToken = default
     )
     {
         list.Columns = columns
-            .Select(pd => new ColumnEntity { Name = pd.Name, Type = pd.Type })
+            .Select(pd => new ColumnEntity { Name = pd.Name, Type = pd.Type, List = list })
             .ToList();
         return Task.CompletedTask;
     }
@@ -67,12 +73,12 @@ public class ListsStore : IListsStore<ListEntity>
 
     public Task SetStatusesAsync(
         ListEntity list,
-        Status[] statuses,
+        IEnumerable<Status> statuses,
         CancellationToken cancellationToken = default
     )
     {
         list.Statuses = statuses
-            .Select(sd => new StatusEntity { Name = sd.Name, Color = sd.Color })
+            .Select(sd => new StatusEntity { Name = sd.Name, Color = sd.Color, List = list })
             .ToList();
         return Task.CompletedTask;
     }
@@ -101,5 +107,19 @@ public class ListsStore : IListsStore<ListEntity>
     {
         var retval = list.CreatedOn;
         return Task.FromResult(retval);
+    }
+
+    public Task<Item> InitItemAsync(ListEntity list, string createdBy, object bag, CancellationToken cancellationToken)
+    {
+        var itemEntity = new ItemEntity
+        {
+            Bag = bag,
+            CreatedBy = createdBy,
+            CreatedOn = DateTime.UtcNow,
+            List = list,
+            ListId = list.Id
+        };
+        list.Items.Add(itemEntity);
+        return Task.FromResult<Item>(itemEntity);
     }
 }

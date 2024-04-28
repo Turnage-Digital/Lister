@@ -9,22 +9,22 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 
-import { AuthProvider } from "./auth";
 import router from "./router";
 import theme from "./theme";
+import { Loading, SideDrawerProvider } from "./components";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement!);
 
 root.render(
-  <AuthProvider>
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <RouterProvider router={router} />
-        </LocalizationProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
-  </AuthProvider>
+  <StyledEngineProvider injectFirst>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <SideDrawerProvider>
+          <RouterProvider router={router} fallbackElement={<Loading />} />
+        </SideDrawerProvider>
+      </LocalizationProvider>
+    </ThemeProvider>
+  </StyledEngineProvider>
 );

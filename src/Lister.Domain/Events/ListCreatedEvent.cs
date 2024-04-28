@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Lister.Domain.Events;
 
-public class ListCreatedEvent : INotification
+public class ListCreatedEvent(Guid id) : INotification
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; } = id;
 }

@@ -10,13 +10,17 @@ interface Props {
 
 const FormBlock = ({ title, blurb, content }: Props) => {
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <Grid xs={12} md={4}>
-        <Stack spacing={2}>
-          <Typography variant="h6" fontWeight="bold">
+        <Stack spacing={2} sx={{ pb: { xs: 4, md: 0 } }}>
+          <Typography color="primary" fontWeight="medium" variant="h6">
             {title}
           </Typography>
-          <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          <Typography
+            variant="body1"
+            sx={{ color: "text.secondary" }}
+            gutterBottom
+          >
             {blurb}
           </Typography>
         </Stack>

@@ -2,15 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-internal class EntityStore<TEntity>
+internal class EntityStore<TEntity>(DbContext dbContext)
     where TEntity : class
 {
-    private readonly DbSet<TEntity> _dbSet;
-
-    public EntityStore(DbContext dbContext)
-    {
-        _dbSet = dbContext.Set<TEntity>();
-    }
+    private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
 
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
