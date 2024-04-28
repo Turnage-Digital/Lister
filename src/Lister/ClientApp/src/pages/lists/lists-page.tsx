@@ -11,9 +11,6 @@ export const listsPageLoader = async () => {
     method: "GET",
   });
   const response = await fetch(getRequest);
-  if (response.status === 401) {
-    return [] as ListName[];
-  }
   const retval = await response.json();
   return retval;
 };

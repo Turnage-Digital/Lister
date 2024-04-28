@@ -44,6 +44,7 @@ export const listIdPageLoader = async ({
   const getListItemDefinitionResponse = await fetch(
     `/api/lists/${params.listId}/itemDefinition`
   );
+
   const getItemResponse = fetch(getItemsUrl);
 
   return defer({

@@ -1,19 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import { ContentPaste, Save } from "@mui/icons-material";
 
 import {
+  SideDrawerContainer,
   SideDrawerContent,
   SideDrawerFooter,
   SideDrawerHeader,
   useSideDrawer,
 } from "../../components";
 
-const SmartPasteDialog = () => {
+interface Props {
+  onPaste: (text: string) => void;
+}
+
+const SmartPasteDialog = ({ onPaste }: Props) => {
   const { closeDrawer } = useSideDrawer();
+  const [text, setText] = useState("");
 
   return (
-    <>
+    <SideDrawerContainer>
       <SideDrawerHeader />
       <SideDrawerContent>
         <TextField
@@ -21,17 +27,24 @@ const SmartPasteDialog = () => {
           fullWidth
           rows={10}
           placeholder="Paste your text here..."
-          sx={{ p: 2 }}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          sx={{ p: 2, flex: 1 }}
         />
       </SideDrawerContent>
       <SideDrawerFooter>
         <Button onClick={closeDrawer}>Cancel</Button>
-        <Box sx={{ flexGrow: 1 }} />
-        <Button variant="contained" startIcon={<Save />} sx={{ ml: 2 }}>
-          Submit
+        <Box sx={{ flex: 1 }} />
+        <Button
+          variant="contained"
+          startIcon={<ContentPaste />}
+          sx={{ ml: 2 }}
+          onClick={() => onPaste(text)}
+        >
+          Smart Paste
         </Button>
       </SideDrawerFooter>
-    </>
+    </SideDrawerContainer>
   );
 };
 

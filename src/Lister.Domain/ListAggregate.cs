@@ -58,8 +58,8 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
 
     // {
     //     "listId": "08dc44fa-810f-4740-8e5a-ad8e1dace60d",
-    //     "text": "This new Trailer Park Boy we have planned is Greasy Lee. He's located in Spring Hill, Florida.
-    //          The street address for this guy is 101 Maple Lane, he's bunking with Ricky. DOB is 2/2/1978."
+    //     "text": "The new Trailer Park Boy is Jim Lahey. He's located in Spring Hill, Florida.
+    //          The street address for this guy is 101 Maple Lane, he's bunking with Randy. DOB is 2/2/1928."
     // }
     public async Task<object> CreateExampleBagAsync(TList list, CancellationToken cancellationToken = default)
     {

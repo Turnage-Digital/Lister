@@ -6,6 +6,7 @@ export { default as StatusChip } from "./status-chip";
 
 export {
   SideDrawer,
+  SideDrawerContainer,
   SideDrawerContent,
   SideDrawerFooter,
   SideDrawerHeader,

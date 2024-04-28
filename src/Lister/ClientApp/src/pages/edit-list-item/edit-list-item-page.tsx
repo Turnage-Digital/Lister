@@ -20,7 +20,6 @@ import SmartPasteDialog from "./smart-paste-dialog";
 const defaultListItem: Item = {
   id: null,
   listId: null,
-  serialNumber: null,
   bag: {},
 };
 
@@ -67,7 +66,7 @@ const EditListItemPage = () => {
   };
 
   const submit = useSubmit();
-  const { openDrawer } = useSideDrawer();
+  const { openDrawer, closeDrawer } = useSideDrawer();
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem(
@@ -86,6 +85,30 @@ const EditListItemPage = () => {
   const update = (key: string, value: any) => {
     const newBag = { ...updated.bag, [key]: value };
     setUpdated({ ...updated, bag: newBag });
+  };
+
+  const handlePaste = async (text: string) => {
+    const body = {
+      listId: listItemDefinition.id,
+      text,
+    };
+
+    const postRequest = new Request(
+      `${process.env.PUBLIC_URL}/api/lists/convert-text-to-list-item`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+      }
+    );
+
+    const response = await fetch(postRequest);
+    const json = await response.json();
+
+    setUpdated({ ...updated, bag: json.bag });
+    closeDrawer();
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -118,7 +141,12 @@ const EditListItemPage = () => {
             <Button
               variant="contained"
               startIcon={<ContentPaste />}
-              onClick={() => openDrawer("Smart Paste", <SmartPasteDialog />)}
+              onClick={() =>
+                openDrawer(
+                  "Smart Paste",
+                  <SmartPasteDialog onPaste={handlePaste} />
+                )
+              }
             >
               Smart Paste
             </Button>

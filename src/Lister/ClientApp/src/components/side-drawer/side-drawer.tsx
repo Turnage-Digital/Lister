@@ -8,28 +8,6 @@ const SideDrawer = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.up("sm"));
 
-  // const outerContent = (
-  //   <>
-  //     <Box
-  //       sx={(theme) => ({
-  //         display: "flex",
-  //         alignItems: "center",
-  //         padding: theme.spacing(2),
-  //         ...theme.mixins.toolbar,
-  //       })}
-  //     >
-  //       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-  //         {title}
-  //       </Typography>
-  //
-  //       <IconButton onClick={closeDrawer}>
-  //         <Close />
-  //       </IconButton>
-  //     </Box>
-  //     <Box sx={{ overflowY: "auto", flexGrow: 1 }}>{innerContent}</Box>
-  //   </>
-  // );
-
   return fullScreen ? (
     <Drawer
       anchor="right"
