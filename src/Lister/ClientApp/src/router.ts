@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import {
   EditListItemPage,
@@ -14,9 +14,6 @@ import {
   ListsPage,
   listsPageLoader,
   Root,
-  rootLoader,
-  SignInPage,
-  signInPageAction,
 } from "./pages";
 
 const router = createBrowserRouter([
@@ -24,50 +21,37 @@ const router = createBrowserRouter([
     id: "root",
     path: "/",
     Component: Root,
-    loader: rootLoader,
-    children: [
-      {
-        path: "/",
-        Component: ListsPage,
-        loader: listsPageLoader,
-        children: [
-          {
-            path: "/:listId",
-            Component: ListIdPage,
-            loader: listIdPageLoader,
-          },
-        ],
-      },
-      {
-        path: "/create",
-        Component: EditListPage,
-        loader: editListPageLoader,
-        action: editListPageAction,
-      },
-      {
-        path: "/:listId/items/create",
-        Component: EditListItemPage,
-        loader: editListItemPageLoader,
-        action: editListItemPageAction,
-      },
-      {
-        path: "/:listId/items/:itemId",
-        Component: ListItemIdPage,
-        loader: listItemIdPageLoader,
-      },
-    ],
-  },
-  {
-    path: "/sign-in",
-    Component: SignInPage,
-    action: signInPageAction,
-  },
-  {
-    path: "/sign-out",
-    action: async () => {
-      await fetch("/api/users/sign-out", { method: "POST" });
-      return redirect("/");
-    },
+    // children: [
+    //   {
+    //     path: "/",
+    //     Component: ListsPage,
+    //     loader: listsPageLoader,
+    //     children: [
+    //       {
+    //         path: "/:listId",
+    //         Component: ListIdPage,
+    //         loader: listIdPageLoader,
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     path: "/create",
+    //     Component: EditListPage,
+    //     loader: editListPageLoader,
+    //     action: editListPageAction,
+    //   },
+    //   {
+    //     path: "/:listId/items/create",
+    //     Component: EditListItemPage,
+    //     loader: editListItemPageLoader,
+    //     action: editListItemPageAction,
+    //   },
+    //   {
+    //     path: "/:listId/items/:itemId",
+    //     Component: ListItemIdPage,
+    //     loader: listItemIdPageLoader,
+    //   },
+    // ],
   },
 ]);
 

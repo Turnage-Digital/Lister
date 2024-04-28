@@ -10,34 +10,13 @@ import {
   Toolbar,
 } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-import {
-  LoaderFunctionArgs,
-  Outlet,
-  redirect,
-  useFetcher,
-} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { SideDrawer } from "../components";
-
-export const rootLoader = async ({ request }: LoaderFunctionArgs) => {
-  const postRequest = new Request(
-    `${process.env.PUBLIC_URL}/api/users/claims`,
-    {
-      method: "GET",
-    }
-  );
-  const response = await fetch(postRequest);
-  if (response.status === 401) {
-    const params = new URLSearchParams();
-    params.set("callbackUrl", new URL(request.url).pathname);
-    return redirect(`/sign-in?${params.toString()}`);
-  }
-  const retval = await response.json();
-  return retval;
-};
+import { useAuth } from "../auth";
 
 const Root = () => {
-  const fetcher = useFetcher();
+  const { signOut } = useAuth();
 
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
     useState<HTMLButtonElement | null>(null);
@@ -46,10 +25,6 @@ const Root = () => {
   };
   const handleCloseUserMenu = () => {
     setUserMenuAnchorElement(null);
-  };
-
-  const handleLogoutClick = async () => {
-    fetcher.submit({}, { method: "POST", action: "/sign-out" });
   };
 
   return (
@@ -72,7 +47,7 @@ const Root = () => {
                 open={Boolean(userMenuAnchorElement)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleLogoutClick}>Sign Out</MenuItem>
+                <MenuItem onClick={signOut}>Sign Out</MenuItem>
               </Menu>
             </Box>
           </Toolbar>
