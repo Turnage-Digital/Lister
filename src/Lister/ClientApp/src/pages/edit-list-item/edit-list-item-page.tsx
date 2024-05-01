@@ -133,8 +133,7 @@ const EditListItemPage = () => {
             <Grid xs={12} md={9}>
               <FormHeader
                 header={`Create - ${listItemDefinition.name}`}
-                currentRoute={["Items", "Create"]}
-                previousRoute="Home"
+                currentRoute="create"
               />
             </Grid>
 

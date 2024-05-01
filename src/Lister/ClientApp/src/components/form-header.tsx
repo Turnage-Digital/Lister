@@ -5,15 +5,17 @@ import { useLinkClickHandler, useParams } from "react-router-dom";
 
 interface Props {
   header: string;
-
-  currentRoute: string[];
-  previousRoute: string;
+  currentRoute: string;
+  showPreviousRoute?: boolean;
 }
 
-const FormHeader = ({ header, currentRoute, previousRoute }: Props) => {
+const FormHeader = ({ header, currentRoute, showPreviousRoute }: Props) => {
   const params = useParams();
   const previousUrl = params.listId ? `/${params.listId}` : `/`;
   const handleLinkClick = useLinkClickHandler(previousUrl);
+
+  const listsUrl = "/";
+  const handleListsClick = useLinkClickHandler(listsUrl);
 
   return (
     <Grid container spacing={2}>
@@ -32,16 +34,26 @@ const FormHeader = ({ header, currentRoute, previousRoute }: Props) => {
         <Breadcrumbs>
           <Link
             underline="hover"
-            onClick={handleLinkClick}
+            onClick={handleListsClick}
             sx={{ cursor: "pointer" }}
           >
-            {previousRoute}
+            Lists
           </Link>
-          {currentRoute.map((route) => (
-            <Typography key={route} color="text.primary">
-              {route}
-            </Typography>
-          ))}
+
+          <Typography color="text.primary">{currentRoute}</Typography>
+
+          {/* <Link */}
+          {/*   underline="hover" */}
+          {/*   onClick={handleLinkClick} */}
+          {/*   sx={{ cursor: "pointer" }} */}
+          {/* > */}
+          {/*   {previousRoute} */}
+          {/* </Link> */}
+          {/* {currentRoute.map((route) => ( */}
+          {/*   <Typography key={route} color="text.primary"> */}
+          {/*     {route} */}
+          {/*   </Typography> */}
+          {/* ))} */}
         </Breadcrumbs>
       </Grid>
     </Grid>

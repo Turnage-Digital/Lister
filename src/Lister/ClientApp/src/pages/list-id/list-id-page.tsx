@@ -11,11 +11,17 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
   Paper,
   Stack,
   Typography,
 } from "@mui/material";
-import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
+import {
+  AddCircle,
+  ArrowBack,
+  MoreVert,
+  Visibility,
+} from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import {
@@ -207,23 +213,50 @@ const ListIdPage = () => {
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
-  return loading ? (
+  const content = loading ? (
     <Loading />
   ) : (
+    <Paper>
+      <DataGrid
+        columns={gridColDefs}
+        rows={rows}
+        getRowId={(row) => row.id}
+        rowCount={pagedItems.count}
+        paginationMode="server"
+        paginationModel={pagination}
+        pageSizeOptions={[10, 25, 50]}
+        onPaginationModelChange={handlePaginationChange}
+        sortingMode="server"
+        sortModel={sort}
+        onSortModelChange={handleSortChange}
+        disableColumnFilter
+        disableColumnSelector
+        disableRowSelectionOnClick
+      />
+    </Paper>
+  );
+
+  return (
     <Container maxWidth="xl">
-      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+      <Stack spacing={4} sx={{ px: 2, py: 4 }}>
         <Grid container>
-          <Grid xs={12} md={9}>
-            <Grid>
-              <Typography
-                color="primary"
-                fontWeight="medium"
-                variant="h4"
-                component="h1"
-              >
-                {listItemDefinition?.name}
-              </Typography>
-            </Grid>
+          <Grid xs={12} md={9} display="flex" justifyContent="flex-start">
+            <IconButton
+              color="primary"
+              onClick={() => navigate(-1)}
+              sx={{ mr: 1 }}
+            >
+              <ArrowBack />
+            </IconButton>
+
+            <Typography
+              color="primary"
+              fontWeight="medium"
+              variant="h4"
+              component="h1"
+            >
+              {listItemDefinition?.name}
+            </Typography>
           </Grid>
 
           <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
@@ -239,24 +272,7 @@ const ListIdPage = () => {
           </Grid>
         </Grid>
 
-        <Paper>
-          <DataGrid
-            columns={gridColDefs}
-            rows={rows}
-            getRowId={(row) => row.id}
-            rowCount={pagedItems.count}
-            paginationMode="server"
-            paginationModel={pagination}
-            pageSizeOptions={[10, 25, 50]}
-            onPaginationModelChange={handlePaginationChange}
-            sortingMode="server"
-            sortModel={sort}
-            onSortModelChange={handleSortChange}
-            disableColumnFilter
-            disableColumnSelector
-            disableRowSelectionOnClick
-          />
-        </Paper>
+        {content}
       </Stack>
     </Container>
   );

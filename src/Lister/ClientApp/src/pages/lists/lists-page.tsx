@@ -47,11 +47,32 @@ const ListsPage = () => {
     fetchData();
   }, [signedIn]);
 
-  return loading ? (
+  const content = loading ? (
     <Loading />
   ) : (
+    <Grid container>
+      {listNames.map((listName) => (
+        <Grid key={listName.id} xs={4}>
+          <Card>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {listName.name}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small" onClick={() => navigate(`/${listName.id}`)}>
+                View
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
+
+  return (
     <Container maxWidth="xl">
-      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+      <Stack spacing={4} sx={{ px: 2, py: 4 }}>
         <Grid container>
           <Grid xs={12} md={9}>
             <Grid>
@@ -77,27 +98,7 @@ const ListsPage = () => {
           </Grid>
         </Grid>
 
-        <Grid container>
-          {listNames.map((listName) => (
-            <Grid key={listName.id} xs={4}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {listName.name}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => navigate(`/${listName.id}`)}
-                  >
-                    View
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {content}
       </Stack>
     </Container>
   );
