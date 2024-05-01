@@ -1,4 +1,4 @@
-import { Status } from "./models";
+import { Status } from "./api";
 
 export const getStatusFromName = (
   statuses: Status[],

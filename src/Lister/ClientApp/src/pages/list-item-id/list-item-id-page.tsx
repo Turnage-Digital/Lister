@@ -3,7 +3,7 @@ import { LoaderFunctionArgs, useLoaderData } from "react-router-dom";
 import { Container, Divider, Stack } from "@mui/material";
 
 import { FormHeader } from "../../components";
-import { Item, ListItemDefinition } from "../../models";
+import { Item, ListItemDefinition } from "../../api";
 
 export const listItemIdPageLoader = async ({ params }: LoaderFunctionArgs) => {
   if (!params.listId || !params.itemId) {
@@ -30,7 +30,7 @@ const ListItemIdPage = () => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="xl">
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <FormHeader
           header={`Item #${item.id} - ${listItemDefinition.name}`}

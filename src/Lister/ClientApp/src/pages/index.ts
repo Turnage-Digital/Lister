@@ -10,10 +10,10 @@ export {
   editListItemPageAction,
 } from "./edit-list-item";
 
-export { ListIdPage, listIdPageLoader } from "./list-id";
+export { ListIdPage } from "./list-id";
 
 export { ListItemIdPage, listItemIdPageLoader } from "./list-item-id";
 
-export { ListsPage, listsPageLoader } from "./lists";
+export { ListsPage } from "./lists";
 
 export { default as Root } from "./root";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import {
   Alert,
   Box,
@@ -18,7 +18,9 @@ const SignInForm = ({ signIn, error }: Props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
     if (username && password) {
       await signIn(username, password);
     }

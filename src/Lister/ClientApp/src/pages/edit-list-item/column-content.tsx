@@ -3,7 +3,7 @@ import { Stack, TextField } from "@mui/material";
 import { DateField } from "@mui/x-date-pickers";
 import { isValid } from "date-fns";
 
-import { ColumnType, Item, ListItemDefinition } from "../../models";
+import { ColumnType, Item, ListItemDefinition } from "../../api";
 
 interface Props {
   listItemDefinition: ListItemDefinition;

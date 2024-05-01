@@ -1,7 +1,7 @@
 import React from "react";
 import { Chip } from "@mui/material";
 
-import { Status } from "../models";
+import { Status } from "../api";
 
 interface Props {
   status?: Status;

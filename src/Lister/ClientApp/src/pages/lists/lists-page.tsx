@@ -1,37 +1,105 @@
-import React from "react";
-import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
-import { Stack } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import { AddCircle, PlaylistAdd } from "@mui/icons-material";
 
-import { ListName } from "../../models";
+import { IListsApi, ListName, ListsApi } from "../../api";
+import { useAuth } from "../../auth";
+import { Loading } from "../../components";
 
-import ListsPageToolbar from "./lists-page-toolbar";
-
-export const listsPageLoader = async () => {
-  const getRequest = new Request(`${process.env.PUBLIC_URL}/api/lists/names`, {
-    method: "GET",
-  });
-  const response = await fetch(getRequest);
-  const retval = await response.json();
-  return retval;
-};
+const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 const ListsPage = () => {
-  const loaded = useLoaderData() as ListName[];
+  const { signedIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleSelectedListChanged = (listName: ListName) => {
-    navigate(`/${listName.id}`);
-  };
+  const [listNames, setListNames] = useState<ListName[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return (
-    <Stack spacing={4} sx={{ px: 2, py: 4 }}>
-      <ListsPageToolbar
-        listNames={loaded}
-        onSelectedListNameChanged={handleSelectedListChanged}
-      />
+  useEffect(() => {
+    if (!signedIn) {
+      return;
+    }
 
-      <Outlet />
-    </Stack>
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const listNames = await listsApi.getListNames();
+        setListNames(listNames);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [signedIn]);
+
+  return loading ? (
+    <Loading />
+  ) : (
+    <Container maxWidth="xl">
+      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+        <Grid container>
+          <Grid xs={12} md={9}>
+            <Grid>
+              <Typography
+                color="primary"
+                fontWeight="medium"
+                variant="h4"
+                component="h1"
+              >
+                Lists
+              </Typography>
+            </Grid>
+          </Grid>
+
+          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              startIcon={<PlaylistAdd />}
+              onClick={() => navigate(`/create`)}
+            >
+              Create a List
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          {listNames.map((listName) => (
+            <Grid key={listName.id} xs={4}>
+              <Card>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {listName.name}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    onClick={() => navigate(`/${listName.id}`)}
+                  >
+                    View
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
+    </Container>
   );
 };
 

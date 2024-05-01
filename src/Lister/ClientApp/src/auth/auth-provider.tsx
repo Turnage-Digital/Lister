@@ -17,9 +17,9 @@ type Props = PropsWithChildren;
 const userApi: IUsersApi = new UsersApi(`${process.env.PUBLIC_URL}/api/users`);
 
 const AuthProvider = ({ children }: Props) => {
-  const [loading, setLoading] = useState<boolean>(true);
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [claims, setClaims] = useState<Claim[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,7 +62,6 @@ const AuthProvider = ({ children }: Props) => {
   };
 
   let content: ReactElement;
-
   if (signedIn) {
     content = <>{children}</>;
   } else if (loading) {

@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { Item, ListItemDefinition } from "../../models";
+import { Item, ListItemDefinition } from "../../api";
 import { FormBlock, FormHeader, useSideDrawer } from "../../components";
 
 import StatusesContent from "./statuses-content";
@@ -125,77 +125,79 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
-  return listItemDefinition ? (
-    <Container component="form" onSubmit={handleSubmit}>
-      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Grid container alignItems="center">
-          <Grid xs={12} md={9}>
-            <FormHeader
-              header={`Create - ${listItemDefinition.name}`}
-              currentRoute={["Items", "Create"]}
-              previousRoute="Home"
-            />
+  return (
+    listItemDefinition && (
+      <Container component="form" onSubmit={handleSubmit}>
+        <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+          <Grid container alignItems="center">
+            <Grid xs={12} md={9}>
+              <FormHeader
+                header={`Create - ${listItemDefinition.name}`}
+                currentRoute={["Items", "Create"]}
+                previousRoute="Home"
+              />
+            </Grid>
+
+            <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+              <Button
+                variant="contained"
+                startIcon={<ContentPaste />}
+                onClick={() =>
+                  openDrawer(
+                    "Smart Paste",
+                    <SmartPasteDialog onPaste={handlePaste} />
+                  )
+                }
+              >
+                Smart Paste
+              </Button>
+            </Grid>
           </Grid>
 
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              startIcon={<ContentPaste />}
-              onClick={() =>
-                openDrawer(
-                  "Smart Paste",
-                  <SmartPasteDialog onPaste={handlePaste} />
-                )
-              }
-            >
-              Smart Paste
-            </Button>
-          </Grid>
-        </Grid>
+          <FormBlock
+            title="Columns"
+            blurb="Blurb about columns for an item."
+            content={
+              <ColumnContent
+                listItemDefinition={listItemDefinition}
+                item={updated}
+                onItemUpdated={update}
+              />
+            }
+          />
 
-        <FormBlock
-          title="Columns"
-          blurb="Blurb about columns for an item."
-          content={
-            <ColumnContent
-              listItemDefinition={listItemDefinition}
-              item={updated}
-              onItemUpdated={update}
-            />
-          }
-        />
+          <FormBlock
+            title="Status"
+            blurb="Blurb about a status for an item."
+            content={
+              <StatusesContent
+                listItemDefinition={listItemDefinition}
+                item={updated}
+                onItemUpdated={update}
+              />
+            }
+          />
 
-        <FormBlock
-          title="Status"
-          blurb="Blurb about a status for an item."
-          content={
-            <StatusesContent
-              listItemDefinition={listItemDefinition}
-              item={updated}
-              onItemUpdated={update}
-            />
-          }
-        />
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: { xs: "center", md: "flex-end" },
-          }}
-        >
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            startIcon={<Save />}
-            sx={{ width: { xs: "100%", md: "auto" } }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: { xs: "center", md: "flex-end" },
+            }}
           >
-            Submit
-          </Button>
-        </Box>
-      </Stack>
-    </Container>
-  ) : null;
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={<Save />}
+              sx={{ width: { xs: "100%", md: "auto" } }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Stack>
+      </Container>
+    )
+  );
 };
 
 export default EditListItemPage;

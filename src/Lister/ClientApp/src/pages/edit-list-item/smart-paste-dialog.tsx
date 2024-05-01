@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
-import { ContentPaste, Save } from "@mui/icons-material";
+import { ContentPaste } from "@mui/icons-material";
 
 import {
   SideDrawerContainer,

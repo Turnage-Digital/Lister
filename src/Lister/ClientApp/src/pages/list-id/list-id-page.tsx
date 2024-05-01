@@ -1,13 +1,5 @@
-import React, { useMemo } from "react";
-import {
-  Await,
-  defer,
-  LoaderFunctionArgs,
-  useLoaderData,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -15,52 +7,100 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { Paper } from "@mui/material";
-import { MoreVert, Visibility } from "@mui/icons-material";
+import {
+  Button,
+  Container,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
+import Grid from "@mui/material/Unstable_Grid2";
 
-import { Column, Item, ListItemDefinition } from "../../models";
+import {
+  Column,
+  IListsApi,
+  Item,
+  ListItemDefinition,
+  ListsApi,
+} from "../../api";
 import { Loading, StatusChip } from "../../components";
 import { getStatusFromName } from "../../status-fns";
+import { useAuth } from "../../auth";
 
-export const listIdPageLoader = async ({
-  request,
-  params,
-}: LoaderFunctionArgs) => {
-  if (!params.listId) {
-    return null;
-  }
-
-  const searchParams = new URL(request.url).searchParams;
-  const page = Number(searchParams.get("page") ?? "0");
-  const pageSize = Number(searchParams.get("pageSize") ?? "10");
-  const field = searchParams.get("field");
-  const sort = searchParams.get("sort");
-
-  let getItemsUrl = `/api/lists/${params.listId}/items?page=${page}&pageSize=${pageSize}`;
-  if (field && sort) {
-    getItemsUrl += `&field=${field}&sort=${sort}`;
-  }
-
-  const getListItemDefinitionResponse = await fetch(
-    `/api/lists/${params.listId}/itemDefinition`
-  );
-
-  const getItemResponse = fetch(getItemsUrl);
-
-  return defer({
-    listItemDefinition: await getListItemDefinitionResponse.json(),
-    items: getItemResponse.then((res) => res.json()),
-  });
-};
+const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 const ListIdPage = () => {
-  const { listItemDefinition, items } = useLoaderData() as {
-    listItemDefinition: ListItemDefinition;
-    items: { items: Item[]; count: number };
-  };
-
-  const params = useParams();
+  const { signedIn } = useAuth();
   const navigate = useNavigate();
+  const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [listItemDefinition, setListItemDefinition] =
+    useState<ListItemDefinition | null>(null);
+  const [pagedItems, setPagedItems] = useState<{
+    items: Item[];
+    count: number;
+  }>({
+    items: [],
+    count: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!signedIn) {
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const listItemDefinition = await listsApi.getListItemDefinition(
+          params.listId!
+        );
+        setListItemDefinition(listItemDefinition);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.listId, signedIn]);
+
+  useEffect(() => {
+    if (!listItemDefinition) {
+      return;
+    }
+
+    const page = Number(searchParams.get("page") ?? "0");
+    const pageSize = Number(searchParams.get("pageSize") ?? "10");
+    const field = searchParams.get("field");
+    const sort = searchParams.get("sort");
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const { items, count } = await listsApi.getItems(
+          params.listId!,
+          page,
+          pageSize,
+          field,
+          sort
+        );
+        setPagedItems({ items, count });
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.listId, listItemDefinition, searchParams]);
 
   const gridColDefs: GridColDef[] = useMemo(() => {
     if (!listItemDefinition) {
@@ -135,10 +175,6 @@ const ListIdPage = () => {
     return retval;
   }, [listItemDefinition, navigate, params]);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const pagination = getPaginationFromSearchParams(searchParams);
-  const sort = getSortFromSearchParams(searchParams);
-
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
     const pageSize = gridPaginationModel.pageSize;
@@ -164,38 +200,65 @@ const ListIdPage = () => {
     setSearchParams(searchParams);
   };
 
-  return (
-    <React.Suspense fallback={<Loading />}>
-      <Await resolve={items}>
-        {(data) => {
-          const rows = data.items.map((item: Item) => ({
-            id: item.id,
-            ...item.bag,
-          }));
+  const rows = pagedItems.items.map((item: Item) => ({
+    id: item.id,
+    ...item.bag,
+  }));
+  const pagination = getPaginationFromSearchParams(searchParams);
+  const sort = getSortFromSearchParams(searchParams);
 
-          return (
-            <Paper>
-              <DataGrid
-                columns={gridColDefs}
-                rows={rows}
-                getRowId={(row) => row.id}
-                rowCount={data.count}
-                paginationMode="server"
-                paginationModel={pagination}
-                pageSizeOptions={[10, 25, 50]}
-                onPaginationModelChange={handlePaginationChange}
-                sortingMode="server"
-                sortModel={sort}
-                onSortModelChange={handleSortChange}
-                disableColumnFilter
-                disableColumnSelector
-                disableRowSelectionOnClick
-              />
-            </Paper>
-          );
-        }}
-      </Await>
-    </React.Suspense>
+  return loading ? (
+    <Loading />
+  ) : (
+    <Container maxWidth="xl">
+      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+        <Grid container>
+          <Grid xs={12} md={9}>
+            <Grid>
+              <Typography
+                color="primary"
+                fontWeight="medium"
+                variant="h4"
+                component="h1"
+              >
+                {listItemDefinition?.name}
+              </Typography>
+            </Grid>
+          </Grid>
+
+          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              startIcon={<AddCircle />}
+              onClick={() =>
+                navigate(`/${listItemDefinition?.id}/items/create`)
+              }
+            >
+              Create an Item
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Paper>
+          <DataGrid
+            columns={gridColDefs}
+            rows={rows}
+            getRowId={(row) => row.id}
+            rowCount={pagedItems.count}
+            paginationMode="server"
+            paginationModel={pagination}
+            pageSizeOptions={[10, 25, 50]}
+            onPaginationModelChange={handlePaginationChange}
+            sortingMode="server"
+            sortModel={sort}
+            onSortModelChange={handleSortChange}
+            disableColumnFilter
+            disableColumnSelector
+            disableRowSelectionOnClick
+          />
+        </Paper>
+      </Stack>
+    </Container>
   );
 };
 

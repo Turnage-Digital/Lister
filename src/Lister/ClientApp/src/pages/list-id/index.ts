@@ -1,1 +1,1 @@
-export { default as ListIdPage, listIdPageLoader } from "./list-id-page";
+export { default as ListIdPage } from "./list-id-page";

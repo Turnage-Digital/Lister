@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 import { FormBlock, FormHeader } from "../../components";
-import { ListItemDefinition } from "../../models";
+import { ListItemDefinition } from "../../api";
 
 import NameBlock from "./name-block";
 import StatusesContent from "./statuses-content";

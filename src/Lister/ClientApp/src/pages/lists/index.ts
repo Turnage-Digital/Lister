@@ -1,1 +1,1 @@
-export { default as ListsPage, listsPageLoader } from "./lists-page";
+export { default as ListsPage } from "./lists-page";
