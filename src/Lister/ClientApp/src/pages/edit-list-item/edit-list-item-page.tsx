@@ -1,5 +1,12 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { ContentPaste, Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
@@ -11,7 +18,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { Item, ListItemDefinition } from "../../api";
-import { FormBlock, FormHeader, useSideDrawer } from "../../components";
+import { FormBlock, useSideDrawer } from "../../components";
 
 import StatusesContent from "./statuses-content";
 import ColumnContent from "./column-content";
@@ -129,12 +136,16 @@ const EditListItemPage = () => {
     listItemDefinition && (
       <Container component="form" onSubmit={handleSubmit}>
         <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-          <Grid container alignItems="center">
+          <Grid container>
             <Grid xs={12} md={9}>
-              <FormHeader
-                header={`Create - ${listItemDefinition.name}`}
-                currentRoute="create"
-              />
+              <Typography
+                color="primary"
+                fontWeight="medium"
+                variant="h4"
+                component="h1"
+              >
+                {`Create - ${listItemDefinition.name}`}
+              </Typography>
             </Grid>
 
             <Grid xs={12} md={3} display="flex" justifyContent="flex-end">

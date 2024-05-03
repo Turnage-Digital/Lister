@@ -1,31 +1,22 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
-import { Save } from "@mui/icons-material";
 import {
-  ActionFunctionArgs,
-  redirect,
-  useLoaderData,
-  useSubmit,
-} from "react-router-dom";
+  Box,
+  Button,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { Save } from "@mui/icons-material";
+import { ActionFunctionArgs, redirect, useSubmit } from "react-router-dom";
+import Grid from "@mui/material/Unstable_Grid2";
 
-import { FormBlock, FormHeader } from "../../components";
+import { FormBlock } from "../../components";
 import { ListItemDefinition } from "../../api";
 
 import NameBlock from "./name-block";
 import StatusesContent from "./statuses-content";
 import ColumnsContent from "./columns-content";
-
-const defaultList: ListItemDefinition = {
-  id: null,
-  name: "",
-  columns: [],
-  statuses: [],
-};
-
-export const editListPageLoader = async () => {
-  const retval = defaultList;
-  return retval;
-};
 
 export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const data = await request.formData();
@@ -49,12 +40,18 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 const EditListPage = () => {
-  const loaded = useLoaderData() as ListItemDefinition;
   const submit = useSubmit();
+
+  const defaultListDefinition: ListItemDefinition = {
+    id: null,
+    name: "",
+    columns: [],
+    statuses: [],
+  };
 
   const [updated, setUpdated] = useState<ListItemDefinition>(() => {
     const item = window.sessionStorage.getItem("updated_list");
-    return item ? JSON.parse(item) : loaded;
+    return item ? JSON.parse(item) : defaultListDefinition;
   });
 
   useEffect(() => {
@@ -82,7 +79,20 @@ const EditListPage = () => {
   return (
     <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <FormHeader header="Create a List" currentRoute="Create" />
+        <Grid container>
+          <Grid xs={12} md={9}>
+            <Typography
+              color="primary"
+              fontWeight="medium"
+              variant="h4"
+              component="h1"
+            >
+              Create a List
+            </Typography>
+          </Grid>
+
+          {/* <Grid xs={12} md={3} display="flex" justifyContent="flex-end" /> */}
+        </Grid>
 
         <FormBlock
           title="Name"

@@ -7,21 +7,8 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import {
-  Button,
-  Container,
-  Divider,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import {
-  AddCircle,
-  ArrowBack,
-  MoreVert,
-  Visibility,
-} from "@mui/icons-material";
+import { Button, Container, Paper, Stack, Typography } from "@mui/material";
+import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import {
@@ -31,9 +18,8 @@ import {
   ListItemDefinition,
   ListsApi,
 } from "../../api";
-import { Loading, StatusChip } from "../../components";
+import { Loading, StatusChip, useAuth } from "../../components";
 import { getStatusFromName } from "../../status-fns";
-import { useAuth } from "../../auth";
 
 const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
@@ -238,17 +224,9 @@ const ListIdPage = () => {
 
   return (
     <Container maxWidth="xl">
-      <Stack spacing={4} sx={{ px: 2, py: 4 }}>
-        <Grid container>
-          <Grid xs={12} md={9} display="flex" justifyContent="flex-start">
-            <IconButton
-              color="primary"
-              onClick={() => navigate(-1)}
-              sx={{ mr: 1 }}
-            >
-              <ArrowBack />
-            </IconButton>
-
+      <Stack sx={{ px: 2, py: 4 }}>
+        <Grid container sx={{ py: 4 }}>
+          <Grid xs={12} md={9}>
             <Typography
               color="primary"
               fontWeight="medium"

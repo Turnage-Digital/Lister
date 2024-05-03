@@ -1,5 +1,1 @@
-export {
-  default as EditListPage,
-  editListPageLoader,
-  editListPageAction,
-} from "./edit-list-page";
+export { default as EditListPage, editListPageAction } from "./edit-list-page";

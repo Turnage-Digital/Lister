@@ -12,8 +12,7 @@ import {
 import { AccountCircle } from "@mui/icons-material";
 import { Outlet } from "react-router-dom";
 
-import { SideDrawer } from "../components";
-import { useAuth } from "../auth";
+import { SideDrawer, useAuth } from "../components";
 
 const Root = () => {
   const { signOut } = useAuth();

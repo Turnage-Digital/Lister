@@ -6,16 +6,14 @@ import {
   CardActions,
   CardContent,
   Container,
-  Divider,
   Stack,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { AddCircle, PlaylistAdd } from "@mui/icons-material";
+import { PlaylistAdd } from "@mui/icons-material";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import { useAuth } from "../../auth";
-import { Loading } from "../../components";
+import { Loading, useAuth } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
@@ -50,9 +48,9 @@ const ListsPage = () => {
   const content = loading ? (
     <Loading />
   ) : (
-    <Grid container>
+    <Grid container spacing={2}>
       {listNames.map((listName) => (
-        <Grid key={listName.id} xs={4}>
+        <Grid key={listName.id} xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -72,19 +70,17 @@ const ListsPage = () => {
 
   return (
     <Container maxWidth="xl">
-      <Stack spacing={4} sx={{ px: 2, py: 4 }}>
-        <Grid container>
+      <Stack sx={{ px: 2, py: 4 }}>
+        <Grid container sx={{ py: 4 }}>
           <Grid xs={12} md={9}>
-            <Grid>
-              <Typography
-                color="primary"
-                fontWeight="medium"
-                variant="h4"
-                component="h1"
-              >
-                Lists
-              </Typography>
-            </Grid>
+            <Typography
+              color="primary"
+              fontWeight="medium"
+              variant="h4"
+              component="h1"
+            >
+              Lists
+            </Typography>
           </Grid>
 
           <Grid xs={12} md={3} display="flex" justifyContent="flex-end">

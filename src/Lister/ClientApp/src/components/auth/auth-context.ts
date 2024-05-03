@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { Claim } from "../api";
+import { Claim } from "../../api";
 
 interface Props {
   signedIn: boolean;

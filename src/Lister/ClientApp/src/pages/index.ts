@@ -1,8 +1,4 @@
-export {
-  EditListPage,
-  editListPageLoader,
-  editListPageAction,
-} from "./edit-list";
+export { EditListPage, editListPageAction } from "./edit-list";
 
 export {
   EditListItemPage,
@@ -12,7 +8,7 @@ export {
 
 export { ListIdPage } from "./list-id";
 
-export { ListItemIdPage, listItemIdPageLoader } from "./list-item-id";
+export { ListItemIdPage } from "./list-item-id";
 
 export { ListsPage } from "./lists";
 

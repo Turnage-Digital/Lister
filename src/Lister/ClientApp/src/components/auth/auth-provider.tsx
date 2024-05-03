@@ -6,8 +6,8 @@ import React, {
   useState,
 } from "react";
 
-import { Loading } from "../components";
-import { Claim, IUsersApi, UsersApi } from "../api";
+import { Claim, IUsersApi, UsersApi } from "../../api";
+import Loading from "../loading";
 
 import AuthContext from "./auth-context";
 import SignInForm from "./sign-in-form";

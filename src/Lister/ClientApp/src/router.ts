@@ -2,7 +2,9 @@ import { createBrowserRouter } from "react-router-dom";
 
 import {
   EditListItemPage,
+  editListItemPageAction,
   EditListPage,
+  editListPageAction,
   ListIdPage,
   ListItemIdPage,
   ListsPage,
@@ -26,6 +28,7 @@ const router = createBrowserRouter([
       {
         path: "/create",
         Component: EditListPage,
+        action: editListPageAction,
       },
       {
         path: "/:listId/items/:itemId",
@@ -34,6 +37,7 @@ const router = createBrowserRouter([
       {
         path: "/:listId/items/create",
         Component: EditListItemPage,
+        action: editListItemPageAction,
       },
     ],
   },
