@@ -31,9 +31,6 @@ internal static class HostingExtensions
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
-            // registry.Configure<JsonOptions>(options =>
-            //     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
             registry.AddCore(connectionString);
 

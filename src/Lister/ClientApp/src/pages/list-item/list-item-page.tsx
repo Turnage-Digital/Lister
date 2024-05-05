@@ -10,7 +10,6 @@ const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 const ListItemPage = () => {
   const { signedIn } = useAuth();
-  const navigate = useNavigate();
   const params = useParams();
 
   const [listItemDefinition, setListItemDefinition] =

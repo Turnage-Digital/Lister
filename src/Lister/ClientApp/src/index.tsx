@@ -19,21 +19,23 @@ const rootElement = document.getElementById("root");
 const root = createRoot(rootElement!);
 
 root.render(
-  <StyledEngineProvider injectFirst>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <AuthProvider>
-          <SideDrawerProvider>
-            <DevSupport
-              ComponentPreviews={ComponentPreviews}
-              useInitialHook={useInitial}
-            >
-              <RouterProvider router={router} />
-            </DevSupport>
-          </SideDrawerProvider>
-        </AuthProvider>
-      </LocalizationProvider>
-    </ThemeProvider>
-  </StyledEngineProvider>
+  <React.StrictMode>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <AuthProvider redirect={false}>
+            <SideDrawerProvider>
+              <DevSupport
+                ComponentPreviews={ComponentPreviews}
+                useInitialHook={useInitial}
+              >
+                <RouterProvider router={router} />
+              </DevSupport>
+            </SideDrawerProvider>
+          </AuthProvider>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  </React.StrictMode>
 );

@@ -50,7 +50,6 @@ export const editListItemPageAction = async ({
 
 const EditListItemPage = () => {
   const { signedIn } = useAuth();
-  const navigate = useNavigate();
   const params = useParams();
   const submit = useSubmit();
   const { openDrawer, closeDrawer } = useSideDrawer();
@@ -158,7 +157,7 @@ const EditListItemPage = () => {
               variant="h5"
               component="h1"
             >
-              {`Create - ${listItemDefinition?.name}`}
+              Create Item
             </Typography>
           </Grid>
 

@@ -45,7 +45,6 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 const EditListPage = () => {
-  const navigate = useNavigate();
   const submit = useSubmit();
 
   const defaultListDefinition: ListItemDefinition = {
