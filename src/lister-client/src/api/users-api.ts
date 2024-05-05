@@ -17,7 +17,7 @@ export class UsersApi implements IUsersApi {
 
   public async signIn(
     username: string,
-    password: string,
+    password: string
   ): Promise<{ succeeded: boolean }> {
     const input = { username, password };
     const request = new Request(`${this.baseUrl}/sign-in`, {
