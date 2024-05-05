@@ -7,7 +7,14 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { Button, Container, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
 
@@ -23,14 +30,14 @@ import { getStatusFromName } from "../../status-fns";
 
 const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
-const ListIdPage = () => {
+const ListPage = () => {
   const { signedIn } = useAuth();
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [listItemDefinition, setListItemDefinition] =
-    useState<ListItemDefinition | null>(null);
+    useState<ListItemDefinition>();
   const [pagedItems, setPagedItems] = useState<{
     items: Item[];
     count: number;
@@ -199,38 +206,17 @@ const ListIdPage = () => {
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
-  const content = loading ? (
+  return loading ? (
     <Loading />
   ) : (
-    <Paper>
-      <DataGrid
-        columns={gridColDefs}
-        rows={rows}
-        getRowId={(row) => row.id}
-        rowCount={pagedItems.count}
-        paginationMode="server"
-        paginationModel={pagination}
-        pageSizeOptions={[10, 25, 50]}
-        onPaginationModelChange={handlePaginationChange}
-        sortingMode="server"
-        sortModel={sort}
-        onSortModelChange={handleSortChange}
-        disableColumnFilter
-        disableColumnSelector
-        disableRowSelectionOnClick
-      />
-    </Paper>
-  );
-
-  return (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Grid container sx={{ py: 4 }}>
+        <Grid container sx={{ pb: 4 }}>
           <Grid xs={12} md={9}>
             <Typography
               color="primary"
-              fontWeight="medium"
-              variant="h4"
+              fontWeight="bold"
+              variant="h5"
               component="h1"
             >
               {listItemDefinition?.name}
@@ -238,19 +224,38 @@ const ListIdPage = () => {
           </Grid>
 
           <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              startIcon={<AddCircle />}
-              onClick={() =>
-                navigate(`/${listItemDefinition?.id}/items/create`)
-              }
-            >
-              Create an Item
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                startIcon={<AddCircle />}
+                onClick={() =>
+                  navigate(`/${listItemDefinition?.id}/items/create`)
+                }
+              >
+                Create an Item
+              </Button>
+            </Box>
           </Grid>
         </Grid>
 
-        {content}
+        <Paper>
+          <DataGrid
+            columns={gridColDefs}
+            rows={rows}
+            getRowId={(row) => row.id}
+            rowCount={pagedItems.count}
+            paginationMode="server"
+            paginationModel={pagination}
+            pageSizeOptions={[10, 25, 50]}
+            onPaginationModelChange={handlePaginationChange}
+            sortingMode="server"
+            sortModel={sort}
+            onSortModelChange={handleSortChange}
+            disableColumnFilter
+            disableColumnSelector
+            disableRowSelectionOnClick
+          />
+        </Paper>
       </Stack>
     </Container>
   );
@@ -278,4 +283,4 @@ const getSortFromSearchParams = (
   return [{ field, sort }];
 };
 
-export default ListIdPage;
+export default ListPage;

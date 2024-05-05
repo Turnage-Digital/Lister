@@ -12,6 +12,8 @@ export interface IListsApi {
     field: string | null,
     sort: string | null
   ): Promise<{ items: Item[]; count: number }>;
+
+  getItem(listId: string, itemId: string): Promise<Item>;
 }
 
 export class ListsApi implements IListsApi {
@@ -54,6 +56,15 @@ export class ListsApi implements IListsApi {
     }
 
     const request = new Request(url, {
+      method: "GET",
+    });
+    const response = await fetch(request);
+    const retval = await response.json();
+    return retval;
+  }
+
+  public async getItem(listId: string, itemId: string): Promise<Item> {
+    const request = new Request(`${this.baseUrl}/${listId}/items/${itemId}`, {
       method: "GET",
     });
     const response = await fetch(request);

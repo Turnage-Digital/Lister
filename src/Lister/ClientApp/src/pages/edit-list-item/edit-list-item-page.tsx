@@ -10,39 +10,21 @@ import {
 import { ContentPaste, Save } from "@mui/icons-material";
 import {
   ActionFunctionArgs,
-  LoaderFunctionArgs,
   redirect,
-  useLoaderData,
+  useNavigate,
+  useParams,
   useSubmit,
 } from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { Item, ListItemDefinition } from "../../api";
-import { FormBlock, useSideDrawer } from "../../components";
+import { IListsApi, Item, ListItemDefinition, ListsApi } from "../../api";
+import { FormBlock, Loading, useAuth, useSideDrawer } from "../../components";
 
 import StatusesContent from "./statuses-content";
 import ColumnContent from "./column-content";
 import SmartPasteDialog from "./smart-paste-dialog";
 
-const defaultListItem: Item = {
-  id: null,
-  listId: null,
-  bag: {},
-};
-
-export const editListItemPageLoader = async ({
-  params,
-}: LoaderFunctionArgs) => {
-  if (!params.listId) {
-    return null;
-  }
-
-  const getListItemDefinitionResponse = await fetch(
-    `${process.env.PUBLIC_URL}/api/lists/${params.listId}/itemDefinition`
-  );
-  const listItemDefinition = await getListItemDefinitionResponse.json();
-  return { listItemDefinition, defaultListItem };
-};
+const listsApi: IListsApi = new ListsApi(`${process.env.PUBLIC_URL}/api/lists`);
 
 export const editListItemPageAction = async ({
   params,
@@ -67,24 +49,55 @@ export const editListItemPageAction = async ({
 };
 
 const EditListItemPage = () => {
-  const { listItemDefinition, defaultListItem } = useLoaderData() as {
-    listItemDefinition: ListItemDefinition;
-    defaultListItem: Item;
-  };
-
+  const { signedIn } = useAuth();
+  const navigate = useNavigate();
+  const params = useParams();
   const submit = useSubmit();
   const { openDrawer, closeDrawer } = useSideDrawer();
 
+  const [listItemDefinition, setListItemDefinition] =
+    useState<ListItemDefinition>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!signedIn) {
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const listItemDefinition = await listsApi.getListItemDefinition(
+          params.listId!
+        );
+        setListItemDefinition(listItemDefinition);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.listId, signedIn]);
+
+  const defaultListItem: Item = {
+    id: null,
+    listId: null,
+    bag: {},
+  };
+
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem(
-      listItemDefinition.id ?? "updated_item"
+      listItemDefinition?.id ?? "updated_item"
     );
     return item ? JSON.parse(item) : defaultListItem;
   });
 
   useEffect(() => {
     window.sessionStorage.setItem(
-      listItemDefinition.id ?? "updated_item",
+      listItemDefinition?.id ?? "updated_item",
       JSON.stringify(updated)
     );
   }, [listItemDefinition, updated]);
@@ -96,7 +109,7 @@ const EditListItemPage = () => {
 
   const handlePaste = async (text: string) => {
     const body = {
-      listId: listItemDefinition.id,
+      listId: listItemDefinition?.id,
       text,
     };
 
@@ -132,23 +145,25 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
-  return (
-    listItemDefinition && (
-      <Container component="form" onSubmit={handleSubmit}>
-        <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-          <Grid container>
-            <Grid xs={12} md={9}>
-              <Typography
-                color="primary"
-                fontWeight="medium"
-                variant="h4"
-                component="h1"
-              >
-                {`Create - ${listItemDefinition.name}`}
-              </Typography>
-            </Grid>
+  return loading ? (
+    <Loading />
+  ) : (
+    <Container component="form" onSubmit={handleSubmit}>
+      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
+        <Grid container>
+          <Grid xs={12} md={9}>
+            <Typography
+              color="primary"
+              fontWeight="bold"
+              variant="h5"
+              component="h1"
+            >
+              {`Create - ${listItemDefinition?.name}`}
+            </Typography>
+          </Grid>
 
-            <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+            <Box>
               <Button
                 variant="contained"
                 startIcon={<ContentPaste />}
@@ -161,52 +176,52 @@ const EditListItemPage = () => {
               >
                 Smart Paste
               </Button>
-            </Grid>
+            </Box>
           </Grid>
+        </Grid>
 
-          <FormBlock
-            title="Columns"
-            blurb="Blurb about columns for an item."
-            content={
-              <ColumnContent
-                listItemDefinition={listItemDefinition}
-                item={updated}
-                onItemUpdated={update}
-              />
-            }
-          />
+        <FormBlock
+          title="Columns"
+          blurb="Blurb about columns for an item."
+          content={
+            <ColumnContent
+              listItemDefinition={listItemDefinition!}
+              item={updated}
+              onItemUpdated={update}
+            />
+          }
+        />
 
-          <FormBlock
-            title="Status"
-            blurb="Blurb about a status for an item."
-            content={
-              <StatusesContent
-                listItemDefinition={listItemDefinition}
-                item={updated}
-                onItemUpdated={update}
-              />
-            }
-          />
+        <FormBlock
+          title="Status"
+          blurb="Blurb about a status for an item."
+          content={
+            <StatusesContent
+              listItemDefinition={listItemDefinition!}
+              item={updated}
+              onItemUpdated={update}
+            />
+          }
+        />
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "center", md: "flex-end" },
-            }}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "center", md: "flex-end" },
+          }}
+        >
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            startIcon={<Save />}
+            sx={{ width: { xs: "100%", md: "auto" } }}
           >
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              startIcon={<Save />}
-              sx={{ width: { xs: "100%", md: "auto" } }}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Stack>
-      </Container>
-    )
+            Submit
+          </Button>
+        </Box>
+      </Stack>
+    </Container>
   );
 };
 

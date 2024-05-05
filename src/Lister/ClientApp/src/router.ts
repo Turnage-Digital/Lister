@@ -5,8 +5,8 @@ import {
   editListItemPageAction,
   EditListPage,
   editListPageAction,
-  ListIdPage,
-  ListItemIdPage,
+  ListItemPage,
+  ListPage,
   ListsPage,
   Root,
 } from "./pages";
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/:listId",
-        Component: ListIdPage,
+        Component: ListPage,
       },
       {
         path: "/create",
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/:listId/items/:itemId",
-        Component: ListItemIdPage,
+        Component: ListItemPage,
       },
       {
         path: "/:listId/items/create",

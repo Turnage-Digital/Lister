@@ -8,7 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Save } from "@mui/icons-material";
-import { ActionFunctionArgs, redirect, useSubmit } from "react-router-dom";
+import {
+  ActionFunctionArgs,
+  redirect,
+  useNavigate,
+  useSubmit,
+} from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { FormBlock } from "../../components";
@@ -40,6 +45,7 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 const EditListPage = () => {
+  const navigate = useNavigate();
   const submit = useSubmit();
 
   const defaultListDefinition: ListItemDefinition = {
@@ -83,15 +89,13 @@ const EditListPage = () => {
           <Grid xs={12} md={9}>
             <Typography
               color="primary"
-              fontWeight="medium"
-              variant="h4"
+              fontWeight="bold"
+              variant="h5"
               component="h1"
             >
               Create a List
             </Typography>
           </Grid>
-
-          {/* <Grid xs={12} md={3} display="flex" justifyContent="flex-end" /> */}
         </Grid>
 
         <FormBlock

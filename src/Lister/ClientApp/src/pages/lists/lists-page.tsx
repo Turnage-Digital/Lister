@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -45,38 +46,17 @@ const ListsPage = () => {
     fetchData();
   }, [signedIn]);
 
-  const content = loading ? (
+  return loading ? (
     <Loading />
   ) : (
-    <Grid container spacing={2}>
-      {listNames.map((listName) => (
-        <Grid key={listName.id} xs={12} sm={6} md={4}>
-          <Card>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {listName.name}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => navigate(`/${listName.id}`)}>
-                View
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  );
-
-  return (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Grid container sx={{ py: 4 }}>
+        <Grid container sx={{ pb: 4 }}>
           <Grid xs={12} md={9}>
             <Typography
               color="primary"
-              fontWeight="medium"
-              variant="h4"
+              fontWeight="bold"
+              variant="h5"
               component="h1"
             >
               Lists
@@ -84,17 +64,39 @@ const ListsPage = () => {
           </Grid>
 
           <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              startIcon={<PlaylistAdd />}
-              onClick={() => navigate(`/create`)}
-            >
-              Create a List
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                startIcon={<PlaylistAdd />}
+                onClick={() => navigate(`/create`)}
+              >
+                Create a List
+              </Button>
+            </Box>
           </Grid>
         </Grid>
 
-        {content}
+        <Grid container spacing={2}>
+          {listNames.map((listName) => (
+            <Grid key={listName.id} xs={12} sm={6} md={4}>
+              <Card>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {listName.name}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    onClick={() => navigate(`/${listName.id}`)}
+                  >
+                    View
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Stack>
     </Container>
   );
