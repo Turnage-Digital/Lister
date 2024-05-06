@@ -1,5 +1,5 @@
 using Azure.AI.OpenAI;
-using Lister.App;
+using Lister.Application;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;

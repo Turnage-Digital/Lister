@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Lister.App;
+using Lister.Application;
 using Lister.Core.ValueObjects;
 using Newtonsoft.Json;
 

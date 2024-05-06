@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Lister.App;
+using Lister.Application;
 using Lister.Extensions;
 using MediatR;
 

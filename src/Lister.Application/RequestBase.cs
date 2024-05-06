@@ -1,7 +1,7 @@
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Lister.App;
+namespace Lister.Application;
 
 public abstract class RequestBase<T> : IRequest<T>
 {

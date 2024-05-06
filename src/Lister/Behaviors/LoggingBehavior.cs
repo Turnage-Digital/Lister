@@ -1,4 +1,4 @@
-using Lister.App;
+using Lister.Application;
 using MediatR;
 using Serilog;
 

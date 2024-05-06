@@ -1,5 +1,5 @@
 using Lamar.Microsoft.DependencyInjection;
-using Lister.App;
+using Lister.Application;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
 using Lister.Extensions;
@@ -77,7 +77,8 @@ internal static class HostingExtensions
                     });
         });
 
-        return builder.Build();
+        var retval = builder.Build();
+        return retval;
     }
 
     public static WebApplication ConfigurePipeline(this WebApplication app)

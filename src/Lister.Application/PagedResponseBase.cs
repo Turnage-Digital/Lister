@@ -1,4 +1,4 @@
-namespace Lister.App;
+namespace Lister.Application;
 
 public abstract class PagedResponseBase<T>(IEnumerable<T> items, long count)
 {
