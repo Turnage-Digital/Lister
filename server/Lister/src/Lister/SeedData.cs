@@ -25,7 +25,7 @@ internal static class SeedData
         if (heath == null)
         {
             CreateUser(userManager, "heath", "heath@email.com", "Pass123$", "Heath Turnage",
-                "Heath", "Turnage", "https://thingman.com");
+                "Heath", "Turnage", "https://lister.com");
             heath = userManager.FindByNameAsync("heath").Result;
         }
         else
@@ -36,7 +36,7 @@ internal static class SeedData
         var erika = userManager.FindByNameAsync("erika").Result;
         if (erika == null)
             CreateUser(userManager, "erika", "erika@email.com", "Pass123$", "Erika Turnage",
-                "Erika", "Turnage", "https://thingman.com");
+                "Erika", "Turnage", "https://lister.com");
         else
             Log.Debug("erika already exists");
 
@@ -103,7 +103,7 @@ internal static class SeedData
                     name = "Ricky Lafluer",
                     state = "FL",
                     status = "Active",
-                    address = "100 Maple Lane",
+                    address = "The Sh*tmobile",
                     zipCode = "34609",
                     dateOfBirth = DateTime.Parse("1/1/1970")
                         .ToUniversalTime()
