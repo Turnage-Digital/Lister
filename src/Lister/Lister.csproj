@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Application\Lister.Application.csproj" />
-        <ProjectReference Include="..\Lister.Core.SqlDB\Lister.Core.SqlDB.csproj"/>
+        <ProjectReference Include="..\Lister.Application.SqlDB\Lister.Application.SqlDB.csproj"/>
     </ItemGroup>
+
 </Project>

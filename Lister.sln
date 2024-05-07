@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister", "src\Lister\Lister
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application", "src\Lister.Application\Lister.Application.csproj", "{53B038AA-BB3A-4F48-90E9-1E5441231157}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application.SqlDB", "src\Lister.Application.SqlDB\Lister.Application.SqlDB.csproj", "{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,7 @@ Global
 		{D9EB863D-DCEA-444E-B475-30F3139ECFC3} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 		{1DAD2A4C-7104-45DD-8301-DC868B8A6C6C} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 		{53B038AA-BB3A-4F48-90E9-1E5441231157} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
+		{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4F309977-9A09-46C7-AE1B-7FD03999B03B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -61,5 +64,9 @@ Global
 		{53B038AA-BB3A-4F48-90E9-1E5441231157}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53B038AA-BB3A-4F48-90E9-1E5441231157}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53B038AA-BB3A-4F48-90E9-1E5441231157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

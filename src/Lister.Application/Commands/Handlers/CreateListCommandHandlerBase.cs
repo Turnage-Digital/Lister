@@ -1,0 +1,14 @@
+using Lister.Core;
+using MediatR;
+
+namespace Lister.Application.Commands.Handlers;
+
+public abstract class CreateListCommandHandlerBase<TList>
+    : IRequestHandler<CreateListCommand<TList>, TList>
+    where TList : IReadOnlyList
+{
+    public abstract Task<TList> Handle(
+        CreateListCommand<TList> request,
+        CancellationToken cancellationToken = default
+    );
+}
