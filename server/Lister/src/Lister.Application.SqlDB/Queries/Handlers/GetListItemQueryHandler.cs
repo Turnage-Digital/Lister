@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Application.SqlDB.Queries.Handlers;
 
-public class GetListItemQueryHandler(ListerDbContext dbContext) : GetListItemQueryHandlerBase
+public class GetListItemQueryHandler(ListerDbContext dbContext) 
+    : GetListItemQueryHandlerBase
 {
     public override async Task<Item> Handle(GetListItemQuery request, CancellationToken cancellationToken)
     {

@@ -1,5 +1,6 @@
 using Dapper;
 using Lister.Application.Queries;
+using Lister.Application.Queries.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.ValueObjects;
 using MediatR;
@@ -9,9 +10,9 @@ using Newtonsoft.Json;
 namespace Lister.Application.SqlDB.Queries.Handlers;
 
 public class GetListItemsQueryHandler(ListerDbContext dbContext)
-    : IRequestHandler<GetListItemsQuery, PagedResponse<Item>>
+    : GetListItemsQueryHandlerBase
 {
-    public async Task<PagedResponse<Item>> Handle(
+    public override async Task<PagedResponse<Item>> Handle(
         GetListItemsQuery request,
         CancellationToken cancellationToken
     )
@@ -20,7 +21,7 @@ public class GetListItemsQueryHandler(ListerDbContext dbContext)
         var sql =
             """
             SELECT SQL_CALC_FOUND_ROWS
-                i.Id, i.Bag
+                i.Bag, i.CreatedBy, i.CreatedOn, i.Id
             FROM
                 Items i
             WHERE
@@ -52,11 +53,14 @@ public class GetListItemsQueryHandler(ListerDbContext dbContext)
         var data = await multi.ReadAsync<dynamic>();
         var items = data.Select(d => new Item
         {
-            Id = d.Id,
-            Bag = JsonConvert.DeserializeObject(d.Bag)
+            Bag = JsonConvert.DeserializeObject(d.Bag),
+            CreatedBy = d.CreatedBy,
+            CreatedOn = d.CreatedOn,
+            Id = d.Id
         }).ToList();
 
         var count = await multi.ReadSingleAsync<long>();
+
         var retval = new PagedResponse<Item>(items, count);
         return retval;
     }

@@ -1,5 +1,6 @@
 using Lamar.Microsoft.DependencyInjection;
 using Lister.Application;
+using Lister.Application.SqlDB;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
 using Lister.Extensions;
@@ -35,7 +36,7 @@ internal static class HostingExtensions
             registry.AddCore(connectionString);
 
             registry.AddMediatR(config =>
-                config.RegisterServicesFromAssembly(typeof(HostingExtensions).Assembly));
+                config.RegisterServicesFromAssembly(typeof(IApplicationMarker).Assembly));
             registry.AddTransient(typeof(IPipelineBehavior<,>),
                 typeof(AssignUserBehavior<,>));
             registry.AddTransient(typeof(IPipelineBehavior<,>),

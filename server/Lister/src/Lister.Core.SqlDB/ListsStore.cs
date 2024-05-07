@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class ListsStore(ListerDbContext dbContext) : IListsStore<ListEntity>
+public class ListsStore(ListerDbContext dbContext) 
+    : IListsStore<ListEntity>
 {
     private readonly EntityStore<ListEntity> _entityStore = new(dbContext);
 

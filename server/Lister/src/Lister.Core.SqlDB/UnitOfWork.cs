@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public abstract class UnitOfWork<TContext>(TContext dbContext) : IUnitOfWork
-    where TContext : DbContext
+public abstract class UnitOfWork<TContext>(TContext dbContext)
+    : IUnitOfWork where TContext : DbContext
 {
     private bool _disposed;
 
