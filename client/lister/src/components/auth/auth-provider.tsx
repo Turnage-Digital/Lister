@@ -17,7 +17,7 @@ type Props = PropsWithChildren;
 const userApi: IUsersApi = new UsersApi(`/api/users`);
 
 const AuthProvider = ({ children }: Props) => {
-  const [signedIn, setSignedIn] = useState<boolean>(true);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
