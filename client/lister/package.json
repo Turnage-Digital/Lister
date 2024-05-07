@@ -1,5 +1,5 @@
 {
-  "name": "lister-client",
+  "name": "lister",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -22,9 +22,7 @@
     "http-proxy-middleware": "^2.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.7.0",
-    "@react-buddy/ide-toolbox": "^2.4.0",
-    "@react-buddy/palette-mui": "^5.0.1"
+    "react-router-dom": "^6.7.0"
   },
   "devDependencies": {
     "@shopify/eslint-plugin": "^42.0.3",
