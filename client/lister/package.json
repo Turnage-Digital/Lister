@@ -1,5 +1,5 @@
 {
-  "name": "lister",
+  "name": "lister-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,11 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/lab": "^5.0.0-alpha.148",
+    "@mui/material": "^5.11.13",
+    "@mui/x-data-grid": "^6.18.4",
+    "@mui/x-date-pickers": "^6.0.4",
+    "clsx": "^1.2.1",
+    "date-fns": "^2.29.3",
+    "http-proxy-middleware": "^2.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@react-buddy/ide-toolbox": "^2.4.0"
+    "react-router-dom": "^6.7.0",
+    "@react-buddy/ide-toolbox": "^2.4.0",
+    "@react-buddy/palette-mui": "^5.0.1"
   },
   "devDependencies": {
+    "@shopify/eslint-plugin": "^42.0.3",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -23,6 +36,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "prettier": "^2.8.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }
