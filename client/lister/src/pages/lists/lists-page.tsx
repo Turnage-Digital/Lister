@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { PlaylistAdd } from "@mui/icons-material";
 import {
-  Box,
   Button,
   Card,
   CardActions,
@@ -11,10 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { PlaylistAdd } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import { Loading, useAuth } from "../../components";
+import { Loading, Titlebar, useAuth } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
@@ -46,37 +45,22 @@ const ListsPage = () => {
     fetchData();
   }, [signedIn]);
 
+  const actions = [
+    {
+      title: "Create a List",
+      icon: <PlaylistAdd />,
+      onClick: () => navigate(`/create`),
+    },
+  ];
+
   return loading ? (
     <Loading />
   ) : (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Grid container sx={{ pb: 4 }}>
-          <Grid xs={12} md={9}>
-            <Typography
-              color="primary"
-              fontWeight="bold"
-              variant="h5"
-              component="h1"
-            >
-              Lists
-            </Typography>
-          </Grid>
+        <Titlebar title="Lists" actions={actions} />
 
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Box>
-              <Button
-                variant="contained"
-                startIcon={<PlaylistAdd />}
-                onClick={() => navigate(`/create`)}
-              >
-                Create a List
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ my: 4 }}>
           {listNames.map((listName) => (
             <Grid key={listName.id} xs={12} sm={6} md={4}>
               <Card>

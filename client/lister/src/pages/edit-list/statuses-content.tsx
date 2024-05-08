@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,9 +13,10 @@ import {
   Stack,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import React, { useState } from "react";
 
-import { StatusBullet } from "../../components";
 import { Status, statusColors } from "../../api";
+import { StatusBullet } from "../../components";
 
 interface Props {
   statuses: Status[] | null;

@@ -1,6 +1,6 @@
-import React, { ReactNode } from "react";
 import { Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import React, { ReactNode } from "react";
 
 interface Props {
   title: string;

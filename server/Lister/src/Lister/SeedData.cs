@@ -142,7 +142,7 @@ internal static class SeedData
             listAggregate.CreateItemAsync(list, heath.Id, new
                 {
                     city = "Columbia",
-                    name = "Shitty Bill",
+                    name = "Sh*tty Bill",
                     state = "SC",
                     status = "Active",
                     address = "202 No Way",

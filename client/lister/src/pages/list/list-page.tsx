@@ -1,13 +1,5 @@
 import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Container, Paper, Stack } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -25,7 +17,7 @@ import {
   ListItemDefinition,
   ListsApi,
 } from "../../api";
-import { Loading, StatusChip, useAuth } from "../../components";
+import { Loading, StatusChip, Titlebar, useAuth } from "../../components";
 import { getStatusFromName } from "../../status-fns";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
@@ -62,6 +54,8 @@ const ListPage = () => {
         setListItemDefinition(listItemDefinition);
       } catch (e: any) {
         setError(e.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -204,39 +198,33 @@ const ListPage = () => {
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
+  const actions = [
+    {
+      title: "Create an Item",
+      icon: <AddCircle />,
+      onClick: () => navigate(`/${params.listId}/items/create`),
+    },
+  ];
+
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: () => navigate("/"),
+    },
+  ];
+
   return loading ? (
     <Loading />
   ) : (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Grid container sx={{ pb: 4 }}>
-          <Grid xs={12} md={9}>
-            <Typography
-              color="primary"
-              fontWeight="bold"
-              variant="h5"
-              component="h1"
-            >
-              {listItemDefinition?.name}
-            </Typography>
-          </Grid>
+        <Titlebar
+          title={listItemDefinition?.name ?? ""}
+          actions={actions}
+          breadcrumbs={breadcrumbs}
+        />
 
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Box>
-              <Button
-                variant="contained"
-                startIcon={<AddCircle />}
-                onClick={() =>
-                  navigate(`/${listItemDefinition?.id}/items/create`)
-                }
-              >
-                Create an Item
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-
-        <Paper>
+        <Paper sx={{ my: 4 }}>
           <DataGrid
             columns={gridColDefs}
             rows={rows}

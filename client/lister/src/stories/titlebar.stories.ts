@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Action, Titlebar } from "../components";
+import { Titlebar } from "../components";
 
 const meta = {
   title: "Titlebar",
@@ -32,7 +32,6 @@ export const ListPage: Story = {
     breadcrumbs: [
       {
         title: "Lists",
-        url: "/",
       },
     ],
   },
@@ -44,11 +43,9 @@ export const ItemPage: Story = {
     breadcrumbs: [
       {
         title: "Lists",
-        url: "/",
       },
       {
         title: "Trailer Park Boys",
-        url: "/08dc6e3a-9704-42f2-800c-4231f00ea3b1",
       },
     ],
   },

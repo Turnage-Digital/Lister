@@ -1,15 +1,15 @@
+import { Container, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Container, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { IListsApi, Item, ListItemDefinition, ListsApi } from "../../api";
-import { Loading, useAuth } from "../../components";
+import { Loading, Titlebar, useAuth } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListItemPage = () => {
   const { signedIn } = useAuth();
+  const navigate = useNavigate();
   const params = useParams();
 
   const [listItemDefinition, setListItemDefinition] =
@@ -60,25 +60,23 @@ const ListItemPage = () => {
     fetchData();
   }, [params.listId, params.itemId, listItemDefinition]);
 
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: () => navigate("/"),
+    },
+    {
+      title: listItemDefinition?.name || "",
+      onClick: () => navigate(`/${params.listId}`),
+    },
+  ];
+
   return loading ? (
     <Loading />
   ) : (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Grid container sx={{ pb: 4 }}>
-          <Grid xs={12} md={9}>
-            <Typography
-              color="primary"
-              fontWeight="bold"
-              variant="h5"
-              component="h1"
-            >
-              {`Item # ${item?.id}`}
-            </Typography>
-          </Grid>
-
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end" />
-        </Grid>
+        <Titlebar title={`Item # ${item?.id}`} breadcrumbs={breadcrumbs} />
       </Stack>
     </Container>
   );

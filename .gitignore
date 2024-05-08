@@ -1,6 +1,5 @@
 .vscode
-.idea/*
-!.idea/rcb-settings.xml
+.idea
 .vs
 .fleet
 

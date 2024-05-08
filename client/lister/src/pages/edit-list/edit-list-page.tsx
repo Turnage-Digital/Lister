@@ -1,27 +1,19 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { Save } from "@mui/icons-material";
+import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import React, { FormEvent, useEffect, useState } from "react";
 import {
   ActionFunctionArgs,
   redirect,
   useNavigate,
   useSubmit,
 } from "react-router-dom";
-import Grid from "@mui/material/Unstable_Grid2";
 
-import { FormBlock } from "../../components";
 import { ListItemDefinition } from "../../api";
+import { FormBlock, Titlebar } from "../../components";
 
+import ColumnsContent from "./columns-content";
 import NameBlock from "./name-block";
 import StatusesContent from "./statuses-content";
-import ColumnsContent from "./columns-content";
 
 export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
   const data = await request.formData();
@@ -42,6 +34,7 @@ export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 const EditListPage = () => {
+  const navigate = useNavigate();
   const submit = useSubmit();
 
   const defaultListDefinition: ListItemDefinition = {
@@ -78,21 +71,17 @@ const EditListPage = () => {
     window.sessionStorage.removeItem("updated_list");
   };
 
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: () => navigate("/"),
+    },
+  ];
+
   return (
-    <Container component="form" onSubmit={handleSubmit}>
+    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Grid container>
-          <Grid xs={12} md={9}>
-            <Typography
-              color="primary"
-              fontWeight="bold"
-              variant="h5"
-              component="h1"
-            >
-              Create a List
-            </Typography>
-          </Grid>
-        </Grid>
+        <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
 
         <FormBlock
           title="Name"

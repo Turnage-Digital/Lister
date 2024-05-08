@@ -1,13 +1,6 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { ContentPaste, Save } from "@mui/icons-material";
+import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import React, { FormEvent, useEffect, useState } from "react";
 import {
   ActionFunctionArgs,
   redirect,
@@ -15,14 +8,19 @@ import {
   useParams,
   useSubmit,
 } from "react-router-dom";
-import Grid from "@mui/material/Unstable_Grid2";
 
 import { IListsApi, Item, ListItemDefinition, ListsApi } from "../../api";
-import { FormBlock, Loading, useAuth, useSideDrawer } from "../../components";
+import {
+  FormBlock,
+  Loading,
+  Titlebar,
+  useAuth,
+  useSideDrawer,
+} from "../../components";
 
-import StatusesContent from "./statuses-content";
 import ColumnContent from "./column-content";
 import SmartPasteDialog from "./smart-paste-dialog";
+import StatusesContent from "./statuses-content";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
@@ -47,6 +45,7 @@ export const editListItemPageAction = async ({
 
 const EditListItemPage = () => {
   const { signedIn } = useAuth();
+  const navigate = useNavigate();
   const params = useParams();
   const submit = useSubmit();
   const { openDrawer, closeDrawer } = useSideDrawer();
@@ -138,40 +137,36 @@ const EditListItemPage = () => {
     window.sessionStorage.removeItem("updated_item");
   };
 
+  const actions = [
+    {
+      title: "Smart Paste",
+      icon: <ContentPaste />,
+      onClick: () =>
+        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />),
+    },
+  ];
+
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: () => navigate("/"),
+    },
+    {
+      title: listItemDefinition?.name ?? "",
+      onClick: () => navigate(`/${params.listId}`),
+    },
+  ];
+
   return loading ? (
     <Loading />
   ) : (
-    <Container component="form" onSubmit={handleSubmit}>
+    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Grid container>
-          <Grid xs={12} md={9}>
-            <Typography
-              color="primary"
-              fontWeight="bold"
-              variant="h5"
-              component="h1"
-            >
-              Create Item
-            </Typography>
-          </Grid>
-
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-            <Box>
-              <Button
-                variant="contained"
-                startIcon={<ContentPaste />}
-                onClick={() =>
-                  openDrawer(
-                    "Smart Paste",
-                    <SmartPasteDialog onPaste={handlePaste} />
-                  )
-                }
-              >
-                Smart Paste
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
+        <Titlebar
+          title="Edit Item"
+          actions={actions}
+          breadcrumbs={breadcrumbs}
+        />
 
         <FormBlock
           title="Columns"

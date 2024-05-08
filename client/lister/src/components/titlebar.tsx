@@ -1,5 +1,3 @@
-import React from "react";
-import Grid from "@mui/material/Unstable_Grid2";
 import {
   Breadcrumbs,
   Button,
@@ -8,6 +6,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import React from "react";
 
 export interface Action {
   title: string;
@@ -17,7 +17,7 @@ export interface Action {
 
 export interface Breadcrumb {
   title: string;
-  url: string;
+  onClick?: () => void;
 }
 
 export interface TitlebarProps {
@@ -28,12 +28,12 @@ export interface TitlebarProps {
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   return (
-    <Grid container spacing={2} sx={{ p: 4 }}>
+    <Grid container spacing={2}>
       <Grid xs={12} md={9}>
         <Typography
           color="primary"
-          fontWeight="bold"
-          variant="h5"
+          fontWeight="medium"
+          variant="h4"
           component="h1"
         >
           {title}
@@ -65,14 +65,15 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
           <Breadcrumbs>
             {breadcrumbs.map((breadcrumb) => (
               <Link
-                key={breadcrumb.url}
-                href={breadcrumb.url}
+                key={breadcrumb.title}
                 underline="hover"
+                onClick={breadcrumb.onClick}
                 sx={{ cursor: "pointer" }}
               >
                 {breadcrumb.title}
               </Link>
             ))}
+            <Typography color="text.primary">{title}</Typography>
           </Breadcrumbs>
         </Grid>
       )}
