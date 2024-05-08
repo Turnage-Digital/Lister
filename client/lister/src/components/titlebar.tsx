@@ -1,49 +1,81 @@
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import { Button, Hidden, Stack, Typography } from "@mui/material";
+import {
+  Breadcrumbs,
+  Button,
+  Hidden,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 
-interface Action {
+export interface Action {
   title: string;
-  icon: React.ReactNode;
-  onClick: () => void;
+  icon?: React.ReactNode;
+  onClick?: () => void;
 }
 
-interface Props {
+export interface Breadcrumb {
+  title: string;
+  url: string;
+}
+
+export interface TitlebarProps {
   title: string;
   actions?: Action[];
+  breadcrumbs?: Breadcrumb[];
 }
 
-const Titlebar = ({ title, actions }: Props) => {
+const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   return (
-    <Grid container sx={{ p: 4 }}>
+    <Grid container spacing={2} sx={{ p: 4 }}>
       <Grid xs={12} md={9}>
         <Typography
           color="primary"
-          fontWeight="bold"
-          variant="h5"
+          fontWeight="medium"
+          variant="h4"
           component="h1"
         >
           {title}
         </Typography>
       </Grid>
 
-      <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-        <Hidden mdDown>
-          <Stack direction="row" spacing={2}>
-            {actions?.map((action) => (
-              <Button
-                key={action.title}
-                variant="contained"
-                size="small"
-                startIcon={action.icon}
-                onClick={action.onClick}
+      {actions && actions.length > 0 && (
+        <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+          <Hidden mdDown>
+            <Stack direction="row" spacing={2}>
+              {actions.map((action) => (
+                <Button
+                  key={action.title}
+                  variant="contained"
+                  size="small"
+                  startIcon={action.icon}
+                  onClick={action.onClick}
+                >
+                  {action.title}
+                </Button>
+              ))}
+            </Stack>
+          </Hidden>
+        </Grid>
+      )}
+
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <Grid xs={12}>
+          <Breadcrumbs>
+            {breadcrumbs.map((breadcrumb) => (
+              <Link
+                key={breadcrumb.url}
+                href={breadcrumb.url}
+                underline="hover"
+                sx={{ cursor: "pointer" }}
               >
-                {action.title}
-              </Button>
+                {breadcrumb.title}
+              </Link>
             ))}
-          </Stack>
-        </Hidden>
-      </Grid>
+          </Breadcrumbs>
+        </Grid>
+      )}
     </Grid>
   );
 };

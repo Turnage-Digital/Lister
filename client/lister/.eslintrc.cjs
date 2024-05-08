@@ -7,7 +7,8 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:@shopify/typescript',
     'plugin:@shopify/react',
-    'plugin:@shopify/prettier'
+    'plugin:@shopify/prettier',
+    'plugin:storybook/recommended'
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs', '*.js'],
   parser: '@typescript-eslint/parser',

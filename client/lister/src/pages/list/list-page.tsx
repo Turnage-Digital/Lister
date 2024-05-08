@@ -1,12 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridColDef,
-  GridPaginationModel,
-  GridSortModel,
-} from "@mui/x-data-grid";
+import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -15,8 +7,16 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   Column,
@@ -62,8 +62,6 @@ const ListPage = () => {
         setListItemDefinition(listItemDefinition);
       } catch (e: any) {
         setError(e.message);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -82,7 +80,7 @@ const ListPage = () => {
 
     const fetchData = async () => {
       try {
-        setLoading(true);
+        if (!loading) setLoading(true);
         const { items, count } = await listsApi.getItems(
           params.listId!,
           page,
