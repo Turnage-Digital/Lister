@@ -32,8 +32,8 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
       <Grid xs={12} md={9}>
         <Typography
           color="primary"
-          fontWeight="medium"
-          variant="h4"
+          fontWeight="bold"
+          variant="h5"
           component="h1"
         >
           {title}
@@ -41,8 +41,8 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
       </Grid>
 
       {actions && actions.length > 0 && (
-        <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
-          <Hidden mdDown>
+        <Hidden mdDown>
+          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
             <Stack direction="row" spacing={2}>
               {actions.map((action) => (
                 <Button
@@ -56,8 +56,8 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
                 </Button>
               ))}
             </Stack>
-          </Hidden>
-        </Grid>
+          </Grid>
+        </Hidden>
       )}
 
       {breadcrumbs && breadcrumbs.length > 0 && (

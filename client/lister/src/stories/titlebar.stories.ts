@@ -23,7 +23,7 @@ export const ListsPage: Story = {
 
 export const ListPage: Story = {
   args: {
-    title: "List",
+    title: "Trailer Park Boys",
     actions: [
       {
         title: "Create an Item",
@@ -33,6 +33,22 @@ export const ListPage: Story = {
       {
         title: "Lists",
         url: "/",
+      },
+    ],
+  },
+};
+
+export const ItemPage: Story = {
+  args: {
+    title: "Item #1",
+    breadcrumbs: [
+      {
+        title: "Lists",
+        url: "/",
+      },
+      {
+        title: "Trailer Park Boys",
+        url: "/08dc6e3a-9704-42f2-800c-4231f00ea3b1",
       },
     ],
   },
