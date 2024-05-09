@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import { Container, Paper, Stack } from "@mui/material";
 import {
@@ -7,7 +8,6 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
@@ -41,6 +41,9 @@ const ListPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log({ signedIn });
+
     if (!signedIn) {
       return;
     }
@@ -63,6 +66,9 @@ const ListPage = () => {
   }, [params.listId, signedIn]);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log({ listItemDefinition });
+
     if (!listItemDefinition) {
       return;
     }
@@ -74,7 +80,7 @@ const ListPage = () => {
 
     const fetchData = async () => {
       try {
-        if (!loading) setLoading(true);
+        setLoading(true);
         const { items, count } = await listsApi.getItems(
           params.listId!,
           page,
@@ -92,79 +98,6 @@ const ListPage = () => {
 
     fetchData();
   }, [params.listId, listItemDefinition, searchParams]);
-
-  const gridColDefs: GridColDef[] = useMemo(() => {
-    if (!listItemDefinition) {
-      return [];
-    }
-
-    const retval: GridColDef[] = [];
-
-    retval.push({
-      field: "id",
-      headerName: "Item #",
-      width: 100,
-      sortable: false,
-      disableColumnMenu: true,
-    });
-
-    const mapped = listItemDefinition.columns.map((column: Column) => {
-      const retval: GridColDef = {
-        field: column.property!,
-        headerName: column.name,
-        flex: 1,
-      };
-
-      if (column.type === "Date") {
-        retval.valueFormatter = (params) => {
-          const date = new Date(params.value);
-          const retval = date.toLocaleDateString();
-          return retval;
-        };
-      }
-      return retval;
-    });
-
-    retval.push(...mapped);
-
-    retval.push({
-      field: "status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => (
-        <StatusChip
-          status={getStatusFromName(listItemDefinition.statuses, params.value)}
-        />
-      ),
-    });
-
-    retval.push({
-      field: "actions",
-      type: "actions",
-      headerName: "",
-      width: 100,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        return [
-          <GridActionsCellItem
-            key={`${id}-view`}
-            icon={<Visibility />}
-            label="View"
-            color="primary"
-            onClick={() => navigate(`/${params.listId}/items/${id}`)}
-          />,
-          <GridActionsCellItem
-            key={`${id}-delete`}
-            icon={<MoreVert />}
-            label="More"
-            color="primary"
-          />,
-        ];
-      },
-    });
-
-    return retval;
-  }, [listItemDefinition, navigate, params]);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
@@ -195,6 +128,7 @@ const ListPage = () => {
     id: item.id,
     ...item.bag,
   }));
+  const gridColDefs = getGridColDefs(listItemDefinition);
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
@@ -267,6 +201,81 @@ const getSortFromSearchParams = (
   const sort = searchParams.get("sort") === "desc" ? "desc" : "asc";
 
   return [{ field, sort }];
+};
+
+const getGridColDefs = (
+  listItemDefinition: ListItemDefinition | undefined
+): GridColDef[] => {
+  if (!listItemDefinition) {
+    return [];
+  }
+
+  const retval: GridColDef[] = [];
+
+  retval.push({
+    field: "id",
+    headerName: "Item #",
+    width: 100,
+    sortable: false,
+    disableColumnMenu: true,
+  });
+
+  const mapped = listItemDefinition.columns.map((column: Column) => {
+    const retval: GridColDef = {
+      field: column.property!,
+      headerName: column.name,
+      flex: 1,
+    };
+
+    if (column.type === "Date") {
+      retval.valueFormatter = (params) => {
+        const date = new Date(params.value);
+        const retval = date.toLocaleDateString();
+        return retval;
+      };
+    }
+    return retval;
+  });
+
+  retval.push(...mapped);
+
+  retval.push({
+    field: "status",
+    headerName: "Status",
+    width: 150,
+    renderCell: (params) => (
+      <StatusChip
+        status={getStatusFromName(listItemDefinition.statuses, params.value)}
+      />
+    ),
+  });
+
+  retval.push({
+    field: "actions",
+    type: "actions",
+    headerName: "",
+    width: 100,
+    cellClassName: "actions",
+    getActions: ({ id }) => {
+      return [
+        <GridActionsCellItem
+          key={`${id}-view`}
+          icon={<Visibility />}
+          label="View"
+          color="primary"
+          // onClick={() => navigate(`/${params.listId}/items/${id}`)}
+        />,
+        <GridActionsCellItem
+          key={`${id}-delete`}
+          icon={<MoreVert />}
+          label="More"
+          color="primary"
+        />,
+      ];
+    },
+  });
+
+  return retval;
 };
 
 export default ListPage;

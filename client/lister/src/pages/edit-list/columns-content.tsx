@@ -1,4 +1,4 @@
-import { Delete } from "@mui/icons-material";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import { Delete } from "@mui/icons-material";
 
 import { Column, ColumnType } from "../../api";
 

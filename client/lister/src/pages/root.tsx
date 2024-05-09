@@ -1,4 +1,4 @@
-import { AccountCircle } from "@mui/icons-material";
+import React, { MouseEvent, useState } from "react";
 import {
   AppBar,
   Box,
@@ -9,7 +9,7 @@ import {
   Stack,
   Toolbar,
 } from "@mui/material";
-import React, { MouseEvent, useState } from "react";
+import { AccountCircle } from "@mui/icons-material";
 import { Outlet } from "react-router-dom";
 
 import { SideDrawer, useAuth } from "../components";

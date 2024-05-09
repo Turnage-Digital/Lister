@@ -1,3 +1,4 @@
+import React from "react";
 import {
   FormControl,
   InputLabel,
@@ -5,7 +6,6 @@ import {
   Select,
   Stack,
 } from "@mui/material";
-import React from "react";
 
 import { Item, ListItemDefinition } from "../../api";
 import { StatusChip } from "../../components";

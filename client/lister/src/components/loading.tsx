@@ -1,7 +1,7 @@
+import React from "react";
 import { Box, CircularProgress } from "@mui/material";
-import React, { FC } from "react";
 
-const Loading: FC = () => {
+const Loading = () => {
   return (
     <Box
       sx={{
