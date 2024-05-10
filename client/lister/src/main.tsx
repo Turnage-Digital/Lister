@@ -9,7 +9,11 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-import { AuthProvider, SideDrawerProvider } from "./components";
+import {
+  AuthProvider,
+  ListDefinitionProvider,
+  SideDrawerProvider,
+} from "./components";
 import router from "./router";
 import theme from "./theme";
 
@@ -23,9 +27,11 @@ root.render(
         <CssBaseline />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <AuthProvider>
-            <SideDrawerProvider>
-              <RouterProvider router={router} />
-            </SideDrawerProvider>
+            <ListDefinitionProvider>
+              <SideDrawerProvider>
+                <RouterProvider router={router} />
+              </SideDrawerProvider>
+            </ListDefinitionProvider>
           </AuthProvider>
         </LocalizationProvider>
       </ThemeProvider>

@@ -1,10 +1,17 @@
+import { Card, CardHeader } from "@mui/material";
 import React from "react";
 
-const ItemCard = () => {
+import { Item } from "../api";
+
+export interface ItemCardProps {
+  item: Item;
+}
+
+const ItemCard = ({ item }: ItemCardProps) => {
   return (
-    <>
-      <h1>Item Card</h1>
-    </>
+    <Card variant="outlined">
+      <CardHeader title={`Item # ${item.id}`} />
+    </Card>
   );
 };
 
