@@ -1,12 +1,7 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
-import {
-  ActionFunctionArgs,
-  redirect,
-  useNavigate,
-  useSubmit,
-} from "react-router-dom";
+import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import React, { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useSubmit } from "react-router-dom";
 
 import { ListItemDefinition } from "../../api";
 import { FormBlock, Titlebar } from "../../components";
@@ -14,24 +9,6 @@ import { FormBlock, Titlebar } from "../../components";
 import ColumnsContent from "./columns-content";
 import NameBlock from "./name-block";
 import StatusesContent from "./statuses-content";
-
-export const editListPageAction = async ({ request }: ActionFunctionArgs) => {
-  const data = await request.formData();
-  const serialized = data.get("serialized") as string;
-
-  const postRequest = new Request(`/api/lists/create`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: serialized,
-  });
-  const response = await fetch(postRequest);
-  const json = await response.json();
-  const listId = json.id;
-
-  return redirect(`/${listId}`);
-};
 
 const EditListPage = () => {
   const navigate = useNavigate();
@@ -79,7 +56,7 @@ const EditListPage = () => {
   ];
 
   return (
-    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
+    <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
 

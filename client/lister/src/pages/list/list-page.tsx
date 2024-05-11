@@ -1,35 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
+import { AddCircle } from "@mui/icons-material";
 import { Container, Paper, Stack } from "@mui/material";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridColDef,
-  GridPaginationModel,
-  GridSortModel,
-} from "@mui/x-data-grid";
+import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import {
-  Column,
-  IListsApi,
-  Item,
-  ListItemDefinition,
-  ListsApi,
-} from "../../api";
-import { Loading, StatusChip, Titlebar, useAuth } from "../../components";
-import { getStatusFromName } from "../../status-fns";
+import { IListsApi, Item, ListsApi } from "../../api";
+import { Loading, Titlebar, useListDefinition } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListPage = () => {
-  const { signedIn } = useAuth();
+  const { listItemDefinition, getGridColDefs } = useListDefinition();
   const navigate = useNavigate();
-  const params = useParams();
+  const { listId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [listItemDefinition, setListItemDefinition] =
-    useState<ListItemDefinition>();
   const [pagedItems, setPagedItems] = useState<{
     items: Item[];
     count: number;
@@ -37,38 +22,10 @@ const ListPage = () => {
     items: [],
     count: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log({ signedIn });
-
-    if (!signedIn) {
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const listItemDefinition = await listsApi.getListItemDefinition(
-          params.listId!
-        );
-        setListItemDefinition(listItemDefinition);
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [params.listId, signedIn]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log({ listItemDefinition });
-
     if (!listItemDefinition) {
       return;
     }
@@ -82,7 +39,7 @@ const ListPage = () => {
       try {
         setLoading(true);
         const { items, count } = await listsApi.getItems(
-          params.listId!,
+          listId!,
           page,
           pageSize,
           field,
@@ -97,7 +54,7 @@ const ListPage = () => {
     };
 
     fetchData();
-  }, [params.listId, listItemDefinition, searchParams]);
+  }, [listId, listItemDefinition, searchParams]);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
@@ -124,11 +81,33 @@ const ListPage = () => {
     setSearchParams(searchParams);
   };
 
+  const getPaginationFromSearchParams = (
+    searchParams: URLSearchParams
+  ): GridPaginationModel => {
+    const page = Number(searchParams.get("page") ?? "0");
+    const pageSize = Number(searchParams.get("pageSize") ?? "10");
+
+    return { page, pageSize };
+  };
+
+  const getSortFromSearchParams = (
+    searchParams: URLSearchParams
+  ): GridSortModel => {
+    if (!searchParams.has("field")) {
+      return [];
+    }
+
+    const field = searchParams.get("field")!;
+    const sort = searchParams.get("sort") === "desc" ? "desc" : "asc";
+
+    return [{ field, sort }];
+  };
+
   const rows = pagedItems.items.map((item: Item) => ({
     id: item.id,
     ...item.bag,
   }));
-  const gridColDefs = getGridColDefs(listItemDefinition);
+  const gridColDefs = getGridColDefs();
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
@@ -136,7 +115,7 @@ const ListPage = () => {
     {
       title: "Create an Item",
       icon: <AddCircle />,
-      onClick: () => navigate(`/${params.listId}/items/create`),
+      onClick: () => navigate(`/${listId}/items/create`),
     },
   ];
 
@@ -158,7 +137,7 @@ const ListPage = () => {
           breadcrumbs={breadcrumbs}
         />
 
-        <Paper sx={{ my: 4 }}>
+        <Paper variant="outlined" sx={{ my: 4 }}>
           <DataGrid
             columns={gridColDefs}
             rows={rows}
@@ -179,103 +158,6 @@ const ListPage = () => {
       </Stack>
     </Container>
   );
-};
-
-const getPaginationFromSearchParams = (
-  searchParams: URLSearchParams
-): GridPaginationModel => {
-  const page = Number(searchParams.get("page") ?? "0");
-  const pageSize = Number(searchParams.get("pageSize") ?? "10");
-
-  return { page, pageSize };
-};
-
-const getSortFromSearchParams = (
-  searchParams: URLSearchParams
-): GridSortModel => {
-  if (!searchParams.has("field")) {
-    return [];
-  }
-
-  const field = searchParams.get("field")!;
-  const sort = searchParams.get("sort") === "desc" ? "desc" : "asc";
-
-  return [{ field, sort }];
-};
-
-const getGridColDefs = (
-  listItemDefinition: ListItemDefinition | undefined
-): GridColDef[] => {
-  if (!listItemDefinition) {
-    return [];
-  }
-
-  const retval: GridColDef[] = [];
-
-  retval.push({
-    field: "id",
-    headerName: "Item #",
-    width: 100,
-    sortable: false,
-    disableColumnMenu: true,
-  });
-
-  const mapped = listItemDefinition.columns.map((column: Column) => {
-    const retval: GridColDef = {
-      field: column.property!,
-      headerName: column.name,
-      flex: 1,
-    };
-
-    if (column.type === "Date") {
-      retval.valueFormatter = (params) => {
-        const date = new Date(params.value);
-        const retval = date.toLocaleDateString();
-        return retval;
-      };
-    }
-    return retval;
-  });
-
-  retval.push(...mapped);
-
-  retval.push({
-    field: "status",
-    headerName: "Status",
-    width: 150,
-    renderCell: (params) => (
-      <StatusChip
-        status={getStatusFromName(listItemDefinition.statuses, params.value)}
-      />
-    ),
-  });
-
-  retval.push({
-    field: "actions",
-    type: "actions",
-    headerName: "",
-    width: 100,
-    cellClassName: "actions",
-    getActions: ({ id }) => {
-      return [
-        <GridActionsCellItem
-          key={`${id}-view`}
-          icon={<Visibility />}
-          label="View"
-          color="primary"
-          // onClick={() => navigate(`/${params.listId}/items/${id}`)}
-        />,
-        <GridActionsCellItem
-          key={`${id}-delete`}
-          icon={<MoreVert />}
-          label="More"
-          color="primary"
-        />,
-      ];
-    },
-  });
-
-  return retval;
 };
 
 export default ListPage;

@@ -1,20 +1,14 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
 import { ContentPaste, Save } from "@mui/icons-material";
-import {
-  ActionFunctionArgs,
-  redirect,
-  useNavigate,
-  useParams,
-  useSubmit,
-} from "react-router-dom";
+import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import React, { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams, useSubmit } from "react-router-dom";
 
-import { IListsApi, Item, ListItemDefinition, ListsApi } from "../../api";
+import { Item } from "../../api";
 import {
   FormBlock,
   Loading,
   Titlebar,
-  useAuth,
+  useListDefinition,
   useSideDrawer,
 } from "../../components";
 
@@ -22,60 +16,12 @@ import ColumnContent from "./column-content";
 import SmartPasteDialog from "./smart-paste-dialog";
 import StatusesContent from "./statuses-content";
 
-const listsApi: IListsApi = new ListsApi(`/api/lists`);
-
-export const editListItemPageAction = async ({
-  params,
-  request,
-}: ActionFunctionArgs) => {
-  const data = await request.formData();
-  const serialized = data.get("serialized") as string;
-
-  const postRequest = new Request(`/api/lists/${params.listId}/items/create`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: serialized,
-  });
-
-  await fetch(postRequest);
-  return redirect(`/${params.listId}`);
-};
-
 const EditListItemPage = () => {
-  const { signedIn } = useAuth();
+  const { listItemDefinition } = useListDefinition();
   const navigate = useNavigate();
-  const params = useParams();
+  const { listId } = useParams();
   const submit = useSubmit();
   const { openDrawer, closeDrawer } = useSideDrawer();
-
-  const [listItemDefinition, setListItemDefinition] =
-    useState<ListItemDefinition>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!signedIn) {
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const listItemDefinition = await listsApi.getListItemDefinition(
-          params.listId!
-        );
-        setListItemDefinition(listItemDefinition);
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [params.listId, signedIn]);
 
   const defaultListItem: Item = {
     id: null,
@@ -153,17 +99,15 @@ const EditListItemPage = () => {
     },
     {
       title: listItemDefinition?.name ?? "",
-      onClick: () => navigate(`/${params.listId}`),
+      onClick: () => navigate(`/${listId}`),
     },
   ];
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
+  return (
+    <Container component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <Titlebar
-          title="Edit Item"
+          title="Create an Item"
           actions={actions}
           breadcrumbs={breadcrumbs}
         />

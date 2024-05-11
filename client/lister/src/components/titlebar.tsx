@@ -1,5 +1,5 @@
-import React from "react";
 import {
+  Box,
   Breadcrumbs,
   Button,
   Hidden,
@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import React from "react";
 
 export interface Action {
   title: string;
@@ -28,13 +29,14 @@ export interface TitlebarProps {
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <Grid xs={12} md={9}>
         <Typography
           color="primary"
           fontWeight="medium"
           variant="h4"
           component="h1"
+          gutterBottom
         >
           {title}
         </Typography>
@@ -45,15 +47,17 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
           <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
             <Stack direction="row" spacing={2}>
               {actions.map((action) => (
-                <Button
-                  key={action.title}
-                  variant="contained"
-                  size="small"
-                  startIcon={action.icon}
-                  onClick={action.onClick}
-                >
-                  {action.title}
-                </Button>
+                <Box key={action.title}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={action.icon}
+                    onClick={action.onClick}
+                    sx={{ p: 1 }}
+                  >
+                    {action.title}
+                  </Button>
+                </Box>
               ))}
             </Stack>
           </Grid>

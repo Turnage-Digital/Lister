@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { PlaylistAdd } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -8,21 +8,27 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { PlaylistAdd } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import { Loading, Titlebar, useAuth } from "../../components";
+import {
+  Loading,
+  Titlebar,
+  useAuth,
+  useListDefinition,
+} from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListsPage = () => {
   const { signedIn } = useAuth();
+  const { setListId } = useListDefinition();
   const navigate = useNavigate();
 
   const [listNames, setListNames] = useState<ListName[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,6 +51,11 @@ const ListsPage = () => {
     fetchData();
   }, [signedIn]);
 
+  const handleViewClicked = (listId: string) => {
+    setListId(listId);
+    navigate(`/${listId}`);
+  };
+
   const actions = [
     {
       title: "Create a List",
@@ -60,10 +71,10 @@ const ListsPage = () => {
       <Stack sx={{ px: 2, py: 4 }}>
         <Titlebar title="Lists" actions={actions} />
 
-        <Grid container spacing={2} sx={{ my: 4 }}>
+        <Grid container spacing={2} sx={{ my: 2 }}>
           {listNames.map((listName) => (
             <Grid key={listName.id} xs={12} sm={6} md={4}>
-              <Card>
+              <Card variant="outlined">
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {listName.name}
@@ -72,7 +83,7 @@ const ListsPage = () => {
                 <CardActions>
                   <Button
                     size="small"
-                    onClick={() => navigate(`/${listName.id}`)}
+                    onClick={() => handleViewClicked(listName.id)}
                   >
                     View
                   </Button>

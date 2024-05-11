@@ -1,44 +1,20 @@
-import React, { useEffect, useState } from "react";
 import { Container, Stack } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { IListsApi, Item, ListItemDefinition, ListsApi } from "../../api";
-import { Loading, Titlebar, useAuth } from "../../components";
+import { IListsApi, Item, ListsApi } from "../../api";
+import { Loading, Titlebar, useListDefinition } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListItemPage = () => {
-  const { signedIn } = useAuth();
+  const { listItemDefinition } = useListDefinition();
   const navigate = useNavigate();
-  const params = useParams();
+  const { listId, itemId } = useParams();
 
-  const [listItemDefinition, setListItemDefinition] =
-    useState<ListItemDefinition>();
   const [item, setItem] = useState<Item>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!signedIn) {
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const listItemDefinition = await listsApi.getListItemDefinition(
-          params.listId!
-        );
-        setListItemDefinition(listItemDefinition);
-      } catch (e: any) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [params.listId, signedIn]);
 
   useEffect(() => {
     if (!listItemDefinition) {
@@ -48,7 +24,7 @@ const ListItemPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const item = await listsApi.getItem(params.listId!, params.itemId!);
+        const item = await listsApi.getItem(listId!, itemId!);
         setItem(item);
       } catch (e: any) {
         setError(e.message);
@@ -58,7 +34,7 @@ const ListItemPage = () => {
     };
 
     fetchData();
-  }, [params.listId, params.itemId, listItemDefinition]);
+  }, [listId, itemId, listItemDefinition]);
 
   const breadcrumbs = [
     {
@@ -67,7 +43,7 @@ const ListItemPage = () => {
     },
     {
       title: listItemDefinition?.name || "",
-      onClick: () => navigate(`/${params.listId}`),
+      onClick: () => navigate(`/${listId}`),
     },
   ];
 
