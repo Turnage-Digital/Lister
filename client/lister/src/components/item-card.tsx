@@ -9,7 +9,7 @@ export interface ItemCardProps {
 
 const ItemCard = ({ item }: ItemCardProps) => {
   return (
-    <Card variant="outlined">
+    <Card>
       <CardHeader title={`Item # ${item.id}`} />
     </Card>
   );

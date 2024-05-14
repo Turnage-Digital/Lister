@@ -6,7 +6,6 @@ import { useNavigate, useParams, useSubmit } from "react-router-dom";
 import { Item } from "../../api";
 import {
   FormBlock,
-  Loading,
   Titlebar,
   useListDefinition,
   useSideDrawer,

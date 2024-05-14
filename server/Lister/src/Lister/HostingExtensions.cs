@@ -43,14 +43,14 @@ internal static class HostingExtensions
                 typeof(LoggingBehavior<,>));
 
             registry
-                .AddDefaultIdentity<IdentityUser>()
+                .AddIdentityApiEndpoints<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             registry
                 .ConfigureApplicationCookie(options =>
                 {
                     options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
 
                     options.Events.OnRedirectToAccessDenied =
                         options.Events.OnRedirectToLogin = context =>
@@ -109,6 +109,10 @@ internal static class HostingExtensions
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.MapGroup("/identity")
+            .WithTags("Identity")
+            .MapIdentityApi<IdentityUser>();
 
         return app;
     }

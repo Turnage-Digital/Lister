@@ -13,17 +13,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import {
-  Loading,
-  Titlebar,
-  useAuth,
-  useListDefinition,
-} from "../../components";
+import { Loading, Titlebar, useListDefinition } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListsPage = () => {
-  const { signedIn } = useAuth();
   const { setListId } = useListDefinition();
   const navigate = useNavigate();
 
@@ -32,10 +26,6 @@ const ListsPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!signedIn) {
-      return;
-    }
-
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -49,7 +39,7 @@ const ListsPage = () => {
     };
 
     fetchData();
-  }, [signedIn]);
+  }, []);
 
   const handleViewClicked = (listId: string) => {
     setListId(listId);
@@ -74,7 +64,7 @@ const ListsPage = () => {
         <Grid container spacing={2} sx={{ my: 2 }}>
           {listNames.map((listName) => (
             <Grid key={listName.id} xs={12} sm={6} md={4}>
-              <Card variant="outlined">
+              <Card>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {listName.name}

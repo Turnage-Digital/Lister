@@ -1,11 +1,11 @@
-import { Claim } from "./models";
+import { Info } from "./models";
 
 export interface IUsersApi {
-  signIn(username: string, password: string): Promise<{ succeeded: boolean }>;
+  login(username: string, password: string): Promise<{ succeeded: boolean }>;
 
-  getClaims(): Promise<{ succeeded: boolean; claims: Claim[] }>;
+  getInfo(): Promise<{ succeeded: boolean; info: Info | null }>;
 
-  signOut(): Promise<void>;
+  logout(): Promise<void>;
 }
 
 export class UsersApi implements IUsersApi {
@@ -15,12 +15,12 @@ export class UsersApi implements IUsersApi {
     this.baseUrl = baseUrl;
   }
 
-  public async signIn(
-    username: string,
+  public async login(
+    email: string,
     password: string
   ): Promise<{ succeeded: boolean }> {
-    const input = { username, password };
-    const request = new Request(`${this.baseUrl}/sign-in`, {
+    const input = { email, password };
+    const request = new Request(`${this.baseUrl}/login?useCookies=true`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -29,34 +29,34 @@ export class UsersApi implements IUsersApi {
     });
     const response = await fetch(request);
     if (!response.ok) {
-      throw new Error("Failed to sign in.");
+      throw new Error("Failed to log in.");
     }
     const retval = await response.json();
     return retval;
   }
 
-  public async getClaims(): Promise<{ succeeded: boolean; claims: Claim[] }> {
-    const request = new Request(`${this.baseUrl}/claims`, {
+  public async getInfo(): Promise<{ succeeded: boolean; info: Info | null }> {
+    const request = new Request(`${this.baseUrl}/manage/info`, {
       method: "GET",
     });
     const response = await fetch(request);
     if (response.status === 401) {
-      return { succeeded: false, claims: [] };
+      return { succeeded: false, info: null };
     } else if (!response.ok) {
-      throw new Error("Failed to get claims.");
+      throw new Error("Failed to get info.");
     }
-    const claims = await response.json();
-    const retval = { succeeded: true, claims };
+    const info = await response.json();
+    const retval = { succeeded: true, info };
     return retval;
   }
 
-  public async signOut(): Promise<void> {
-    const request = new Request(`${this.baseUrl}/sign-out`, {
+  public async logout(): Promise<void> {
+    const request = new Request(`${this.baseUrl}/logout`, {
       method: "POST",
     });
     const response = await fetch(request);
     if (!response.ok) {
-      throw new Error("Failed to sign out.");
+      throw new Error("Failed to log out.");
     }
   }
 }

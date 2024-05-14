@@ -22,7 +22,7 @@ const ListPage = () => {
     items: [],
     count: 0,
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -81,6 +81,10 @@ const ListPage = () => {
     setSearchParams(searchParams);
   };
 
+  const handleItemClicked = (listId: string, itemId: string) => {
+    navigate(`/${listId}/items/${itemId}`);
+  };
+
   const getPaginationFromSearchParams = (
     searchParams: URLSearchParams
   ): GridPaginationModel => {
@@ -107,7 +111,7 @@ const ListPage = () => {
     id: item.id,
     ...item.bag,
   }));
-  const gridColDefs = getGridColDefs();
+  const gridColDefs = getGridColDefs(handleItemClicked);
   const pagination = getPaginationFromSearchParams(searchParams);
   const sort = getSortFromSearchParams(searchParams);
 
@@ -137,7 +141,7 @@ const ListPage = () => {
           breadcrumbs={breadcrumbs}
         />
 
-        <Paper variant="outlined" sx={{ my: 4 }}>
+        <Paper sx={{ my: 4 }}>
           <DataGrid
             columns={gridColDefs}
             rows={rows}

@@ -5,8 +5,8 @@ export { UsersApi } from "./users-api";
 export type { IUsersApi } from "./users-api";
 
 export type {
-  Claim,
   Column,
+  Info,
   Item,
   ListItemDefinition,
   ListName,

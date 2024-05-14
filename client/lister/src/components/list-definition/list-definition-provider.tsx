@@ -1,11 +1,9 @@
 import { MoreVert, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 import { Column, IListsApi, ListItemDefinition, ListsApi } from "../../api";
 import { getStatusFromName } from "../../status-fns";
-import { useAuth } from "../auth";
 import Loading from "../loading";
 import StatusChip from "../status-chip";
 
@@ -16,8 +14,6 @@ type Props = PropsWithChildren;
 const listApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListDefinitionProvider = ({ children }: Props) => {
-  const { signedIn } = useAuth();
-
   const [listId, setListId] = useState<string | null>(null);
   const [listItemDefinition, setListItemDefinition] =
     useState<ListItemDefinition | null>(null);
@@ -25,7 +21,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!listId || !signedIn) {
+    if (!listId) {
       return;
     }
 
@@ -43,10 +39,12 @@ const ListDefinitionProvider = ({ children }: Props) => {
     };
 
     fetchData();
-  }, [listId, signedIn]);
+  }, [listId]);
 
   const listDefinitionContextValue = useMemo(() => {
-    const getGridColDefs = (): GridColDef[] => {
+    const getGridColDefs = (
+      onItemClicked: (listId: string, itemId: string) => void
+    ): GridColDef[] => {
       if (!listItemDefinition) {
         return [];
       }
@@ -107,7 +105,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
               icon={<Visibility />}
               label="View"
               color="primary"
-              // onClick={() => navigate(`/${params.listId}/items/${id}`)}
+              onClick={() => onItemClicked(listId!, id as string)}
             />,
             <GridActionsCellItem
               key={`${id}-delete`}
@@ -122,13 +120,13 @@ const ListDefinitionProvider = ({ children }: Props) => {
       return retval;
     };
 
-    return { setListId, getGridColDefs, listItemDefinition, error };
-  }, [setListId, listItemDefinition, error]);
+    return { setListId, getGridColDefs, listItemDefinition };
+  }, [setListId, listId, listItemDefinition]);
 
   const content = loading ? <Loading /> : children;
   return (
     <ListDefinitionContext.Provider value={listDefinitionContextValue}>
-      {children}
+      {content}
     </ListDefinitionContext.Provider>
   );
 };

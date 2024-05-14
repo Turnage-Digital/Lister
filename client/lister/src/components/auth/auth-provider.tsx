@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 
-import { Claim, IUsersApi, UsersApi } from "../../api";
+import { Info, IUsersApi, UsersApi } from "../../api";
 import Loading from "../loading";
 
 import AuthContext from "./auth-context";
@@ -14,12 +14,12 @@ import SignInForm from "./sign-in-form";
 
 type Props = PropsWithChildren;
 
-const userApi: IUsersApi = new UsersApi(`/api/users`);
+const userApi: IUsersApi = new UsersApi(`/identity`);
 
 const AuthProvider = ({ children }: Props) => {
-  const [signedIn, setSignedIn] = useState<boolean>(false);
-  const [claims, setClaims] = useState<Claim[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [info, setInfo] = useState<Info | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,11 +27,11 @@ const AuthProvider = ({ children }: Props) => {
       setLoading(true);
 
       try {
-        const result = await userApi.getClaims();
+        const result = await userApi.getInfo();
 
         if (result.succeeded) {
-          setSignedIn(true);
-          setClaims(result.claims);
+          setLoggedIn(true);
+          setInfo(result.info);
         }
       } catch (e: any) {
         setError(e.message);
@@ -41,43 +41,41 @@ const AuthProvider = ({ children }: Props) => {
     };
 
     fetchData();
-  }, [signedIn]);
+  }, [loggedIn]);
 
-  const signIn = async (username: string, password: string) => {
+  const login = async (username: string, password: string) => {
     setLoading(true);
-    const result = await userApi.signIn(username, password);
+    const result = await userApi.login(username, password);
     if (result.succeeded) {
-      setSignedIn(result.succeeded);
+      setLoggedIn(result.succeeded);
     } else {
       setError("Invalid username or password.");
     }
     setLoading(false);
   };
 
-  const signOut = async () => {
+  const logout = async () => {
     setLoading(true);
-    await userApi.signOut();
-    setSignedIn(false);
+    await userApi.logout();
+    setLoggedIn(false);
     setLoading(false);
   };
 
   let content: ReactElement;
-  if (signedIn) {
+  if (loggedIn) {
     content = <>{children}</>;
   } else if (loading) {
     content = <Loading />;
   } else {
-    content = <SignInForm signIn={signIn} error={error} />;
+    content = <SignInForm signIn={login} error={error} />;
   }
 
   const authContextValue = useMemo(() => {
     return {
-      signedIn,
-      setSignedIn,
-      claims,
-      signOut,
+      info,
+      logout,
     };
-  }, [signedIn, claims]);
+  }, [info]);
 
   return (
     <AuthContext.Provider value={authContextValue}>

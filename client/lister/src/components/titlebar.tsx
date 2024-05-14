@@ -66,7 +66,7 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
 
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Grid xs={12}>
-          <Breadcrumbs>
+          <Breadcrumbs separator="›">
             {breadcrumbs.map((breadcrumb) => (
               <Link
                 key={breadcrumb.title}
@@ -77,7 +77,7 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
                 {breadcrumb.title}
               </Link>
             ))}
-            <Typography color="text.primary">{title}</Typography>
+            <Typography color="text.secondary">{title}</Typography>
           </Breadcrumbs>
         </Grid>
       )}

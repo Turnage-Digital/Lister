@@ -1,4 +1,6 @@
-export type { Claim } from "./claim";
+// export type { Claim } from "./claim";
+
+export type { Info } from "./info";
 
 export type { Column } from "./column";
 export type { Status } from "./status";

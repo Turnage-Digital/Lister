@@ -5,16 +5,16 @@ import { ListItemDefinition } from "../../api";
 
 export interface ListItemDefinitionContextProps {
   setListId: (listId: string) => void;
-  getGridColDefs: () => GridColDef[];
+  getGridColDefs: (
+    onItemClicked: (listId: string, itemId: string) => void
+  ) => GridColDef[];
   listItemDefinition: ListItemDefinition | null;
-  error: string | null;
 }
 
 const defaultValue: ListItemDefinitionContextProps = {
   setListId: () => {},
   getGridColDefs: () => [],
   listItemDefinition: null,
-  error: null,
 };
 
 const ListItemDefinitionContext =
