@@ -53,7 +53,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
 
       retval.push({
         field: "id",
-        headerName: "Item #",
+        headerName: "ID",
         width: 100,
         sortable: false,
         disableColumnMenu: true,

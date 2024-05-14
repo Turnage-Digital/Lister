@@ -15,7 +15,7 @@ import { Outlet } from "react-router-dom";
 import { SideDrawer, useAuth } from "../components";
 
 const Root = () => {
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
 
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
     useState<HTMLButtonElement | null>(null);
@@ -46,7 +46,7 @@ const Root = () => {
                 open={Boolean(userMenuAnchorElement)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={signOut}>Sign Out</MenuItem>
+                <MenuItem onClick={logout}>Log Out</MenuItem>
               </Menu>
             </Box>
           </Toolbar>

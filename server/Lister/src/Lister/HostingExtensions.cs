@@ -66,6 +66,7 @@ internal static class HostingExtensions
                 builder.Configuration.GetSection("OpenAI"));
 
             if (builder.Environment.IsDevelopment())
+            {
                 registry
                     .AddEndpointsApiExplorer()
                     .AddSwaggerGen(options =>
@@ -76,6 +77,7 @@ internal static class HostingExtensions
                             Title = "Lister API"
                         });
                     });
+            }
         });
 
         var retval = builder.Build();
@@ -92,7 +94,7 @@ internal static class HostingExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            SeedData.EnsureSeedData(app);
+            // SeedData.EnsureSeedData(app);
         }
         else
         {
