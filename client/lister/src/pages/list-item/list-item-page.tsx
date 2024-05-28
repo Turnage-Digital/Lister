@@ -52,7 +52,7 @@ const ListItemPage = () => {
   ) : (
     <Container maxWidth="xl">
       <Stack sx={{ px: 2, py: 4 }}>
-        <Titlebar title={item?.id ?? ""} breadcrumbs={breadcrumbs} />
+        <Titlebar title={`Id ${item?.id}`} breadcrumbs={breadcrumbs} />
       </Stack>
     </Container>
   );

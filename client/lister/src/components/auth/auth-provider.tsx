@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 import { Info, IUsersApi, UsersApi } from "../../api";
-import Loading from "../loading";
+import { Loading } from "../load";
 
 import AuthContext from "./auth-context";
 import SignInForm from "./sign-in-form";
@@ -24,11 +24,9 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-
       try {
+        setLoading(true);
         const result = await userApi.getInfo();
-
         if (result.succeeded) {
           setLoggedIn(true);
           setInfo(result.info);

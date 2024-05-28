@@ -71,6 +71,8 @@ const EditListItemPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    window.sessionStorage.clear();
+
     const data = {
       serialized: JSON.stringify(updated),
     };
@@ -78,8 +80,6 @@ const EditListItemPage = () => {
     submit(data, {
       method: "post",
     });
-
-    window.sessionStorage.removeItem("updated_item");
   };
 
   const actions = [
@@ -103,7 +103,7 @@ const EditListItemPage = () => {
   ];
 
   return (
-    <Container component="form" onSubmit={handleSubmit}>
+    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <Titlebar
           title="Create an Item"
@@ -144,7 +144,6 @@ const EditListItemPage = () => {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             startIcon={<Save />}
             sx={{ width: { xs: "100%", md: "auto" } }}
           >

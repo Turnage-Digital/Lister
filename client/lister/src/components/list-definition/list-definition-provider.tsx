@@ -2,9 +2,14 @@ import { MoreVert, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
-import { Column, IListsApi, ListItemDefinition, ListsApi } from "../../api";
-import { getStatusFromName } from "../../status-fns";
-import Loading from "../loading";
+import {
+  Column,
+  getStatusFromName,
+  IListsApi,
+  ListItemDefinition,
+  ListsApi,
+} from "../../api";
+import { Loading } from "../load";
 import StatusChip from "../status-chip";
 
 import ListDefinitionContext from "./list-definition-context";
@@ -53,7 +58,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
 
       retval.push({
         field: "id",
-        headerName: "ID",
+        headerName: "Id",
         width: 100,
         sortable: false,
         disableColumnMenu: true,

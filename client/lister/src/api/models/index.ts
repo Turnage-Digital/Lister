@@ -1,5 +1,3 @@
-// export type { Claim } from "./claim";
-
 export type { Info } from "./info";
 
 export type { Column } from "./column";
@@ -12,3 +10,4 @@ export { ColumnType } from "./column-type";
 
 export type { StatusColor } from "./status-colors";
 export { statusColors } from "./status-colors";
+export { getStatusFromName } from "./status";

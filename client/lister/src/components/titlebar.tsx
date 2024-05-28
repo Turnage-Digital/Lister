@@ -1,5 +1,4 @@
 import {
-  Box,
   Breadcrumbs,
   Button,
   Hidden,
@@ -44,20 +43,23 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
 
       {actions && actions.length > 0 && (
         <Hidden mdDown>
-          <Grid xs={12} md={3} display="flex" justifyContent="flex-end">
+          <Grid
+            xs={12}
+            md={3}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+          >
             <Stack direction="row" spacing={2}>
               {actions.map((action) => (
-                <Box key={action.title}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={action.icon}
-                    onClick={action.onClick}
-                    sx={{ p: 1 }}
-                  >
-                    {action.title}
-                  </Button>
-                </Box>
+                <Button
+                  key={action.title}
+                  variant="contained"
+                  startIcon={action.icon}
+                  onClick={action.onClick}
+                >
+                  {action.title}
+                </Button>
               ))}
             </Stack>
           </Grid>

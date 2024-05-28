@@ -3,7 +3,7 @@ import { createContext } from "react";
 
 import { ListItemDefinition } from "../../api";
 
-export interface ListItemDefinitionContextProps {
+export interface ListItemDefinitionValue {
   setListId: (listId: string) => void;
   getGridColDefs: (
     onItemClicked: (listId: string, itemId: string) => void
@@ -11,13 +11,13 @@ export interface ListItemDefinitionContextProps {
   listItemDefinition: ListItemDefinition | null;
 }
 
-const defaultValue: ListItemDefinitionContextProps = {
+const defaultValue: ListItemDefinitionValue = {
   setListId: () => {},
   getGridColDefs: () => [],
   listItemDefinition: null,
 };
 
 const ListItemDefinitionContext =
-  createContext<ListItemDefinitionContextProps>(defaultValue);
+  createContext<ListItemDefinitionValue>(defaultValue);
 
 export default ListItemDefinitionContext;

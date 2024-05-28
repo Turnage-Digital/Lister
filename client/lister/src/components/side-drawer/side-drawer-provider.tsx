@@ -1,27 +1,6 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  ReactNode,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { PropsWithChildren, ReactNode, useMemo, useState } from "react";
 
-interface SideDrawerValue {
-  openDrawer: (title: string, content: ReactNode) => void;
-  closeDrawer: () => void;
-  title: string;
-  content: ReactNode;
-}
-
-const defaultValue: SideDrawerValue = {
-  openDrawer: () => {},
-  closeDrawer: () => {},
-  title: "",
-  content: null,
-};
-
-const SideDrawerContext = createContext<SideDrawerValue>(defaultValue);
+import SideDrawerContext from "./side-drawer-context";
 
 const SideDrawerProvider = ({ children }: PropsWithChildren) => {
   const [title, setTitle] = useState("");
@@ -54,7 +33,3 @@ const SideDrawerProvider = ({ children }: PropsWithChildren) => {
 };
 
 export default SideDrawerProvider;
-
-export function useSideDrawer() {
-  return useContext(SideDrawerContext);
-}

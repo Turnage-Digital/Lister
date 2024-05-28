@@ -15,13 +15,17 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         var requestBase = request as RequestBase<TResponse>;
         if (requestBase is not null)
+        {
             Log.Information("Handling {request}",
                 new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
+        }
 
         var retval = await next();
         if (requestBase is not null)
+        {
             Log.Information("Handled {request}",
                 new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
+        }
 
         return retval;
     }

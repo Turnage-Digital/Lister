@@ -56,7 +56,7 @@ const EditListPage = () => {
   ];
 
   return (
-    <Container component="form" onSubmit={handleSubmit}>
+    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
       <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
         <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
 

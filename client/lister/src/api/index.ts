@@ -14,4 +14,4 @@ export type {
   StatusColor,
 } from "./models";
 
-export { ColumnType, statusColors } from "./models";
+export { ColumnType, statusColors, getStatusFromName } from "./models";

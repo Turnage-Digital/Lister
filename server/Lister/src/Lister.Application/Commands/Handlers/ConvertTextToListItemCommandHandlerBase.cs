@@ -12,10 +12,4 @@ public abstract class ConvertTextToListItemCommandHandlerBase<TList>
         ConvertTextToListItemCommand request,
         CancellationToken cancellationToken
     );
-
-    protected abstract Task<TList> GetListAsync(
-        Guid listId,
-        string? userId,
-        CancellationToken cancellationToken
-    );
 }

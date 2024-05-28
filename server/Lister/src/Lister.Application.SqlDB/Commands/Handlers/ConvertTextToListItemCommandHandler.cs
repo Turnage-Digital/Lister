@@ -44,7 +44,7 @@ public class ConvertTextToListItemCommandHandler(
         return retval;
     }
 
-    protected override async Task<ListEntity> GetListAsync(
+    private async Task<ListEntity> GetListAsync(
         Guid listId,
         string? userId,
         CancellationToken cancellationToken

@@ -12,10 +12,11 @@ import {
 import React, { MouseEvent, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { SideDrawer, useAuth } from "../components";
+import { Loading, SideDrawer, useAuth, useLoad } from "../components";
 
 const Root = () => {
   const { logout } = useAuth();
+  const { loading } = useLoad();
 
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
     useState<HTMLButtonElement | null>(null);
@@ -25,6 +26,8 @@ const Root = () => {
   const handleCloseUserMenu = () => {
     setUserMenuAnchorElement(null);
   };
+
+  const content = loading ? <Loading /> : <Outlet />;
 
   return (
     <>
@@ -54,7 +57,7 @@ const Root = () => {
 
         <Container maxWidth="xl">
           <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
-          <Outlet />
+          {content}
         </Container>
       </Stack>
 

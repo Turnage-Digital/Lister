@@ -6,7 +6,8 @@ using MediatR;
 namespace Lister.Behaviors;
 
 public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpContextAccessor)
-    : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
 {
     public async Task<TResponse> Handle(
         TRequest request,

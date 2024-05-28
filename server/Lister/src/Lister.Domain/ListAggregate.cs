@@ -67,9 +67,9 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         var typeMap = new Dictionary<ColumnType, object>
         {
             { ColumnType.Text, "text" },
-            { ColumnType.Number, 42 },
+            { ColumnType.Number, 77 },
             { ColumnType.Date, DateTime.Today.ToString("o") },
-            { ColumnType.Boolean, false }
+            { ColumnType.Boolean, true }
         };
 
         var columns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
