@@ -9,7 +9,8 @@ namespace Lister.Application.SqlDB.Commands.Handlers;
 public class CreateListItemCommandHandler(ListAggregate<ListEntity> listAggregate)
     : CreateListItemCommandHandlerBase
 {
-    public override async Task<Item> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
+    public override async Task<Item> Handle(CreateListItemCommand request,
+        CancellationToken cancellationToken = default)
     {
         var list = await listAggregate.ReadAsync(request.ListId!, cancellationToken);
         if (list is null)

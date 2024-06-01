@@ -3,7 +3,6 @@ using Lister.Application.Queries;
 using Lister.Application.Queries.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.ValueObjects;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 

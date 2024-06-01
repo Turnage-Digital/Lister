@@ -9,11 +9,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 
-import {
-  AuthProvider,
-  ListDefinitionProvider,
-  SideDrawerProvider,
-} from "./components";
+import { AuthProvider, LoadProvider, SideDrawerProvider } from "./components";
 import router from "./router";
 import theme from "./theme";
 
@@ -26,11 +22,7 @@ root.render(
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
-          <ListDefinitionProvider>
-            <SideDrawerProvider>
-              <RouterProvider router={router} />
-            </SideDrawerProvider>
-          </ListDefinitionProvider>
+          <RouterProvider router={router} />
         </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>

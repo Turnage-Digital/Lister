@@ -35,6 +35,15 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         var retval = await unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
         return retval;
     }
+    
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+    {
+        await unitOfWork.ListsStore.DeleteAsync(id, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        Log.Information("Deleted list with id {id}", id);
+        // publish event
+    }
 
     public async Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
     {

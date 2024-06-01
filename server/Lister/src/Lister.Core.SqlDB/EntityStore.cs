@@ -14,6 +14,6 @@ internal class EntityStore<TEntity>(DbContext dbContext)
 
     public ValueTask<TEntity?> ReadAsync(object id, CancellationToken cancellationToken = default)
     {
-        return _dbSet.FindAsync(new[] { id }, cancellationToken);
+        return _dbSet.FindAsync([id], cancellationToken);
     }
 }

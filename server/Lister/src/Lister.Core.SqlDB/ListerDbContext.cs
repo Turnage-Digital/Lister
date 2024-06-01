@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB;
 
-public class ListerDbContext(DbContextOptions<ListerDbContext> options) 
+public class ListerDbContext(DbContextOptions<ListerDbContext> options)
     : DbContext(options)
 {
     public virtual DbSet<ListEntity> Lists { get; set; } = null!;

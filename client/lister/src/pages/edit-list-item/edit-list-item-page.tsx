@@ -1,5 +1,5 @@
 import { ContentPaste, Save } from "@mui/icons-material";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import { Box, Button, Divider, Stack } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams, useSubmit } from "react-router-dom";
 
@@ -8,6 +8,7 @@ import {
   FormBlock,
   Titlebar,
   useListDefinition,
+  useLoad,
   useSideDrawer,
 } from "../../components";
 
@@ -17,10 +18,12 @@ import StatusesContent from "./statuses-content";
 
 const EditListItemPage = () => {
   const { listItemDefinition } = useListDefinition();
+  const { loading } = useLoad();
+  const { openDrawer, closeDrawer } = useSideDrawer();
+
   const navigate = useNavigate();
   const { listId } = useParams();
   const submit = useSubmit();
-  const { openDrawer, closeDrawer } = useSideDrawer();
 
   const defaultListItem: Item = {
     id: null,
@@ -102,56 +105,60 @@ const EditListItemPage = () => {
     },
   ];
 
-  return (
-    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
-      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Titlebar
-          title="Create an Item"
-          actions={actions}
-          breadcrumbs={breadcrumbs}
-        />
+  return loading || listItemDefinition === null ? null : (
+    <Stack
+      component="form"
+      spacing={4}
+      divider={<Divider />}
+      onSubmit={handleSubmit}
+      sx={{ px: 2, py: 4 }}
+    >
+      <Titlebar
+        title="Create an Item"
+        actions={actions}
+        breadcrumbs={breadcrumbs}
+      />
 
-        <FormBlock
-          title="Columns"
-          blurb="Blurb about columns for an item."
-          content={
-            <ColumnContent
-              listItemDefinition={listItemDefinition!}
-              item={updated}
-              onItemUpdated={update}
-            />
-          }
-        />
+      <FormBlock
+        title="Columns"
+        blurb="Blurb about columns for an item."
+        content={
+          <ColumnContent
+            listItemDefinition={listItemDefinition}
+            item={updated}
+            onItemUpdated={update}
+          />
+        }
+      />
 
-        <FormBlock
-          title="Status"
-          blurb="Blurb about a status for an item."
-          content={
-            <StatusesContent
-              listItemDefinition={listItemDefinition!}
-              item={updated}
-              onItemUpdated={update}
-            />
-          }
-        />
+      <FormBlock
+        title="Status"
+        blurb="Blurb about a status for an item."
+        content={
+          <StatusesContent
+            listItemDefinition={listItemDefinition}
+            item={updated}
+            onItemUpdated={update}
+          />
+        }
+      />
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: { xs: "center", md: "flex-end" },
-          }}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: { xs: "center", md: "flex-end" },
+        }}
+      >
+        <Button
+          type="submit"
+          variant="contained"
+          startIcon={<Save />}
+          sx={{ width: { xs: "100%", md: "auto" } }}
         >
-          <Button
-            type="submit"
-            variant="contained"
-            startIcon={<Save />}
-            sx={{ width: { xs: "100%", md: "auto" } }}
-          >
-            Submit
-          </Button>
-        </Box>
-      </Stack>
-    </Container>
+          Submit
+        </Button>
+      </Box>
+    </Stack>
   );
 };
 

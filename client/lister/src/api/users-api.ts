@@ -28,11 +28,10 @@ export class UsersApi implements IUsersApi {
       body: JSON.stringify(input),
     });
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error("Failed to log in.");
+    if (response.status === 401) {
+      return { succeeded: false };
     }
-    const retval = await response.json();
-    return retval;
+    return { succeeded: true };
   }
 
   public async getInfo(): Promise<{ succeeded: boolean; info: Info | null }> {
@@ -42,21 +41,15 @@ export class UsersApi implements IUsersApi {
     const response = await fetch(request);
     if (response.status === 401) {
       return { succeeded: false, info: null };
-    } else if (!response.ok) {
-      throw new Error("Failed to get info.");
     }
     const info = await response.json();
-    const retval = { succeeded: true, info };
-    return retval;
+    return { succeeded: true, info };
   }
 
   public async logout(): Promise<void> {
     const request = new Request(`${this.baseUrl}/logout`, {
       method: "POST",
     });
-    const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error("Failed to log out.");
-    }
+    await fetch(request);
   }
 }

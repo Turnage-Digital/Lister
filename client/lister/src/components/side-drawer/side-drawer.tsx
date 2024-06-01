@@ -1,10 +1,11 @@
 import { Dialog, Drawer, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
 
-import { useSideDrawer } from "./side-drawer-provider";
+import useSideDrawer from "./use-side-drawer";
 
 const SideDrawer = () => {
   const { content, closeDrawer } = useSideDrawer();
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.up("sm"));
 

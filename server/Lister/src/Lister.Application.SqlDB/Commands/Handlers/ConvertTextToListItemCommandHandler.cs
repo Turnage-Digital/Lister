@@ -15,11 +15,12 @@ public class ConvertTextToListItemCommandHandler(
     ListAggregate<ListEntity> listAggregate,
     ListerDbContext dbContext,
     IOptions<OpenAIOptions> options)
-    : ConvertTextToListItemCommandHandlerBase<ListEntity>
+    : ConvertTextToListItemCommandHandlerBase
 {
     private readonly string _apiKey = options.Value.ApiKey;
 
-    public override async Task<Item> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
+    public override async Task<Item> Handle(ConvertTextToListItemCommand request,
+        CancellationToken cancellationToken = default)
     {
         Item retval;
 

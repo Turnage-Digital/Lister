@@ -10,6 +10,8 @@ public interface IListsStore<TList>
     Task CreateAsync(TList list, CancellationToken cancellationToken);
 
     Task<TList?> ReadAsync(string id, CancellationToken cancellationToken);
+    
+    Task DeleteAsync(string id, CancellationToken cancellationToken);
 
     Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken);
 

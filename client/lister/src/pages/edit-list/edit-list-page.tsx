@@ -1,5 +1,5 @@
 import { Save } from "@mui/icons-material";
-import { Box, Button, Container, Divider, Stack } from "@mui/material";
+import { Box, Button, Divider, Stack } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useSubmit } from "react-router-dom";
 
@@ -56,60 +56,64 @@ const EditListPage = () => {
   ];
 
   return (
-    <Container maxWidth="xl" component="form" onSubmit={handleSubmit}>
-      <Stack spacing={4} divider={<Divider />} sx={{ px: 2, py: 4 }}>
-        <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
+    <Stack
+      component="form"
+      spacing={4}
+      divider={<Divider />}
+      onSubmit={handleSubmit}
+      sx={{ px: 2, py: 4 }}
+    >
+      <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
 
-        <FormBlock
-          title="Name"
-          blurb="Blurb about naming a list."
-          content={
-            <NameBlock
-              name={updated.name}
-              onNameChanged={(name) => update("name", name)}
-            />
-          }
-        />
+      <FormBlock
+        title="Name"
+        blurb="Blurb about naming a list."
+        content={
+          <NameBlock
+            name={updated.name}
+            onNameChanged={(name) => update("name", name)}
+          />
+        }
+      />
 
-        <FormBlock
-          title="Columns"
-          blurb="Blurb about columns for a list."
-          content={
-            <ColumnsContent
-              columns={updated.columns}
-              onColumnsChanged={(columns) => update("columns", columns)}
-            />
-          }
-        />
+      <FormBlock
+        title="Columns"
+        blurb="Blurb about columns for a list."
+        content={
+          <ColumnsContent
+            columns={updated.columns}
+            onColumnsChanged={(columns) => update("columns", columns)}
+          />
+        }
+      />
 
-        <FormBlock
-          title="Statuses"
-          blurb="Blurb about statuses for an item."
-          content={
-            <StatusesContent
-              statuses={updated.statuses}
-              onStatusesChanged={(statuses) => update("statuses", statuses)}
-            />
-          }
-        />
+      <FormBlock
+        title="Statuses"
+        blurb="Blurb about statuses for an item."
+        content={
+          <StatusesContent
+            statuses={updated.statuses}
+            onStatusesChanged={(statuses) => update("statuses", statuses)}
+          />
+        }
+      />
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: { xs: "center", md: "flex-end" },
-          }}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: { xs: "center", md: "flex-end" },
+        }}
+      >
+        <Button
+          type="submit"
+          variant="contained"
+          startIcon={<Save />}
+          sx={{ width: { xs: "100%", md: "auto" } }}
         >
-          <Button
-            type="submit"
-            variant="contained"
-            startIcon={<Save />}
-            sx={{ width: { xs: "100%", md: "auto" } }}
-          >
-            Submit
-          </Button>
-        </Box>
-      </Stack>
-    </Container>
+          Submit
+        </Button>
+      </Box>
+    </Stack>
   );
 };
 

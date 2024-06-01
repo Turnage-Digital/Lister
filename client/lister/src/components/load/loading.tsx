@@ -1,8 +1,12 @@
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 
+import useLoad from "./use-load";
+
 const Loading = () => {
-  return (
+  const { loading } = useLoad();
+
+  return loading ? (
     <Box
       sx={{
         position: "fixed",
@@ -18,7 +22,7 @@ const Loading = () => {
     >
       <CircularProgress />
     </Box>
-  );
+  ) : null;
 };
 
 export default Loading;

@@ -2,7 +2,7 @@ import { Close } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 import React from "react";
 
-import { useSideDrawer } from "./side-drawer-provider";
+import useSideDrawer from "./use-side-drawer";
 
 const SideDrawerHeader = () => {
   const { title, closeDrawer } = useSideDrawer();

@@ -4,7 +4,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Container,
   Stack,
   Typography,
 } from "@mui/material";
@@ -13,17 +12,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import { Loading, Titlebar, useListDefinition } from "../../components";
+import { Titlebar, useLoad } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListsPage = () => {
-  const { setListId } = useListDefinition();
+  const { loading, setLoading, setError } = useLoad();
+
   const navigate = useNavigate();
 
   const [listNames, setListNames] = useState<ListName[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,12 +37,7 @@ const ListsPage = () => {
     };
 
     fetchData();
-  }, []);
-
-  const handleViewClicked = (listId: string) => {
-    setListId(listId);
-    navigate(`/${listId}`);
-  };
+  }, [setError, setLoading]);
 
   const actions = [
     {
@@ -54,36 +47,32 @@ const ListsPage = () => {
     },
   ];
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <Container maxWidth="xl">
-      <Stack sx={{ px: 2, py: 4 }}>
-        <Titlebar title="Lists" actions={actions} />
+  return loading ? null : (
+    <Stack sx={{ px: 2, py: 4 }}>
+      <Titlebar title="Lists" actions={actions} />
 
-        <Grid container spacing={2} sx={{ my: 2 }}>
-          {listNames.map((listName) => (
-            <Grid key={listName.id} xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {listName.name}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => handleViewClicked(listName.id)}
-                  >
-                    View
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
-    </Container>
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        {listNames.map((listName) => (
+          <Grid key={listName.id} xs={12} sm={6} md={4}>
+            <Card>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {listName.name}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  size="small"
+                  onClick={() => navigate(`/${listName.id}`)}
+                >
+                  View
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Stack>
   );
 };
 

@@ -3,7 +3,7 @@ import React, { PropsWithChildren, useMemo, useState } from "react";
 import LoadContext from "./load-context";
 
 const LoadProvider = ({ children }: PropsWithChildren) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
   const value = useMemo(
@@ -11,8 +11,9 @@ const LoadProvider = ({ children }: PropsWithChildren) => {
       loading,
       error,
       setLoading,
+      setError,
     }),
-    [loading, error, setLoading]
+    [loading, error]
   );
 
   return <LoadContext.Provider value={value}>{children}</LoadContext.Provider>;

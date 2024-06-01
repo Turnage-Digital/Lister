@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Core.SqlDB;
 
-public class ListsStore(ListerDbContext dbContext) 
+public class ListsStore(ListerDbContext dbContext)
     : IListsStore<ListEntity>
 {
     private readonly EntityStore<ListEntity> _entityStore = new(dbContext);
@@ -31,6 +31,11 @@ public class ListsStore(ListerDbContext dbContext)
         var parsed = Guid.Parse(id);
         var retval = await _entityStore.ReadAsync(parsed, cancellationToken);
         return retval;
+    }
+
+    public Task DeleteAsync(string id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)

@@ -1,20 +1,20 @@
-import { Container, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { IListsApi, Item, ListsApi } from "../../api";
-import { Loading, Titlebar, useListDefinition } from "../../components";
+import { Titlebar, useListDefinition, useLoad } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListItemPage = () => {
   const { listItemDefinition } = useListDefinition();
+  const { loading, setLoading, setError } = useLoad();
+
   const navigate = useNavigate();
   const { listId, itemId } = useParams();
 
   const [item, setItem] = useState<Item>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!listItemDefinition) {
@@ -34,7 +34,7 @@ const ListItemPage = () => {
     };
 
     fetchData();
-  }, [listId, itemId, listItemDefinition]);
+  }, [setError, setLoading, listId, itemId, listItemDefinition]);
 
   const breadcrumbs = [
     {
@@ -47,14 +47,10 @@ const ListItemPage = () => {
     },
   ];
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <Container maxWidth="xl">
-      <Stack sx={{ px: 2, py: 4 }}>
-        <Titlebar title={`Id ${item?.id}`} breadcrumbs={breadcrumbs} />
-      </Stack>
-    </Container>
+  return loading || listItemDefinition === null ? null : (
+    <Stack sx={{ px: 2, py: 4 }}>
+      <Titlebar title={`Id ${item?.id}`} breadcrumbs={breadcrumbs} />
+    </Stack>
   );
 };
 

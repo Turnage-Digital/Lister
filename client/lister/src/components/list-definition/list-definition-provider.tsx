@@ -1,6 +1,7 @@
 import { MoreVert, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import {
   Column,
@@ -9,7 +10,7 @@ import {
   ListItemDefinition,
   ListsApi,
 } from "../../api";
-import { Loading } from "../load";
+import { useLoad } from "../load";
 import StatusChip from "../status-chip";
 
 import ListDefinitionContext from "./list-definition-context";
@@ -19,20 +20,21 @@ type Props = PropsWithChildren;
 const listApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListDefinitionProvider = ({ children }: Props) => {
-  const [listId, setListId] = useState<string | null>(null);
+  const { setLoading, setError } = useLoad();
+
+  const { listId } = useParams();
+
   const [listItemDefinition, setListItemDefinition] =
     useState<ListItemDefinition | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!listId) {
+      setListItemDefinition(null);
       return;
     }
 
     const fetchData = async () => {
       setLoading(true);
-
       try {
         const result = await listApi.getListItemDefinition(listId);
         setListItemDefinition(result);
@@ -44,7 +46,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
     };
 
     fetchData();
-  }, [listId]);
+  }, [setLoading, setError, listId]);
 
   const listDefinitionContextValue = useMemo(() => {
     const getGridColDefs = (
@@ -125,13 +127,12 @@ const ListDefinitionProvider = ({ children }: Props) => {
       return retval;
     };
 
-    return { setListId, getGridColDefs, listItemDefinition };
-  }, [setListId, listId, listItemDefinition]);
+    return { getGridColDefs, listItemDefinition };
+  }, [listId, listItemDefinition]);
 
-  const content = loading ? <Loading /> : children;
   return (
     <ListDefinitionContext.Provider value={listDefinitionContextValue}>
-      {content}
+      {children}
     </ListDefinitionContext.Provider>
   );
 };

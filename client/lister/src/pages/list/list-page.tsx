@@ -1,16 +1,18 @@
 import { AddCircle } from "@mui/icons-material";
-import { Container, Paper, Stack } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { IListsApi, Item, ListsApi } from "../../api";
-import { Loading, Titlebar, useListDefinition } from "../../components";
+import { Titlebar, useListDefinition, useLoad } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListPage = () => {
   const { listItemDefinition, getGridColDefs } = useListDefinition();
+  const { loading, setLoading, setError } = useLoad();
+
   const navigate = useNavigate();
   const { listId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,8 +24,6 @@ const ListPage = () => {
     items: [],
     count: 0,
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!listItemDefinition) {
@@ -54,7 +54,7 @@ const ListPage = () => {
     };
 
     fetchData();
-  }, [listId, listItemDefinition, searchParams]);
+  }, [setError, setLoading, listId, listItemDefinition, searchParams]);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;
@@ -130,37 +130,33 @@ const ListPage = () => {
     },
   ];
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <Container maxWidth="xl">
-      <Stack sx={{ px: 2, py: 4 }}>
-        <Titlebar
-          title={listItemDefinition?.name ?? ""}
-          actions={actions}
-          breadcrumbs={breadcrumbs}
-        />
+  return loading || listItemDefinition === null ? null : (
+    <Stack sx={{ px: 2, py: 4 }}>
+      <Titlebar
+        title={listItemDefinition.name ?? ""}
+        actions={actions}
+        breadcrumbs={breadcrumbs}
+      />
 
-        <Paper sx={{ my: 4 }}>
-          <DataGrid
-            columns={gridColDefs}
-            rows={rows}
-            getRowId={(row) => row.id}
-            rowCount={pagedItems.count}
-            paginationMode="server"
-            paginationModel={pagination}
-            pageSizeOptions={[10, 25, 50]}
-            onPaginationModelChange={handlePaginationChange}
-            sortingMode="server"
-            sortModel={sort}
-            onSortModelChange={handleSortChange}
-            disableColumnFilter
-            disableColumnSelector
-            disableRowSelectionOnClick
-          />
-        </Paper>
-      </Stack>
-    </Container>
+      <Paper sx={{ my: 4 }}>
+        <DataGrid
+          columns={gridColDefs}
+          rows={rows}
+          getRowId={(row) => row.id}
+          rowCount={pagedItems.count}
+          paginationMode="server"
+          paginationModel={pagination}
+          pageSizeOptions={[10, 25, 50]}
+          onPaginationModelChange={handlePaginationChange}
+          sortingMode="server"
+          sortModel={sort}
+          onSortModelChange={handleSortChange}
+          disableColumnFilter
+          disableColumnSelector
+          disableRowSelectionOnClick
+        />
+      </Paper>
+    </Stack>
   );
 };
 

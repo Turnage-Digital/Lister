@@ -4,7 +4,6 @@ import { createContext } from "react";
 import { ListItemDefinition } from "../../api";
 
 export interface ListItemDefinitionValue {
-  setListId: (listId: string) => void;
   getGridColDefs: (
     onItemClicked: (listId: string, itemId: string) => void
   ) => GridColDef[];
@@ -12,7 +11,6 @@ export interface ListItemDefinitionValue {
 }
 
 const defaultValue: ListItemDefinitionValue = {
-  setListId: () => {},
   getGridColDefs: () => [],
   listItemDefinition: null,
 };
