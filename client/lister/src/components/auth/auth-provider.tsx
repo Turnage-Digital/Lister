@@ -14,22 +14,22 @@ const AuthProvider = ({ children }: Props) => {
 
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [info, setInfo] = useState<Info | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const result = await userApi.getInfo();
-        if (result.succeeded) {
-          setLoggedIn(true);
-          setInfo(result.info);
-        } else {
+        const info = await userApi.getInfo();
+        if (info === null) {
           setLoggedIn(false);
           setInfo(null);
-          // setError(result.errorMessage || "An error occurred.");
+        } else {
+          setLoggedIn(true);
+          setInfo(info);
         }
       } catch (e: any) {
-        // setError(e.message);
+        setError(e.message);
       } finally {
         setLoading(false);
       }
@@ -40,21 +40,31 @@ const AuthProvider = ({ children }: Props) => {
 
   const authContextValue = useMemo(() => {
     const login = async (username: string, password: string) => {
-      setLoading(true);
-      const result = await userApi.login(username, password);
-      if (result.succeeded) {
-        setLoggedIn(result.succeeded);
-      } else {
-        // setError("Invalid username or password.");
+      try {
+        setLoading(true);
+        const succeeded = await userApi.login(username, password);
+        if (succeeded) {
+          setLoggedIn(succeeded);
+        } else {
+          setError("Invalid username or password.");
+        }
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     const logout = async () => {
-      setLoading(true);
-      await userApi.logout();
-      setLoggedIn(false);
-      setLoading(false);
+      try {
+        setLoading(true);
+        await userApi.logout();
+        setLoggedIn(false);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
     return {

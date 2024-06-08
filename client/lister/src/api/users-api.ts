@@ -1,16 +1,9 @@
 import { Info } from "./models";
 
 export interface IUsersApi {
-  login(
-    username: string,
-    password: string
-  ): Promise<{ succeeded: boolean; errorMessage?: string }>;
+  login(username: string, password: string): Promise<boolean>;
 
-  getInfo(): Promise<{
-    succeeded: boolean;
-    info: Info | null;
-    errorMessage?: string;
-  }>;
+  getInfo(): Promise<Info | null>;
 
   logout(): Promise<void>;
 }
@@ -22,60 +15,41 @@ export class UsersApi implements IUsersApi {
     this.baseUrl = baseUrl;
   }
 
-  public async login(
-    email: string,
-    password: string
-  ): Promise<{ succeeded: boolean; errorMessage?: string }> {
-    let retval: { succeeded: boolean; errorMessage?: string };
+  public async login(email: string, password: string): Promise<boolean> {
+    const input = { email, password };
+    const request = new Request(`${this.baseUrl}/login?useCookies=true`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(input),
+    });
 
-    try {
-      const input = { email, password };
-      const request = new Request(`${this.baseUrl}/login?useCookies=true`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(input),
-      });
-      const response = await fetch(request);
-      if (response.status === 401) {
-        retval = { succeeded: false };
-      } else {
-        retval = { succeeded: true };
-      }
-    } catch (e: any) {
-      retval = { succeeded: false, errorMessage: e.message };
+    const response = await fetch(request);
+    if (!response.ok) {
+      throw new Error(`HTTP error status: ${response.status}`);
     }
 
+    const retval = response.status !== 401;
     return retval;
   }
 
-  public async getInfo(): Promise<{
-    succeeded: boolean;
-    info: Info | null;
-    errorMessage?: string;
-  }> {
-    let retval: {
-      succeeded: boolean;
-      info: Info | null;
-      errorMessage?: string;
-    };
+  public async getInfo(): Promise<Info | null> {
+    const request = new Request(`${this.baseUrl}/manage/info`, {
+      method: "GET",
+    });
 
-    try {
-      const request = new Request(`${this.baseUrl}/manage/info`, {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      if (response.status === 401) {
-        retval = { succeeded: false, info: null };
-      } else {
-        const info = await response.json();
-        retval = { succeeded: true, info };
-      }
-    } catch (e: any) {
-      retval = { succeeded: false, info: null, errorMessage: e.message };
+    const response = await fetch(request);
+    if (!response.ok) {
+      throw new Error(`HTTP error status: ${response.status}`);
     }
 
+    let retval: Info | null;
+    if (response.status === 401) {
+      retval = null;
+    } else {
+      retval = await response.json();
+    }
     return retval;
   }
 
