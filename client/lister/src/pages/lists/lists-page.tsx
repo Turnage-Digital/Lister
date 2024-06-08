@@ -17,7 +17,7 @@ import { Titlebar, useLoad } from "../../components";
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListsPage = () => {
-  const { loading, setLoading, setError } = useLoad();
+  const { loading, setLoading } = useLoad();
 
   const navigate = useNavigate();
 
@@ -30,14 +30,14 @@ const ListsPage = () => {
         const listNames = await listsApi.getListNames();
         setListNames(listNames);
       } catch (e: any) {
-        setError(e.message);
+        // setError(e.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [setError, setLoading]);
+  }, [setLoading]);
 
   const actions = [
     {

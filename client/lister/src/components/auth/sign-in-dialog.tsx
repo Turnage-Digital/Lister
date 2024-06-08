@@ -1,20 +1,21 @@
 import {
-  Alert,
   Box,
   Button,
-  Container,
+  Dialog,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { FormEvent, useState } from "react";
 
-interface Props {
-  signIn: (username: string, password: string) => Promise<void>;
-  error: string | null;
-}
+import { useLoad } from "../load";
 
-const SignInForm = ({ signIn, error }: Props) => {
+import useAuth from "./use-auth";
+
+const SignInDialog = () => {
+  const { loading } = useLoad();
+  const { loggedIn, login } = useAuth();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -22,13 +23,13 @@ const SignInForm = ({ signIn, error }: Props) => {
     e.preventDefault();
 
     if (username && password) {
-      await signIn(username, password);
+      await login(username, password);
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
-      <Stack spacing={2} alignItems="center">
+    <Dialog open={!loggedIn && !loading} fullScreen>
+      <Stack spacing={2} alignItems="center" sx={{ px: 4, py: 8 }}>
         <Typography variant="h5">Sign in</Typography>
 
         <Box component="form" onSubmit={handleSubmit}>
@@ -65,15 +66,9 @@ const SignInForm = ({ signIn, error }: Props) => {
             Sign In
           </Button>
         </Box>
-
-        {error && (
-          <Alert sx={{ mt: 2 }} severity="error">
-            {error}
-          </Alert>
-        )}
       </Stack>
-    </Container>
+    </Dialog>
   );
 };
 
-export default SignInForm;
+export default SignInDialog;

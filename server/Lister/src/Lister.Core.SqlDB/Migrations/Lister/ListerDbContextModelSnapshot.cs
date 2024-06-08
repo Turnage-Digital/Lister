@@ -18,7 +18,7 @@ namespace Lister.Core.SqlDB.Migrations.Lister
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -71,6 +71,13 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<Guid?>("ListId")
                         .HasColumnType("char(36)")
                         .HasColumnName("ListId");
@@ -95,6 +102,13 @@ namespace Lister.Core.SqlDB.Migrations.Lister
                         .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")

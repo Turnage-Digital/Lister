@@ -35,13 +35,13 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         var retval = await unitOfWork.ListsStore.ReadAsync(id, cancellationToken);
         return retval;
     }
-    
-    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+
+    public async Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken = default)
     {
-        await unitOfWork.ListsStore.DeleteAsync(id, cancellationToken);
+        await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        Log.Information("Deleted list with id {id}", id);
+
+        Log.Information("Deleted list: {list}", new { list, deletedBy });
         // publish event
     }
 
@@ -87,6 +87,7 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
         retval.status = statuses.First().Name;
 
+        Log.Information("Created example bag: {bag}", retval);
         return retval;
     }
 }

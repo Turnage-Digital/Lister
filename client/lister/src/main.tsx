@@ -21,9 +21,13 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <LoadProvider>
+          <AuthProvider>
+            <SideDrawerProvider>
+              <RouterProvider router={router} />
+            </SideDrawerProvider>
+          </AuthProvider>
+        </LoadProvider>
       </LocalizationProvider>
     </ThemeProvider>
   </StyledEngineProvider>

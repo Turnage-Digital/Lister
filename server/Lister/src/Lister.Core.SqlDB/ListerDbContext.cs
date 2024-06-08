@@ -31,6 +31,11 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
 
             entity.Property(e => e.CreatedOn)
                 .IsRequired();
+            
+            entity.Property(e => e.DeletedBy)
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.DeletedOn);
 
             entity.HasMany(e => e.Columns)
                 .WithOne(d => d.List)
@@ -110,6 +115,11 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
 
             entity.Property(e => e.CreatedOn)
                 .IsRequired();
+            
+            entity.Property(e => e.DeletedBy)
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.DeletedOn);
 
             entity.Property(e => e.ListId)
                 .HasColumnName("ListId");

@@ -11,7 +11,7 @@ public interface IListsStore<TList>
 
     Task<TList?> ReadAsync(string id, CancellationToken cancellationToken);
     
-    Task DeleteAsync(string id, CancellationToken cancellationToken);
+    Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken);
 
     Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken);
 
@@ -26,8 +26,6 @@ public interface IListsStore<TList>
     Task SetStatusesAsync(TList list, IEnumerable<Status> statuses, CancellationToken cancellationToken);
 
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
-
-    Task SetCreatedByAsync(TList list, string userId, CancellationToken cancellationToken);
 
     Task<string> GetCreatedByAsync(TList list, CancellationToken cancellationToken);
 

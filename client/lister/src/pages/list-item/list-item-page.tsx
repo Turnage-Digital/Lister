@@ -9,7 +9,7 @@ const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListItemPage = () => {
   const { listItemDefinition } = useListDefinition();
-  const { loading, setLoading, setError } = useLoad();
+  const { loading, setLoading } = useLoad();
 
   const navigate = useNavigate();
   const { listId, itemId } = useParams();
@@ -27,14 +27,14 @@ const ListItemPage = () => {
         const item = await listsApi.getItem(listId!, itemId!);
         setItem(item);
       } catch (e: any) {
-        setError(e.message);
+        // setError(e.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [setError, setLoading, listId, itemId, listItemDefinition]);
+  }, [listId, itemId, listItemDefinition, setLoading]);
 
   const breadcrumbs = [
     {

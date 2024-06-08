@@ -7,7 +7,9 @@ using Lister.Domain;
 
 namespace Lister.Application.SqlDB.Commands.Handlers;
 
-public class CreateListCommandHandler(ListAggregate<ListEntity> listAggregate, IMapper mapper)
+public class CreateListCommandHandler(
+    ListAggregate<ListEntity> listAggregate,
+    IMapper mapper)
     : CreateListCommandHandlerBase<ListItemDefinitionView>
 {
     public override async Task<ListItemDefinitionView> Handle(
@@ -24,7 +26,7 @@ public class CreateListCommandHandler(ListAggregate<ListEntity> listAggregate, I
             request.Statuses,
             request.Columns,
             cancellationToken);
-
+        
         var retval = mapper.Map<ListItemDefinitionView>(created);
         return retval;
     }

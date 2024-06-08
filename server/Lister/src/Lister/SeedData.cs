@@ -43,12 +43,12 @@ internal static class SeedData
         var listAggregate = scope.ServiceProvider
             .GetRequiredService<ListAggregate<ListEntity>>();
 
-        var list = listAggregate.FindByNameAsync("Trailer Park Boys").Result;
+        var list = listAggregate.FindByNameAsync("Students").Result;
         if (list == null)
         {
             list = listAggregate.CreateAsync(
                 heath!.Id,
-                "Trailer Park Boys",
+                "Students",
                 new[]
                 {
                     new Status
@@ -272,14 +272,6 @@ internal static class SeedData
         if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
 
         Log.Debug($"{userName} created");
-    }
-
-    private static long GetJavascriptTimestamp(string dateTime)
-    {
-        var parsed = DateTime.Parse(dateTime);
-        var retval = (long)(parsed - new DateTime(1970, 1, 1))
-            .TotalMilliseconds;
-        return retval;
     }
 
     private static class JwtClaimTypes

@@ -10,6 +10,7 @@ import {
   ListItemDefinition,
   ListsApi,
 } from "../../api";
+import { useAuth } from "../auth";
 import { useLoad } from "../load";
 import StatusChip from "../status-chip";
 
@@ -20,7 +21,8 @@ type Props = PropsWithChildren;
 const listApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListDefinitionProvider = ({ children }: Props) => {
-  const { setLoading, setError } = useLoad();
+  const { setLoading } = useLoad();
+  const { loggedIn } = useAuth();
 
   const { listId } = useParams();
 
@@ -28,7 +30,7 @@ const ListDefinitionProvider = ({ children }: Props) => {
     useState<ListItemDefinition | null>(null);
 
   useEffect(() => {
-    if (!listId) {
+    if (!listId || !loggedIn) {
       setListItemDefinition(null);
       return;
     }
@@ -39,14 +41,14 @@ const ListDefinitionProvider = ({ children }: Props) => {
         const result = await listApi.getListItemDefinition(listId);
         setListItemDefinition(result);
       } catch (e: any) {
-        setError(e.message);
+        // setError(e.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [setLoading, setError, listId]);
+  }, [listId, loggedIn, setLoading]);
 
   const listDefinitionContextValue = useMemo(() => {
     const getGridColDefs = (

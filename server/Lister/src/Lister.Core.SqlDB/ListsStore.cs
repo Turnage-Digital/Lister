@@ -22,7 +22,6 @@ public class ListsStore(ListerDbContext dbContext)
 
     public async Task CreateAsync(ListEntity list, CancellationToken cancellationToken = default)
     {
-        list.CreatedOn = DateTime.UtcNow;
         await _entityStore.CreateAsync(list, cancellationToken);
     }
 
@@ -33,9 +32,11 @@ public class ListsStore(ListerDbContext dbContext)
         return retval;
     }
 
-    public Task DeleteAsync(string id, CancellationToken cancellationToken)
+    public Task DeleteAsync(ListEntity list, string deletedBy, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        list.DeletedBy = deletedBy;
+        list.DeletedOn = DateTime.UtcNow;
+        return Task.CompletedTask;
     }
 
     public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)
@@ -95,12 +96,6 @@ public class ListsStore(ListerDbContext dbContext)
             .Select(sd => new Status { Name = sd.Name, Color = sd.Color })
             .ToArray();
         return Task.FromResult(retval);
-    }
-
-    public Task SetCreatedByAsync(ListEntity list, string userId, CancellationToken cancellationToken)
-    {
-        list.CreatedBy = userId;
-        return Task.CompletedTask;
     }
 
     public Task<string> GetCreatedByAsync(ListEntity list, CancellationToken cancellationToken)

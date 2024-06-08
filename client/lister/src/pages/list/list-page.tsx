@@ -11,7 +11,7 @@ const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
 const ListPage = () => {
   const { listItemDefinition, getGridColDefs } = useListDefinition();
-  const { loading, setLoading, setError } = useLoad();
+  const { loading, setLoading } = useLoad();
 
   const navigate = useNavigate();
   const { listId } = useParams();
@@ -47,14 +47,14 @@ const ListPage = () => {
         );
         setPagedItems({ items, count });
       } catch (e: any) {
-        setError(e.message);
+        // setError(e.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [setError, setLoading, listId, listItemDefinition, searchParams]);
+  }, [listId, listItemDefinition, searchParams, setLoading]);
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     const page = gridPaginationModel.page;

@@ -2,16 +2,20 @@ import { createContext } from "react";
 
 import { Info } from "../../api";
 
-interface Props {
+export interface AuthValue {
+  loggedIn: boolean;
   info: Info | null;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-const defaultValue: Props = {
+const defaultValue: AuthValue = {
+  loggedIn: false,
   info: null,
+  login: async () => {},
   logout: async () => {},
 };
 
-const AuthContext = createContext<Props>(defaultValue);
+const AuthContext = createContext<AuthValue>(defaultValue);
 
 export default AuthContext;

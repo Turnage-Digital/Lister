@@ -15,63 +15,68 @@ import { Outlet } from "react-router-dom";
 import {
   ListDefinitionProvider,
   Loading,
-  LoadProvider,
   SideDrawer,
-  SideDrawerProvider,
+  SignInDialog,
   useAuth,
 } from "../components";
 
 const Root = () => {
-  const { logout } = useAuth();
+  const { loggedIn, logout } = useAuth();
 
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
     useState<HTMLButtonElement | null>(null);
+
   const handleOpenUserMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setUserMenuAnchorElement(event.currentTarget);
   };
+
   const handleCloseUserMenu = () => {
     setUserMenuAnchorElement(null);
   };
 
+  const handleLogoutClick = async () => {
+    setUserMenuAnchorElement(null);
+    await logout();
+  };
+
   return (
-    <LoadProvider>
-      <SideDrawerProvider>
-        <ListDefinitionProvider>
-          <Stack
-            sx={{
-              minWidth: "100%",
-              height: "100vh",
-            }}
-          >
-            <AppBar>
-              <Toolbar>
-                <Box sx={{ flexGrow: 1 }} />
-                <Box sx={{ flexGrow: 0 }}>
-                  <IconButton color="inherit" onClick={handleOpenUserMenu}>
-                    <AccountCircle />
-                  </IconButton>
-                  <Menu
-                    anchorEl={userMenuAnchorElement}
-                    open={Boolean(userMenuAnchorElement)}
-                    onClose={handleCloseUserMenu}
-                  >
-                    <MenuItem onClick={logout}>Log Out</MenuItem>
-                  </Menu>
-                </Box>
-              </Toolbar>
-            </AppBar>
+    <ListDefinitionProvider>
+      <Stack
+        sx={{
+          minWidth: "100%",
+          height: "100vh",
+        }}
+      >
+        <AppBar>
+          <Toolbar>
+            <Box sx={{ flexGrow: 1 }} />
+            {loggedIn && (
+              <Box sx={{ flexGrow: 0 }}>
+                <IconButton color="inherit" onClick={handleOpenUserMenu}>
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  anchorEl={userMenuAnchorElement}
+                  open={Boolean(userMenuAnchorElement)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={handleLogoutClick}>Log Out</MenuItem>
+                </Menu>
+              </Box>
+            )}
+          </Toolbar>
+        </AppBar>
 
-            <Container maxWidth="xl">
-              <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
-              <Outlet />
-            </Container>
-          </Stack>
+        <Container maxWidth="xl">
+          <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
+          {loggedIn && <Outlet />}
+        </Container>
+      </Stack>
 
-          <Loading />
-          <SideDrawer />
-        </ListDefinitionProvider>
-      </SideDrawerProvider>
-    </LoadProvider>
+      <SideDrawer />
+      <SignInDialog />
+      <Loading />
+    </ListDefinitionProvider>
   );
 };
 
