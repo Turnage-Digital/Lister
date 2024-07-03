@@ -15,6 +15,7 @@ const ListItemPage = () => {
   const { listId, itemId } = useParams();
 
   const [item, setItem] = useState<Item>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!listItemDefinition) {
@@ -27,7 +28,7 @@ const ListItemPage = () => {
         const item = await listsApi.getItem(listId!, itemId!);
         setItem(item);
       } catch (e: any) {
-        // setError(e.message);
+        setError(e.message);
       } finally {
         setLoading(false);
       }
@@ -49,7 +50,7 @@ const ListItemPage = () => {
 
   return loading || listItemDefinition === null ? null : (
     <Stack sx={{ px: 2, py: 4 }}>
-      <Titlebar title={`Id ${item?.id}`} breadcrumbs={breadcrumbs} />
+      <Titlebar title={`ID ${item?.id}`} breadcrumbs={breadcrumbs} />
     </Stack>
   );
 };

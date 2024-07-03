@@ -24,12 +24,7 @@ export class UsersApi implements IUsersApi {
       method: "POST",
       body: JSON.stringify(input),
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     const retval = response.status !== 401;
     return retval;
   }
@@ -38,12 +33,7 @@ export class UsersApi implements IUsersApi {
     const request = new Request(`${this.baseUrl}/manage/info`, {
       method: "GET",
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     let retval: Info | null;
     if (response.status === 401) {
       retval = null;

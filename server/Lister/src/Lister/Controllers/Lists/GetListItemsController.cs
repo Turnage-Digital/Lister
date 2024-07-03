@@ -11,7 +11,7 @@ namespace Lister.Controllers.Lists;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemsController(IMediator mediator) : Controller
+public class GetListItemsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{listId}/items")]
     [ProducesResponseType(typeof(Item[]), Status200OK)]

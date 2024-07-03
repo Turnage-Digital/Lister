@@ -27,12 +27,7 @@ export class ListsApi implements IListsApi {
     const request = new Request(`${this.baseUrl}/names`, {
       method: "GET",
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     const retval = await response.json();
     return retval;
   }
@@ -43,12 +38,7 @@ export class ListsApi implements IListsApi {
     const request = new Request(`${this.baseUrl}/${listId}/itemDefinition`, {
       method: "GET",
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     const retval = await response.json();
     return retval;
   }
@@ -68,12 +58,7 @@ export class ListsApi implements IListsApi {
     const request = new Request(url, {
       method: "GET",
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     const retval = await response.json();
     return retval;
   }
@@ -82,12 +67,7 @@ export class ListsApi implements IListsApi {
     const request = new Request(`${this.baseUrl}/${listId}/items/${itemId}`, {
       method: "GET",
     });
-
     const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error(`HTTP error status: ${response.status}`);
-    }
-
     const retval = await response.json();
     return retval;
   }

@@ -3,6 +3,7 @@ using Lister.Core.SqlDB.Views;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Lister.Controllers.Lists;
@@ -11,7 +12,7 @@ namespace Lister.Controllers.Lists;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemDefinitionController(IMediator mediator) : Controller
+public class GetListItemDefinitionController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{listId}/itemDefinition")]
     [ProducesResponseType(typeof(ListItemDefinitionView), Status200OK)]
@@ -20,7 +21,7 @@ public class GetListItemDefinitionController(IMediator mediator) : Controller
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> Get(string listId)
     {
-        GetListItemDefinitionQuery<ListItemDefinitionView> query = new(listId);
+        GetListItemDefinitionQuery<ListItemDefinitionView?> query = new(listId);
         var result = await mediator.Send(query);
         return Ok(result);
     }

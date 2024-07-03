@@ -4,21 +4,46 @@ using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Views;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace Lister.Application.SqlDB.Queries.Handlers;
 
-public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext)
-    : GetListItemDefinitionQueryHandlerBase<ListItemDefinitionView>
+public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext, IDistributedCache cache)
+    : GetListItemDefinitionQueryHandlerBase<ListItemDefinitionView?>
 {
-    public override async Task<ListItemDefinitionView> Handle(
-        GetListItemDefinitionQuery<ListItemDefinitionView> request,
+    public override async Task<ListItemDefinitionView?> Handle(
+        GetListItemDefinitionQuery<ListItemDefinitionView?> request,
         CancellationToken cancellationToken
     )
     {
+        ListItemDefinitionView? retval;
+
         var parsed = Guid.Parse(request.ListId);
+        var cacheKey = $"ListItemDefinition-{request.ListId}";
+        var cacheValue = await cache.GetStringAsync(cacheKey, cancellationToken);
+
+        if (cacheValue != null)
+        {
+            retval = JsonConvert.DeserializeObject<ListItemDefinitionView>(cacheValue);
+        }
+        else
+        {
+            retval = await GetFromDatabaseAsync(parsed, request.UserId, cancellationToken);
+            await CacheDatabaseResultAsync(cacheKey, retval, cancellationToken);
+        }
+
+        return retval;
+    }
+
+    private async Task<ListItemDefinitionView?> GetFromDatabaseAsync(
+        Guid listId,
+        string? userId,
+        CancellationToken cancellationToken)
+    {
         var retval = await dbContext.Lists
-            .Where(list => list.CreatedBy == request.UserId)
-            .Where(list => list.Id == parsed)
+            .Where(list => list.CreatedBy == userId)
+            .Where(list => list.Id == listId)
             .Select(list => new ListItemDefinitionView
             {
                 Id = list.Id,
@@ -37,7 +62,23 @@ public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext)
                     }).ToArray()
             })
             .AsSplitQuery()
-            .SingleAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
         return retval;
+    }
+
+    private async Task CacheDatabaseResultAsync(
+        string key,
+        ListItemDefinitionView? value,
+        CancellationToken cancellationToken)
+    {
+        if (value == null)
+            return;
+        
+        var serialized = JsonConvert.SerializeObject(value);
+        var options = new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(5)
+        };
+        await cache.SetStringAsync(key, serialized, options, cancellationToken);
     }
 }

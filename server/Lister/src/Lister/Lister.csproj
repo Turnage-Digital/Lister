@@ -10,7 +10,6 @@
 
     <ItemGroup>
         <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.15"/>
-        <PackageReference Include="Lamar.Microsoft.DependencyInjection" Version="13.0.4"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">

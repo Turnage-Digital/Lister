@@ -24,6 +24,7 @@ const ListPage = () => {
     items: [],
     count: 0,
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!listItemDefinition) {
@@ -47,7 +48,7 @@ const ListPage = () => {
         );
         setPagedItems({ items, count });
       } catch (e: any) {
-        // setError(e.message);
+        setError(e.message);
       } finally {
         setLoading(false);
       }
@@ -130,7 +131,7 @@ const ListPage = () => {
     },
   ];
 
-  return loading || listItemDefinition === null ? null : (
+  return loading || listItemDefinition === null || rows.length === 0 ? null : (
     <Stack sx={{ px: 2, py: 4 }}>
       <Titlebar
         title={listItemDefinition.name ?? ""}

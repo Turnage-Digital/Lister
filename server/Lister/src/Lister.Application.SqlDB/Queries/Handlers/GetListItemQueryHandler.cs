@@ -9,7 +9,7 @@ namespace Lister.Application.SqlDB.Queries.Handlers;
 public class GetListItemQueryHandler(ListerDbContext dbContext)
     : GetListItemQueryHandlerBase
 {
-    public override async Task<Item> Handle(GetListItemQuery request, CancellationToken cancellationToken)
+    public override async Task<Item?> Handle(GetListItemQuery request, CancellationToken cancellationToken)
     {
         var parsedListId = Guid.Parse(request.ListId);
         var parsedItemId = int.Parse(request.ItemId);
@@ -22,7 +22,7 @@ public class GetListItemQueryHandler(ListerDbContext dbContext)
                 Id = item.Id,
                 Bag = item.Bag
             })
-            .SingleAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
         return retval;
     }
 }

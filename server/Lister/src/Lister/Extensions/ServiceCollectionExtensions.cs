@@ -2,6 +2,7 @@ using Lister.Core;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Configuration;
 using Lister.Core.SqlDB.Entities;
+using Lister.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Extensions;
@@ -19,15 +20,15 @@ public static class ServiceCollectionExtensions
             options.UseMySql(connectionString, serverVersion,
                 optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddScoped<IListerUnitOfWork<ListEntity>, ListerUnitOfWork>();
-        services.AddStores();
+        services.AddScoped<IListsStore<ListEntity>, ListsStore>();
         services.AddAutoMapper(config =>
             config.AddProfile<CoreMappingProfile>());
         return services;
     }
-
-    private static IServiceCollection AddStores(this IServiceCollection services)
+    
+    public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<IListsStore<ListEntity>, ListsStore>();
+        services.AddScoped<ListAggregate<ListEntity>>();
         return services;
     }
 }

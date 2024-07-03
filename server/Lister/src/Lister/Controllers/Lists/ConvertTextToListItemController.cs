@@ -11,7 +11,7 @@ namespace Lister.Controllers.Lists;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class ConvertTextToListItemController(IMediator mediator) : Controller
+public class ConvertTextToListItemController(IMediator mediator) : ControllerBase
 {
     [HttpPost("convert-text-to-list-item")]
     [ProducesResponseType(typeof(Item), 200)]

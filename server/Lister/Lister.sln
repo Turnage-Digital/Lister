@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{ABD2ADD4-78FC-455C-9E72-1950554586E9}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
-		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1AA1A271-B127-4AB4-A137-67CDC4655917}"

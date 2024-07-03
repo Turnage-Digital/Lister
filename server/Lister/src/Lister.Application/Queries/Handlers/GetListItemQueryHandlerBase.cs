@@ -4,9 +4,9 @@ using MediatR;
 namespace Lister.Application.Queries.Handlers;
 
 public abstract class GetListItemQueryHandlerBase
-    : IRequestHandler<GetListItemQuery, Item>
+    : IRequestHandler<GetListItemQuery, Item?>
 {
-    public abstract Task<Item> Handle(
+    public abstract Task<Item?> Handle(
         GetListItemQuery request,
         CancellationToken cancellationToken);
 }

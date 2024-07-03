@@ -1,6 +1,7 @@
 using Lister.Application;
 using MediatR;
 using Serilog;
+using Serilog.Context;
 
 namespace Lister.Behaviors;
 
@@ -13,20 +14,25 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken
     )
     {
-        var requestBase = request as RequestBase<TResponse>;
-        if (requestBase is not null)
+        TResponse retval;
+        if (request is RequestBase<TResponse> requestBase)
         {
-            Log.Information("Handling {request}",
-                new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
-        }
+            using (LogContext.PushProperty("RequestId", requestBase.RequestId))
+            {
+                Log.Information("Handling {request}",
+                    new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
+                
+                retval = await next();
 
-        var retval = await next();
-        if (requestBase is not null)
+                Log.Information("Handled {request}",
+                    new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
+            }
+        }
+        else
         {
-            Log.Information("Handled {request}",
-                new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
+            retval = await next();
         }
-
+        
         return retval;
     }
 }

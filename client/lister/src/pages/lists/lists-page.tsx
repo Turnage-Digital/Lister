@@ -22,6 +22,7 @@ const ListsPage = () => {
   const navigate = useNavigate();
 
   const [listNames, setListNames] = useState<ListName[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +31,7 @@ const ListsPage = () => {
         const listNames = await listsApi.getListNames();
         setListNames(listNames);
       } catch (e: any) {
-        // setError(e.message);
+        setError(e.message);
       } finally {
         setLoading(false);
       }

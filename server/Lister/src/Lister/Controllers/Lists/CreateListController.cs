@@ -11,7 +11,7 @@ namespace Lister.Controllers.Lists;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class CreateListController(IMediator mediator) : Controller
+public class CreateListController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]
     [ProducesResponseType(typeof(ListItemDefinitionView), Status201Created)]
