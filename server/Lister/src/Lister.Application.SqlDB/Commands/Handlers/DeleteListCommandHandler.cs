@@ -6,13 +6,22 @@ using MediatR;
 
 namespace Lister.Application.SqlDB.Commands.Handlers;
 
-public class DeleteListCommandHandler(ListAggregate<ListEntity> listAggregate)
+public class DeleteListCommandHandler(ListAggregate<ListEntity, ItemEntity> listAggregate)
     : DeleteListCommandHandlerBase
 {
-    public override Task<Unit> Handle(
+    public override async Task<Unit> Handle(
         DeleteListCommand request,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var list = await listAggregate.ReadAsync(request.ListId!, cancellationToken);
+        if (list is null)
+            throw new ArgumentNullException(nameof(request), $"List with id {request.ListId} does not exist");
+
+        if (request.UserId is null)
+            throw new ArgumentNullException(nameof(request), "UserId is null");
+
+        await listAggregate.DeleteAsync(list, request.UserId, cancellationToken);
+        
+        return Unit.Value;
     }
 }

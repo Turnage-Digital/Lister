@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 namespace Lister.Application.SqlDB.Commands.Handlers;
 
 public class ConvertTextToListItemCommandHandler(
-    ListAggregate<ListEntity> listAggregate,
+    ListAggregate<ListEntity, ItemEntity> listAggregate,
     ListerDbContext dbContext,
     IOptions<OpenAIOptions> options)
     : ConvertTextToListItemCommandHandlerBase

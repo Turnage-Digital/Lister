@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Lister.Application.Commands;
 
-public class CreateListItemCommand : RequestBase<Item>
+public class AddListItemCommand : RequestBase<Item>
 {
     [JsonIgnore]
     public string? ListId { get; set; }

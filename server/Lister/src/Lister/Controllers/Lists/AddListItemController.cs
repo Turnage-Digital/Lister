@@ -11,13 +11,13 @@ namespace Lister.Controllers.Lists;
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class CreateListItemController(IMediator mediator) : ControllerBase
+public class AddListItemController(IMediator mediator) : ControllerBase
 {
-    [HttpPost("{listId}/items/create")]
+    [HttpPost("{listId}/items/add")]
     [ProducesResponseType(typeof(Item), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
-    public async Task<IActionResult> Post(string listId, [FromBody] CreateListItemCommand command)
+    public async Task<IActionResult> Post(string listId, [FromBody] AddListItemCommand command)
     {
         command.ListId = listId;
         var result = await mediator.Send(command);

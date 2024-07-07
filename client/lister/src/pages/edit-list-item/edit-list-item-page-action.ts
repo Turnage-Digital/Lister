@@ -7,7 +7,7 @@ export const editListItemPageAction = async ({
   const data = await request.formData();
   const serialized = data.get("serialized") as string;
 
-  const postRequest = new Request(`/api/lists/${params.listId}/items/create`, {
+  const postRequest = new Request(`/api/lists/${params.listId}/items/add`, {
     headers: {
       "Content-Type": "application/json",
     },

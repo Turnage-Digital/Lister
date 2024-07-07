@@ -8,7 +8,7 @@ using Lister.Domain;
 namespace Lister.Application.SqlDB.Commands.Handlers;
 
 public class CreateListCommandHandler(
-    ListAggregate<ListEntity> listAggregate,
+    ListAggregate<ListEntity, ItemEntity> listAggregate,
     IMapper mapper)
     : CreateListCommandHandlerBase<ListItemDefinitionView>
 {

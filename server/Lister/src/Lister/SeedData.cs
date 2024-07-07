@@ -1,9 +1,11 @@
 using System.Security.Claims;
+using Bogus;
 using Lister.Core.Enums;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
 using Lister.Domain;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Lister;
@@ -35,13 +37,15 @@ internal static class SeedData
 
         var erika = userManager.FindByNameAsync("erika").Result;
         if (erika == null)
+        {
             CreateUser(userManager, "erika", "erika@email.com", "Pass123$", "Erika Turnage",
                 "Erika", "Turnage", "https://lister.com");
+        }
         else
             Log.Debug("erika already exists");
 
         var listAggregate = scope.ServiceProvider
-            .GetRequiredService<ListAggregate<ListEntity>>();
+            .GetRequiredService<ListAggregate<ListEntity, ItemEntity>>();
 
         var list = listAggregate.FindByNameAsync("Students").Result;
         if (list == null)
@@ -97,145 +101,17 @@ internal static class SeedData
                 }
             ).Result;
 
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Ricky Lafluer",
-                    state = "FL",
-                    status = "Active",
-                    address = "The Sh*tmobile",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Julian",
-                    state = "FL",
-                    status = "Active",
-                    address = "101 Sunnyvale Lane",
-                    zipCode = "34707",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Bubbles",
-                    state = "FL",
-                    status = "Active",
-                    address = "The Shed",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Columbia",
-                    name = "Sh*tty Bill",
-                    state = "SC",
-                    status = "Active",
-                    address = "202 No Way",
-                    zipCode = "29212",
-                    dateOfBirth = DateTime.Parse("2/1/1945")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Columbia",
-                    name = "Ray Lafluer",
-                    state = "SC",
-                    status = "Inactive",
-                    address = "The Dump",
-                    zipCode = "29212",
-                    dateOfBirth = DateTime.Parse("1/1/1950")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "New York",
-                    name = "Trevor",
-                    state = "NY",
-                    status = "Inactive",
-                    address = "Unknown",
-                    zipCode = "10001",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Corey",
-                    state = "FL",
-                    status = "Active",
-                    address = "101 Other Way",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Lucy Lafluer",
-                    state = " FL",
-                    status = "Inactive",
-                    address = "100 Maple Lane",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Sara",
-                    state = "FL",
-                    status = "Active",
-                    address = "100 Maple Lane",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1970")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
-
-            listAggregate.CreateItemAsync(list, heath.Id, new
-                {
-                    city = "Spring Hill",
-                    name = "Trinity Lafluer",
-                    state = "FL",
-                    status = "Active",
-                    address = "100 Maple Lane",
-                    zipCode = "34609",
-                    dateOfBirth = DateTime.Parse("1/1/1990")
-                        .ToUniversalTime()
-                        .ToString("O")
-                }
-            ).Wait();
+            var faker = new Faker<Student>()
+                .RuleFor(s => s.City, f => f.Person.Address.City)
+                .RuleFor(s => s.Name, f => f.Person.FullName)
+                .RuleFor(s => s.State, f => f.Person.Address.State)
+                .RuleFor(s => s.Status, f => f.PickRandom("Active", "Inactive"))
+                .RuleFor(s => s.Address, f => f.Person.Address.Street)
+                .RuleFor(s => s.ZipCode, f => f.Address.ZipCode())
+                .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.ToString("O"));
+            var students = faker.Generate(10000);
+            
+            listAggregate.AddListItemsAsync(list, heath.Id, students).Wait();
         }
 
         Log.Information("Done seeding database. Exiting.");
@@ -280,5 +156,29 @@ internal static class SeedData
         public const string GivenName = "given_name";
         public const string FamilyName = "family_name";
         public const string WebSite = "website";
+    }
+
+    private class Student
+    {
+        [JsonProperty("city")]
+        public string City { get; set; } = null!;
+
+        [JsonProperty("name")]
+        public string Name { get; set; } = null!;
+
+        [JsonProperty("state")]
+        public string State { get; set; } = null!;
+
+        [JsonProperty("status")]
+        public string Status { get; set; } = null!;
+
+        [JsonProperty("address")]
+        public string Address { get; set; } = null!;
+
+        [JsonProperty("zipCode")]
+        public string ZipCode { get; set; } = null!;
+
+        [JsonProperty("dateOfBirth")]
+        public string DateOfBirth { get; set; } = null!;
     }
 }

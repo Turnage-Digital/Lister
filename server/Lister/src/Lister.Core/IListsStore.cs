@@ -2,7 +2,7 @@ using Lister.Core.ValueObjects;
 
 namespace Lister.Core;
 
-public interface IListsStore<TList>
+public interface IListsStore<TList, in TItem>
     where TList : IWritableList
 {
     Task<TList> InitAsync(string createdBy, string name, CancellationToken cancellationToken);
@@ -10,14 +10,10 @@ public interface IListsStore<TList>
     Task CreateAsync(TList list, CancellationToken cancellationToken);
 
     Task<TList?> ReadAsync(string id, CancellationToken cancellationToken);
-    
+
     Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken);
 
     Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken);
-
-    Task SetNameAsync(TList list, string name, CancellationToken cancellationToken);
-
-    Task<string> GetNameAsync(TList list, CancellationToken cancellationToken);
 
     Task SetColumnsAsync(TList list, IEnumerable<Column> columns, CancellationToken cancellationToken);
 
@@ -27,9 +23,5 @@ public interface IListsStore<TList>
 
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
 
-    Task<string> GetCreatedByAsync(TList list, CancellationToken cancellationToken);
-
-    Task<DateTime> GetCreatedOnAsync(TList list, CancellationToken cancellationToken);
-
-    Task<Item> InitItemAsync(TList list, string createdBy, object bag, CancellationToken cancellationToken);
+    Task AddItemAsync(TList list, TItem item, CancellationToken cancellationToken);
 }

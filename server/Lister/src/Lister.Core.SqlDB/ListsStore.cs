@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Lister.Core.SqlDB;
 
 public class ListsStore(ListerDbContext dbContext)
-    : IListsStore<ListEntity>
+    : IListsStore<ListEntity, ItemEntity>
 {
     private readonly EntityStore<ListEntity> _entityStore = new(dbContext);
 
-    public Task<ListEntity> InitAsync(string createdBy, string name, CancellationToken cancellationToken)
+    public Task<ListEntity> InitAsync(string createdBy, string name, CancellationToken cancellationToken = default)
     {
         var retval = new ListEntity
         {
@@ -32,30 +32,18 @@ public class ListsStore(ListerDbContext dbContext)
         return retval;
     }
 
-    public Task DeleteAsync(ListEntity list, string deletedBy, CancellationToken cancellationToken)
+    public Task DeleteAsync(ListEntity list, string deletedBy, CancellationToken cancellationToken = default)
     {
         list.DeletedBy = deletedBy;
         list.DeletedOn = DateTime.UtcNow;
         return Task.CompletedTask;
     }
 
-    public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<ListEntity?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         var retval = await dbContext.Lists
             .SingleOrDefaultAsync(l => l.Name == name, cancellationToken);
         return retval;
-    }
-
-    public Task SetNameAsync(ListEntity list, string name, CancellationToken cancellationToken = default)
-    {
-        list.Name = name;
-        return Task.CompletedTask;
-    }
-
-    public Task<string> GetNameAsync(ListEntity list, CancellationToken cancellationToken = default)
-    {
-        var retval = list.Name;
-        return Task.FromResult(retval);
     }
 
     public Task SetColumnsAsync(
@@ -70,7 +58,7 @@ public class ListsStore(ListerDbContext dbContext)
         return Task.CompletedTask;
     }
 
-    public Task<Column[]> GetColumnsAsync(ListEntity list, CancellationToken cancellationToken)
+    public Task<Column[]> GetColumnsAsync(ListEntity list, CancellationToken cancellationToken = default)
     {
         var retval = list.Columns
             .Select(pd => new Column { Name = pd.Name, Type = pd.Type })
@@ -98,29 +86,9 @@ public class ListsStore(ListerDbContext dbContext)
         return Task.FromResult(retval);
     }
 
-    public Task<string> GetCreatedByAsync(ListEntity list, CancellationToken cancellationToken)
+    public Task AddItemAsync(ListEntity list, ItemEntity item, CancellationToken cancellationToken = default)
     {
-        var retval = list.CreatedBy;
-        return Task.FromResult(retval);
-    }
-
-    public Task<DateTime> GetCreatedOnAsync(ListEntity list, CancellationToken cancellationToken)
-    {
-        var retval = list.CreatedOn;
-        return Task.FromResult(retval);
-    }
-
-    public Task<Item> InitItemAsync(ListEntity list, string createdBy, object bag, CancellationToken cancellationToken)
-    {
-        var itemEntity = new ItemEntity
-        {
-            Bag = bag,
-            CreatedBy = createdBy,
-            CreatedOn = DateTime.UtcNow,
-            List = list,
-            ListId = list.Id
-        };
-        list.Items.Add(itemEntity);
-        return Task.FromResult<Item>(itemEntity);
+        list.Items.Add(item);
+        return Task.CompletedTask;
     }
 }

@@ -6,10 +6,10 @@ using Lister.Domain;
 
 namespace Lister.Application.SqlDB.Commands.Handlers;
 
-public class CreateListItemCommandHandler(ListAggregate<ListEntity> listAggregate)
-    : CreateListItemCommandHandlerBase
+public class AddListItemCommandHandler(ListAggregate<ListEntity, ItemEntity> listAggregate)
+    : AddListItemCommandHandlerBase
 {
-    public override async Task<Item> Handle(CreateListItemCommand request,
+    public override async Task<Item> Handle(AddListItemCommand request,
         CancellationToken cancellationToken = default)
     {
         var list = await listAggregate.ReadAsync(request.ListId!, cancellationToken);
@@ -19,7 +19,7 @@ public class CreateListItemCommandHandler(ListAggregate<ListEntity> listAggregat
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), "UserId is null");
 
-        var retval = await listAggregate.CreateItemAsync(list, request.UserId, request.Bag, cancellationToken);
+        var retval = await listAggregate.AddListItemAsync(list, request.UserId, request.Bag, cancellationToken);
         return retval;
     }
 }

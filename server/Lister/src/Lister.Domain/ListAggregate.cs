@@ -8,14 +8,15 @@ using Serilog;
 
 namespace Lister.Domain;
 
-public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator mediator)
+public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfWork, IMediator mediator)
     where TList : IWritableList
+    where TItem : Item
 {
     public async Task<TList> CreateAsync(
         string createdBy,
         string name,
         IEnumerable<Status> statuses,
-        IEnumerable<Column> columns,
+        IEnumerable<Column> columns, 
         CancellationToken cancellationToken = default
     )
     {
@@ -24,9 +25,7 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         await unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        Log.Information("Created list: {list}", retval);
-        await mediator.Publish(new ListCreatedEvent(retval.Id!.Value), cancellationToken);
+        await mediator.Publish(new ListCreatedEvent(retval.Id!.Value, createdBy), cancellationToken);
         return retval;
     }
 
@@ -40,9 +39,7 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
     {
         await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        Log.Information("Deleted list: {list}", new { list, deletedBy });
-        // publish event
+        await mediator.Publish(new ListDeletedEvent(list.Id!.Value, deletedBy), cancellationToken);
     }
 
     public async Task<TList?> FindByNameAsync(string name, CancellationToken cancellationToken = default)
@@ -51,25 +48,38 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         return retval;
     }
 
-    public async Task<Item> CreateItemAsync(
+    public async Task<Item> AddListItemAsync(
         TList list,
         string createdBy,
         object bag,
         CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.InitItemAsync(list, createdBy, bag, cancellationToken);
+        var retval = await unitOfWork.ItemsStore.InitAsync(createdBy, bag, cancellationToken);
+        await unitOfWork.ListsStore.AddItemAsync(list, retval, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        Log.Information("Created list item: {item}", retval);
-        await mediator.Publish(new ListItemCreatedEvent(retval.Id!.Value), cancellationToken);
+        await mediator.Publish(new ListItemAddedEvent(retval.Id!.Value, createdBy), cancellationToken);
         return retval;
     }
 
-    // {
-    //     "listId": "08dc44fa-810f-4740-8e5a-ad8e1dace60d",
-    //     "text": "The new Trailer Park Boy is Jim Lahey. He's located in Spring Hill, Florida.
-    //          The street address for this guy is 101 Maple Lane, he's bunking with Randy. DOB is 2/2/1928."
-    // }
+    public async Task<IEnumerable<Item>> AddListItemsAsync(
+        TList list,
+        string createdBy,
+        IEnumerable<object> bags,
+        CancellationToken cancellationToken = default)
+    {
+        var retval = new List<Item>();
+        foreach (var bag in bags)
+        {
+            var item = await unitOfWork.ItemsStore.InitAsync(createdBy, bag, cancellationToken);
+            await unitOfWork.ListsStore.AddItemAsync(list, item, cancellationToken);
+            retval.Add(item);
+        }
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        var ids = retval.Select(i => i.Id!.Value);
+        await mediator.Publish(new ListItemsAddedEvent(ids, createdBy), cancellationToken);
+        return retval;
+    }
+
     public async Task<object> CreateExampleBagAsync(TList list, CancellationToken cancellationToken = default)
     {
         dynamic retval = new ExpandoObject();
@@ -82,7 +92,11 @@ public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator
         };
 
         var columns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
-        foreach (var column in columns) ((IDictionary<string, object?>)retval)[column.Property] = typeMap[column.Type];
+        foreach (var column in columns)
+        {
+            var cast = (IDictionary<string, object?>)retval;
+            cast[column.Property] = typeMap[column.Type];
+        }
 
         var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
         retval.status = statuses.First().Name;

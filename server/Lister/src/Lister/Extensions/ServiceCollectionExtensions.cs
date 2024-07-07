@@ -19,8 +19,8 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ListerDbContext>(options =>
             options.UseMySql(connectionString, serverVersion,
                 optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
-        services.AddScoped<IListerUnitOfWork<ListEntity>, ListerUnitOfWork>();
-        services.AddScoped<IListsStore<ListEntity>, ListsStore>();
+        services.AddScoped<IListerUnitOfWork<ListEntity, ItemEntity>, ListerUnitOfWork>();
+        services.AddScoped<IListsStore<ListEntity, ItemEntity>, ListsStore>();
         services.AddAutoMapper(config =>
             config.AddProfile<CoreMappingProfile>());
         return services;
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<ListAggregate<ListEntity>>();
+        services.AddScoped<ListAggregate<ListEntity, ItemEntity>>();
         return services;
     }
 }
