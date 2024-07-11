@@ -17,22 +17,22 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         TResponse retval;
         if (request is RequestBase<TResponse> requestBase)
         {
-            using (LogContext.PushProperty("RequestId", requestBase.RequestId))
-            {
-                Log.Information("Handling {request}",
-                    new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
-                
-                retval = await next();
+            // using (LogContext.PushProperty("CorrelationId", requestBase.CorrelationId))
+            // {
+            Log.Information("Handling {request}",
+                new { requestBase.GetType().Name, requestBase.UserId });
 
-                Log.Information("Handled {request}",
-                    new { requestBase.RequestId, requestBase.UserId, requestBase.GetType().Name });
-            }
+            retval = await next();
+
+            Log.Information("Handled {request}",
+                new { requestBase.GetType().Name, requestBase.UserId });
+            // }
         }
         else
         {
             retval = await next();
         }
-        
+
         return retval;
     }
 }

@@ -6,6 +6,7 @@ using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
 using Lister.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -14,7 +15,8 @@ namespace Lister.Application.SqlDB.Commands.Handlers;
 public class ConvertTextToListItemCommandHandler(
     ListAggregate<ListEntity, ItemEntity> listAggregate,
     ListerDbContext dbContext,
-    IOptions<OpenAIOptions> options)
+    IOptions<OpenAIOptions> options,
+    ILogger<ConvertTextToListItemCommandHandler> logger)
     : ConvertTextToListItemCommandHandlerBase
 {
     private readonly string _apiKey = options.Value.ApiKey;
@@ -31,6 +33,7 @@ public class ConvertTextToListItemCommandHandler(
 
             var exampleBag = await listAggregate.CreateExampleBagAsync(list, cancellationToken);
             var exampleJson = JsonConvert.SerializeObject(exampleBag);
+            logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
 
             var completedJson = await GetCompletedJsonAsync(exampleJson, request.Text, cancellationToken);
             var completedBag = JsonConvert.DeserializeObject(completedJson);

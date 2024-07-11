@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { IListsApi, ListName, ListsApi } from "../../api";
-import { Titlebar, useLoad } from "../../components";
+import { ListCard, Titlebar, useLoad } from "../../components";
 
 const listsApi: IListsApi = new ListsApi(`/api/lists`);
 
@@ -54,23 +54,11 @@ const ListsPage = () => {
 
       <Grid container spacing={2} sx={{ my: 2 }}>
         {listNames.map((listName) => (
-          <Grid key={listName.id} xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {listName.name}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button
-                  size="small"
-                  onClick={() => navigate(`/${listName.id}`)}
-                >
-                  View
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
+          <ListCard
+            key={listName.id}
+            listName={listName}
+            onViewClick={(id) => navigate(`/${id}`)}
+          />
         ))}
       </Grid>
     </Stack>

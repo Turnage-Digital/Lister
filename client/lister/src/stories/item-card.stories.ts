@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     item: {
-      id: "1",
+      id: "1108",
       listId: "1",
       bag: {
         city: "Spring Hill",

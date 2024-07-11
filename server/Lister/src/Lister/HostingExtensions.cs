@@ -2,6 +2,7 @@ using Lister.Application;
 using Lister.Application.SqlDB;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
+using Lister.Domain;
 using Lister.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,15 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Host.UseSerilog((context, config) => config
+        var seqUrl = builder.Configuration["SeqUrl"]!;
+        builder.Host.UseSerilog((_, config) => config
             .WriteTo.Console(outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
+                "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
+            .WriteTo.Seq(seqUrl)
+            .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
 
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
         
         builder.Services.AddControllers()
@@ -35,7 +40,10 @@ internal static class HostingExtensions
         builder.Services.AddDomain();
         
         builder.Services.AddMediatR(config =>
-            config.RegisterServicesFromAssembly(typeof(IApplicationMarker).Assembly));
+        {
+            config.RegisterServicesFromAssembly(typeof(IDomainMarker).Assembly);
+            config.RegisterServicesFromAssembly(typeof(IApplicationMarker).Assembly);
+        });
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(AssignUserBehavior<,>));
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
@@ -92,7 +100,7 @@ internal static class HostingExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            SeedData.EnsureSeedData(app);
+            // SeedData.EnsureSeedData(app);
         }
         else
         {

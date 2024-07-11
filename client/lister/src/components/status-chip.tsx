@@ -1,4 +1,4 @@
-import { Chip } from "@mui/material";
+import { Chip, lighten, darken } from "@mui/material";
 import React from "react";
 
 import { Status } from "../api";
@@ -17,8 +17,9 @@ const StatusChip = ({ status, onDelete }: Props) => {
     <Chip
       label={status.name}
       sx={{
-        color: "white",
-        backgroundColor: status.color,
+        color: darken(status.color, 0.4),
+        fontWeight: "bold",
+        backgroundColor: lighten(status.color, 0.6),
       }}
       onDelete={onDelete}
     />

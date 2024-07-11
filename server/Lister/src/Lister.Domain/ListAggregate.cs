@@ -4,7 +4,6 @@ using Lister.Core.Enums;
 using Lister.Core.ValueObjects;
 using Lister.Domain.Events;
 using MediatR;
-using Serilog;
 
 namespace Lister.Domain;
 
@@ -100,8 +99,6 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
 
         var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
         retval.status = statuses.First().Name;
-
-        Log.Information("Created example bag: {bag}", retval);
         return retval;
     }
 }

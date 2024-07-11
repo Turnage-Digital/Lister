@@ -1,13 +1,14 @@
 using MediatR;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Lister.Domain.Events;
 
-public class ListItemAddedEventHandler : INotificationHandler<ListItemAddedEvent>
+public class ListItemAddedEventHandler(ILogger<ListItemAddedEventHandler> logger)
+    : INotificationHandler<ListItemAddedEvent>
 {
     public Task Handle(ListItemAddedEvent notification, CancellationToken cancellationToken = default)
     {
-        Log.Information("Added list item: {item}", new { notification.Id, notification.AddedBy });
+        logger.LogInformation("Added list item: {item}", new { notification.Id, notification.AddedBy });
         return Task.CompletedTask;
     }
 }

@@ -3,11 +3,11 @@ import React from "react";
 
 import { Item } from "../api";
 
-export interface ItemCardProps {
+export interface Props {
   item: Item;
 }
 
-const ItemCard = ({ item }: ItemCardProps) => {
+const ItemCard = ({ item }: Props) => {
   return (
     <Card>
       <CardHeader title={`Item # ${item.id}`} />

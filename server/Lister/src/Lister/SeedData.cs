@@ -109,7 +109,7 @@ internal static class SeedData
                 .RuleFor(s => s.Address, f => f.Person.Address.Street)
                 .RuleFor(s => s.ZipCode, f => f.Address.ZipCode())
                 .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.ToString("O"));
-            var students = faker.Generate(10000);
+            var students = faker.Generate(100000);
             
             listAggregate.AddListItemsAsync(list, heath.Id, students).Wait();
         }

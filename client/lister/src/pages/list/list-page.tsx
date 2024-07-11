@@ -118,7 +118,7 @@ const ListPage = () => {
 
   const actions = [
     {
-      title: "Create an Item",
+      title: "Add an Item",
       icon: <AddCircle />,
       onClick: () => navigate(`/${listId}/items/create`),
     },
@@ -131,7 +131,7 @@ const ListPage = () => {
     },
   ];
 
-  return loading || listItemDefinition === null || rows.length === 0 ? null : (
+  return loading || listItemDefinition === null ? null : (
     <Stack sx={{ px: 2, py: 4 }}>
       <Titlebar
         title={listItemDefinition.name ?? ""}

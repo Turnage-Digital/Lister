@@ -23,10 +23,10 @@ export const ListsPage: Story = {
 
 export const ListPage: Story = {
   args: {
-    title: "Trailer Park Boys",
+    title: "Students",
     actions: [
       {
-        title: "Create an Item",
+        title: "Add an Item",
       },
     ],
     breadcrumbs: [
@@ -39,13 +39,13 @@ export const ListPage: Story = {
 
 export const ItemPage: Story = {
   args: {
-    title: "Item #1",
+    title: "ID 6732",
     breadcrumbs: [
       {
         title: "Lists",
       },
       {
-        title: "Trailer Park Boys",
+        title: "Students",
       },
     ],
   },

@@ -5,11 +5,15 @@ using Lister.Core.SqlDB.Views;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Lister.Application.SqlDB.Queries.Handlers;
 
-public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext, IDistributedCache cache)
+public class GetListItemDefinitionQueryHandler(
+    ListerDbContext dbContext, 
+    IDistributedCache cache, 
+    ILogger<GetListItemDefinitionQueryHandler> logger)
     : GetListItemDefinitionQueryHandlerBase<ListItemDefinitionView?>
 {
     public override async Task<ListItemDefinitionView?> Handle(
@@ -25,10 +29,12 @@ public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext, IDistr
 
         if (cacheValue != null)
         {
+            logger.LogInformation("Cache hit for {cacheKey}", cacheKey);
             retval = JsonConvert.DeserializeObject<ListItemDefinitionView>(cacheValue);
         }
         else
         {
+            logger.LogInformation("Cache miss for {cacheKey}", cacheKey);
             retval = await GetFromDatabaseAsync(parsed, request.UserId, cancellationToken);
             await CacheDatabaseResultAsync(cacheKey, retval, cancellationToken);
         }
@@ -73,12 +79,9 @@ public class GetListItemDefinitionQueryHandler(ListerDbContext dbContext, IDistr
     {
         if (value == null)
             return;
-        
+
         var serialized = JsonConvert.SerializeObject(value);
-        var options = new DistributedCacheEntryOptions
-        {
-            SlidingExpiration = TimeSpan.FromMinutes(5)
-        };
+        var options = new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };
         await cache.SetStringAsync(key, serialized, options, cancellationToken);
     }
 }
