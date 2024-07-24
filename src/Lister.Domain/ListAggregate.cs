@@ -15,7 +15,7 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
         string createdBy,
         string name,
         IEnumerable<Status> statuses,
-        IEnumerable<Column> columns, 
+        IEnumerable<Column> columns,
         CancellationToken cancellationToken = default
     )
     {
@@ -73,6 +73,7 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
             await unitOfWork.ListsStore.AddItemAsync(list, item, cancellationToken);
             retval.Add(item);
         }
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
         var ids = retval.Select(i => i.Id!.Value);
         await mediator.Publish(new ListItemsAddedEvent(ids, createdBy), cancellationToken);

@@ -1,14 +1,15 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Lister.Application;
-using Lister.Application.SqlDB.Commands.Handlers;
+using Lister.Application.SqlDB.Commands;
 using Lister.Behaviors;
 using Lister.Core.SqlDB;
 using Lister.Domain.Events;
 using Lister.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace Lister;
@@ -17,29 +18,28 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
-        var seqUrl = builder.Configuration["SeqUrl"]!;
         builder.Host.UseSerilog((_, config) => config
             .WriteTo.Console(outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
-            .WriteTo.Seq(seqUrl)
+            .WriteTo.Seq(builder.Configuration["SeqUrl"]!)
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
 
         builder.Services.AddHttpContextAccessor();
-        
+
         builder.Services.AddDistributedMemoryCache();
-        
-        builder.Services.AddControllers()
-            .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            });
+
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         builder.Services.AddCore(connectionString);
         builder.Services.AddDomain();
-        
+        builder.Services.AddApplication();
+
         builder.Services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>();
@@ -100,8 +100,6 @@ internal static class HostingExtensions
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            SeedData.EnsureSeedData(app);
         }
         else
         {
@@ -111,17 +109,14 @@ internal static class HostingExtensions
         app.UseHttpsRedirection();
         app.UseHsts();
 
+        app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
 
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapControllers();
-
-        app.MapGroup("/identity")
-            .WithTags("Identity")
-            .MapIdentityApi<IdentityUser>();
+        app.UseApplication();
 
         return app;
     }

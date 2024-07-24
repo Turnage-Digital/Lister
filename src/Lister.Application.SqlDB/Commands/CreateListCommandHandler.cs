@@ -1,11 +1,10 @@
 using AutoMapper;
 using Lister.Application.Commands;
-using Lister.Application.Commands.Handlers;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.SqlDB.Views;
 using Lister.Domain;
 
-namespace Lister.Application.SqlDB.Commands.Handlers;
+namespace Lister.Application.SqlDB.Commands;
 
 public class CreateListCommandHandler(
     ListAggregate<ListEntity, ItemEntity> listAggregate,
@@ -26,7 +25,7 @@ public class CreateListCommandHandler(
             request.Statuses,
             request.Columns,
             cancellationToken);
-        
+
         var retval = mapper.Map<ListItemDefinitionView>(created);
         return retval;
     }

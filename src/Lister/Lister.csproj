@@ -10,7 +10,6 @@
 
     <ItemGroup>
         <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.15"/>
-        <PackageReference Include="Bogus" Version="35.5.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
@@ -22,13 +21,18 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.1"/>
-        <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
-        <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
+        <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Lister.Application.SqlDB\Lister.Application.SqlDB.csproj"/>
     </ItemGroup>
+
+    <Target Name="BuildClientApp" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <Exec WorkingDirectory="ClientApp\" Command="npm install"/>
+        <Exec WorkingDirectory="ClientApp\" Command="npm run build"/>
+    </Target>
 
 </Project>

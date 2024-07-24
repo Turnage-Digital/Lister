@@ -1,7 +1,7 @@
 using Lister.Core;
 using MediatR;
 
-namespace Lister.Application.Commands.Handlers;
+namespace Lister.Application.Commands;
 
 public abstract class CreateListCommandHandlerBase<TList>
     : IRequestHandler<CreateListCommand<TList>, TList>

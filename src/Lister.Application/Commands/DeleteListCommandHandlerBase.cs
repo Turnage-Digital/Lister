@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Lister.Application.Commands.Handlers;
+namespace Lister.Application.Commands;
 
 public abstract class DeleteListCommandHandlerBase
     : IRequestHandler<DeleteListCommand>

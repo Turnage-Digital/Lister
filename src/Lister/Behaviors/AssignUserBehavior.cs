@@ -15,15 +15,27 @@ public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpCo
         CancellationToken cancellationToken
     )
     {
-        if (request is RequestBase<TResponse> requestBase)
+        if (request is RequestBase<TResponse> requestBaseWithResponse)
         {
-            var user = httpContextAccessor.HttpContext!.User;
-            var identity = (ClaimsIdentity)user.Identity!;
-            var userId = identity.GetUserId();
+            var userId = GetUserId();
+            requestBaseWithResponse.UserId = userId;
+        }
+
+        if (request is RequestBase requestBase)
+        {
+            var userId = GetUserId();
             requestBase.UserId = userId;
         }
 
         var retval = await next();
         return retval;
+    }
+
+    private string GetUserId()
+    {
+        var user = httpContextAccessor.HttpContext!.User;
+        var identity = (ClaimsIdentity)user.Identity!;
+        var userId = identity.GetUserId();
+        return userId;
     }
 }

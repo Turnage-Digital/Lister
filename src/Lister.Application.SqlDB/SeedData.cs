@@ -1,14 +1,14 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Bogus;
 using Lister.Core.Enums;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
 using Lister.Domain;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using Serilog;
 
-namespace Lister;
+namespace Lister.Application.SqlDB;
 
 internal static class SeedData
 {
@@ -42,7 +42,9 @@ internal static class SeedData
                 "Erika", "Turnage", "https://lister.com");
         }
         else
+        {
             Log.Debug("erika already exists");
+        }
 
         var listAggregate = scope.ServiceProvider
             .GetRequiredService<ListAggregate<ListEntity, ItemEntity>>();
@@ -110,7 +112,7 @@ internal static class SeedData
                 .RuleFor(s => s.ZipCode, f => f.Address.ZipCode())
                 .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.ToString("O"));
             var students = faker.Generate(100000);
-            
+
             listAggregate.AddListItemsAsync(list, heath.Id, students).Wait();
         }
 
@@ -160,25 +162,25 @@ internal static class SeedData
 
     private class Student
     {
-        [JsonProperty("city")]
+        [JsonPropertyName("city")]
         public string City { get; set; } = null!;
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        [JsonProperty("state")]
+        [JsonPropertyName("state")]
         public string State { get; set; } = null!;
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; } = null!;
 
-        [JsonProperty("address")]
+        [JsonPropertyName("address")]
         public string Address { get; set; } = null!;
 
-        [JsonProperty("zipCode")]
+        [JsonPropertyName("zipCode")]
         public string ZipCode { get; set; } = null!;
 
-        [JsonProperty("dateOfBirth")]
+        [JsonPropertyName("dateOfBirth")]
         public string DateOfBirth { get; set; } = null!;
     }
 }

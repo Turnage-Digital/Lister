@@ -1,18 +1,18 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Lister.Core.ValueObjects;
 
 public record Item
 {
-    [JsonProperty("bag")]
+    [JsonPropertyName("bag")]
     public object Bag { get; set; } = null!;
 
-    [JsonProperty("createdBy")]
+    [JsonPropertyName("createdBy")]
     public string CreatedBy { get; set; } = null!;
 
-    [JsonProperty("createdOn")]
+    [JsonPropertyName("createdOn")]
     public DateTime CreatedOn { get; set; }
 
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public int? Id { get; set; }
 }

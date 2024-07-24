@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Lister.Domain.Events;
 
-public class ListCreatedEventHandler(ILogger<ListCreatedEventHandler> logger) 
+public class ListCreatedEventHandler(ILogger<ListCreatedEventHandler> logger)
     : INotificationHandler<ListCreatedEvent>
 {
     public Task Handle(ListCreatedEvent notification, CancellationToken cancellationToken = default)

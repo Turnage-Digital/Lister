@@ -1,14 +1,14 @@
+using System.Text.Json.Serialization;
 using Lister.Core.Enums;
-using Newtonsoft.Json;
 
 namespace Lister.Core.ValueObjects;
 
 public record Column
 {
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonProperty("property")]
+    [JsonPropertyName("property")]
     public string Property
     {
         get
@@ -20,6 +20,6 @@ public record Column
         }
     }
 
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public ColumnType Type { get; set; }
 }

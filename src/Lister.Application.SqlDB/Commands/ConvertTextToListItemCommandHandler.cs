@@ -1,16 +1,14 @@
 using Azure.AI.OpenAI;
 using Lister.Application.Commands;
-using Lister.Application.Commands.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Entities;
 using Lister.Core.ValueObjects;
 using Lister.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Lister.Application.SqlDB.Commands.Handlers;
+namespace Lister.Application.SqlDB.Commands;
 
 public class ConvertTextToListItemCommandHandler(
     ListAggregate<ListEntity, ItemEntity> listAggregate,

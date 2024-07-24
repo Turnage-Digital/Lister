@@ -1,18 +1,16 @@
 using Lister.Application.Queries;
-using Lister.Application.Queries.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Views;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Lister.Application.SqlDB.Queries.Handlers;
+namespace Lister.Application.SqlDB.Queries;
 
 public class GetListItemDefinitionQueryHandler(
-    ListerDbContext dbContext, 
-    IDistributedCache cache, 
+    ListerDbContext dbContext,
+    IDistributedCache cache,
     ILogger<GetListItemDefinitionQueryHandler> logger)
     : GetListItemDefinitionQueryHandlerBase<ListItemDefinitionView?>
 {

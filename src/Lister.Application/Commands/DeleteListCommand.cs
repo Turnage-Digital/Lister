@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using MediatR;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Lister.Application.Commands;
 
 public class DeleteListCommand : RequestBase
 {
-    [JsonProperty("listId")]
+    [JsonPropertyName("listId")]
     [Required]
     public string ListId { get; set; } = null!;
 }

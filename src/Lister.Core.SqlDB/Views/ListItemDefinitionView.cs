@@ -1,19 +1,19 @@
+using System.Text.Json.Serialization;
 using Lister.Core.ValueObjects;
-using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB.Views;
 
 public record ListItemDefinitionView : IReadOnlyList
 {
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonProperty("columns")]
+    [JsonPropertyName("columns")]
     public Column[] Columns { get; set; } = null!;
 
-    [JsonProperty("statuses")]
+    [JsonPropertyName("statuses")]
     public Status[] Statuses { get; set; } = null!;
 
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public Guid? Id { get; set; }
 }

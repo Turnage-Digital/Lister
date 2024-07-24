@@ -1,7 +1,7 @@
 using Lister.Core.ValueObjects;
 using MediatR;
 
-namespace Lister.Application.Queries.Handlers;
+namespace Lister.Application.Queries;
 
 public abstract class GetListItemsQueryHandlerBase
     : IRequestHandler<GetListItemsQuery, PagedResponse<Item>>

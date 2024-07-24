@@ -17,7 +17,7 @@ import {
   Item,
   type ListItemDefinition,
 } from "../../api";
-import { Titlebar, StatusChip } from "../../components";
+import { StatusChip, Titlebar } from "../../components";
 
 const ListPage = () => {
   const navigate = useNavigate();

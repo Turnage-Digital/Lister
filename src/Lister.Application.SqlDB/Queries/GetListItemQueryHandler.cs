@@ -1,10 +1,9 @@
 using Lister.Application.Queries;
-using Lister.Application.Queries.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Application.SqlDB.Queries.Handlers;
+namespace Lister.Application.SqlDB.Queries;
 
 public class GetListItemQueryHandler(ListerDbContext dbContext)
     : GetListItemQueryHandlerBase

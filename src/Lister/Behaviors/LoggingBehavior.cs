@@ -1,7 +1,6 @@
 using Lister.Application;
 using MediatR;
 using Serilog;
-using Serilog.Context;
 
 namespace Lister.Behaviors;
 
@@ -17,8 +16,6 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         TResponse retval;
         if (request is RequestBase<TResponse> requestBase)
         {
-            // using (LogContext.PushProperty("CorrelationId", requestBase.CorrelationId))
-            // {
             Log.Information("Handling {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
 
@@ -26,7 +23,6 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
             Log.Information("Handled {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
-            // }
         }
         else
         {

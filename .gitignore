@@ -2,16 +2,16 @@
 .idea
 .vs
 .fleet
-
 .DS_Store
 
 bin
 obj
 node_modules
+dist
 
-*.user
-
-lister.db*
-.env.development.local
-
+tsconfig.tsbuildinfo
 *storybook.log
+
+/src/Lister/wwwroot/favicon.ico
+/src/Lister/wwwroot/index.html
+/src/Lister/wwwroot/assets/

@@ -1,10 +1,9 @@
 using Lister.Application.Queries;
-using Lister.Application.Queries.Handlers;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Views;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Application.SqlDB.Queries.Handlers;
+namespace Lister.Application.SqlDB.Queries;
 
 public class GetListNamesQueryHandler(ListerDbContext dbContext) : GetListNamesQueryHandlerBase<ListNameView>
 {

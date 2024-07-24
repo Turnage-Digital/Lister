@@ -1,7 +1,7 @@
 using Lister.Core;
 using MediatR;
 
-namespace Lister.Application.Queries.Handlers;
+namespace Lister.Application.Queries;
 
 public abstract class GetListItemDefinitionQueryHandlerBase<TList>
     : IRequestHandler<GetListItemDefinitionQuery<TList>, TList?>

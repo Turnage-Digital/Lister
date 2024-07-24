@@ -1,12 +1,12 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Lister.Core.ValueObjects;
 
 public record Status
 {
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonProperty("color")]
+    [JsonPropertyName("color")]
     public string Color { get; set; } = null!;
 }

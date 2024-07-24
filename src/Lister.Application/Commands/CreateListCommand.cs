@@ -1,22 +1,22 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Lister.Core;
 using Lister.Core.ValueObjects;
-using Newtonsoft.Json;
 
 namespace Lister.Application.Commands;
 
 public class CreateListCommand<TList> : RequestBase<TList>
     where TList : IReadOnlyList
 {
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     [Required]
     public string Name { get; set; } = null!;
 
-    [JsonProperty("statuses")]
+    [JsonPropertyName("statuses")]
     [Required]
     public Status[] Statuses { get; set; } = null!;
 
-    [JsonProperty("columns")]
+    [JsonPropertyName("columns")]
     [Required]
     public Column[] Columns { get; set; } = null!;
 }

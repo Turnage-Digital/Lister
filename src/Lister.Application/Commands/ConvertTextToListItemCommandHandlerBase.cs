@@ -1,7 +1,7 @@
 using Lister.Core.ValueObjects;
 using MediatR;
 
-namespace Lister.Application.Commands.Handlers;
+namespace Lister.Application.Commands;
 
 public abstract class ConvertTextToListItemCommandHandlerBase
     : IRequestHandler<ConvertTextToListItemCommand, Item>

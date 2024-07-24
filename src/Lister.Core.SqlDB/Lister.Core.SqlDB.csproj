@@ -19,9 +19,4 @@
         <ProjectReference Include="..\Lister.Core\Lister.Core.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Migrations\Application\"/>
-        <Folder Include="Migrations\Lister\"/>
-    </ItemGroup>
-
 </Project>

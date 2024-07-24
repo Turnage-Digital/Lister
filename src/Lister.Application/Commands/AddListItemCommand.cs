@@ -1,16 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Lister.Core.ValueObjects;
-using Newtonsoft.Json;
 
 namespace Lister.Application.Commands;
 
 public class AddListItemCommand : RequestBase<Item>
 {
-    [JsonProperty("listId")]
+    [JsonPropertyName("listId")]
     [Required]
     public string? ListId { get; set; }
 
-    [JsonProperty("bag")]
+    [JsonPropertyName("bag")]
     [Required]
     public object Bag { get; set; } = null!;
 }

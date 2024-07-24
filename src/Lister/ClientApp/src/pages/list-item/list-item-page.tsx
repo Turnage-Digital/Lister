@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Titlebar, useListDefinition } from "../../components";
+import { Titlebar } from "../../components";
 
 const ListItemPage = () => {
   const navigate = useNavigate();
