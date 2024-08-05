@@ -1,10 +1,10 @@
+using System.Text.Json;
 using Lister.Application.Queries;
 using Lister.Core.SqlDB;
 using Lister.Core.SqlDB.Views;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 
 namespace Lister.Application.SqlDB.Queries;
 
@@ -28,7 +28,7 @@ public class GetListItemDefinitionQueryHandler(
         if (cacheValue != null)
         {
             logger.LogInformation("Cache hit for {cacheKey}", cacheKey);
-            retval = JsonConvert.DeserializeObject<ListItemDefinitionView>(cacheValue);
+            retval = JsonSerializer.Deserialize<ListItemDefinitionView>(cacheValue);
         }
         else
         {
@@ -78,7 +78,7 @@ public class GetListItemDefinitionQueryHandler(
         if (value == null)
             return;
 
-        var serialized = JsonConvert.SerializeObject(value);
+        var serialized = JsonSerializer.Serialize(value);
         var options = new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };
         await cache.SetStringAsync(key, serialized, options, cancellationToken);
     }

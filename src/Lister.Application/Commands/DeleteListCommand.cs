@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Lister.Application.Commands;
 
-public class DeleteListCommand : RequestBase
+public record DeleteListCommand : RequestBase
 {
     [JsonPropertyName("listId")]
     [Required]

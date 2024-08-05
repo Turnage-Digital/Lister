@@ -4,7 +4,7 @@ using Lister.Core.ValueObjects;
 
 namespace Lister.Application.Commands;
 
-public class AddListItemCommand : RequestBase<Item>
+public record AddListItemCommand : RequestBase<Item>
 {
     [JsonPropertyName("listId")]
     [Required]

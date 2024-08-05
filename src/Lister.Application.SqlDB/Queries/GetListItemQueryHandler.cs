@@ -11,11 +11,10 @@ public class GetListItemQueryHandler(ListerDbContext dbContext)
     public override async Task<Item?> Handle(GetListItemQuery request, CancellationToken cancellationToken)
     {
         var parsedListId = Guid.Parse(request.ListId);
-        var parsedItemId = int.Parse(request.ItemId);
         var retval = await dbContext.Items
             .Where(item => item.List.CreatedBy == request.UserId)
             .Where(item => item.ListId == parsedListId)
-            .Where(item => item.Id == parsedItemId)
+            .Where(item => item.Id == request.ItemId)
             .Select(item => new Item
             {
                 Id = item.Id,

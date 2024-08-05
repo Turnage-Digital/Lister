@@ -1,9 +1,9 @@
+using System.Text.Json;
 using Dapper;
 using Lister.Application.Queries;
 using Lister.Core.SqlDB;
 using Lister.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Lister.Application.SqlDB.Queries;
 
@@ -51,12 +51,11 @@ public class GetListItemsQueryHandler(ListerDbContext dbContext)
         var data = await multi.ReadAsync<dynamic>();
         var items = data.Select(d => new Item
         {
-            Bag = JsonConvert.DeserializeObject(d.Bag),
+            Bag = JsonSerializer.Deserialize<object>(d.Bag),
             CreatedBy = d.CreatedBy,
             CreatedOn = d.CreatedOn,
             Id = d.Id
         }).ToList();
-
         var count = await multi.ReadSingleAsync<long>();
 
         var retval = new PagedResponse<Item>(items, count);

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Azure.AI.OpenAI;
 using Lister.Application.Commands;
 using Lister.Core.SqlDB;
@@ -6,7 +7,6 @@ using Lister.Core.ValueObjects;
 using Lister.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Lister.Application.SqlDB.Commands;
 
@@ -30,11 +30,11 @@ public class ConvertTextToListItemCommandHandler(
             var list = await GetListAsync(parsed, request.UserId, cancellationToken);
 
             var exampleBag = await listAggregate.CreateExampleBagAsync(list, cancellationToken);
-            var exampleJson = JsonConvert.SerializeObject(exampleBag);
+            var exampleJson = JsonSerializer.Serialize(exampleBag);
             logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
 
             var completedJson = await GetCompletedJsonAsync(exampleJson, request.Text, cancellationToken);
-            var completedBag = JsonConvert.DeserializeObject(completedJson);
+            var completedBag = JsonSerializer.Deserialize<object>(completedJson);
 
             retval = new Item { Bag = completedBag ?? new object() };
         }

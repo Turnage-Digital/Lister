@@ -66,7 +66,7 @@ public static class EndpointRouteBuilderCommandExtensions
             .Produces<HttpValidationProblemDetails>(Status500InternalServerError);
         return endpoints;
     }
-    
+
     private static async Task<IResult> HandleCommandAsync<TCommand>(
         TCommand command,
         IMediator mediator,

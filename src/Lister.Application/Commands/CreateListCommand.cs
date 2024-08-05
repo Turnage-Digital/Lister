@@ -5,7 +5,7 @@ using Lister.Core.ValueObjects;
 
 namespace Lister.Application.Commands;
 
-public class CreateListCommand<TList> : RequestBase<TList>
+public record CreateListCommand<TList> : RequestBase<TList>
     where TList : IReadOnlyList
 {
     [JsonPropertyName("name")]

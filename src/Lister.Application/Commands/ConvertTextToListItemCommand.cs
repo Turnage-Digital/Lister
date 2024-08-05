@@ -4,7 +4,7 @@ using Lister.Core.ValueObjects;
 
 namespace Lister.Application.Commands;
 
-public class ConvertTextToListItemCommand : RequestBase<Item>
+public record ConvertTextToListItemCommand : RequestBase<Item>
 {
     [JsonPropertyName("listId")]
     [Required]

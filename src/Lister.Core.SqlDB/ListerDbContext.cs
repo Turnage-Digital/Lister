@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using Lister.Core.SqlDB.Entities;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Lister.Core.SqlDB;
 
@@ -102,11 +102,15 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
             entity.HasKey(e => e.Id)
                 .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
 
+            var jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
             entity.Property(e => e.Bag)
                 .HasColumnType("JSON")
                 .HasConversion(
-                    e => JsonConvert.SerializeObject(e),
-                    e => JsonConvert.DeserializeObject<object>(e)!)
+                    e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                    e => JsonSerializer.Deserialize<object>(e, jsonSerializerOptions)!)
                 .IsRequired();
 
             entity.Property(e => e.CreatedBy)

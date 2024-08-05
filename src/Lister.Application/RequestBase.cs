@@ -3,13 +3,13 @@ using MediatR;
 
 namespace Lister.Application;
 
-public abstract class RequestBase : IRequest
+public abstract record RequestBase : IRequest
 {
     [JsonIgnore]
     public string? UserId { get; set; }
 }
 
-public abstract class RequestBase<T> : IRequest<T>
+public abstract record RequestBase<T> : IRequest<T>
 {
     [JsonIgnore]
     public string? UserId { get; set; }
