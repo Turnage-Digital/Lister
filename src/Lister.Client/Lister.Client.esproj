@@ -10,9 +10,7 @@
   
   <ItemGroup>
     <None Include=".storybook\*" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Script Include="tsconfig.json" />
   </ItemGroup>
+  
 </Project>
