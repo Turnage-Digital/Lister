@@ -9,7 +9,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import React from "react";
 
-import { ListName } from "../api";
+import { ListName } from "../models";
 
 export interface Props {
   listName: ListName;

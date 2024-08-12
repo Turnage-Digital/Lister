@@ -1,7 +1,7 @@
 import { Chip, darken, lighten } from "@mui/material";
 import React from "react";
 
-import { Status } from "../api";
+import { Status } from "../models";
 
 interface Props {
   status?: Status;

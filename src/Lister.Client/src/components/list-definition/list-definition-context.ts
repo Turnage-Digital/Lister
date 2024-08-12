@@ -1,7 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { createContext } from "react";
 
-import { ListItemDefinition } from "../../api";
+import { ListItemDefinition } from "../../models";
 
 export interface ListItemDefinitionValue {
   getGridColDefs: (

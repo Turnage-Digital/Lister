@@ -12,7 +12,7 @@ public class DeleteListCommandHandler(ListAggregate<ListEntity, ItemEntity> list
         DeleteListCommand request,
         CancellationToken cancellationToken = default)
     {
-        var list = await listAggregate.ReadAsync(request.ListId!, cancellationToken);
+        var list = await listAggregate.ReadAsync(request.ListId, cancellationToken);
         if (list is null)
             throw new ArgumentNullException(nameof(request), $"List with id {request.ListId} does not exist");
 

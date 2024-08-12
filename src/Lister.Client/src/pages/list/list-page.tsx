@@ -16,7 +16,7 @@ import {
   getStatusFromName,
   Item,
   type ListItemDefinition,
-} from "../../api";
+} from "../../models";
 import { StatusChip, Titlebar } from "../../components";
 
 const ListPage = () => {

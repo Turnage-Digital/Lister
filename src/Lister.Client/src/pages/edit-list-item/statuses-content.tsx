@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import { getStatusFromName, Item, ListItemDefinition } from "../../api";
+import { getStatusFromName, Item, ListItemDefinition } from "../../models";
 import { StatusChip } from "../../components";
 
 interface Props {

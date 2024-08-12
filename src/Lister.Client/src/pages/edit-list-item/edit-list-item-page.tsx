@@ -4,7 +4,7 @@ import { ContentPaste, Save } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, useSubmit } from "react-router-dom";
 
-import { Item, type ListItemDefinition } from "../../api";
+import { Item, type ListItemDefinition } from "../../models";
 import { FormBlock, Titlebar, useSideDrawer } from "../../components";
 
 import ColumnContent from "./column-content";

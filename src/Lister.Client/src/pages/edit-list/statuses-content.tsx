@@ -15,7 +15,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import React, { useState } from "react";
 
-import { Status, statusColors } from "../../api";
+import { Status, statusColors } from "../../models";
 import { StatusBullet } from "../../components";
 
 interface Props {

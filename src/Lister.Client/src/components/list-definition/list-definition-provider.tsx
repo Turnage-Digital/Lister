@@ -4,7 +4,7 @@ import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
-import { Column, getStatusFromName } from "../../api";
+import { Column, getStatusFromName } from "../../models";
 import StatusChip from "../status-chip";
 
 import ListDefinitionContext from "./list-definition-context";

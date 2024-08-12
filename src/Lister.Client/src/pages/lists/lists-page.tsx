@@ -5,7 +5,7 @@ import { PlaylistAdd } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { ListName } from "../../api";
+import { ListName } from "../../models";
 import { ListCard, Titlebar } from "../../components";
 
 const ListsPage = () => {

@@ -1,7 +1,7 @@
 import { Card, CardHeader } from "@mui/material";
 import React from "react";
 
-import { Item } from "../api";
+import { Item } from "../models";
 
 export interface Props {
   item: Item;

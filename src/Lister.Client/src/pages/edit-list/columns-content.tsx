@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-import { Column, ColumnType } from "../../api";
+import { Column, ColumnType } from "../../models";
 
 interface Props {
   columns: Column[] | null;

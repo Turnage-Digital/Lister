@@ -1,9 +1,9 @@
-import { Save } from "@mui/icons-material";
-import { Box, Button, Divider, Stack } from "@mui/material";
 import React, { FormEvent, useEffect, useState } from "react";
+import { Box, Button, Divider, Stack } from "@mui/material";
+import { Save } from "@mui/icons-material";
 import { useNavigate, useSubmit } from "react-router-dom";
 
-import { ListItemDefinition } from "../../api";
+import { ListItemDefinition } from "../../models";
 import { FormBlock, Titlebar } from "../../components";
 
 import ColumnsContent from "./columns-content";
