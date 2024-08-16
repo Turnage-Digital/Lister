@@ -4,8 +4,9 @@ import path from "path";
 import child_process from "child_process";
 import { env } from "process";
 
-import plugin from "@vitejs/plugin-react";
+import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
 const baseFolder =
   env.APPDATA !== undefined && env.APPDATA !== ""
@@ -45,7 +46,7 @@ const target = env.ASPNETCORE_HTTPS_PORT
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [plugin()],
+  plugins: [viteReact(), TanStackRouterVite()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

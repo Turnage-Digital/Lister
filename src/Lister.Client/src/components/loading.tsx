@@ -1,11 +1,8 @@
-import { Box, CircularProgress } from "@mui/material";
-import { useIsFetching } from "@tanstack/react-query";
 import React from "react";
+import { Box, CircularProgress } from "@mui/material";
 
 const Loading = () => {
-  const isFetching = useIsFetching();
-
-  return isFetching ? (
+  return (
     <Box
       sx={{
         position: "fixed",
@@ -21,7 +18,7 @@ const Loading = () => {
     >
       <CircularProgress />
     </Box>
-  ) : null;
+  );
 };
 
 export default Loading;

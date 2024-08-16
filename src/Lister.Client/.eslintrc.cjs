@@ -22,6 +22,7 @@ module.exports = {
     "no-process-env": "off",
     "no-implicit-coercion": "off",
     "@shopify/jsx-no-hardcoded-content": "off",
-    "@typescript-eslint/naming-convention": "off"
+    "@typescript-eslint/naming-convention": "off",
+    "no-template-curly-in-string": "off",
   }
 };
