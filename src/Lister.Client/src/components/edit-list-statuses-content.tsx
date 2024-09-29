@@ -15,15 +15,16 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { Status, statusColors } from "../../models";
-import { StatusBullet } from "../../components";
+import { Status, statusColors } from "../models";
+
+import StatusBullet from "./status-bullet";
 
 interface Props {
   statuses: Status[] | null;
   onStatusesChanged: (statuses: Status[]) => void;
 }
 
-const StatusesContent = ({ statuses, onStatusesChanged }: Props) => {
+const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
   const [statusName, setStatusName] = useState<string | null>(null);
   const [statusColor, setStatusColor] = useState(statusColors[0]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -136,4 +137,4 @@ const StatusesContent = ({ statuses, onStatusesChanged }: Props) => {
   );
 };
 
-export default StatusesContent;
+export default EditListStatusesContent;

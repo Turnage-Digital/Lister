@@ -18,14 +18,14 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-import { Column, ColumnType } from "../../models";
+import { Column, ColumnType } from "../models";
 
 interface Props {
   columns: Column[] | null;
   onColumnsChanged: (columns: Column[]) => void;
 }
 
-const ColumnsContent = ({ columns, onColumnsChanged }: Props) => {
+const EditListColumnsContent = ({ columns, onColumnsChanged }: Props) => {
   const [columnName, setColumnName] = useState<string | null>(null);
   const [columnType, setColumnType] = useState<ColumnType | null>(null);
 
@@ -129,4 +129,4 @@ const ColumnsContent = ({ columns, onColumnsChanged }: Props) => {
   );
 };
 
-export default ColumnsContent;
+export default EditListColumnsContent;

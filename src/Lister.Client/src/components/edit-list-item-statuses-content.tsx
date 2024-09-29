@@ -7,8 +7,9 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import { getStatusFromName, Item, ListItemDefinition } from "../../models";
-import { StatusChip } from "../../components";
+import { getStatusFromName, Item, ListItemDefinition } from "../models";
+
+import StatusChip from "./status-chip";
 
 interface Props {
   listItemDefinition: ListItemDefinition;
@@ -16,7 +17,7 @@ interface Props {
   onItemUpdated: (key: string, value: string) => void;
 }
 
-const StatusesContent = ({
+const EditListItemStatusesContent = ({
   listItemDefinition,
   item,
   onItemUpdated,
@@ -50,4 +51,4 @@ const StatusesContent = ({
   </Stack>
 );
 
-export default StatusesContent;
+export default EditListItemStatusesContent;

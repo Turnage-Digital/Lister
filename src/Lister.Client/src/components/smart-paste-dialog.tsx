@@ -8,7 +8,7 @@ import {
   SideDrawerFooter,
   SideDrawerHeader,
   useSideDrawer,
-} from "../../components";
+} from "./side-drawer";
 
 interface Props {
   onPaste: (text: string) => void;

@@ -3,7 +3,7 @@ import { Stack, TextField } from "@mui/material";
 import { DateField } from "@mui/x-date-pickers";
 import { isValid } from "date-fns";
 
-import { ColumnType, Item, ListItemDefinition } from "../../models";
+import { ColumnType, Item, ListItemDefinition } from "../models";
 
 interface Props {
   listItemDefinition: ListItemDefinition;
@@ -11,7 +11,11 @@ interface Props {
   onItemUpdated: (key: string, value: any) => void;
 }
 
-const ColumnContent = ({ listItemDefinition, item, onItemUpdated }: Props) => {
+const EditListItemColumnContent = ({
+  listItemDefinition,
+  item,
+  onItemUpdated,
+}: Props) => {
   const getDate = (date: number | null) => {
     return date ? new Date(date) : null;
   };
@@ -79,4 +83,4 @@ const ColumnContent = ({ listItemDefinition, item, onItemUpdated }: Props) => {
     </Stack>
   );
 };
-export default ColumnContent;
+export default EditListItemColumnContent;

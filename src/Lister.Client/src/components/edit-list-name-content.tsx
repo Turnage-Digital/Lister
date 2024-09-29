@@ -6,7 +6,7 @@ interface Props {
   onNameChanged: (name: string) => void;
 }
 
-const NameBlock = ({ name, onNameChanged }: Props) => {
+const EditListNameContent = ({ name, onNameChanged }: Props) => {
   return (
     <Stack spacing={2}>
       <TextField
@@ -28,4 +28,4 @@ const NameBlock = ({ name, onNameChanged }: Props) => {
   );
 };
 
-export default NameBlock;
+export default EditListNameContent;
