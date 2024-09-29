@@ -15,7 +15,7 @@ import {
   Column,
   getStatusFromName,
   Item,
-  ListIdSearch,
+  ListSearch,
   ListItemDefinition,
 } from "../models";
 import { StatusChip, Titlebar } from "../components";
@@ -211,7 +211,7 @@ const RouteComponent = () => {
 
 export const Route = createFileRoute("/_auth/$listId/")({
   component: RouteComponent,
-  validateSearch: (search): ListIdSearch => {
+  validateSearch: (search): ListSearch => {
     const page = Number(search.page ?? "0");
     const pageSize = Number(search.pageSize ?? "10");
     const field = search?.field as string | undefined;

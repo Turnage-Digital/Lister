@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { ListIdSearch, ListName } from "./models";
+import { ListSearch, ListName } from "./models";
 
 export const listNamesQueryOptions = () =>
   queryOptions({
@@ -29,7 +29,7 @@ export const listDefinitionQueryOptions = (listId?: string) =>
     enabled: !!listId,
   });
 
-export const pagedItemsQueryOptions = (search: ListIdSearch, listId?: string) =>
+export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
   queryOptions({
     queryKey: [
       "list-items",

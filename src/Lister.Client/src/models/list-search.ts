@@ -1,4 +1,4 @@
-export interface ListIdSearch {
+export interface ListSearch {
   page: number;
   pageSize: number;
   field?: string;

@@ -16,20 +16,16 @@ public class GetListItemsQueryHandler(ListerDbContext dbContext)
     )
     {
         var builder = new SqlBuilder();
-        var sql =
-            """
-            SELECT SQL_CALC_FOUND_ROWS
-                i.Bag, i.CreatedBy, i.CreatedOn, i.Id
-            FROM
-                Items i
-            WHERE
-                i.ListId = @listId
-            /**orderby**/
-            """;
-
-        sql += request.PageSize is not null
-            ? " LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();"
-            : " LIMIT 1 OFFSET 10; SELECT FOUND_ROWS();";
+        const string sql = """
+                           SELECT SQL_CALC_FOUND_ROWS
+                               i.Bag, i.CreatedBy, i.CreatedOn, i.Id
+                           FROM
+                               Items i
+                           WHERE
+                               i.ListId = @listId
+                           /**orderby**/
+                           LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();
+                           """;
 
         var parameters = new
         {
