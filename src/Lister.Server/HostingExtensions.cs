@@ -42,7 +42,9 @@ internal static class HostingExtensions
 
         builder.Services.AddMediatR(config =>
         {
+            // Domain events
             config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>();
+            // Application commands and queries
             config.RegisterServicesFromAssemblyContaining<CreateListCommandHandler>();
         });
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>),

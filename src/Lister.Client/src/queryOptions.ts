@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { ListName } from "./models";
+import { ListIdSearch, ListName } from "./models";
 
 export const listNamesQueryOptions = () =>
   queryOptions({
@@ -19,7 +19,30 @@ export const listDefinitionQueryOptions = (listId?: string) =>
   queryOptions({
     queryKey: ["list-definition", listId],
     queryFn: async () => {
-      const request = new Request(`/api/lists/${listId}`, {
+      const request = new Request(`/api/lists/${listId}/itemDefinition`, {
+        method: "GET",
+      });
+      const response = await fetch(request);
+      const retval = await response.json();
+      return retval;
+    },
+    enabled: !!listId,
+  });
+
+export const pagedItemsQueryOptions = (search: ListIdSearch, listId?: string) =>
+  queryOptions({
+    queryKey: [
+      "list-items",
+      listId,
+      `${listId}-${search.page}-${search.pageSize}-${search.field}-${search.sort}`,
+    ],
+    queryFn: async () => {
+      const lol = search.toString();
+      let url = `/api/lists/${listId}?page=${search.page}&pageSize=${search.pageSize}`;
+      if (search.field && search.sort) {
+        url += `&field=${search.field}&sort=${search.sort}`;
+      }
+      const request = new Request(url, {
         method: "GET",
       });
       const response = await fetch(request);

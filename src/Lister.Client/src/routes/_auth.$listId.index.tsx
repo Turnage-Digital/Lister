@@ -8,12 +8,21 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Column, getStatusFromName, Item, ListItemDefinition } from "../models";
+import {
+  Column,
+  getStatusFromName,
+  Item,
+  ListIdSearch,
+  ListItemDefinition,
+} from "../models";
 import { StatusChip, Titlebar } from "../components";
-import { listDefinitionQueryOptions } from "../queryOptions";
+import {
+  listDefinitionQueryOptions,
+  pagedItemsQueryOptions,
+} from "../queryOptions";
 
 const RouteComponent = () => {
   const { listId } = Route.useParams();
@@ -24,22 +33,9 @@ const RouteComponent = () => {
     listDefinitionQueryOptions(listId)
   );
 
-  const pagedItemsQuery = useQuery<{ items: Item[]; count: number }>({
-    queryKey: ["list-items", listId, search.toString()],
-    queryFn: async () => {
-      let url = `/api/lists/${listId}/items?page=${search.page}&pageSize=${search.pageSize}`;
-      if (search.field && search.sort) {
-        url += `&field=${search.field}&sort=${search.sort}`;
-      }
-      const request = new Request(url, {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      const retval = await response.json();
-      return retval;
-    },
-    enabled: !!listId,
-  });
+  const pagedItemsQuery = useSuspenseQuery(
+    pagedItemsQueryOptions(search, listId)
+  );
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     navigate({
@@ -213,13 +209,6 @@ const RouteComponent = () => {
   );
 };
 
-export interface ListIdSearch {
-  page: number;
-  pageSize: number;
-  field?: string;
-  sort?: string;
-}
-
 export const Route = createFileRoute("/_auth/$listId/")({
   component: RouteComponent,
   validateSearch: (search): ListIdSearch => {
@@ -229,5 +218,11 @@ export const Route = createFileRoute("/_auth/$listId/")({
     const sort = search?.sort as string | undefined;
 
     return { page, pageSize, field, sort };
+  },
+  loaderDeps: ({ search }) => search,
+  loader: (options) => {
+    options.context.queryClient.ensureQueryData(
+      pagedItemsQueryOptions(options.deps, options.params.listId)
+    );
   },
 });

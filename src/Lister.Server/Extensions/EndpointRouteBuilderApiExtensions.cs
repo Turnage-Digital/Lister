@@ -19,14 +19,14 @@ public static class EndpointRouteBuilderApiExtensions
 
         retval.MapCreateCommand<CreateListCommand<ListItemDefinitionView>, ListItemDefinitionView>(
             "/{0}", r => r.Id!);
-        retval.MapPatchCommand<AddListItemCommand, Item>("{listId}/items/add");
+        retval.MapPatchCommand<AddListItemCommand, Item>("{listId}/add");
         retval.MapPostCommand<ConvertTextToListItemCommand, Item>("convert-text-to-list-item");
         retval.MapDeleteCommand<DeleteListCommand>();
 
-        retval.MapGetQuery<GetListItemQuery, Item?>("{listId}/items/{itemId}");
+        retval.MapGetQuery<GetListItemQuery, Item?>("{listId}/{itemId}");
         retval.MapGetQuery<GetListItemDefinitionQuery<ListItemDefinitionView>, ListItemDefinitionView>(
             "{listId}/itemDefinition");
-        retval.MapGetQuery<GetListItemsQuery, PagedResponse<Item>>("{listId}/items");
+        retval.MapGetQuery<GetListItemsQuery, PagedResponse<Item>>("{listId}");
         retval.MapGetQuery<GetListNamesQuery<ListNameView>, ListNameView[]>("names");
 
         return retval;

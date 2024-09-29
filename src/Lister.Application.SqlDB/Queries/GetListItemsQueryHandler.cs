@@ -29,7 +29,7 @@ public class GetListItemsQueryHandler(ListerDbContext dbContext)
 
         sql += request.PageSize is not null
             ? " LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();"
-            : "; SELECT FOUND_ROWS();";
+            : " LIMIT 1 OFFSET 10; SELECT FOUND_ROWS();";
 
         var parameters = new
         {
