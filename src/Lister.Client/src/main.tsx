@@ -20,7 +20,7 @@ export const queryClient = new QueryClient();
 
 export const router = createRouter({
   routeTree,
-  defaultPendingComponent: () => <Loading />,
+  defaultPendingComponent: Loading,
   context: { queryClient },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
@@ -40,13 +40,13 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <QueryClientProvider client={queryClient}>
-          <SideDrawerProvider>
+        <SideDrawerProvider>
+          <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
-          </SideDrawerProvider>
-          <ReactQueryDevtools />
-          <TanStackRouterDevtools router={router} />
-        </QueryClientProvider>
+            <TanStackRouterDevtools router={router} />
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </SideDrawerProvider>
       </LocalizationProvider>
     </ThemeProvider>
   </StyledEngineProvider>

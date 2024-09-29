@@ -35,7 +35,7 @@ public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpCo
     {
         var user = httpContextAccessor.HttpContext!.User;
         var identity = (ClaimsIdentity)user.Identity!;
-        var userId = identity.GetUserId();
-        return userId;
+        var retval = identity.GetUserId();
+        return retval;
     }
 }

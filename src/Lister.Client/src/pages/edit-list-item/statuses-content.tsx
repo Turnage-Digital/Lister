@@ -28,6 +28,7 @@ const StatusesContent = ({
         name="status"
         id="status"
         label="Status"
+        variant="outlined"
         sx={{
           background: "white",
         }}

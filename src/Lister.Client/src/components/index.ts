@@ -8,7 +8,7 @@ export { default as Titlebar } from "./titlebar";
 
 export type { Action } from "./titlebar";
 
-export { ListDefinitionProvider, useListDefinition } from "./list-definition";
+// export { ListDefinitionProvider, useListDefinition } from "./list-definition";
 export {
   SideDrawer,
   SideDrawerContainer,

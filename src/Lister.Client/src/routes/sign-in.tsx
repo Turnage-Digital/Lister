@@ -1,5 +1,6 @@
-import React, { FormEvent } from "react";
+import React, { FormEvent, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -7,51 +8,46 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-const SignIn = () => {
-  // const actionData = useActionData() as { error: string } | undefined;
+const RouteComponent = () => {
+  const navigate = Route.useNavigate();
+  const search = Route.useSearch();
 
-  const searchParams = Route.useSearch();
-  const redirectTo = searchParams.callbackUrl;
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(e.currentTarget);
 
     const email = formData.get("username") as string | null;
     if (!email) {
-      return {
-        error: "You must provide a username to log in",
-      };
+      setError("You must provide a username to log in");
+      return;
     }
 
     const password = formData.get("password") as string | null;
     if (!password) {
-      return {
-        error: "You must provide a password to log in",
-      };
+      setError("You must provide a password to log in");
+      return;
     }
 
     const input = { email, password };
-    const postRequest = new Request("/identity/login?useCookies=true", {
+    const request = new Request("/identity/login?useCookies=true", {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify(input),
     });
-    const response = await fetch(postRequest);
-    const succeeded = response.status === 200;
-    if (!succeeded) {
-      return {
-        error: "Invalid username or password",
-      };
+    const response = await fetch(request);
+    if (!response.ok) {
+      setError("Invalid username or password");
+      return;
     }
 
-    // const redirectTo = formData.get("redirectTo") as string | null;
-    // return redirect({ to: redirectTo || "/" });
+    navigate({ to: search.callbackUrl });
   };
 
   return (
@@ -59,9 +55,7 @@ const SignIn = () => {
       <Stack spacing={2} alignItems="center">
         <Typography variant="h5">Sign in</Typography>
 
-        <Box component="form" method="post">
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-
+        <Box component="form" method="post" onSubmit={handleSubmit}>
           <TextField
             margin="normal"
             required
@@ -94,25 +88,25 @@ const SignIn = () => {
           </Button>
         </Box>
 
-        {/* {actionData && actionData.error && (*/}
-        {/*  <Alert sx={{ mt: 2 }} severity="error">*/}
-        {/*    {actionData.error}*/}
-        {/*  </Alert>*/}
-        {/* )}*/}
+        {error && (
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {error}
+          </Alert>
+        )}
       </Stack>
     </Container>
   );
 };
 
 export interface SignInSearch {
-  callbackUrl: string;
+  callbackUrl?: string;
 }
 
 export const Route = createFileRoute("/sign-in")({
-  component: SignIn,
+  component: RouteComponent,
   validateSearch: (search): SignInSearch => {
     return {
-      callbackUrl: search?.callback as string,
+      callbackUrl: search?.callbackUrl as string | undefined,
     };
   },
 });

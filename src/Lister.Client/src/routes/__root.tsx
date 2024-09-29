@@ -10,11 +10,19 @@ import {
   Toolbar,
 } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  Outlet,
+  useRouter,
+} from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
 
 import { SideDrawer } from "../components";
 
-const Root = () => {
+const RootComponent = () => {
+  const router = useRouter();
+  const navigate = Route.useNavigate();
+
   const [userMenuAnchorElement, setUserMenuAnchorElement] =
     useState<HTMLButtonElement | null>(null);
 
@@ -26,7 +34,18 @@ const Root = () => {
     setUserMenuAnchorElement(null);
   };
 
-  const handleLogoutClick = async () => {};
+  const handleLogoutClick = async () => {
+    const request = new Request("/identity/logout", {
+      method: "POST",
+    });
+    const response = await fetch(request);
+    if (response.ok) {
+      await router.invalidate();
+      await navigate({ to: "/" });
+    } else {
+      // console.error("Failed to log out");
+    }
+  };
 
   return (
     <>
@@ -66,20 +85,8 @@ const Root = () => {
   );
 };
 
-// export const rootLoader = async ({ request }: LoaderFunctionArgs) => {
-//   const postRequest = new Request("/identity/manage/info", {
-//     method: "GET",
-//   });
-//   const response = await fetch(postRequest);
-//   if (response.status === 401) {
-//     const params = new URLSearchParams();
-//     params.set("callbackUrl", new URL(request.url).pathname);
-//     return redirect(`/sign-in?${params.toString()}`);
-//   }
-//   const retval = await response.json();
-//   return retval;
-// };
-
-export const Route = createRootRoute({
-  component: Root,
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
+  component: RootComponent,
 });
