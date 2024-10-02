@@ -1,6 +1,5 @@
 import React from "react";
 import { Paper, Stack } from "@mui/material";
-import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -8,21 +7,22 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { AddCircle, MoreVert, Visibility } from "@mui/icons-material";
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
+import { StatusChip, Titlebar } from "../components";
 import {
   Column,
   getStatusFromName,
   Item,
-  ListSearch,
   ListItemDefinition,
+  ListSearch,
 } from "../models";
-import { StatusChip, Titlebar } from "../components";
 import {
   listDefinitionQueryOptions,
   pagedItemsQueryOptions,
-} from "../queryOptions";
+} from "../query-options";
 
 const RouteComponent = () => {
   const { listId } = Route.useParams();
@@ -37,109 +37,40 @@ const RouteComponent = () => {
     pagedItemsQueryOptions(search, listId)
   );
 
-  const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
-    navigate({
-      search: {
+  const handlePaginationChange = async (
+    gridPaginationModel: GridPaginationModel
+  ) => {
+    await navigate({
+      search: (prev) => ({
+        ...prev,
         page: gridPaginationModel.page,
         pageSize: gridPaginationModel.pageSize,
-      },
+      }),
     });
   };
 
-  const handleSortChange = (gridSortModel: GridSortModel) => {
+  const handleSortChange = async (gridSortModel: GridSortModel) => {
     if (gridSortModel.length === 0) {
-      navigate({
+      await navigate({
         search: (prev) => ({ ...prev, field: undefined, sort: undefined }),
       });
     } else {
       const field = gridSortModel[0].field;
       const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
 
-      navigate({
+      await navigate({
         search: (prev) => ({ ...prev, field, sort }),
       });
     }
   };
 
-  const handleItemClicked = (listId: string, itemId: string) => {
-    navigate({ to: "/$listId/$itemId", params: { listId, itemId } });
+  const handleItemClicked = async (listId: string, itemId: string) => {
+    await navigate({ to: "/$listId/$itemId", params: { listId, itemId } });
   };
 
   if (!listDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
     return null;
   }
-
-  const getGridColDefs = (
-    listItemDefinition: ListItemDefinition,
-    handleItemClicked: (listId: string, itemId: string) => void
-  ): GridColDef[] => {
-    const retval: GridColDef[] = [];
-
-    retval.push({
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      sortable: false,
-      disableColumnMenu: true,
-    });
-
-    const mapped = listItemDefinition.columns.map((column: Column) => {
-      const retval: GridColDef = {
-        field: column.property!,
-        headerName: column.name,
-        flex: 1,
-      };
-
-      if (column.type === "Date") {
-        retval.valueFormatter = (params) => {
-          const date = new Date(params.value);
-          const retval = date.toLocaleDateString();
-          return retval;
-        };
-      }
-      return retval;
-    });
-
-    retval.push(...mapped);
-
-    retval.push({
-      field: "status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => (
-        <StatusChip
-          status={getStatusFromName(listItemDefinition.statuses, params.value)}
-        />
-      ),
-    });
-
-    retval.push({
-      field: "actions",
-      type: "actions",
-      headerName: "",
-      width: 100,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        return [
-          <GridActionsCellItem
-            key={`${id}-view`}
-            icon={<Visibility />}
-            label="View"
-            color="primary"
-            onClick={() => handleItemClicked(listId!, id as string)}
-          />,
-          <GridActionsCellItem
-            key={`${id}-delete`}
-            icon={<MoreVert />}
-            label="More"
-            color="primary"
-          />,
-        ];
-      },
-    });
-
-    return retval;
-  };
 
   const gridColDefs = getGridColDefs(
     listDefinitionQuery.data,
@@ -226,3 +157,77 @@ export const Route = createFileRoute("/_auth/$listId/")({
     );
   },
 });
+
+const getGridColDefs = (
+  listItemDefinition: ListItemDefinition,
+  handleItemClicked: (listId: string, itemId: string) => void
+): GridColDef[] => {
+  const retval: GridColDef[] = [];
+
+  retval.push({
+    field: "id",
+    headerName: "ID",
+    width: 100,
+    sortable: false,
+    disableColumnMenu: true,
+  });
+
+  const mapped = listItemDefinition.columns.map((column: Column) => {
+    const retval: GridColDef = {
+      field: column.property!,
+      headerName: column.name,
+      flex: 1,
+    };
+
+    if (column.type === "Date") {
+      retval.valueFormatter = (params) => {
+        const date = new Date(params.value);
+        const retval = date.toLocaleDateString();
+        return retval;
+      };
+    }
+    return retval;
+  });
+
+  retval.push(...mapped);
+
+  retval.push({
+    field: "status",
+    headerName: "Status",
+    width: 150,
+    renderCell: (params) => (
+      <StatusChip
+        status={getStatusFromName(listItemDefinition.statuses, params.value)}
+      />
+    ),
+  });
+
+  retval.push({
+    field: "actions",
+    type: "actions",
+    headerName: "",
+    width: 100,
+    cellClassName: "actions",
+    getActions: ({ id }) => {
+      return [
+        <GridActionsCellItem
+          key={`${id}-view`}
+          icon={<Visibility />}
+          label="View"
+          color="primary"
+          onClick={() =>
+            handleItemClicked(listItemDefinition.id!, id.toString())
+          }
+        />,
+        <GridActionsCellItem
+          key={`${id}-delete`}
+          icon={<MoreVert />}
+          label="More"
+          color="primary"
+        />,
+      ];
+    },
+  });
+
+  return retval;
+};

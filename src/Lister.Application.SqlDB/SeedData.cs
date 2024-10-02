@@ -56,8 +56,7 @@ public static class SeedData
                 list = listAggregate.CreateAsync(
                     heath!.Id,
                     "Students",
-                    new[]
-                    {
+                    [
                         new Status
                         {
                             Name = "Active",
@@ -68,9 +67,8 @@ public static class SeedData
                             Name = "Inactive",
                             Color = "#607d8b"
                         }
-                    },
-                    new[]
-                    {
+                    ],
+                    [
                         new Column
                         {
                             Name = "Name",
@@ -101,7 +99,7 @@ public static class SeedData
                             Name = "Date Of Birth",
                             Type = ColumnType.Date
                         }
-                    }
+                    ]
                 ).Result;
 
                 var faker = new Faker<Student>()
@@ -146,13 +144,12 @@ public static class SeedData
         var result = userManager.CreateAsync(user, password).Result;
         if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
 
-        result = userManager.AddClaimsAsync(user, new Claim[]
-        {
-            new(JwtClaimTypes.Name, name),
-            new(JwtClaimTypes.GivenName, givenName),
-            new(JwtClaimTypes.FamilyName, familyName),
-            new(JwtClaimTypes.WebSite, website)
-        }).Result;
+        result = userManager.AddClaimsAsync(user, [
+            new Claim(JwtClaimTypes.Name, name),
+            new Claim(JwtClaimTypes.GivenName, givenName),
+            new Claim(JwtClaimTypes.FamilyName, familyName),
+            new Claim(JwtClaimTypes.WebSite, website)
+        ]).Result;
 
         if (!result.Succeeded)
         {

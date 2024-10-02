@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { listDefinitionQueryOptions } from "../queryOptions";
+import { listDefinitionQueryOptions } from "../query-options";
 
 export const Route = createFileRoute("/_auth/$listId")({
   loader: (options) =>

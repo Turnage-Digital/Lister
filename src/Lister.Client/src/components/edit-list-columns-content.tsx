@@ -66,6 +66,7 @@ const EditListColumnsContent = ({ columns, onColumnsChanged }: Props) => {
         <FormControl variant="outlined" margin="normal" fullWidth>
           <InputLabel htmlFor="type">Type</InputLabel>
           <Select
+            variant="outlined"
             name="type"
             id="type"
             label="Type"

@@ -2,10 +2,10 @@ import React from "react";
 import { Stack } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { PlaylistAdd } from "@mui/icons-material";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { listNamesQueryOptions } from "../queryOptions";
+import { listNamesQueryOptions } from "../query-options";
 import { ListCard, Titlebar } from "../components";
 
 const RouteComponent = () => {
