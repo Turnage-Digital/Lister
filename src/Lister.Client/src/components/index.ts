@@ -1,3 +1,5 @@
+export { getGridColDefs } from "./col-defs";
+
 export { default as EditListColumnsContent } from "./edit-list-columns-content";
 export { default as EditListItemColumnContent } from "./edit-list-item-column-content";
 export { default as EditListItemStatusesContent } from "./edit-list-item-statuses-content";
@@ -8,7 +10,6 @@ export { default as FormBlock } from "./form-block";
 export { default as ItemCard } from "./item-card";
 export { default as ListCard } from "./list-card";
 export { default as Loading } from "./loading";
-export { default as StatusChip } from "./status-chip";
 export { default as Titlebar } from "./titlebar";
 
 export type { Action } from "./titlebar";

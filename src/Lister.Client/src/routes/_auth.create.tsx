@@ -41,7 +41,7 @@ const RouteComponent = () => {
     e.preventDefault();
     const mutated = await mutation.mutateAsync(updated);
     window.sessionStorage.removeItem("updated_list");
-    await navigate({ to: `/list/${mutated.id}` });
+    navigate({ to: `/${mutated.id}` });
   };
 
   const breadcrumbs = [
