@@ -11,7 +11,7 @@ const RouteComponent = () => {
   const navigate = Route.useNavigate();
 
   const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId)
+    listDefinitionQueryOptions(listId),
   );
 
   const itemQuery = useSuspenseQuery(itemQueryOptions(listId, itemId));
@@ -23,12 +23,12 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" })
+      onClick: () => navigate({ to: "/" }),
     },
     {
       title: listDefinitionQuery.data.name || "",
-      onClick: () => navigate({ to: `/${listId}` })
-    }
+      onClick: () => navigate({ to: `/${listId}` }),
+    },
   ];
 
   return (
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/_auth/$listId/$itemId")({
   component: RouteComponent,
   loader: (options) => {
     options.context.queryClient.ensureQueryData(
-      itemQueryOptions(options.params.listId, options.params.itemId)
+      itemQueryOptions(options.params.listId, options.params.itemId),
     );
-  }
+  },
 });

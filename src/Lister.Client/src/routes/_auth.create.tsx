@@ -8,7 +8,7 @@ import {
   EditListNameContent,
   EditListStatusesContent,
   FormBlock,
-  Titlebar
+  Titlebar,
 } from "../components";
 import { ListItemDefinition } from "../models";
 import { useCreateListMutation } from "../query-options";
@@ -21,7 +21,7 @@ const RouteComponent = () => {
     id: null,
     name: "",
     columns: [],
-    statuses: []
+    statuses: [],
   };
 
   const [updated, setUpdated] = useState<ListItemDefinition>(() => {
@@ -47,8 +47,8 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" })
-    }
+      onClick: () => navigate({ to: "/" }),
+    },
   ];
 
   return (
@@ -97,7 +97,7 @@ const RouteComponent = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" }
+          justifyContent: { xs: "center", md: "flex-end" },
         }}
       >
         <Button
@@ -114,5 +114,5 @@ const RouteComponent = () => {
 };
 
 export const Route = createFileRoute("/_auth/create")({
-  component: RouteComponent
+  component: RouteComponent,
 });

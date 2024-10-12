@@ -1,4 +1,10 @@
-import { FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+} from "@mui/material";
 import React from "react";
 
 import { getStatusFromName, Item, ListItemDefinition } from "../models";
@@ -12,10 +18,10 @@ interface Props {
 }
 
 const EditListItemStatusesContent = ({
-                                       listItemDefinition,
-                                       item,
-                                       onItemUpdated
-                                     }: Props) => (
+  listItemDefinition,
+  item,
+  onItemUpdated,
+}: Props) => (
   <Stack spacing={2}>
     <FormControl variant="outlined" fullWidth>
       <InputLabel htmlFor="status">Status</InputLabel>
@@ -25,7 +31,7 @@ const EditListItemStatusesContent = ({
         label="Status"
         variant="outlined"
         sx={{
-          background: "white"
+          background: "white",
         }}
         renderValue={(value) => (
           <StatusChip

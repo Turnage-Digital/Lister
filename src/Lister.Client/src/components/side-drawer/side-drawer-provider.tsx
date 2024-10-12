@@ -20,9 +20,9 @@ const SideDrawerProvider = ({ children }: PropsWithChildren) => {
       openDrawer,
       closeDrawer,
       title,
-      content
+      content,
     }),
-    [content, title]
+    [content, title],
   );
 
   return (

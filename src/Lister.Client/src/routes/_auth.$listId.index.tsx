@@ -7,7 +7,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { getGridColDefs, Titlebar } from "../components";
 import { Item, ListSearch } from "../models";
-import { listDefinitionQueryOptions, pagedItemsQueryOptions } from "../query-options";
+import {
+  listDefinitionQueryOptions,
+  pagedItemsQueryOptions,
+} from "../query-options";
 
 const RouteComponent = () => {
   const { listId } = Route.useParams();
@@ -15,11 +18,11 @@ const RouteComponent = () => {
   const search = Route.useSearch();
 
   const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId)
+    listDefinitionQueryOptions(listId),
   );
 
   const pagedItemsQuery = useSuspenseQuery(
-    pagedItemsQueryOptions(search, listId)
+    pagedItemsQueryOptions(search, listId),
   );
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
@@ -27,22 +30,22 @@ const RouteComponent = () => {
       search: (prev) => ({
         ...prev,
         page: gridPaginationModel.page,
-        pageSize: gridPaginationModel.pageSize
-      })
+        pageSize: gridPaginationModel.pageSize,
+      }),
     });
   };
 
   const handleSortChange = (gridSortModel: GridSortModel) => {
     if (gridSortModel.length === 0) {
       navigate({
-        search: (prev) => ({ ...prev, field: undefined, sort: undefined })
+        search: (prev) => ({ ...prev, field: undefined, sort: undefined }),
       });
     } else {
       const field = gridSortModel[0].field;
       const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
 
       navigate({
-        search: (prev) => ({ ...prev, field, sort })
+        search: (prev) => ({ ...prev, field, sort }),
       });
     }
   };
@@ -57,40 +60,40 @@ const RouteComponent = () => {
 
   const gridColDefs = getGridColDefs(
     listDefinitionQuery.data,
-    handleItemClicked
+    handleItemClicked,
   );
 
   const pagination: GridPaginationModel = {
     page: search.page,
-    pageSize: search.pageSize
+    pageSize: search.pageSize,
   };
 
   const sort: GridSortModel = [];
   if (search.field && search.sort) {
     sort.push({
       field: search.field,
-      sort: search.sort === "desc" ? "desc" : "asc"
+      sort: search.sort === "desc" ? "desc" : "asc",
     });
   }
 
   const rows = pagedItemsQuery.data.items.map((item: Item) => ({
     id: item.id,
-    ...item.bag
+    ...item.bag,
   }));
 
   const actions = [
     {
       title: "Add an Item",
       icon: <AddCircle />,
-      onClick: () => navigate({ to: "/$listId/create", params: { listId } })
-    }
+      onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
+    },
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" })
-    }
+      onClick: () => navigate({ to: "/" }),
+    },
   ];
 
   return (
@@ -128,15 +131,15 @@ export const Route = createFileRoute("/_auth/$listId/")({
   validateSearch: (search): ListSearch => {
     const page = Number(search.page ?? "0");
     const pageSize = Number(search.pageSize ?? "10");
-    const field = search?.field as string | undefined;
-    const sort = search?.sort as string | undefined;
+    const field = search.field as string | undefined;
+    const sort = search.sort as string | undefined;
 
     return { page, pageSize, field, sort };
   },
   loaderDeps: ({ search }) => search,
   loader: (options) => {
     options.context.queryClient.ensureQueryData(
-      pagedItemsQueryOptions(options.deps, options.params.listId)
+      pagedItemsQueryOptions(options.deps, options.params.listId),
     );
-  }
+  },
 });

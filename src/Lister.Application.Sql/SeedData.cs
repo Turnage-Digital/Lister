@@ -111,7 +111,7 @@ public static class SeedData
                     .RuleFor(s => s.Address, f => f.Person.Address.Street)
                     .RuleFor(s => s.ZipCode, f => f.Address.ZipCode())
                     .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.Date.ToString("O"));
-                var students = faker.Generate(75);
+                var students = faker.Generate(500);
 
                 listAggregate.AddListItemsAsync(list, heath.Id, students).Wait();
             }
@@ -170,13 +170,13 @@ public static class SeedData
 
     private class Student
     {
-        public string City { get; } = null!;
-        public string Name { get; } = null!;
-        public string State { get; } = null!;
-        public string Status { get; } = null!;
-        public string Address { get; } = null!;
-        public string ZipCode { get; } = null!;
-        public string DateOfBirth { get; } = null!;
+        public string City { get; set; } = null!;
+        public string Name { get; set;  } = null!;
+        public string State { get; set; } = null!;
+        public string Status { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string DateOfBirth { get; set; } = null!;
     }
 }
 #endif

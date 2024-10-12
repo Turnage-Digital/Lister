@@ -4,6 +4,7 @@ import {
   Button,
   Chip,
   FormControl,
+  Grid2,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -11,9 +12,8 @@ import {
   Menu,
   MenuItem,
   OutlinedInput,
-  Stack
+  Stack,
 } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
 
 import { Status, statusColors } from "../models";
 
@@ -74,7 +74,7 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
               type="text"
               label="Status"
               sx={{
-                background: "white"
+                background: "white",
               }}
               value={statusName ?? ""}
               onChange={(event) => setStatusName(event.target.value)}
@@ -104,21 +104,21 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
           </Box>
         </Stack>
 
-        <Grid container spacing={2}>
+        <Grid2 container spacing={2}>
           {statuses &&
             statuses.map((status) => (
-              <Grid key={status.name}>
+              <Grid2 key={status.name}>
                 <Chip
                   label={status.name}
                   sx={{
                     color: "white",
-                    backgroundColor: status.color
+                    backgroundColor: status.color,
                   }}
                   onDelete={() => handleRemoveClicked(status.name)}
                 />
-              </Grid>
+              </Grid2>
             ))}
-        </Grid>
+        </Grid2>
       </Stack>
 
       <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>

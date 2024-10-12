@@ -1,6 +1,5 @@
 import React from "react";
-import { Stack } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Grid2, Stack } from "@mui/material";
 import { PlaylistAdd } from "@mui/icons-material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -20,15 +19,15 @@ const RouteComponent = () => {
     {
       title: "Create a List",
       icon: <PlaylistAdd />,
-      onClick: () => navigate({ to: "/create" })
-    }
+      onClick: () => navigate({ to: "/create" }),
+    },
   ];
 
   return (
     <Stack sx={{ px: 2, py: 4 }}>
       <Titlebar title="Lists" actions={actions} />
 
-      <Grid container spacing={2} sx={{ my: 2 }}>
+      <Grid2 container spacing={2} sx={{ my: 2 }}>
         {listNamesQuery.data.map((listName) => (
           <ListCard
             key={listName.id}
@@ -37,12 +36,12 @@ const RouteComponent = () => {
               navigate({
                 to: "/$listId",
                 params: { listId: listName.id },
-                search: { page: 0, pageSize: 10 }
+                search: { page: 0, pageSize: 10 },
               })
             }
           />
         ))}
-      </Grid>
+      </Grid2>
     </Stack>
   );
 };
@@ -50,5 +49,5 @@ const RouteComponent = () => {
 export const Route = createFileRoute("/_auth/")({
   component: RouteComponent,
   loader: (options) =>
-    options.context.queryClient.ensureQueryData(listNamesQueryOptions())
+    options.context.queryClient.ensureQueryData(listNamesQueryOptions()),
 });

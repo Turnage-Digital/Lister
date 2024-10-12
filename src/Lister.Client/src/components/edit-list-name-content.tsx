@@ -17,7 +17,7 @@ const EditListNameContent = ({ name, onNameChanged }: Props) => {
         required
         fullWidth
         sx={{
-          background: "white"
+          background: "white",
         }}
         value={name ?? ""}
         onChange={(event) => {

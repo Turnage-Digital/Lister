@@ -1,6 +1,12 @@
 import { Delete, Visibility } from "@mui/icons-material";
-import { Card, CardActions, CardContent, IconButton, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  Grid2,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import React from "react";
 
 import { ListName } from "../models";
@@ -12,7 +18,7 @@ export interface Props {
 
 const ListCard = ({ listName, onViewClick }: Props) => {
   return (
-    <Grid key={listName.id} xs={12} sm={6} md={4}>
+    <Grid2 key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
       <Card>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
@@ -28,7 +34,7 @@ const ListCard = ({ listName, onViewClick }: Props) => {
           </IconButton>
         </CardActions>
       </Card>
-    </Grid>
+    </Grid2>
   );
 };
 

@@ -1,5 +1,13 @@
-import { Breadcrumbs, Button, Hidden, Link, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Grid2,
+  Hidden,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 import React from "react";
 
 export interface Action {
@@ -21,8 +29,8 @@ export interface TitlebarProps {
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   return (
-    <Grid container>
-      <Grid xs={12} md={9}>
+    <Grid2 container>
+      <Grid2 size={{ xs: 12, md: 9 }}>
         <Typography
           color="primary"
           fontWeight="medium"
@@ -32,13 +40,12 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
         >
           {title}
         </Typography>
-      </Grid>
+      </Grid2>
 
       {actions && actions.length > 0 && (
-        <Hidden mdDown>
-          <Grid
-            xs={12}
-            md={3}
+        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+          <Grid2
+            size={{ xs: 12, md: 3 }}
             display="flex"
             alignItems="center"
             justifyContent="flex-end"
@@ -55,12 +62,12 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
                 </Button>
               ))}
             </Stack>
-          </Grid>
-        </Hidden>
+          </Grid2>
+        </Box>
       )}
 
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <Grid xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <Breadcrumbs separator="›">
             {breadcrumbs.map((breadcrumb) => (
               <Link
@@ -74,9 +81,9 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
             ))}
             <Typography color="text.secondary">{title}</Typography>
           </Breadcrumbs>
-        </Grid>
+        </Grid2>
       )}
-    </Grid>
+    </Grid2>
   );
 };
 

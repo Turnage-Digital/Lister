@@ -8,7 +8,7 @@ export const auth: Auth = {
   logout: () => {
     auth.status = "loggedOut";
     auth.username = undefined;
-  }
+  },
 };
 
 export interface Auth {

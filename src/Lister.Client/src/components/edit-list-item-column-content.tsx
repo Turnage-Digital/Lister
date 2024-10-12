@@ -12,10 +12,10 @@ interface Props {
 }
 
 const EditListItemColumnContent = ({
-                                     listItemDefinition,
-                                     item,
-                                     onItemUpdated
-                                   }: Props) => {
+  listItemDefinition,
+  item,
+  onItemUpdated,
+}: Props) => {
   const getDate = (date: number | null) => {
     return date ? new Date(date) : null;
   };
@@ -36,7 +36,7 @@ const EditListItemColumnContent = ({
                 key={column.name}
                 label={column.name}
                 sx={{
-                  background: "white"
+                  background: "white",
                 }}
                 value={item.bag[column.property!] ?? ""}
                 onChange={(e) =>
@@ -52,7 +52,7 @@ const EditListItemColumnContent = ({
                 label={column.name}
                 type="number"
                 sx={{
-                  background: "white"
+                  background: "white",
                 }}
                 value={item.bag[column.property!] ?? ""}
                 onChange={(e) =>
@@ -67,7 +67,7 @@ const EditListItemColumnContent = ({
                 key={column.name}
                 label={column.name}
                 sx={{
-                  background: "white"
+                  background: "white",
                 }}
                 value={getDate(item.bag[column.property!])}
                 onChange={(newValue) =>

@@ -7,12 +7,12 @@ export const listNamesQueryOptions = () =>
     queryKey: ["list-names"],
     queryFn: async () => {
       const request = new Request("/api/lists/names", {
-        method: "GET"
+        method: "GET",
       });
       const response = await fetch(request);
       const retval: ListName[] = await response.json();
       return retval;
-    }
+    },
   });
 
 export const listDefinitionQueryOptions = (listId?: string) =>
@@ -20,13 +20,13 @@ export const listDefinitionQueryOptions = (listId?: string) =>
     queryKey: ["list-definition", listId],
     queryFn: async () => {
       const request = new Request(`/api/lists/${listId}/itemDefinition`, {
-        method: "GET"
+        method: "GET",
       });
       const response = await fetch(request);
       const retval = await response.json();
       return retval;
     },
-    enabled: !!listId
+    enabled: Boolean(listId),
   });
 
 export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
@@ -37,7 +37,7 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
       search.page,
       search.pageSize,
       search.field ?? "id",
-      search.sort ?? "asc"
+      search.sort ?? "asc",
     ],
     queryFn: async () => {
       let url = `/api/lists/${listId}?page=${search.page}&pageSize=${search.pageSize}`;
@@ -45,13 +45,13 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
         url += `&field=${search.field}&sort=${search.sort}`;
       }
       const request = new Request(url, {
-        method: "GET"
+        method: "GET",
       });
       const response = await fetch(request);
       const retval = await response.json();
       return retval;
     },
-    enabled: !!listId
+    enabled: Boolean(listId),
   });
 
 export const itemQueryOptions = (listId?: string, itemId?: string) =>
@@ -59,13 +59,13 @@ export const itemQueryOptions = (listId?: string, itemId?: string) =>
     queryKey: ["list-item", listId, itemId],
     queryFn: async () => {
       const request = new Request(`/api/lists/${listId}/${itemId}`, {
-        method: "GET"
+        method: "GET",
       });
       const response = await fetch(request);
       const retval = await response.json();
       return retval;
     },
-    enabled: !!listId && !!itemId
+    enabled: Boolean(listId) && Boolean(itemId),
   });
 
 export const useCreateListMutation = () =>
@@ -73,15 +73,15 @@ export const useCreateListMutation = () =>
     mutationFn: async (list: ListItemDefinition) => {
       const request = new Request("/api/lists", {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(list)
+        body: JSON.stringify(list),
       });
       const response = await fetch(request);
       const retval: ListItemDefinition = await response.json();
       return retval;
-    }
+    },
   });
 
 export const useAddListItemMutation = (listId: string) =>
@@ -89,13 +89,13 @@ export const useAddListItemMutation = (listId: string) =>
     mutationFn: async (item: Item) => {
       const request = new Request(`/api/lists/${listId}/add`, {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         method: "PATCH",
-        body: JSON.stringify(item)
+        body: JSON.stringify(item),
       });
       const response = await fetch(request);
       const retval: Item = await response.json();
       return retval;
-    }
+    },
   });
