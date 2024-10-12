@@ -127,18 +127,113 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  AuthRoute: AuthRoute.addChildren({
-    AuthListIdRoute: AuthListIdRoute.addChildren({
-      AuthListIdItemIdRoute,
-      AuthListIdCreateRoute,
-      AuthListIdIndexRoute,
-    }),
-    AuthCreateRoute,
-    AuthIndexRoute,
-  }),
-  SignInRoute,
-})
+interface AuthListIdRouteChildren {
+  AuthListIdItemIdRoute: typeof AuthListIdItemIdRoute
+  AuthListIdCreateRoute: typeof AuthListIdCreateRoute
+  AuthListIdIndexRoute: typeof AuthListIdIndexRoute
+}
+
+const AuthListIdRouteChildren: AuthListIdRouteChildren = {
+  AuthListIdItemIdRoute: AuthListIdItemIdRoute,
+  AuthListIdCreateRoute: AuthListIdCreateRoute,
+  AuthListIdIndexRoute: AuthListIdIndexRoute,
+}
+
+const AuthListIdRouteWithChildren = AuthListIdRoute._addFileChildren(
+  AuthListIdRouteChildren,
+)
+
+interface AuthRouteChildren {
+  AuthListIdRoute: typeof AuthListIdRouteWithChildren
+  AuthCreateRoute: typeof AuthCreateRoute
+  AuthIndexRoute: typeof AuthIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthListIdRoute: AuthListIdRouteWithChildren,
+  AuthCreateRoute: AuthCreateRoute,
+  AuthIndexRoute: AuthIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+export interface FileRoutesByFullPath {
+  '': typeof AuthRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/$listId': typeof AuthListIdRouteWithChildren
+  '/create': typeof AuthCreateRoute
+  '/': typeof AuthIndexRoute
+  '/$listId/$itemId': typeof AuthListIdItemIdRoute
+  '/$listId/create': typeof AuthListIdCreateRoute
+  '/$listId/': typeof AuthListIdIndexRoute
+}
+
+export interface FileRoutesByTo {
+  '/sign-in': typeof SignInRoute
+  '/create': typeof AuthCreateRoute
+  '/': typeof AuthIndexRoute
+  '/$listId/$itemId': typeof AuthListIdItemIdRoute
+  '/$listId/create': typeof AuthListIdCreateRoute
+  '/$listId': typeof AuthListIdIndexRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/_auth/$listId': typeof AuthListIdRouteWithChildren
+  '/_auth/create': typeof AuthCreateRoute
+  '/_auth/': typeof AuthIndexRoute
+  '/_auth/$listId/$itemId': typeof AuthListIdItemIdRoute
+  '/_auth/$listId/create': typeof AuthListIdCreateRoute
+  '/_auth/$listId/': typeof AuthListIdIndexRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | ''
+    | '/sign-in'
+    | '/$listId'
+    | '/create'
+    | '/'
+    | '/$listId/$itemId'
+    | '/$listId/create'
+    | '/$listId/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/sign-in'
+    | '/create'
+    | '/'
+    | '/$listId/$itemId'
+    | '/$listId/create'
+    | '/$listId'
+  id:
+    | '__root__'
+    | '/_auth'
+    | '/sign-in'
+    | '/_auth/$listId'
+    | '/_auth/create'
+    | '/_auth/'
+    | '/_auth/$listId/$itemId'
+    | '/_auth/$listId/create'
+    | '/_auth/$listId/'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  AuthRoute: typeof AuthRouteWithChildren
+  SignInRoute: typeof SignInRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthRoute: AuthRouteWithChildren,
+  SignInRoute: SignInRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 

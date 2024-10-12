@@ -21,5 +21,5 @@ export {
   SideDrawerFooter,
   SideDrawerHeader,
   SideDrawerProvider,
-  useSideDrawer,
+  useSideDrawer
 } from "./side-drawer";

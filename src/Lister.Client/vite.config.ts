@@ -28,7 +28,7 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         certFilePath,
         "--format",
         "Pem",
-        "--no-password",
+        "--no-password"
       ],
       { stdio: "inherit" }
     ).status !== 0
@@ -41,32 +41,32 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 const target = env.ASPNETCORE_HTTPS_PORT
   ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
   : env.ASPNETCORE_URLS
-  ? env.ASPNETCORE_URLS.split(";")[0]
-  : "https://localhost:5000";
+    ? env.ASPNETCORE_URLS.split(";")[0]
+    : "https://localhost:5000";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [viteReact(), TanStackRouterVite()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   server: {
     proxy: {
       "^/api": {
         target,
-        secure: false,
+        secure: false
       },
       "^/identity": {
         target,
-        secure: false,
-      },
+        secure: false
+      }
     },
     port: 3000,
     https: {
       key: fs.readFileSync(keyFilePath),
-      cert: fs.readFileSync(certFilePath),
-    },
-  },
+      cert: fs.readFileSync(certFilePath)
+    }
+  }
 });

@@ -7,10 +7,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { getGridColDefs, Titlebar } from "../components";
 import { Item, ListSearch } from "../models";
-import {
-  listDefinitionQueryOptions,
-  pagedItemsQueryOptions,
-} from "../query-options";
+import { listDefinitionQueryOptions, pagedItemsQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const { listId } = Route.useParams();
@@ -30,22 +27,22 @@ const RouteComponent = () => {
       search: (prev) => ({
         ...prev,
         page: gridPaginationModel.page,
-        pageSize: gridPaginationModel.pageSize,
-      }),
+        pageSize: gridPaginationModel.pageSize
+      })
     });
   };
 
   const handleSortChange = (gridSortModel: GridSortModel) => {
     if (gridSortModel.length === 0) {
       navigate({
-        search: (prev) => ({ ...prev, field: undefined, sort: undefined }),
+        search: (prev) => ({ ...prev, field: undefined, sort: undefined })
       });
     } else {
       const field = gridSortModel[0].field;
       const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
 
       navigate({
-        search: (prev) => ({ ...prev, field, sort }),
+        search: (prev) => ({ ...prev, field, sort })
       });
     }
   };
@@ -65,35 +62,35 @@ const RouteComponent = () => {
 
   const pagination: GridPaginationModel = {
     page: search.page,
-    pageSize: search.pageSize,
+    pageSize: search.pageSize
   };
 
   const sort: GridSortModel = [];
   if (search.field && search.sort) {
     sort.push({
       field: search.field,
-      sort: search.sort === "desc" ? "desc" : "asc",
+      sort: search.sort === "desc" ? "desc" : "asc"
     });
   }
 
   const rows = pagedItemsQuery.data.items.map((item: Item) => ({
     id: item.id,
-    ...item.bag,
+    ...item.bag
   }));
 
   const actions = [
     {
       title: "Add an Item",
       icon: <AddCircle />,
-      onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
-    },
+      onClick: () => navigate({ to: "/$listId/create", params: { listId } })
+    }
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
-    },
+      onClick: () => navigate({ to: "/" })
+    }
   ];
 
   return (
@@ -141,5 +138,5 @@ export const Route = createFileRoute("/_auth/$listId/")({
     options.context.queryClient.ensureQueryData(
       pagedItemsQueryOptions(options.deps, options.params.listId)
     );
-  },
+  }
 });

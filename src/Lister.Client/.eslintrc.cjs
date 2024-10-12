@@ -5,15 +5,13 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:@shopify/typescript",
-    "plugin:@shopify/react",
-    "plugin:@shopify/prettier",
     "plugin:storybook/recommended"
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
   rules: {
+    "@typescript-eslint/naming-convention": "off",
     "react-refresh/only-export-components": [
       "warn",
       { allowConstantExport: true }
@@ -21,8 +19,6 @@ module.exports = {
     "id-length": "off",
     "no-process-env": "off",
     "no-implicit-coercion": "off",
-    "@shopify/jsx-no-hardcoded-content": "off",
-    "@typescript-eslint/naming-convention": "off",
-    "no-template-curly-in-string": "off",
+    "no-template-curly-in-string": "off"
   }
 };

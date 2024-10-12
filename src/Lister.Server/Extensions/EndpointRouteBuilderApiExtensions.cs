@@ -2,8 +2,8 @@ using Lister.Application;
 using Lister.Application.Commands;
 using Lister.Application.Extensions;
 using Lister.Application.Queries;
-using Lister.Core.SqlDB.Views;
-using Lister.Core.ValueObjects;
+using Lister.Core.Entities;
+using Lister.Core.Views;
 using Microsoft.AspNetCore.Identity;
 
 namespace Lister.Server.Extensions;
@@ -17,17 +17,17 @@ public static class EndpointRouteBuilderApiExtensions
             .WithTags("Lists")
             .RequireAuthorization();
 
-        retval.MapCreateCommand<CreateListCommand<ListItemDefinitionView>, ListItemDefinitionView>(
+        retval.MapCreateCommand<CreateListCommand<ListItemDefinition>, ListItemDefinition>(
             "/{0}", r => r.Id!);
         retval.MapPatchCommand<AddListItemCommand, Item>("{listId}/add");
         retval.MapPostCommand<ConvertTextToListItemCommand, Item>("convert-text-to-list-item");
         retval.MapDeleteCommand<DeleteListCommand>();
 
         retval.MapGetQuery<GetListItemQuery, Item?>("{listId}/{itemId}");
-        retval.MapGetQuery<GetListItemDefinitionQuery<ListItemDefinitionView>, ListItemDefinitionView>(
+        retval.MapGetQuery<GetListItemDefinitionQuery<ListItemDefinition>, ListItemDefinition>(
             "{listId}/itemDefinition");
         retval.MapGetQuery<GetListItemsQuery, PagedResponse<Item>>("{listId}");
-        retval.MapGetQuery<GetListNamesQuery<ListNameView>, ListNameView[]>("names");
+        retval.MapGetQuery<GetListNamesQuery<ListName>, ListName[]>("names");
 
         return retval;
     }

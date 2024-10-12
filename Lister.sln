@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1AA1A271-B12
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Core", "src\Lister.Core\Lister.Core.csproj", "{4F309977-9A09-46C7-AE1B-7FD03999B03B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Core.SqlDB", "src\Lister.Core.SqlDB\Lister.Core.SqlDB.csproj", "{E22BE0E0-FB7F-4AE5-ACA8-BB7F26853D82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Core.Sql", "src\Lister.Core.Sql\Lister.Core.Sql.csproj", "{E22BE0E0-FB7F-4AE5-ACA8-BB7F26853D82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Domain", "src\Lister.Domain\Lister.Domain.csproj", "{D9EB863D-DCEA-444E-B475-30F3139ECFC3}"
 EndProject
@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Server", "src\Lister
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application", "src\Lister.Application\Lister.Application.csproj", "{53B038AA-BB3A-4F48-90E9-1E5441231157}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application.SqlDB", "src\Lister.Application.SqlDB\Lister.Application.SqlDB.csproj", "{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application.Sql", "src\Lister.Application.Sql\Lister.Application.Sql.csproj", "{E88B3BEF-DD86-401E-A4DA-CE86FDAF042C}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Lister.Client", "src\Lister.Client\Lister.Client.esproj", "{D413228F-C866-4539-8C97-01EF654DD7D1}"
 EndProject

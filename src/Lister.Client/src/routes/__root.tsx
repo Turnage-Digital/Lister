@@ -1,22 +1,10 @@
 import React, { MouseEvent, useState } from "react";
-import {
-  AppBar,
-  Box,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Box, Container, IconButton, Menu, MenuItem, Stack, Toolbar } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
-import {
-  createRootRouteWithContext,
-  Outlet,
-  useRouter,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet, useRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 
+import { Auth } from "../auth";
 import { SideDrawer } from "../components";
 
 const RootComponent = () => {
@@ -36,7 +24,7 @@ const RootComponent = () => {
 
   const handleLogoutClick = async () => {
     const request = new Request("/identity/logout", {
-      method: "POST",
+      method: "POST"
     });
     const response = await fetch(request);
     if (response.ok) {
@@ -52,7 +40,7 @@ const RootComponent = () => {
       <Stack
         sx={{
           minWidth: "100%",
-          height: "100vh",
+          height: "100vh"
         }}
       >
         <AppBar>
@@ -86,7 +74,8 @@ const RootComponent = () => {
 };
 
 export const Route = createRootRouteWithContext<{
+  auth: Auth;
   queryClient: QueryClient;
 }>()({
-  component: RootComponent,
+  component: RootComponent
 });

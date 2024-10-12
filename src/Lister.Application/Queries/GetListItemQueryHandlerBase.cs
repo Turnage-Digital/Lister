@@ -1,4 +1,4 @@
-using Lister.Core.ValueObjects;
+using Lister.Core.Entities;
 using MediatR;
 
 namespace Lister.Application.Queries;

@@ -1,3 +1,3 @@
 namespace Lister.Core;
 
-public interface IReadOnlyList : IList { }
+public interface IReadOnlyList : IList;

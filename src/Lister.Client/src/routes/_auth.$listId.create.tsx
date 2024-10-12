@@ -9,14 +9,11 @@ import {
   EditListItemStatusesContent,
   FormBlock,
   Titlebar,
-  useSideDrawer,
+  useSideDrawer
 } from "../components";
 import SmartPasteDialog from "../components/smart-paste-dialog";
 import { Item } from "../models";
-import {
-  listDefinitionQueryOptions,
-  useAddListItemMutation,
-} from "../query-options";
+import { listDefinitionQueryOptions, useAddListItemMutation } from "../query-options";
 
 const RouteComponent = () => {
   const { openDrawer, closeDrawer } = useSideDrawer();
@@ -31,7 +28,7 @@ const RouteComponent = () => {
   const defaultListItem: Item = {
     id: null,
     listId,
-    bag: {},
+    bag: {}
   };
 
   const [updated, setUpdated] = useState<Item>(() => {
@@ -56,15 +53,15 @@ const RouteComponent = () => {
   const handlePaste = async (text: string) => {
     const body = {
       listId: listDefinitionQuery.data?.id,
-      text,
+      text
     };
 
     const postRequest = new Request(`/api/lists/convert-text-to-list-item`, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     });
 
     const response = await fetch(postRequest);
@@ -90,19 +87,19 @@ const RouteComponent = () => {
       title: "Smart Paste",
       icon: <ContentPaste />,
       onClick: () =>
-        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />),
-    },
+        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />)
+    }
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate({ to: "/" })
     },
     {
       title: listDefinitionQuery.data.name ?? "",
-      onClick: () => navigate({ to: `/${listId}` }),
-    },
+      onClick: () => navigate({ to: `/${listId}` })
+    }
   ];
 
   return (
@@ -146,7 +143,7 @@ const RouteComponent = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" },
+          justifyContent: { xs: "center", md: "flex-end" }
         }}
       >
         <Button
@@ -163,5 +160,5 @@ const RouteComponent = () => {
 };
 
 export const Route = createFileRoute("/_auth/$listId/create")({
-  component: RouteComponent,
+  component: RouteComponent
 });

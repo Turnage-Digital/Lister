@@ -20,8 +20,8 @@ const RouteComponent = () => {
     {
       title: "Create a List",
       icon: <PlaylistAdd />,
-      onClick: () => navigate({ to: "/create" }),
-    },
+      onClick: () => navigate({ to: "/create" })
+    }
   ];
 
   return (
@@ -37,7 +37,7 @@ const RouteComponent = () => {
               navigate({
                 to: "/$listId",
                 params: { listId: listName.id },
-                search: { page: 0, pageSize: 10 },
+                search: { page: 0, pageSize: 10 }
               })
             }
           />
@@ -50,5 +50,5 @@ const RouteComponent = () => {
 export const Route = createFileRoute("/_auth/")({
   component: RouteComponent,
   loader: (options) =>
-    options.context.queryClient.ensureQueryData(listNamesQueryOptions()),
+    options.context.queryClient.ensureQueryData(listNamesQueryOptions())
 });

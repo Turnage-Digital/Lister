@@ -1,5 +1,6 @@
 using System.Dynamic;
 using Lister.Core;
+using Lister.Core.Entities;
 using Lister.Core.Enums;
 using Lister.Core.ValueObjects;
 using Lister.Domain.Events;

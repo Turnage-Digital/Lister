@@ -23,12 +23,12 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate({ to: "/" })
     },
     {
       title: listDefinitionQuery.data.name || "",
-      onClick: () => navigate({ to: `/${listId}` }),
-    },
+      onClick: () => navigate({ to: `/${listId}` })
+    }
   ];
 
   return (
@@ -44,5 +44,5 @@ export const Route = createFileRoute("/_auth/$listId/$itemId")({
     options.context.queryClient.ensureQueryData(
       itemQueryOptions(options.params.listId, options.params.itemId)
     );
-  },
+  }
 });

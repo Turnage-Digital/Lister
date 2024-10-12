@@ -1,8 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Application;
-using Lister.Application.SqlDB.Commands;
-using Lister.Core.SqlDB;
+using Lister.Application.Sql;
+using Lister.Application.Sql.Commands;
+using Lister.Core.Sql;
 using Lister.Domain.Events;
 using Lister.Server.Behaviors;
 using Lister.Server.Extensions;
@@ -32,7 +33,7 @@ internal static class HostingExtensions
         {
             options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
         });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
@@ -117,6 +118,9 @@ internal static class HostingExtensions
 
         app.UseApplication();
 
+#if DEBUG
+        SeedData.EnsureSeedData(app);
+#endif
         return app;
     }
 }

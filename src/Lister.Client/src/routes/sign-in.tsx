@@ -1,18 +1,13 @@
 import React, { FormEvent, useState } from "react";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Container, Stack, TextField, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
 const RouteComponent = () => {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
+  const { auth } = Route.useRouteContext({
+    select: ({ auth }) => ({ auth })
+  });
 
   const [error, setError] = useState<string | null>(null);
 
@@ -36,10 +31,10 @@ const RouteComponent = () => {
     const input = { email, password };
     const request = new Request("/identity/login?useCookies=true", {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       method: "POST",
-      body: JSON.stringify(input),
+      body: JSON.stringify(input)
     });
     const response = await fetch(request);
     if (!response.ok) {
@@ -47,6 +42,7 @@ const RouteComponent = () => {
       return;
     }
 
+    auth.login(email);
     navigate({ to: search.callbackUrl });
   };
 
@@ -106,7 +102,7 @@ export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,
   validateSearch: (search): SignInSearch => {
     return {
-      callbackUrl: search?.callbackUrl as string | undefined,
+      callbackUrl: search?.callbackUrl as string | undefined
     };
-  },
+  }
 });

@@ -1,5 +1,4 @@
-import { Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Grid2, Stack, Typography } from "@mui/material";
 import React, { ReactNode } from "react";
 
 interface Props {
@@ -10,8 +9,8 @@ interface Props {
 
 const FormBlock = ({ title, blurb, content }: Props) => {
   return (
-    <Grid container>
-      <Grid xs={12} md={4}>
+    <Grid2 container>
+      <Grid2 xs={12} md={4}>
         <Stack spacing={2} sx={{ pb: { xs: 4, md: 0 } }}>
           <Typography color="primary" fontWeight="medium" variant="h6">
             {title}
@@ -24,11 +23,11 @@ const FormBlock = ({ title, blurb, content }: Props) => {
             {blurb}
           </Typography>
         </Stack>
-      </Grid>
-      <Grid xs={12} md={8}>
+      </Grid2>
+      <Grid2 xs={12} md={8}>
         {content}
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

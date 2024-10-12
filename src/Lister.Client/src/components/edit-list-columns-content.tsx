@@ -14,7 +14,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
+  TextField
 } from "@mui/material";
 import React, { useState } from "react";
 
@@ -57,7 +57,7 @@ const EditListColumnsContent = ({ columns, onColumnsChanged }: Props) => {
           margin="normal"
           fullWidth
           sx={{
-            background: "white",
+            background: "white"
           }}
           value={columnName ?? ""}
           onChange={(event) => setColumnName(event.target.value)}
@@ -71,7 +71,7 @@ const EditListColumnsContent = ({ columns, onColumnsChanged }: Props) => {
             id="type"
             label="Type"
             sx={{
-              background: "white",
+              background: "white"
             }}
             value={columnType ?? ""}
             onChange={(event) =>

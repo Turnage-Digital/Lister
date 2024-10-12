@@ -1,8 +1,8 @@
 using Lister.Application.Validation;
 using Lister.Core;
-using Lister.Core.SqlDB;
-using Lister.Core.SqlDB.Configuration;
-using Lister.Core.SqlDB.Entities;
+using Lister.Core.Sql;
+using Lister.Core.Sql.Configuration;
+using Lister.Core.Sql.Entities;
 using Lister.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,15 +18,15 @@ public static class ServiceCollectionExtensions
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
-        services.AddScoped<IListerUnitOfWork<ListEntity, ItemEntity>, ListerUnitOfWork>();
-        services.AddScoped<IListsStore<ListEntity, ItemEntity>, ListsStore>();
+        services.AddScoped<IListerUnitOfWork<ListDb, ItemDb>, ListerUnitOfWork>();
+        services.AddScoped<IListsStore<ListDb, ItemDb>, ListsStore>();
         services.AddAutoMapper(config => config.AddProfile<CoreMappingProfile>());
         return services;
     }
 
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<ListAggregate<ListEntity, ItemEntity>>();
+        services.AddScoped<ListAggregate<ListDb, ItemDb>>();
         return services;
     }
 

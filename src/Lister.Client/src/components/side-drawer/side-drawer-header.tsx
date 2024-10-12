@@ -13,7 +13,7 @@ const SideDrawerHeader = () => {
         display: "flex",
         alignItems: "center",
         padding: theme.spacing(2),
-        ...theme.mixins.toolbar,
+        ...theme.mixins.toolbar
       })}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>

@@ -1,4 +1,4 @@
-using Lister.Core.ValueObjects;
+using Lister.Core.Entities;
 
 namespace Lister.Core;
 

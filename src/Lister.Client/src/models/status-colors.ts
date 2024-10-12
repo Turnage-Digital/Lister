@@ -17,7 +17,7 @@ import {
   purple,
   red,
   teal,
-  yellow,
+  yellow
 } from "@mui/material/colors";
 
 export interface StatusColor {
@@ -44,5 +44,5 @@ export const statusColors: StatusColor[] = [
   { name: "Purple", value: purple[500] },
   { name: "Red", value: red[500] },
   { name: "Teal", value: teal[500] },
-  { name: "Yellow", value: yellow[500] },
+  { name: "Yellow", value: yellow[500] }
 ];
