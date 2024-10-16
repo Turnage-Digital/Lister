@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Lister.Core.ValueObjects;
 
-namespace Lister.Core.Views;
+namespace Lister.Core.Entities.Views;
 
 public record ListItemDefinition : IReadOnlyList
 {

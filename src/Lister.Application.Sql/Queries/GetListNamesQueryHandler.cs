@@ -1,6 +1,6 @@
 using Lister.Application.Queries;
+using Lister.Core.Entities.Views;
 using Lister.Core.Sql;
-using Lister.Core.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Application.Sql.Queries;

@@ -1,5 +1,5 @@
 using AutoMapper;
-using Lister.Core.Views;
+using Lister.Core.Entities.Views;
 
 namespace Lister.Core.Sql.Configuration;
 

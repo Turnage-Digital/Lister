@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Lister.Core.Views;
+namespace Lister.Core.Entities.Views;
 
 public record ListName : IReadOnlyList
 {

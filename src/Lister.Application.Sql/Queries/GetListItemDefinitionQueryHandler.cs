@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Lister.Application.Queries;
+using Lister.Core.Entities.Views;
 using Lister.Core.Sql;
 using Lister.Core.ValueObjects;
-using Lister.Core.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 

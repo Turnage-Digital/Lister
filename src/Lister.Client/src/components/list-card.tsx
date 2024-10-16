@@ -1,4 +1,4 @@
-import { Delete, Visibility } from "@mui/icons-material";
+import React from "react";
 import {
   Card,
   CardActions,
@@ -7,7 +7,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import React from "react";
+import { Delete, Visibility } from "@mui/icons-material";
 
 import { ListName } from "../models";
 

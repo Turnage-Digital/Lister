@@ -88,7 +88,7 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
         {
             { ColumnType.Text, "text" },
             { ColumnType.Number, 77 },
-            { ColumnType.Date, DateTime.Today.ToString("o") },
+            { ColumnType.Date, DateTime.Today.ToString("O") },
             { ColumnType.Boolean, true }
         };
 

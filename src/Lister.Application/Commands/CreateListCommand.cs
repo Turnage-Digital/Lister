@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Lister.Core;
+using Lister.Core.Entities;
 using Lister.Core.ValueObjects;
 
 namespace Lister.Application.Commands;

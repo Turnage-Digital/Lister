@@ -1,4 +1,5 @@
 using Lister.Core;
+using Lister.Core.Entities;
 
 namespace Lister.Application.Queries;
 

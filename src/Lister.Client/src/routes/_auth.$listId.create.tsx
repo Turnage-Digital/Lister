@@ -10,8 +10,8 @@ import {
   FormBlock,
   Titlebar,
   useSideDrawer,
+  SmartPasteDialog,
 } from "../components";
-import SmartPasteDialog from "../components/smart-paste-dialog";
 import { Item } from "../models";
 import {
   listDefinitionQueryOptions,

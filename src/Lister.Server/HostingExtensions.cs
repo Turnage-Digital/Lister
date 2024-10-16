@@ -37,7 +37,12 @@ internal static class HostingExtensions
         });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        builder.Services.AddCore(connectionString);
+        var migrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
+        builder.Services.AddCore(config =>
+        {
+            config.DatabaseOptions.DefaultConnectionString = connectionString;
+            config.DatabaseOptions.MigrationAssemblyName = migrationAssemblyName;
+        });
         builder.Services.AddDomain();
         builder.Services.AddApplication();
 

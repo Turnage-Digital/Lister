@@ -3,7 +3,7 @@ using Lister.Application.Commands;
 using Lister.Application.Extensions;
 using Lister.Application.Queries;
 using Lister.Core.Entities;
-using Lister.Core.Views;
+using Lister.Core.Entities.Views;
 using Microsoft.AspNetCore.Identity;
 
 namespace Lister.Server.Extensions;

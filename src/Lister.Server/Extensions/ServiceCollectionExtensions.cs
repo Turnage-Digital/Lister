@@ -10,9 +10,17 @@ namespace Lister.Server.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCore(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddCore(this IServiceCollection services, Action<CoreConfiguration> configuration)
     {
-        var migrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
+        var coreConfiguration = new CoreConfiguration();
+        configuration(coreConfiguration);
+        return services.AddCore(coreConfiguration);
+    }
+
+    public static IServiceCollection AddCore(this IServiceCollection services, CoreConfiguration configuration)
+    {
+        var connectionString = configuration.DatabaseOptions.DefaultConnectionString;
+        var migrationAssemblyName = configuration.DatabaseOptions.MigrationAssemblyName;
         var serverVersion = ServerVersion.AutoDetect(connectionString);
         services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));

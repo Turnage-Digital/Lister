@@ -1,4 +1,5 @@
 using Lister.Core;
+using Lister.Core.Entities;
 using MediatR;
 
 namespace Lister.Application.Commands;

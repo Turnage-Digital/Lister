@@ -1,8 +1,8 @@
 using AutoMapper;
 using Lister.Application.Commands;
+using Lister.Core.Entities.Views;
 using Lister.Core.Sql;
 using Lister.Core.Sql.Entities;
-using Lister.Core.Views;
 using Lister.Domain;
 
 namespace Lister.Application.Sql.Commands;

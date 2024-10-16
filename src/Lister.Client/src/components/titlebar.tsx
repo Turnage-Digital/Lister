@@ -1,14 +1,13 @@
+import React from "react";
 import {
   Box,
   Breadcrumbs,
   Button,
   Grid2,
-  Hidden,
   Link,
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
 
 export interface Action {
   title: string;
@@ -43,27 +42,26 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
       </Grid2>
 
       {actions && actions.length > 0 && (
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>
-          <Grid2
-            size={{ xs: 12, md: 3 }}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-end"
-          >
-            <Stack direction="row" spacing={2}>
-              {actions.map((action) => (
-                <Button
-                  key={action.title}
-                  variant="contained"
-                  startIcon={action.icon}
-                  onClick={action.onClick}
-                >
-                  {action.title}
-                </Button>
-              ))}
-            </Stack>
-          </Grid2>
-        </Box>
+        <Grid2
+          size={{ xs: 12, md: 3 }}
+          sx={{
+            display: { xs: "none", md: "flex" },
+            justifyContent: "flex-end",
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            {actions.map((action) => (
+              <Button
+                key={action.title}
+                variant="contained"
+                startIcon={action.icon}
+                onClick={action.onClick}
+              >
+                {action.title}
+              </Button>
+            ))}
+          </Stack>
+        </Grid2>
       )}
 
       {breadcrumbs && breadcrumbs.length > 0 && (
