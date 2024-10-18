@@ -1,9 +1,8 @@
 using Lister.Application.Validation;
-using Lister.Core;
-using Lister.Core.Sql;
-using Lister.Core.Sql.Configuration;
-using Lister.Core.Sql.Entities;
 using Lister.Domain;
+using Lister.Infra.Sql;
+using Lister.Infra.Sql.Configuration;
+using Lister.Infra.Sql.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Server.Extensions;

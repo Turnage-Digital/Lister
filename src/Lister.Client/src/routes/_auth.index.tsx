@@ -1,11 +1,11 @@
-import React from "react";
-import { Grid2, Stack } from "@mui/material";
 import { PlaylistAdd } from "@mui/icons-material";
-import { createFileRoute } from "@tanstack/react-router";
+import { Grid2, Stack } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import React from "react";
 
-import { listNamesQueryOptions } from "../query-options";
 import { ListCard, Titlebar } from "../components";
+import { listNamesQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const navigate = Route.useNavigate();

@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
 import { Grid2, Stack, Typography } from "@mui/material";
+import React, { ReactNode } from "react";
 
 interface Props {
   title: string;

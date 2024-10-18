@@ -1,10 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Application;
-using Lister.Application.Sql;
-using Lister.Application.Sql.Commands;
-using Lister.Core.Sql;
+using Lister.Application.Queries;
 using Lister.Domain.Events;
+using Lister.Infra.Sql;
 using Lister.Server.Behaviors;
 using Lister.Server.Extensions;
 using MediatR;
@@ -33,7 +32,7 @@ internal static class HostingExtensions
         {
             options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()); 
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
@@ -49,7 +48,7 @@ internal static class HostingExtensions
         builder.Services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>();
-            config.RegisterServicesFromAssemblyContaining<CreateListCommandHandler>();
+            config.RegisterServicesFromAssemblyContaining<GetListItemDefinitionQuery>();
         });
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(AssignUserBehavior<,>));

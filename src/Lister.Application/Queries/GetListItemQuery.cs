@@ -1,4 +1,4 @@
-using Lister.Core.Entities;
+using Lister.Domain.Entities;
 
 namespace Lister.Application.Queries;
 

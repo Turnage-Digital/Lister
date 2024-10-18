@@ -1,6 +1,4 @@
-import React from "react";
 import {
-  Box,
   Breadcrumbs,
   Button,
   Grid2,
@@ -8,6 +6,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import React from "react";
 
 export interface Action {
   title: string;

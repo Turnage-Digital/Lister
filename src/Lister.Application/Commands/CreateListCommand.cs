@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Lister.Core;
-using Lister.Core.Entities;
-using Lister.Core.ValueObjects;
+using Lister.Domain.ValueObjects;
+using Lister.Domain.Views;
 
 namespace Lister.Application.Commands;
 
-public record CreateListCommand<TList> : RequestBase<TList>
-    where TList : IReadOnlyList
+public record CreateListCommand : RequestBase<ListItemDefinition>
 {
     [JsonPropertyName("name")]
     [Required]

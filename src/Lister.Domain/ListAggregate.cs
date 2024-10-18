@@ -1,9 +1,8 @@
 using System.Dynamic;
-using Lister.Core;
-using Lister.Core.Entities;
-using Lister.Core.Enums;
-using Lister.Core.ValueObjects;
+using Lister.Domain.Entities;
+using Lister.Domain.Enums;
 using Lister.Domain.Events;
+using Lister.Domain.ValueObjects;
 using MediatR;
 
 namespace Lister.Domain;

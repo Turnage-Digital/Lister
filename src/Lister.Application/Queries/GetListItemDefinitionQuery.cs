@@ -1,7 +1,5 @@
-using Lister.Core;
-using Lister.Core.Entities;
+using Lister.Domain.Views;
 
 namespace Lister.Application.Queries;
 
-public record GetListItemDefinitionQuery<TList>(string ListId) : RequestBase<TList>
-    where TList : IReadOnlyList?;
+public record GetListItemDefinitionQuery(string ListId) : RequestBase<ListItemDefinition?>;

@@ -1,4 +1,4 @@
-namespace Lister.Core;
+namespace Lister.Server.Extensions;
 
 public class DatabaseOptions
 {
