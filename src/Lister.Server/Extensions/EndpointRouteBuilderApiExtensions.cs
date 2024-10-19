@@ -1,6 +1,6 @@
-using Lister.Application.Commands;
+using Lister.Application.Commands.List;
 using Lister.Application.Extensions;
-using Lister.Application.Queries;
+using Lister.Application.Queries.List;
 using Lister.Domain;
 using Lister.Domain.Entities;
 using Lister.Domain.Views;

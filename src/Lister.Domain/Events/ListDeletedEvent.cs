@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Lister.Domain.Events;
+namespace Lister.Domain.Events.List;
 
 public class ListDeletedEvent(Guid id, string deletedBy) : INotification
 {

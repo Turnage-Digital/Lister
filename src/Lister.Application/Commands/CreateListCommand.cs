@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Lister.Domain.ValueObjects;
 using Lister.Domain.Views;
 
-namespace Lister.Application.Commands;
+namespace Lister.Application.Commands.List;
 
 public record CreateListCommand : RequestBase<ListItemDefinition>
 {

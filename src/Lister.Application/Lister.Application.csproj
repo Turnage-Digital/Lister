@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Domain\Lister.Domain.csproj"/>
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <ProjectReference Include="..\Lister.Domain\Lister.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

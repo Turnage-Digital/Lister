@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Lister.Domain.Events;
+namespace Lister.Domain.Events.List;
 
 public class ListItemAddedEvent(int id, string addedBy) : INotification
 {

@@ -1,12 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Application;
-using Lister.Application.Queries;
-using Lister.Domain.Events;
-using Lister.Infra.Sql;
-using Lister.Server.Behaviors;
+using Lister.Infrastructure.OpenAi;
+using Lister.Infrastructure.Sql;
 using Lister.Server.Extensions;
-using MediatR;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -37,23 +34,13 @@ internal static class HostingExtensions
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         var migrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
-        builder.Services.AddCore(config =>
+        builder.Services.AddInfrastructure(config =>
         {
-            config.DatabaseOptions.DefaultConnectionString = connectionString;
+            config.DatabaseOptions.ConnectionString = connectionString;
             config.DatabaseOptions.MigrationAssemblyName = migrationAssemblyName;
         });
         builder.Services.AddDomain();
         builder.Services.AddApplication();
-
-        builder.Services.AddMediatR(config =>
-        {
-            config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>();
-            config.RegisterServicesFromAssemblyContaining<GetListItemDefinitionQuery>();
-        });
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
-            typeof(AssignUserBehavior<,>));
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
-            typeof(LoggingBehavior<,>));
 
         builder.Services
             .AddIdentityApiEndpoints<IdentityUser>()
@@ -75,7 +62,7 @@ internal static class HostingExtensions
 
         builder.Services.AddAuthorization();
 
-        builder.Services.Configure<OpenAIOptions>(
+        builder.Services.Configure<OpenAiOptions>(
             builder.Configuration.GetSection("OpenAI"));
 
         if (builder.Environment.IsDevelopment())

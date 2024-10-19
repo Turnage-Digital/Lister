@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Lister.Domain.Entities;
 
-namespace Lister.Application.Commands;
+namespace Lister.Application.Commands.List;
 
 public record ConvertTextToListItemCommand : RequestBase<Item>
 {

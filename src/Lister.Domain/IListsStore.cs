@@ -1,8 +1,9 @@
+using Lister.Domain.Entities;
 using Lister.Domain.ValueObjects;
 
 namespace Lister.Domain;
 
-public interface IListsStore<TList, in TItem>
+public interface IListsStore<TList>
     where TList : IWritableList
 {
     Task<TList> InitAsync(string createdBy, string name, CancellationToken cancellationToken);
@@ -23,5 +24,5 @@ public interface IListsStore<TList, in TItem>
 
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
 
-    Task AddItemAsync(TList list, TItem item, CancellationToken cancellationToken);
+    Task<Item> AddItemAsync(TList list, string createdBy, object bag, CancellationToken cancellationToken);
 }

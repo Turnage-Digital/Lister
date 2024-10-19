@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Lister.Domain.Events.Handlers;
+namespace Lister.Domain.Events.List.Handlers;
 
 public class ListDeletedEventHandler(ILogger<ListDeletedEventHandler> logger) : INotificationHandler<ListDeletedEvent>
 {

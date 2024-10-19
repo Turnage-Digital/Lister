@@ -11,14 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from "./routes/__root";
-import { Route as AuthImport } from "./routes/_auth";
-import { Route as AuthListIdImport } from "./routes/_auth.$listId";
-import { Route as AuthListIdItemIdImport } from "./routes/_auth.$listId.$itemId";
-import { Route as AuthListIdCreateImport } from "./routes/_auth.$listId.create";
-import { Route as AuthListIdIndexImport } from "./routes/_auth.$listId.index";
-import { Route as AuthCreateImport } from "./routes/_auth.create";
-import { Route as AuthIndexImport } from "./routes/_auth.index";
 import { Route as SignInImport } from "./routes/sign-in";
+import { Route as AuthImport } from "./routes/_auth";
+import { Route as AuthIndexImport } from "./routes/_auth.index";
+import { Route as AuthCreateImport } from "./routes/_auth.create";
+import { Route as AuthListIdImport } from "./routes/_auth.$listId";
+import { Route as AuthListIdIndexImport } from "./routes/_auth.$listId.index";
+import { Route as AuthListIdCreateImport } from "./routes/_auth.$listId.create";
+import { Route as AuthListIdItemIdImport } from "./routes/_auth.$listId.$itemId";
 
 // Create/Update Routes
 

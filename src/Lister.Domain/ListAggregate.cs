@@ -1,15 +1,14 @@
 using System.Dynamic;
 using Lister.Domain.Entities;
 using Lister.Domain.Enums;
-using Lister.Domain.Events;
+using Lister.Domain.Events.List;
 using Lister.Domain.ValueObjects;
 using MediatR;
 
 namespace Lister.Domain;
 
-public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfWork, IMediator mediator)
+public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator mediator)
     where TList : IWritableList
-    where TItem : Item
 {
     public async Task<TList> CreateAsync(
         string createdBy,
@@ -53,8 +52,7 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
         object bag,
         CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ItemsStore.InitAsync(createdBy, bag, cancellationToken);
-        await unitOfWork.ListsStore.AddItemAsync(list, retval, cancellationToken);
+        var retval = await unitOfWork.ListsStore.AddItemAsync(list, createdBy, bag, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await mediator.Publish(new ListItemAddedEvent(retval.Id!.Value, createdBy), cancellationToken);
         return retval;
@@ -69,8 +67,7 @@ public class ListAggregate<TList, TItem>(IListerUnitOfWork<TList, TItem> unitOfW
         var retval = new List<Item>();
         foreach (var bag in bags)
         {
-            var item = await unitOfWork.ItemsStore.InitAsync(createdBy, bag, cancellationToken);
-            await unitOfWork.ListsStore.AddItemAsync(list, item, cancellationToken);
+            var item = await unitOfWork.ListsStore.AddItemAsync(list, createdBy, bag, cancellationToken);
             retval.Add(item);
         }
 

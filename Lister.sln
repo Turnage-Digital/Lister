@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{AB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1AA1A271-B127-4AB4-A137-67CDC4655917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Infra.Sql", "src\Lister.Infra.Sql\Lister.Infra.Sql.csproj", "{E22BE0E0-FB7F-4AE5-ACA8-BB7F26853D82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Infrastructure.Sql", "src\Lister.Infrastructure.Sql\Lister.Infrastructure.Sql.csproj", "{E22BE0E0-FB7F-4AE5-ACA8-BB7F26853D82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Domain", "src\Lister.Domain\Lister.Domain.csproj", "{D9EB863D-DCEA-444E-B475-30F3139ECFC3}"
 EndProject
@@ -21,6 +21,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Application", "src\Lister.Application\Lister.Application.csproj", "{53B038AA-BB3A-4F48-90E9-1E5441231157}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Lister.Client", "src\Lister.Client\Lister.Client.esproj", "{D413228F-C866-4539-8C97-01EF654DD7D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Infrastructure.OpenAi", "src\Lister.Infrastructure.OpenAi\Lister.Infrastructure.OpenAi.csproj", "{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,7 @@ Global
 		{1DAD2A4C-7104-45DD-8301-DC868B8A6C6C} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 		{53B038AA-BB3A-4F48-90E9-1E5441231157} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 		{D413228F-C866-4539-8C97-01EF654DD7D1} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
+		{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD} = {1AA1A271-B127-4AB4-A137-67CDC4655917}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E22BE0E0-FB7F-4AE5-ACA8-BB7F26853D82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +61,9 @@ Global
 		{D413228F-C866-4539-8C97-01EF654DD7D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D413228F-C866-4539-8C97-01EF654DD7D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{D413228F-C866-4539-8C97-01EF654DD7D1}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C09CA0A2-ED26-4D3D-9CE7-35AAEE0AB2CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
