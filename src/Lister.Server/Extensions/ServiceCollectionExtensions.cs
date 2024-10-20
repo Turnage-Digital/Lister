@@ -1,11 +1,15 @@
-using Lister.Application.Behaviors;
-using Lister.Application.Queries.List;
-using Lister.Application.Validation;
-using Lister.Domain;
-using Lister.Domain.Events.List;
-using Lister.Infrastructure.Sql;
-using Lister.Infrastructure.Sql.Configuration;
-using Lister.Infrastructure.Sql.Entities;
+using Lister.Core.Application.Behaviors;
+using Lister.Core.Application.Validation;
+using Lister.Lists.Application.Commands;
+using Lister.Lists.Application.Commands.Handlers;
+using Lister.Lists.Application.Queries;
+using Lister.Lists.Domain;
+using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Views;
+using Lister.Lists.Infrastructure.OpenAi;
+using Lister.Lists.Infrastructure.Sql;
+using Lister.Lists.Infrastructure.Sql.Configuration;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddScoped<IListerUnitOfWork<ListDb>, ListerUnitOfWork>();
-        services.AddScoped<IGetList<ListDb>, ListGetter>();
+        services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetListItem, ListItemGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetListItems, ListItemsGetter>();
@@ -56,6 +60,13 @@ public static class ServiceCollectionExtensions
             typeof(AssignUserBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
+        services.AddScoped(typeof(IRequestHandler<AddListItemCommand, Item>),
+            typeof(AddListItemCommandHandler<ListDb>));
+        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, Item>),
+            typeof(ConvertTextToListItemCommandHandler<ListDb>));
+        services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
+            typeof(CreateListCommandHandler<ListDb>));
+        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>), typeof(DeleteListCommandHandler<ListDb>));
         return services;
     }
 }

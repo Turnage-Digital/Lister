@@ -22,19 +22,19 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.3"/>
         <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1"/>
         <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Application\Lister.Application.csproj"/>
         <ProjectReference Include="..\Lister.Client\Lister.Client.esproj">
             <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
         </ProjectReference>
-        <ProjectReference Include="..\Lister.Infrastructure.OpenAi\Lister.Infrastructure.OpenAi.csproj" />
-        <ProjectReference Include="..\Lister.Infrastructure.Sql\Lister.Infrastructure.Sql.csproj"/>
+        <ProjectReference Include="..\Modules\Lists\Lister.Lists.Application\Lister.Lists.Application.csproj"/>
+        <ProjectReference Include="..\Modules\Lists\Lister.Lists.Infrastructure.OpenAi\Lister.Lists.Infrastructure.OpenAi.csproj"/>
+        <ProjectReference Include="..\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj"/>
     </ItemGroup>
 
 </Project>

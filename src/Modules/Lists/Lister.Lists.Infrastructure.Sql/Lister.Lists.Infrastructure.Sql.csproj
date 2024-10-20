@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <PackageReference Include="Bogus" Version="35.6.1"/>
+        <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj"/>
+        <ProjectReference Include="..\Lister.Lists.Domain\Lister.Lists.Domain.csproj"/>
+    </ItemGroup>
+
+</Project>

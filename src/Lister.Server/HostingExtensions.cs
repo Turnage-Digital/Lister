@@ -1,8 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Lister.Application;
-using Lister.Infrastructure.OpenAi;
-using Lister.Infrastructure.Sql;
+using Lister.Lists.Infrastructure.OpenAi;
+using Lister.Lists.Infrastructure.Sql;
 using Lister.Server.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;

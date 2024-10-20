@@ -1,4 +1,4 @@
-using Lister.Infrastructure.Sql;
+using Lister.Core.Infrastructure.Sql;
 
 namespace Lister.Server.Extensions;
 

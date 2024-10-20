@@ -1,8 +1,0 @@
-namespace Lister.Infrastructure.OpenAi;
-
-public class OpenAiOptions
-{
-    public string ApiKey { get; set; } = null!;
-
-    public string BaseUrl { get; set; } = null!;
-}
