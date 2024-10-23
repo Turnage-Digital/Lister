@@ -1,4 +1,4 @@
-namespace Lister.Lists.Domain;
+namespace Lister.Core.Domain;
 
 public interface IGetCompletedJson
 {

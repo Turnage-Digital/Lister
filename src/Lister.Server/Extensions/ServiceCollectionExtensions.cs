@@ -1,5 +1,7 @@
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Application.Validation;
+using Lister.Core.Domain;
+using Lister.Core.Infrastructure.OpenAi;
 using Lister.Lists.Application.Commands;
 using Lister.Lists.Application.Commands.Handlers;
 using Lister.Lists.Application.Queries;
@@ -7,9 +9,9 @@ using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.Views;
-using Lister.Lists.Infrastructure.OpenAi;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
+using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +37,7 @@ public static class ServiceCollectionExtensions
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
         services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
-        services.AddScoped<IListerUnitOfWork<ListDb>, ListerUnitOfWork>();
+        services.AddScoped<IListsUnitOfWork<ListDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetListItem, ListItemGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();

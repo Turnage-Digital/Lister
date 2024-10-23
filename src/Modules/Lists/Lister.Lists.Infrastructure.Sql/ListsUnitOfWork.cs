@@ -3,8 +3,8 @@ using Lister.Lists.Domain;
 
 namespace Lister.Lists.Infrastructure.Sql;
 
-public class ListerUnitOfWork(ListerDbContext dbContext)
-    : UnitOfWork<ListerDbContext>(dbContext), IListerUnitOfWork<ListDb>
+public class ListsUnitOfWork(ListerDbContext dbContext)
+    : UnitOfWork<ListerDbContext>(dbContext), IListsUnitOfWork<ListDb>
 {
     private readonly ListerDbContext _dbContext = dbContext;
 

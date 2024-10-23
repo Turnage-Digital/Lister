@@ -1,4 +1,4 @@
-namespace Lister.Lists.Infrastructure.OpenAi;
+namespace Lister.Core.Infrastructure.OpenAi;
 
 public class OpenAiOptions
 {

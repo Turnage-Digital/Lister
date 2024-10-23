@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using MediatR;

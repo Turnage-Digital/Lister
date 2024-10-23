@@ -3,7 +3,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Lister.Lists.Infrastructure.Sql.Migrations.Application;
+namespace Lister.Users.Infrastructure.Sql.Migrations.Application;
 
 /// <inheritdoc />
 public partial class Initial : Migration

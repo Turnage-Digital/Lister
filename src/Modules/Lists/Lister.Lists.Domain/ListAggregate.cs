@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Lister.Lists.Domain;
 
-public class ListAggregate<TList>(IListerUnitOfWork<TList> unitOfWork, IMediator mediator)
+public class ListAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator mediator)
     where TList : IWritableList
 {
     public async Task<TList?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken = default)

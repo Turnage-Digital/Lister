@@ -1,8 +1,8 @@
 using Azure.AI.OpenAI;
-using Lister.Lists.Domain;
+using Lister.Core.Domain;
 using Microsoft.Extensions.Options;
 
-namespace Lister.Lists.Infrastructure.OpenAi;
+namespace Lister.Core.Infrastructure.OpenAi;
 
 public class CompletedJsonGetter(IOptions<OpenAiOptions> options) : IGetCompletedJson
 {

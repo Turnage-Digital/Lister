@@ -1,8 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Lister.Lists.Infrastructure.OpenAi;
+using Lister.Core.Infrastructure.OpenAi;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Server.Extensions;
+using Lister.Users.Infrastructure.Sql;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
