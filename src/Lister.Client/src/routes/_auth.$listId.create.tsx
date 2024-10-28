@@ -1,6 +1,6 @@
 import { ContentPaste, Save } from "@mui/icons-material";
 import { Box, Button, Divider, Stack } from "@mui/material";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { FormEvent, useEffect, useState } from "react";
 
@@ -13,16 +13,31 @@ import {
   useSideDrawer,
 } from "../components";
 import { Item } from "../models";
-import {
-  listDefinitionQueryOptions,
-  useAddListItemMutation,
-} from "../query-options";
+import { listDefinitionQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const { openDrawer, closeDrawer } = useSideDrawer();
   const { listId } = Route.useParams();
   const navigate = Route.useNavigate();
-  const mutation = useAddListItemMutation(listId);
+  const { queryClient } = Route.useRouteContext();
+
+  const addItemMutation = useMutation({
+    mutationFn: async (item: Item) => {
+      const request = new Request(`/api/lists/${listId}/add`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        body: JSON.stringify(item),
+      });
+      const response = await fetch(request);
+      const retval: Item = await response.json();
+      return retval;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
 
   const listDefinitionQuery = useSuspenseQuery(
     listDefinitionQueryOptions(listId),
@@ -76,8 +91,10 @@ const RouteComponent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const mutated = await mutation.mutateAsync(updated);
-    window.sessionStorage.removeItem("updated_item");
+    const mutated = await addItemMutation.mutateAsync(updated);
+    window.sessionStorage.removeItem(
+      listDefinitionQuery.data?.id ?? "updated_item",
+    );
     navigate({ to: `/${listId}/${mutated.id}` });
   };
 

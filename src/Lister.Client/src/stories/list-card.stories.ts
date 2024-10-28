@@ -17,5 +17,6 @@ export const Default: Story = {
       name: "List Name",
     },
     onViewClick: () => {},
+    onDeleteClick: () => {},
   },
 };

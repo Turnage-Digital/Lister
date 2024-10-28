@@ -44,7 +44,7 @@ public static class EndpointRouteBuilderCommandExtensions
     }
 
     public static IEndpointRouteBuilder MapPutCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path = "/{id}")
+        string path)
         where TCommand : IRequest
     {
         endpoints.MapPut(path, HandleCommandAsync<TCommand>)
@@ -56,7 +56,7 @@ public static class EndpointRouteBuilderCommandExtensions
     }
 
     public static IEndpointRouteBuilder MapPatchCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path = "/{id}")
+        string path)
         where TCommand : IRequest
     {
         endpoints.MapPatch(path, HandleCommandAsync<TCommand>)
@@ -85,7 +85,7 @@ public static class EndpointRouteBuilderCommandExtensions
     }
 
     public static IEndpointRouteBuilder MapDeleteCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path = "/{id}")
+        string path)
         where TCommand : IRequest
     {
         endpoints.MapDelete(path, async (
@@ -114,7 +114,7 @@ public static class EndpointRouteBuilderCommandExtensions
     }
 
     public static IEndpointRouteBuilder MapPutCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
-        string path = "/{id}")
+        string path)
         where TCommand : IRequest<TResult>
     {
         endpoints.MapPut(path, HandleCommandWithResultAsync<TCommand, TResult>)
@@ -126,7 +126,7 @@ public static class EndpointRouteBuilderCommandExtensions
     }
 
     public static IEndpointRouteBuilder MapPatchCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
-        string path = "/{id}")
+        string path)
         where TCommand : IRequest<TResult>
     {
         endpoints.MapPatch(path, HandleCommandWithResultAsync<TCommand, TResult>)

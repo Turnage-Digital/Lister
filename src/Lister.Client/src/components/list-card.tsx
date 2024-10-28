@@ -14,9 +14,10 @@ import { ListName } from "../models";
 export interface Props {
   listName: ListName;
   onViewClick: (id: string) => void;
+  onDeleteClick: (id: string) => void;
 }
 
-const ListCard = ({ listName, onViewClick }: Props) => {
+const ListCard = ({ listName, onViewClick, onDeleteClick }: Props) => {
   return (
     <Grid2 key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
       <Card>
@@ -29,7 +30,7 @@ const ListCard = ({ listName, onViewClick }: Props) => {
           <IconButton onClick={() => onViewClick(listName.id)}>
             <Visibility />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => onDeleteClick(listName.id)}>
             <Delete />
           </IconButton>
         </CardActions>

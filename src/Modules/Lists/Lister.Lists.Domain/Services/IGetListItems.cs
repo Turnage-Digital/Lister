@@ -1,7 +1,7 @@
 using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 
-namespace Lister.Lists.Domain;
+namespace Lister.Lists.Domain.Services;
 
 public interface IGetListItems
 {

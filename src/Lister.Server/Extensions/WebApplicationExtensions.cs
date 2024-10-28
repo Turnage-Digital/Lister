@@ -29,7 +29,7 @@ public static class WebApplicationExtensions
             "/{0}", r => r.Id!);
         retval.MapPatchCommand<AddListItemCommand, Item>("{listId}/add");
         retval.MapPostCommand<ConvertTextToListItemCommand, Item>("convert-text-to-list-item");
-        retval.MapDeleteCommand<DeleteListCommand>();
+        retval.MapDeleteCommand<DeleteListCommand>("{listId}");
 
         retval.MapGetQuery<GetListItemQuery, Item?>("{listId}/{itemId}");
         retval.MapGetQuery<GetListItemDefinitionQuery, ListItemDefinition?>(

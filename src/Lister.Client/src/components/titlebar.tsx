@@ -1,4 +1,5 @@
 import {
+  Box,
   Breadcrumbs,
   Button,
   Grid2,
@@ -50,14 +51,16 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
         >
           <Stack direction="row" spacing={2}>
             {actions.map((action) => (
-              <Button
-                key={action.title}
-                variant="contained"
-                startIcon={action.icon}
-                onClick={action.onClick}
-              >
-                {action.title}
-              </Button>
+              <Box>
+                <Button
+                  key={action.title}
+                  variant="contained"
+                  startIcon={action.icon}
+                  onClick={action.onClick}
+                >
+                  {action.title}
+                </Button>
+              </Box>
             ))}
           </Stack>
         </Grid2>

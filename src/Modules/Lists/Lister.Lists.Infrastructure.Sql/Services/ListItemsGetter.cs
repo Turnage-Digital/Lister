@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Dapper;
 using Lister.Core.Domain;
-using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Lists.Infrastructure.Sql;
+namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
 {

@@ -38,8 +38,27 @@ const RouteComponent = () => {
   );
 };
 
+interface RouteParams {
+  listId: string;
+  itemId: number;
+}
+
 export const Route = createFileRoute("/_auth/$listId/$itemId")({
   component: RouteComponent,
+  params: {
+    parse: (params: any) => {
+      return {
+        listId: params.listId as string,
+        itemId: parseInt(params.itemId, 10),
+      };
+    },
+    stringify: (params: any) => {
+      return {
+        listId: params.listId as string,
+        itemId: params.itemId.toString(),
+      };
+    },
+  },
   loader: (options) => {
     options.context.queryClient.ensureQueryData(
       itemQueryOptions(options.params.listId, options.params.itemId),

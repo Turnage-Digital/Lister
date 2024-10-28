@@ -49,7 +49,7 @@ public static class SeedData
             var listAggregate = scope.ServiceProvider
                 .GetRequiredService<ListAggregate<ListDb>>();
 
-            var list = listAggregate.GetByNameAsync(heath!.Id, "Students").Result;
+            var list = listAggregate.GetByNameAsync("Students", heath!.Id).Result;
             if (list == null)
             {
                 list = listAggregate.CreateAsync(
@@ -158,7 +158,7 @@ public static class SeedData
         Console.WriteLine($"{userName} created");
     }
 
-    private static class JwtClaimTypes
+    public static class JwtClaimTypes
     {
         public const string Name = "name";
         public const string GivenName = "given_name";
@@ -166,15 +166,15 @@ public static class SeedData
         public const string WebSite = "website";
     }
 
-    private class Student
+    public class Student
     {
-        public string City { get; } = null!;
-        public string Name { get; } = null!;
-        public string State { get; } = null!;
-        public string Status { get; } = null!;
-        public string Address { get; } = null!;
-        public string ZipCode { get; } = null!;
-        public string DateOfBirth { get; } = null!;
+        public string City { get; set; } = null!;
+        public string Name { get; set; } = null!;
+        public string State { get; set; } = null!;
+        public string Status { get; set; } = null!;
+        public string Address { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string DateOfBirth { get; set; } = null!;
     }
 }
 #endif

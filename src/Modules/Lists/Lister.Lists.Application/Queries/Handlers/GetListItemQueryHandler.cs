@@ -1,5 +1,5 @@
-using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Services;
 using MediatR;
 
 namespace Lister.Lists.Application.Queries.Handlers;

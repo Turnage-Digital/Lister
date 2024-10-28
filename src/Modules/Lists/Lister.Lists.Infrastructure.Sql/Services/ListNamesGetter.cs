@@ -1,8 +1,8 @@
-using Lister.Lists.Domain;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Lists.Infrastructure.Sql;
+namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListNamesGetter(ListerDbContext dbContext) : IGetListNames
 {
@@ -10,6 +10,7 @@ public class ListNamesGetter(ListerDbContext dbContext) : IGetListNames
     {
         var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == userId)
+            .Where(list => list.DeletedBy == null || list.DeletedOn == null)
             .Select(list => new ListName
             {
                 Id = list.Id,

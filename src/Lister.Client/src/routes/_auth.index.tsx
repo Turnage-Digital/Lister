@@ -1,6 +1,6 @@
 import { PlaylistAdd } from "@mui/icons-material";
 import { Grid2, Stack } from "@mui/material";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
@@ -9,6 +9,31 @@ import { listNamesQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const navigate = Route.useNavigate();
+  const { queryClient } = Route.useRouteContext();
+
+  const deleteListMutation = useMutation({
+    mutationFn: async (listId: string) => {
+      const request = new Request(`/api/lists/${listId}`, {
+        method: "DELETE",
+      });
+      await fetch(request);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
+
+  const handleViewClicked = (listId: string) => {
+    navigate({
+      to: "/$listId",
+      params: { listId },
+      search: { page: 0, pageSize: 10 },
+    });
+  };
+
+  const handleDeleteClicked = async (listId: string) => {
+    await deleteListMutation.mutateAsync(listId);
+  };
 
   const listNamesQuery = useSuspenseQuery(listNamesQueryOptions());
   if (!listNamesQuery.isSuccess) {
@@ -32,13 +57,8 @@ const RouteComponent = () => {
           <ListCard
             key={listName.id}
             listName={listName}
-            onViewClick={() =>
-              navigate({
-                to: "/$listId",
-                params: { listId: listName.id },
-                search: { page: 0, pageSize: 10 },
-              })
-            }
+            onViewClick={() => handleViewClicked(listName.id)}
+            onDeleteClick={() => handleDeleteClicked(listName.id)}
           />
         ))}
       </Grid2>

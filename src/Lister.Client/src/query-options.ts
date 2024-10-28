@@ -1,6 +1,6 @@
-import { queryOptions, useMutation } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
-import { Item, ListItemDefinition, ListName, ListSearch } from "./models";
+import { ListName, ListSearch } from "./models";
 
 export const listNamesQueryOptions = () =>
   queryOptions({
@@ -54,7 +54,7 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
     enabled: Boolean(listId),
   });
 
-export const itemQueryOptions = (listId?: string, itemId?: string) =>
+export const itemQueryOptions = (listId?: string, itemId?: number) =>
   queryOptions({
     queryKey: ["list-item", listId, itemId],
     queryFn: async () => {
@@ -66,36 +66,4 @@ export const itemQueryOptions = (listId?: string, itemId?: string) =>
       return retval;
     },
     enabled: Boolean(listId) && Boolean(itemId),
-  });
-
-export const useCreateListMutation = () =>
-  useMutation({
-    mutationFn: async (list: ListItemDefinition) => {
-      const request = new Request("/api/lists", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(list),
-      });
-      const response = await fetch(request);
-      const retval: ListItemDefinition = await response.json();
-      return retval;
-    },
-  });
-
-export const useAddListItemMutation = (listId: string) =>
-  useMutation({
-    mutationFn: async (item: Item) => {
-      const request = new Request(`/api/lists/${listId}/add`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        body: JSON.stringify(item),
-      });
-      const response = await fetch(request);
-      const retval: Item = await response.json();
-      return retval;
-    },
   });

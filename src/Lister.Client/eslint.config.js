@@ -21,6 +21,7 @@ export default [
       "no-process-env": "off",
       "no-implicit-coercion": "off",
       "no-template-curly-in-string": "off",
+      "@typescript-eslint/no-misused-promises": "off",
     },
   },
 ];

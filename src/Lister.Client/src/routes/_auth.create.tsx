@@ -1,5 +1,6 @@
 import { Save } from "@mui/icons-material";
 import { Box, Button, Divider, Stack } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { FormEvent, useEffect, useState } from "react";
 
@@ -11,11 +12,28 @@ import {
   Titlebar,
 } from "../components";
 import { ListItemDefinition } from "../models";
-import { useCreateListMutation } from "../query-options";
 
 const RouteComponent = () => {
   const navigate = Route.useNavigate();
-  const mutation = useCreateListMutation();
+  const { queryClient } = Route.useRouteContext();
+
+  const createListMutation = useMutation({
+    mutationFn: async (list: ListItemDefinition) => {
+      const request = new Request("/api/lists", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(list),
+      });
+      const response = await fetch(request);
+      const retval: ListItemDefinition = await response.json();
+      return retval;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
 
   const defaultListDefinition: ListItemDefinition = {
     id: null,
@@ -39,7 +57,7 @@ const RouteComponent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const mutated = await mutation.mutateAsync(updated);
+    const mutated = await createListMutation.mutateAsync(updated);
     window.sessionStorage.removeItem("updated_list");
     navigate({ to: `/${mutated.id}` });
   };

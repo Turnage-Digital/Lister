@@ -1,7 +1,7 @@
 import { AddCircle } from "@mui/icons-material";
 import { Paper, Stack } from "@mui/material";
 import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
@@ -15,6 +15,7 @@ import {
 const RouteComponent = () => {
   const { listId } = Route.useParams();
   const navigate = Route.useNavigate();
+  const { queryClient } = Route.useRouteContext();
   const search = Route.useSearch();
 
   const listDefinitionQuery = useSuspenseQuery(
@@ -24,6 +25,24 @@ const RouteComponent = () => {
   const pagedItemsQuery = useSuspenseQuery(
     pagedItemsQueryOptions(search, listId),
   );
+
+  const deleteItemMutation = useMutation({
+    mutationFn: async ({
+      listId,
+      itemId,
+    }: {
+      listId: string;
+      itemId: number;
+    }) => {
+      const request = new Request(`/api/lists/${listId}/${itemId}`, {
+        method: "DELETE",
+      });
+      await fetch(request);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
 
   const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
     navigate({
@@ -50,8 +69,12 @@ const RouteComponent = () => {
     }
   };
 
-  const handleItemClicked = (listId: string, itemId: string) => {
+  const handleViewClicked = (listId: string, itemId: number) => {
     navigate({ to: "/$listId/$itemId", params: { listId, itemId } });
+  };
+
+  const handleDeleteClicked = async (listId: string, itemId: number) => {
+    await deleteItemMutation.mutateAsync({ listId, itemId });
   };
 
   if (!listDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
@@ -60,7 +83,8 @@ const RouteComponent = () => {
 
   const gridColDefs = getGridColDefs(
     listDefinitionQuery.data,
-    handleItemClicked,
+    handleViewClicked,
+    handleDeleteClicked,
   );
 
   const pagination: GridPaginationModel = {
@@ -83,7 +107,7 @@ const RouteComponent = () => {
 
   const actions = [
     {
-      title: "Add an Item",
+      title: "Create an Item",
       icon: <AddCircle />,
       onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
     },

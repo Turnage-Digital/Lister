@@ -1,6 +1,6 @@
 using Lister.Lists.Domain.Views;
 
-namespace Lister.Lists.Domain;
+namespace Lister.Lists.Domain.Services;
 
 public interface IGetListItemDefinition
 {

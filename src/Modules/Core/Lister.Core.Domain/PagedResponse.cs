@@ -1,8 +1,14 @@
 namespace Lister.Core.Domain;
 
-public class PagedResponse<T>(IEnumerable<T> items, long count)
+public class PagedResponse<T>
 {
-    public IEnumerable<T> Items { get; set; } = items;
+    public PagedResponse(IEnumerable<T> items, long count)
+    {
+        Items = items;
+        Count = count;
+    }
 
-    public long Count { get; set; } = count;
+    public IEnumerable<T> Items { get; set; }
+
+    public long Count { get; set; }
 }

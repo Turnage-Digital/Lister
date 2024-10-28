@@ -26,7 +26,7 @@ export const ListPage: Story = {
     title: "Students",
     actions: [
       {
-        title: "Add an Item",
+        title: "Create an Item",
       },
     ],
     breadcrumbs: [

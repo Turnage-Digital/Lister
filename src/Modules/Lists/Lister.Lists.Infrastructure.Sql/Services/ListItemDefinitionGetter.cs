@@ -1,9 +1,9 @@
-using Lister.Lists.Domain;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Lists.Infrastructure.Sql;
+namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemDefinitionGetter(ListerDbContext dbContext) : IGetListItemDefinition
 {

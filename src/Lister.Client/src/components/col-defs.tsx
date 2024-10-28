@@ -1,4 +1,4 @@
-import { MoreVert, Visibility } from "@mui/icons-material";
+import { Delete, Edit, MoreVert, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import React from "react";
 
@@ -8,14 +8,15 @@ import StatusChip from "./status-chip";
 
 export const getGridColDefs = (
   listItemDefinition: ListItemDefinition,
-  handleItemClicked: (listId: string, itemId: string) => void,
+  handleViewClicked: (listId: string, itemId: number) => void,
+  handleDeleteClicked: (listId: string, itemId: number) => void,
 ): GridColDef[] => {
   const retval: GridColDef[] = [];
 
   retval.push({
     field: "id",
     headerName: "ID",
-    width: 100,
+    width: 75,
     sortable: false,
     disableColumnMenu: true,
   });
@@ -54,24 +55,36 @@ export const getGridColDefs = (
     field: "actions",
     type: "actions",
     headerName: "",
-    width: 100,
+    width: 75,
     cellClassName: "actions",
     getActions: ({ id }) => {
       return [
         <GridActionsCellItem
           key={`${id}-view`}
+          showInMenu
           icon={<Visibility />}
           label="View"
           color="primary"
           onClick={() =>
-            handleItemClicked(listItemDefinition.id!, id.toString())
+            handleViewClicked(listItemDefinition.id!, id as number)
           }
         />,
         <GridActionsCellItem
-          key={`${id}-delete`}
-          icon={<MoreVert />}
-          label="More"
+          key={`${id}-edit`}
+          showInMenu
+          icon={<Edit />}
+          label="Edit"
           color="primary"
+        />,
+        <GridActionsCellItem
+          key={`${id}-delete`}
+          showInMenu
+          icon={<Delete />}
+          label="Delete"
+          color="primary"
+          onClick={() =>
+            handleDeleteClicked(listItemDefinition.id!, id as number)
+          }
         />,
       ];
     },

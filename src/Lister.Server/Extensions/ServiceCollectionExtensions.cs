@@ -1,16 +1,18 @@
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Application.Validation;
-using Lister.Core.Domain;
-using Lister.Core.Infrastructure.OpenAi;
+using Lister.Core.Domain.Services;
+using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Lists.Application.Commands;
 using Lister.Lists.Application.Commands.Handlers;
 using Lister.Lists.Application.Queries;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
+using Lister.Lists.Infrastructure.Sql.Services;
 using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +33,18 @@ public static class ServiceCollectionExtensions
         InfrastructureConfiguration configuration)
     {
         var connectionString = configuration.DatabaseOptions.ConnectionString;
-        var migrationAssemblyName = configuration.DatabaseOptions.MigrationAssemblyName;
         var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+        var applicationDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.ApplicationDbContextMigrationAssemblyName;
         services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
+            optionsBuilder => optionsBuilder.MigrationsAssembly(applicationDbContextMigrationAssemblyName)));
+
+        var listerDbContextMigrationAssemblyName = 
+            configuration.DatabaseOptions.ListerDbContextMigrationAssemblyName;
         services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(migrationAssemblyName)));
+            optionsBuilder => optionsBuilder.MigrationsAssembly(listerDbContextMigrationAssemblyName)));
+
         services.AddScoped<IListsUnitOfWork<ListDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetListItem, ListItemGetter>();
