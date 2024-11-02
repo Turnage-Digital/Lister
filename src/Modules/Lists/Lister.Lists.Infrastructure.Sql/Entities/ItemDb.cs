@@ -9,6 +9,4 @@ public class ItemDb : Item
     public DateTime? DeletedOn { get; set; }
 
     public ListDb ListDb { get; set; } = null!;
-
-    public Guid? ListId { get; set; }
 }

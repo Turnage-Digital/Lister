@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { ListName, ListSearch } from "./models";
+import { Item, ListItemDefinition, ListName, ListSearch } from "./models";
+import { PagedResponse } from "./models/paged-response";
 
 export const listNamesQueryOptions = () =>
   queryOptions({
@@ -23,7 +24,7 @@ export const listDefinitionQueryOptions = (listId?: string) =>
         method: "GET",
       });
       const response = await fetch(request);
-      const retval = await response.json();
+      const retval: ListItemDefinition = await response.json();
       return retval;
     },
     enabled: Boolean(listId),
@@ -48,7 +49,7 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
         method: "GET",
       });
       const response = await fetch(request);
-      const retval = await response.json();
+      const retval: PagedResponse<Item> = await response.json();
       return retval;
     },
     enabled: Boolean(listId),
@@ -58,11 +59,11 @@ export const itemQueryOptions = (listId?: string, itemId?: number) =>
   queryOptions({
     queryKey: ["list-item", listId, itemId],
     queryFn: async () => {
-      const request = new Request(`/api/lists/${listId}/${itemId}`, {
+      const request = new Request(`/api/lists/${listId}/items/${itemId}`, {
         method: "GET",
       });
       const response = await fetch(request);
-      const retval = await response.json();
+      const retval: Item = await response.json();
       return retval;
     },
     enabled: Boolean(listId) && Boolean(itemId),

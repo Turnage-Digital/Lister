@@ -16,6 +16,8 @@ public class ListsStore(ListerDbContext dbContext)
     public async Task<ListDb?> GetByIdAsync(string userId, Guid id, CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
+            .Include(l => l.Columns)
+            .Include(l => l.Statuses)
             .Where(list => list.CreatedBy == userId)
             .Where(list => list.Id == id)
             .SingleOrDefaultAsync(cancellationToken);
@@ -25,6 +27,8 @@ public class ListsStore(ListerDbContext dbContext)
     public async Task<ListDb?> GetByNameAsync(string userId, string name, CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
+            .Include(l => l.Columns)
+            .Include(l => l.Statuses)
             .Where(list => list.CreatedBy == userId)
             .Where(list => list.Name == name)
             .SingleOrDefaultAsync(cancellationToken);
@@ -109,5 +113,19 @@ public class ListsStore(ListerDbContext dbContext)
         };
         listDB.Items.Add(itemDB);
         return Task.FromResult<Item>(itemDB);
+    }
+
+    public async Task DeleteItemAsync(ListDb list, string deletedBy, int itemId, CancellationToken cancellationToken)
+    {
+        var item = await dbContext.Items
+            .Where(i => i.ListDb == list)
+            .Where(i => i.Id == itemId)
+            .SingleOrDefaultAsync(cancellationToken);
+        
+        if (item is null)
+            throw new InvalidOperationException($"Item with id {itemId} does not exist");
+        
+        item.DeletedBy = deletedBy;
+        item.DeletedOn = DateTime.UtcNow;
     }
 }

@@ -6,7 +6,7 @@ using MediatR;
 namespace Lister.Lists.Application.Commands.Handlers;
 
 public class CreateListCommandHandler<TList>(
-    ListAggregate<TList> listAggregate,
+    ListsAggregate<TList> listsAggregate,
     IMapper mapper)
     : IRequestHandler<CreateListCommand, ListItemDefinition>
     where TList : IWritableList
@@ -19,7 +19,7 @@ public class CreateListCommandHandler<TList>(
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), "UserId is null");
 
-        var created = await listAggregate.CreateAsync(
+        var created = await listsAggregate.CreateAsync(
             request.UserId,
             request.Name,
             request.Statuses,

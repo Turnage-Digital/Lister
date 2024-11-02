@@ -7,22 +7,44 @@ namespace Lister.Core.Application.Extensions;
 
 public static class EndpointRouteBuilderCommandExtensions
 {
-    public static IEndpointRouteBuilder MapCreateCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
-        string locationTemplate, Func<TResult, object> idSelector)
+    public static IEndpointRouteBuilder MapCreateCommand<TCommand, TResult>(
+        this IEndpointRouteBuilder endpoints,
+        string path,
+        string locationTemplate,
+        params Func<TResult, object>[] idSelectors)
         where TCommand : IRequest<TResult>
     {
-        endpoints.MapPost("/", async (
+        endpoints.MapPost(path, async (
                 TCommand command,
                 IMediator mediator,
                 IValidator validator) =>
             {
-                var validationResult = validator.Validate(command);
-                if (validationResult.IsNotValid)
-                    return Results.ValidationProblem(validationResult.Errors, statusCode: 500);
-                var result = await mediator.Send(command);
-                var id = result is null ? string.Empty : idSelector(result);
-                var location = string.Format(locationTemplate, id);
-                return Results.Created(location, result);
+                IResult retval;
+
+                try
+                {
+                    var validationResult = validator.Validate(command);
+                    if (validationResult.IsNotValid)
+                    {
+                        retval = Results.ValidationProblem(validationResult.Errors,
+                            statusCode: Status500InternalServerError);
+                    }
+                    else
+                    {
+                        var result = await mediator.Send(command);
+                        var ids = idSelectors.Select(selector => selector(result))
+                            .ToArray();
+                        var location = string.Format(locationTemplate, ids);
+                        retval = Results.Created(location, result);
+                    }
+                }
+                catch (Exception e)
+                {
+                    retval = Results.Problem(e.Message,
+                        statusCode: Status500InternalServerError);
+                }
+
+                return retval;
             })
             .Produces(Status201Created)
             .Produces(Status401Unauthorized)
@@ -31,8 +53,7 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPostCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path)
+    public static IEndpointRouteBuilder MapPostCommand<TCommand>(this IEndpointRouteBuilder endpoints, string path)
         where TCommand : IRequest
     {
         endpoints.MapPost(path, HandleCommandAsync<TCommand>)
@@ -43,8 +64,7 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPutCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path)
+    public static IEndpointRouteBuilder MapPutCommand<TCommand>(this IEndpointRouteBuilder endpoints, string path)
         where TCommand : IRequest
     {
         endpoints.MapPut(path, HandleCommandAsync<TCommand>)
@@ -55,8 +75,7 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPatchCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path)
+    public static IEndpointRouteBuilder MapPatchCommand<TCommand>(this IEndpointRouteBuilder endpoints, string path)
         where TCommand : IRequest
     {
         endpoints.MapPatch(path, HandleCommandAsync<TCommand>)
@@ -73,27 +92,52 @@ public static class EndpointRouteBuilderCommandExtensions
         IValidator validator
     ) where TCommand : IRequest
     {
-        var validationResult = validator.Validate(command);
-        if (validationResult.IsNotValid)
+        IResult retval;
+
+        try
         {
-            return Results.ValidationProblem(validationResult.Errors,
+            var validationResult = validator.Validate(command);
+            if (validationResult.IsNotValid)
+            {
+                retval = Results.ValidationProblem(validationResult.Errors,
+                    statusCode: Status500InternalServerError);
+            }
+            else
+            {
+                await mediator.Send(command);
+                retval = Results.Ok();
+            }
+        }
+        catch (Exception e)
+        {
+            retval = Results.Problem(e.Message,
                 statusCode: Status500InternalServerError);
         }
 
-        await mediator.Send(command);
-        return Results.Ok();
+        return retval;
     }
 
-    public static IEndpointRouteBuilder MapDeleteCommand<TCommand>(this IEndpointRouteBuilder endpoints,
-        string path)
+    public static IEndpointRouteBuilder MapDeleteCommand<TCommand>(this IEndpointRouteBuilder endpoints, string path)
         where TCommand : IRequest
     {
         endpoints.MapDelete(path, async (
                 [AsParameters] TCommand command,
                 [FromServices] IMediator mediator) =>
             {
-                await mediator.Send(command);
-                return Results.Ok();
+                IResult retval;
+
+                try
+                {
+                    await mediator.Send(command);
+                    retval = Results.Ok();
+                }
+                catch (Exception e)
+                {
+                    retval = Results.Problem(e.Message,
+                        statusCode: Status500InternalServerError);
+                }
+
+                return retval;
             })
             .Produces(Status200OK)
             .Produces(Status401Unauthorized)
@@ -101,7 +145,8 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPostCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
+    public static IEndpointRouteBuilder MapPostCommand<TCommand, TResult>(
+        this IEndpointRouteBuilder endpoints,
         string path)
         where TCommand : IRequest<TResult>
     {
@@ -113,7 +158,8 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPutCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
+    public static IEndpointRouteBuilder MapPutCommand<TCommand, TResult>(
+        this IEndpointRouteBuilder endpoints,
         string path)
         where TCommand : IRequest<TResult>
     {
@@ -125,7 +171,8 @@ public static class EndpointRouteBuilderCommandExtensions
         return endpoints;
     }
 
-    public static IEndpointRouteBuilder MapPatchCommand<TCommand, TResult>(this IEndpointRouteBuilder endpoints,
+    public static IEndpointRouteBuilder MapPatchCommand<TCommand, TResult>(
+        this IEndpointRouteBuilder endpoints,
         string path)
         where TCommand : IRequest<TResult>
     {
@@ -143,14 +190,28 @@ public static class EndpointRouteBuilderCommandExtensions
         IValidator validator
     ) where TCommand : IRequest<TResult>
     {
-        var validationResult = validator.Validate(command);
-        if (validationResult.IsNotValid)
+        IResult retval;
+
+        try
         {
-            return Results.ValidationProblem(validationResult.Errors,
+            var validationResult = validator.Validate(command);
+            if (validationResult.IsNotValid)
+            {
+                retval = Results.ValidationProblem(validationResult.Errors,
+                    statusCode: Status500InternalServerError);
+            }
+            else
+            {
+                var result = await mediator.Send(command);
+                retval = Results.Ok(result);
+            }
+        }
+        catch (Exception e)
+        {
+            retval = Results.Problem(e.Message,
                 statusCode: Status500InternalServerError);
         }
 
-        var result = await mediator.Send(command);
-        return Results.Ok(result);
+        return retval;
     }
 }

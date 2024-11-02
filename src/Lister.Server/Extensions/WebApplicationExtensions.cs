@@ -25,17 +25,18 @@ public static class WebApplicationExtensions
             .WithTags("Lists")
             .RequireAuthorization();
 
-        retval.MapCreateCommand<CreateListCommand, ListItemDefinition>(
-            "/{0}", r => r.Id!);
-        retval.MapPatchCommand<AddListItemCommand, Item>("{listId}/add");
-        retval.MapPostCommand<ConvertTextToListItemCommand, Item>("convert-text-to-list-item");
-        retval.MapDeleteCommand<DeleteListCommand>("{listId}");
+        retval.MapCreateCommand<CreateListCommand, ListItemDefinition>("/", "/{0}", 
+            r => r.Id!);
+        retval.MapCreateCommand<CreateListItemCommand, Item>("/{listId}/items", "/{0}/items/{1}", 
+            i => i.ListId!, i => i.Id!);
+        retval.MapPostCommand<ConvertTextToListItemCommand, Item>("/{listId}/items/convert-text-to-list-item");
+        retval.MapDeleteCommand<DeleteListCommand>("/{listId}");
+        retval.MapDeleteCommand<DeleteListItemCommand>("/{listId}/items/{itemId}");
 
-        retval.MapGetQuery<GetListItemQuery, Item?>("{listId}/{itemId}");
-        retval.MapGetQuery<GetListItemDefinitionQuery, ListItemDefinition?>(
-            "{listId}/itemDefinition");
-        retval.MapGetQuery<GetListItemsQuery, PagedResponse<Item>>("{listId}");
-        retval.MapGetQuery<GetListNamesQuery, ListName[]>("names");
+        retval.MapGetQuery<GetListNamesQuery, ListName[]>("/names");
+        retval.MapGetQuery<GetListItemDefinitionQuery, ListItemDefinition?>("/{listId}/itemDefinition");
+        retval.MapGetQuery<GetListItemsQuery, PagedResponse<Item>>("/{listId}");
+        retval.MapGetQuery<GetListItemQuery, Item?>("/{listId}/items/{itemId}");
 
         return retval;
     }

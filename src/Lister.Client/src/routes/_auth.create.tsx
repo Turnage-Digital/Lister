@@ -1,4 +1,5 @@
 import { Save } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Box, Button, Divider, Stack } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -58,8 +59,15 @@ const RouteComponent = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const mutated = await createListMutation.mutateAsync(updated);
+    if (mutated.id === null) {
+      throw new Error("List was not created.");
+    }
     window.sessionStorage.removeItem("updated_list");
-    navigate({ to: `/${mutated.id}` });
+    navigate({
+      to: "/$listId",
+      params: { listId: mutated.id },
+      search: { page: 0, pageSize: 10 },
+    });
   };
 
   const breadcrumbs = [
@@ -118,14 +126,15 @@ const RouteComponent = () => {
           justifyContent: { xs: "center", md: "flex-end" },
         }}
       >
-        <Button
+        <LoadingButton
           type="submit"
           variant="contained"
           startIcon={<Save />}
+          loading={createListMutation.isPending}
           sx={{ width: { xs: "100%", md: "auto" } }}
         >
           Submit
-        </Button>
+        </LoadingButton>
       </Box>
     </Stack>
   );

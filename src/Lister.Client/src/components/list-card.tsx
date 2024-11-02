@@ -5,6 +5,7 @@ import {
   CardContent,
   Grid2,
   IconButton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -27,12 +28,16 @@ const ListCard = ({ listName, onViewClick, onDeleteClick }: Props) => {
           </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: "flex-end" }}>
-          <IconButton onClick={() => onViewClick(listName.id)}>
-            <Visibility />
-          </IconButton>
-          <IconButton onClick={() => onDeleteClick(listName.id)}>
-            <Delete />
-          </IconButton>
+          <Tooltip title={`View ${listName.name}`}>
+            <IconButton onClick={() => onViewClick(listName.id)}>
+              <Visibility />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Delete ${listName.name}`}>
+            <IconButton onClick={() => onDeleteClick(listName.id)}>
+              <Delete />
+            </IconButton>
+          </Tooltip>
         </CardActions>
       </Card>
     </Grid2>

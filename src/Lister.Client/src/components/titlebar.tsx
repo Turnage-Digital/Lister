@@ -51,9 +51,8 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
         >
           <Stack direction="row" spacing={2}>
             {actions.map((action) => (
-              <Box>
+              <Box key={action.title}>
                 <Button
-                  key={action.title}
                   variant="contained"
                   startIcon={action.icon}
                   onClick={action.onClick}

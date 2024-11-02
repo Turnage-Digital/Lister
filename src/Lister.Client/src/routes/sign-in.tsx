@@ -1,7 +1,7 @@
+import { LoadingButton } from "@mui/lab";
 import {
   Alert,
   Box,
-  Button,
   Container,
   Stack,
   TextField,
@@ -18,6 +18,7 @@ const RouteComponent = () => {
     select: ({ auth }) => ({ auth, status: auth.status }),
   });
 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useLayoutEffect(() => {
@@ -29,36 +30,45 @@ const RouteComponent = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    try {
+      setError(null);
+      setLoading(true);
 
-    const email = formData.get("username") as string | null;
-    if (!email) {
-      setError("You must provide a username to log in");
-      return;
+      const formData = new FormData(event.currentTarget);
+
+      const email = formData.get("username") as string | null;
+      if (!email) {
+        setError("You must provide a username to log in");
+        return;
+      }
+
+      const password = formData.get("password") as string | null;
+      if (!password) {
+        setError("You must provide a password to log in");
+        return;
+      }
+
+      const input = { email, password };
+      const request = new Request("/identity/login?useCookies=true", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(input),
+      });
+      const response = await fetch(request);
+      if (!response.ok) {
+        setError("Invalid username or password");
+        return;
+      }
+
+      auth.login(email);
+      navigate({ to: search.callbackUrl });
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
     }
-
-    const password = formData.get("password") as string | null;
-    if (!password) {
-      setError("You must provide a password to log in");
-      return;
-    }
-
-    const input = { email, password };
-    const request = new Request("/identity/login?useCookies=true", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(input),
-    });
-    const response = await fetch(request);
-    if (!response.ok) {
-      setError("Invalid username or password");
-      return;
-    }
-
-    auth.login(email);
-    navigate({ to: search.callbackUrl });
   };
 
   return (
@@ -88,15 +98,16 @@ const RouteComponent = () => {
             autoComplete="current-password"
           />
 
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="large"
             fullWidth
+            loading={loading}
             sx={{ my: 2 }}
           >
             Sign In
-          </Button>
+          </LoadingButton>
         </Box>
 
         {error && (

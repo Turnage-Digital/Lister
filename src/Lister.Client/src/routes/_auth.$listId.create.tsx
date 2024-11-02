@@ -1,5 +1,6 @@
 import { ContentPaste, Save } from "@mui/icons-material";
-import { Box, Button, Divider, Stack } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Divider, Stack } from "@mui/material";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { FormEvent, useEffect, useState } from "react";
@@ -21,13 +22,13 @@ const RouteComponent = () => {
   const navigate = Route.useNavigate();
   const { queryClient } = Route.useRouteContext();
 
-  const addItemMutation = useMutation({
+  const createItemMutation = useMutation({
     mutationFn: async (item: Item) => {
-      const request = new Request(`/api/lists/${listId}/add`, {
+      const request = new Request(`/api/lists/${listId}/items`, {
         headers: {
           "Content-Type": "application/json",
         },
-        method: "PATCH",
+        method: "POST",
         body: JSON.stringify(item),
       });
       const response = await fetch(request);
@@ -51,14 +52,14 @@ const RouteComponent = () => {
 
   const [updated, setUpdated] = useState<Item>(() => {
     const item = window.sessionStorage.getItem(
-      listDefinitionQuery.data?.id ?? "updated_item",
+      listDefinitionQuery.data.id ?? "updated_item",
     );
     return item ? JSON.parse(item) : defaultListItem;
   });
 
   useEffect(() => {
     window.sessionStorage.setItem(
-      listDefinitionQuery.data?.id ?? "updated_item",
+      listDefinitionQuery.data.id ?? "updated_item",
       JSON.stringify(updated),
     );
   }, [listDefinitionQuery, updated]);
@@ -69,21 +70,21 @@ const RouteComponent = () => {
   };
 
   const handlePaste = async (text: string) => {
-    const body = {
-      listId: listDefinitionQuery.data?.id,
-      text,
-    };
+    const command = { text };
 
-    const postRequest = new Request(`/api/lists/convert-text-to-list-item`, {
-      headers: {
-        "Content-Type": "application/json",
+    const postRequest = new Request(
+      `/api/lists/${listDefinitionQuery.data.id}/items/convert-text-to-list-item`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(command),
       },
-      method: "POST",
-      body: JSON.stringify(body),
-    });
+    );
 
     const response = await fetch(postRequest);
-    const json = await response.json();
+    const json: Item = await response.json();
 
     setUpdated({ ...updated, bag: json.bag });
     closeDrawer();
@@ -91,11 +92,17 @@ const RouteComponent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const mutated = await addItemMutation.mutateAsync(updated);
+    const mutated = await createItemMutation.mutateAsync(updated);
+    if (mutated.id === null) {
+      throw new Error("Item was not created.");
+    }
     window.sessionStorage.removeItem(
-      listDefinitionQuery.data?.id ?? "updated_item",
+      listDefinitionQuery.data.id ?? "updated_item",
     );
-    navigate({ to: `/${listId}/${mutated.id}` });
+    navigate({
+      to: "/$listId/$itemId",
+      params: { listId, itemId: mutated.id },
+    });
   };
 
   if (!listDefinitionQuery.isSuccess) {
@@ -117,7 +124,7 @@ const RouteComponent = () => {
       onClick: () => navigate({ to: "/" }),
     },
     {
-      title: listDefinitionQuery.data.name ?? "",
+      title: listDefinitionQuery.data.name,
       onClick: () => navigate({ to: `/${listId}` }),
     },
   ];
@@ -131,7 +138,7 @@ const RouteComponent = () => {
       sx={{ px: 2, py: 4 }}
     >
       <Titlebar
-        title="Create an Item"
+        title="Add an Item"
         actions={actions}
         breadcrumbs={breadcrumbs}
       />
@@ -166,14 +173,15 @@ const RouteComponent = () => {
           justifyContent: { xs: "center", md: "flex-end" },
         }}
       >
-        <Button
+        <LoadingButton
           type="submit"
           variant="contained"
           startIcon={<Save />}
+          loading={createItemMutation.isPending}
           sx={{ width: { xs: "100%", md: "auto" } }}
         >
           Submit
-        </Button>
+        </LoadingButton>
       </Box>
     </Stack>
   );

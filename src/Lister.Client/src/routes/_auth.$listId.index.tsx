@@ -34,7 +34,7 @@ const RouteComponent = () => {
       listId: string;
       itemId: number;
     }) => {
-      const request = new Request(`/api/lists/${listId}/${itemId}`, {
+      const request = new Request(`/api/lists/${listId}/items/${itemId}`, {
         method: "DELETE",
       });
       await fetch(request);
@@ -107,7 +107,7 @@ const RouteComponent = () => {
 
   const actions = [
     {
-      title: "Create an Item",
+      title: "Add an Item",
       icon: <AddCircle />,
       onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
     },

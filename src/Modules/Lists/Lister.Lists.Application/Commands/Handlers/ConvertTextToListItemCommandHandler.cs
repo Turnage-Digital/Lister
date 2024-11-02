@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Lister.Lists.Application.Commands.Handlers;
 
 public class ConvertTextToListItemCommandHandler<TList>(
-    ListAggregate<TList> listAggregate,
+    ListsAggregate<TList> listsAggregate,
     IGetCompletedJson completedJsonGetter,
     ILogger<ConvertTextToListItemCommandHandler<TList>> logger)
     : IRequestHandler<ConvertTextToListItemCommand, Item>
@@ -25,12 +25,12 @@ public class ConvertTextToListItemCommandHandler<TList>(
         try
         {
             var parsed = Guid.Parse(request.ListId);
-            var list = await listAggregate.GetByIdAsync(parsed, request.UserId, cancellationToken);
+            var list = await listsAggregate.GetByIdAsync(parsed, request.UserId, cancellationToken);
 
             if (list is null)
                 throw new InvalidOperationException($"List with id {request.ListId} does not exist");
 
-            var exampleBag = await listAggregate.CreateExampleBagAsync(list, cancellationToken);
+            var exampleBag = await listsAggregate.CreateExampleBagAsync(list, cancellationToken);
             var exampleJson = JsonSerializer.Serialize(exampleBag);
             logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
 

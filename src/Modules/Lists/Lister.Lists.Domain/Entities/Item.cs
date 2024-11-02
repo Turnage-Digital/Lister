@@ -15,4 +15,7 @@ public class Item
 
     [JsonPropertyName("id")]
     public int? Id { get; set; }
+    
+    [JsonPropertyName("listId")]
+    public Guid? ListId { get; set; }
 }

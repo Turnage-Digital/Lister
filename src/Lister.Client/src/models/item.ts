@@ -1,5 +1,5 @@
 export interface Item {
-  id: string | null;
-  listId: string | null;
+  id: number | null;
+  listId: string;
   bag: any;
 }

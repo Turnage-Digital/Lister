@@ -47,7 +47,7 @@ public static class SeedData
             }
 
             var listAggregate = scope.ServiceProvider
-                .GetRequiredService<ListAggregate<ListDb>>();
+                .GetRequiredService<ListsAggregate<ListDb>>();
 
             var list = listAggregate.GetByNameAsync("Students", heath!.Id).Result;
             if (list == null)

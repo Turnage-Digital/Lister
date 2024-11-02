@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Lister.Lists.Domain;
 
-public class ListAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator mediator)
+public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator mediator)
     where TList : IWritableList
 {
     public async Task<TList?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken = default)
@@ -75,6 +75,17 @@ public class ListAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator 
         var ids = retval.Select(i => i.Id!.Value);
         await mediator.Publish(new ListItemsAddedEvent(ids, createdBy), cancellationToken);
         return retval;
+    }
+    
+    public async Task DeleteListItemAsync(
+        TList list,
+        string deletedBy,
+        int itemId,
+        CancellationToken cancellationToken = default)
+    {
+        await unitOfWork.ListsStore.DeleteItemAsync(list, deletedBy, itemId, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await mediator.Publish(new ListItemDeletedEvent(itemId, deletedBy), cancellationToken);
     }
 
     public async Task<object> CreateExampleBagAsync(TList list, CancellationToken cancellationToken = default)

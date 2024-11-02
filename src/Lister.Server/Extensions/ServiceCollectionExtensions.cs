@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<ListAggregate<ListDb>>();
+        services.AddScoped<ListsAggregate<ListDb>>();
         services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>(); });
         return services;
     }
@@ -66,17 +66,22 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IValidator, Validator>();
         services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<GetListItemQuery>(); });
+        
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(AssignUserBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
-        services.AddScoped(typeof(IRequestHandler<AddListItemCommand, Item>),
-            typeof(AddListItemCommandHandler<ListDb>));
+        
+        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, Item>),
+            typeof(CreateListItemCommandHandler<ListDb>));
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, Item>),
             typeof(ConvertTextToListItemCommandHandler<ListDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
             typeof(CreateListCommandHandler<ListDb>));
-        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>), typeof(DeleteListCommandHandler<ListDb>));
+        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>), 
+            typeof(DeleteListCommandHandler<ListDb>));
+        services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
+            typeof(DeleteListItemCommandHandler<ListDb>));
         return services;
     }
 }
