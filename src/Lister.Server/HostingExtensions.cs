@@ -111,9 +111,21 @@ internal static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseApplication();
-
         app.MapControllers();
+        
+        var identityGroup = app
+            .MapGroup("/identity")
+            .WithTags("Identity");
+
+        identityGroup.MapIdentityApi<IdentityUser>();
+
+        identityGroup.MapPost("logout",
+            async (SignInManager<IdentityUser> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return Results.Ok();
+            }
+        );
 
 #if DEBUG
         SeedData.EnsureSeedData(app);
