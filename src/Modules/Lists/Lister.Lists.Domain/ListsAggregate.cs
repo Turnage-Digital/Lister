@@ -46,7 +46,7 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
         await mediator.Publish(new ListDeletedEvent(list.Id!.Value, deletedBy), cancellationToken);
     }
 
-    public async Task<Item> AddListItemAsync(
+    public async Task<Item> CreateListItemAsync(
         TList list,
         string createdBy,
         object bag,
@@ -54,11 +54,11 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
     {
         var retval = await unitOfWork.ListsStore.AddItemAsync(list, createdBy, bag, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await mediator.Publish(new ListItemAddedEvent(retval.Id!.Value, createdBy), cancellationToken);
+        await mediator.Publish(new ListItemCreatedEvent(retval.Id!.Value, createdBy), cancellationToken);
         return retval;
     }
 
-    public async Task<IEnumerable<Item>> AddListItemsAsync(
+    public async Task<IEnumerable<Item>> CreateListItemsAsync(
         TList list,
         string createdBy,
         IEnumerable<object> bags,
@@ -73,10 +73,10 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         var ids = retval.Select(i => i.Id!.Value);
-        await mediator.Publish(new ListItemsAddedEvent(ids, createdBy), cancellationToken);
+        await mediator.Publish(new ListItemsCreatedEvent(ids, createdBy), cancellationToken);
         return retval;
     }
-    
+
     public async Task DeleteListItemAsync(
         TList list,
         string deletedBy,

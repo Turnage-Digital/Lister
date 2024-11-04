@@ -41,7 +41,7 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
       search.sort ?? "asc",
     ],
     queryFn: async () => {
-      let url = `/api/lists/${listId}?page=${search.page}&pageSize=${search.pageSize}`;
+      let url = `/api/lists/${listId}/items?page=${search.page}&pageSize=${search.pageSize}`;
       if (search.field && search.sort) {
         url += `&field=${search.field}&sort=${search.sort}`;
       }

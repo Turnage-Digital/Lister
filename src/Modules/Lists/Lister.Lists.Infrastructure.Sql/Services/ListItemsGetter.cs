@@ -9,7 +9,7 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
 {
-    public async Task<PagedResponse<Item>> Get(string userId,
+    public async Task<PagedResponse<Item>> GetAsync(string userId,
         Guid listId,
         int page,
         int pageSize,
@@ -53,7 +53,8 @@ public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
             Bag = JsonSerializer.Deserialize<object>(d.Bag),
             CreatedBy = d.CreatedBy,
             CreatedOn = d.CreatedOn,
-            Id = d.Id
+            Id = d.Id,
+            ListId = listId
         }).ToList();
         var count = await multi.ReadSingleAsync<long>();
 

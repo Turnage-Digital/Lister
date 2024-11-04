@@ -121,10 +121,10 @@ public class ListsStore(ListerDbContext dbContext)
             .Where(i => i.ListDb == list)
             .Where(i => i.Id == itemId)
             .SingleOrDefaultAsync(cancellationToken);
-        
+
         if (item is null)
             throw new InvalidOperationException($"Item with id {itemId} does not exist");
-        
+
         item.DeletedBy = deletedBy;
         item.DeletedOn = DateTime.UtcNow;
     }

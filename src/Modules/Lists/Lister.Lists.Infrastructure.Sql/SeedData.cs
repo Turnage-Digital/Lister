@@ -111,7 +111,7 @@ public static class SeedData
                     .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.Date.ToString("O"));
                 var students = faker.Generate(500);
 
-                listAggregate.AddListItemsAsync(list, heath.Id, students).Wait();
+                listAggregate.CreateListItemsAsync(list, heath.Id, students).Wait();
             }
 
             Console.WriteLine("Done seeding database. Exiting.");

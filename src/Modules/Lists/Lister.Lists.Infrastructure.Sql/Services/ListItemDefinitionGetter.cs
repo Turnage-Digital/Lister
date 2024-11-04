@@ -7,7 +7,7 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemDefinitionGetter(ListerDbContext dbContext) : IGetListItemDefinition
 {
-    public async Task<ListItemDefinition?> Get(string userId, Guid listId, CancellationToken cancellationToken)
+    public async Task<ListItemDefinition?> GetAsync(string userId, Guid listId, CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == userId)

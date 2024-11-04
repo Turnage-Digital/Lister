@@ -1,10 +1,12 @@
 using Lister.Core.Application.Behaviors;
-using Lister.Core.Application.Validation;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi.Services;
-using Lister.Lists.Application.Commands;
-using Lister.Lists.Application.Commands.Handlers;
-using Lister.Lists.Application.Queries;
+using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
+using Lister.Lists.Application.Endpoints.CreateList;
+using Lister.Lists.Application.Endpoints.CreateListItem;
+using Lister.Lists.Application.Endpoints.DeleteList;
+using Lister.Lists.Application.Endpoints.DeleteListItem;
+using Lister.Lists.Application.Endpoints.GetListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Events;
@@ -40,7 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(applicationDbContextMigrationAssemblyName)));
 
-        var listerDbContextMigrationAssemblyName = 
+        var listerDbContextMigrationAssemblyName =
             configuration.DatabaseOptions.ListerDbContextMigrationAssemblyName;
         services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(listerDbContextMigrationAssemblyName)));
@@ -51,7 +53,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetListItems, ListItemsGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();
-        services.AddAutoMapper(config => config.AddProfile<CoreMappingProfile>());
+
+        services.AddAutoMapper(config =>
+            config.AddProfile<CoreMappingProfile>());
+
         return services;
     }
 
@@ -64,21 +69,20 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IValidator, Validator>();
         services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<GetListItemQuery>(); });
-        
+
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(AssignUserBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
-        
+
         services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, Item>),
             typeof(CreateListItemCommandHandler<ListDb>));
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, Item>),
             typeof(ConvertTextToListItemCommandHandler<ListDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
             typeof(CreateListCommandHandler<ListDb>));
-        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>), 
+        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
             typeof(DeleteListCommandHandler<ListDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
             typeof(DeleteListItemCommandHandler<ListDb>));

@@ -25,6 +25,6 @@ public interface IListsStore<TList>
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
 
     Task<Item> AddItemAsync(TList list, string createdBy, object bag, CancellationToken cancellationToken);
-    
+
     Task DeleteItemAsync(TList list, string deletedBy, int itemId, CancellationToken cancellationToken);
 }

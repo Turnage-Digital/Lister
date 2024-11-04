@@ -6,7 +6,7 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListNamesGetter(ListerDbContext dbContext) : IGetListNames
 {
-    public async Task<ListName[]> Get(string userId, CancellationToken cancellationToken)
+    public async Task<ListName[]> GetAsync(string userId, CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
             .Where(list => list.CreatedBy == userId)

@@ -4,5 +4,5 @@ namespace Lister.Lists.Domain.Services;
 
 public interface IGetListNames
 {
-    Task<ListName[]> Get(string userId, CancellationToken cancellationToken);
+    Task<ListName[]> GetAsync(string userId, CancellationToken cancellationToken);
 }

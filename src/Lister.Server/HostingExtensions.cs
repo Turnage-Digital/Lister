@@ -22,16 +22,17 @@ internal static class HostingExtensions
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
         builder.Services.AddHttpContextAccessor();
-
+        
         builder.Services.AddDistributedMemoryCache();
-
-        builder.Services.Configure<JsonOptions>(options =>
-        {
-            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
-
+        
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+        
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         var applicationDbContextMigrationAssemblyName = typeof(ApplicationDbContext).Assembly.FullName!;
         var listerDbContextMigrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
@@ -111,6 +112,8 @@ internal static class HostingExtensions
         app.UseAuthorization();
 
         app.UseApplication();
+
+        app.MapControllers();
 
 #if DEBUG
         SeedData.EnsureSeedData(app);
