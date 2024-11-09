@@ -14,36 +14,24 @@ public class ConvertTextToListItemCommandHandler<TList>(
     : IRequestHandler<ConvertTextToListItemCommand, Item>
     where TList : IWritableList
 {
-    public async Task<Item> Handle(ConvertTextToListItemCommand request,
-        CancellationToken cancellationToken = default)
+    public async Task<Item> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken = default)
     {
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), "UserId is null");
 
-        Item retval;
+        var parsed = Guid.Parse(request.ListId);
+        var list = await listsAggregate.GetByIdAsync(parsed, cancellationToken);
+        if (list is null)
+            throw new InvalidOperationException($"List with id {request.ListId} does not exist");
 
-        try
-        {
-            var parsed = Guid.Parse(request.ListId);
-            var list = await listsAggregate.GetByIdAsync(parsed, request.UserId, cancellationToken);
+        var exampleBag = await listsAggregate.CreateExampleBagAsync(list, cancellationToken);
+        var exampleJson = JsonSerializer.Serialize(exampleBag);
+        logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
 
-            if (list is null)
-                throw new InvalidOperationException($"List with id {request.ListId} does not exist");
+        var completedJson = await completedJsonGetter.Get(exampleJson, request.Text, cancellationToken);
+        var completedBag = JsonSerializer.Deserialize<object>(completedJson);
 
-            var exampleBag = await listsAggregate.CreateExampleBagAsync(list, cancellationToken);
-            var exampleJson = JsonSerializer.Serialize(exampleBag);
-            logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
-
-            var completedJson = await completedJsonGetter.Get(exampleJson, request.Text, cancellationToken);
-            var completedBag = JsonSerializer.Deserialize<object>(completedJson);
-
-            retval = new Item { Bag = completedBag ?? new object() };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Failed to convert text to list item", ex);
-        }
-
+        var retval = new Item { Bag = completedBag ?? new object() };
         return retval;
     }
 }

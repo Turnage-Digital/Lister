@@ -6,11 +6,11 @@ namespace Lister.Lists.Domain;
 public interface IListsStore<TList>
     where TList : IWritableList
 {
-    Task<TList?> GetByIdAsync(string userId, Guid id, CancellationToken cancellationToken);
+    Task<TList?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<TList?> GetByNameAsync(string userId, string name, CancellationToken cancellationToken);
+    Task<TList?> GetByNameAsync(string name, CancellationToken cancellationToken);
 
-    Task<TList> InitAsync(string createdBy, string name, CancellationToken cancellationToken);
+    Task<TList> InitAsync(string name, string createdBy, CancellationToken cancellationToken);
 
     Task CreateAsync(TList list, CancellationToken cancellationToken);
 
@@ -24,7 +24,9 @@ public interface IListsStore<TList>
 
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
 
-    Task<Item> AddItemAsync(TList list, string createdBy, object bag, CancellationToken cancellationToken);
+    Task<Item?> GetItemByIdAsync(int id, CancellationToken cancellationToken);
 
-    Task DeleteItemAsync(TList list, string deletedBy, int itemId, CancellationToken cancellationToken);
+    Task<Item> CreateItemAsync(TList list, object bag, string createdBy, CancellationToken cancellationToken);
+
+    Task DeleteItemAsync(TList list, Item item, string deletedBy, CancellationToken cancellationToken);
 }

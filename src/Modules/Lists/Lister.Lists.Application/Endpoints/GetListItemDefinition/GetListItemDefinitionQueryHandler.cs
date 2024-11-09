@@ -23,7 +23,7 @@ public class GetListItemDefinitionQueryHandler(
 
         ListItemDefinition? retval;
 
-        var parsed = Guid.Parse(request.ListId);
+        var parsedListId = Guid.Parse(request.ListId);
         var cacheKey = $"ListItemDefinition-{request.ListId}";
         var cacheValue = await cache.GetStringAsync(cacheKey, cancellationToken);
 
@@ -35,7 +35,7 @@ public class GetListItemDefinitionQueryHandler(
         else
         {
             logger.LogInformation("Cache miss for {cacheKey}", cacheKey);
-            retval = await query.GetAsync(request.UserId, parsed, cancellationToken);
+            retval = await query.GetAsync(parsedListId, cancellationToken);
             await CacheDatabaseResultAsync(cacheKey, retval, cancellationToken);
         }
 

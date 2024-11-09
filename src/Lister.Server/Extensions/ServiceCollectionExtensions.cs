@@ -14,6 +14,7 @@ using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
+using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
 using Lister.Users.Infrastructure.Sql;
 using MediatR;
@@ -49,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IListsUnitOfWork<ListDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
-        services.AddScoped<IGetListItem, ListItemGetter>();
+        services.AddScoped<IGetItem, ItemGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetListItems, ListItemsGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();

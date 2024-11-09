@@ -1,4 +1,5 @@
 using Lister.Core.Domain;
+using Lister.Lists.Domain.Entities;
 
 namespace Lister.Lists.Domain;
 

@@ -26,17 +26,9 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
                 .HasMaxLength(50)
                 .IsRequired();
 
-            entity.Property(e => e.CreatedBy)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            entity.Property(e => e.CreatedOn)
-                .IsRequired();
-
-            entity.Property(e => e.DeletedBy)
-                .HasMaxLength(50);
-
-            entity.Property(e => e.DeletedOn);
+            entity.Property(e => e.IsDeleted)
+                .IsRequired()
+                .HasDefaultValue(false);
 
             entity.HasMany(e => e.Columns)
                 .WithOne(d => d.ListDb)
@@ -47,7 +39,7 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
                 .HasForeignKey(d => d.ListId);
 
             entity.HasMany(e => e.Items)
-                .WithOne(e => e.ListDb)
+                .WithOne(e => e.List)
                 .HasForeignKey(e => e.ListId);
         });
 
@@ -65,8 +57,7 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
             entity.Property(e => e.Type)
                 .IsRequired();
 
-            entity.Property(e => e.ListId)
-                .HasColumnName("ListId");
+            entity.Property(e => e.ListId);
 
             entity.HasOne(d => d.ListDb)
                 .WithMany(p => p.Columns)
@@ -88,8 +79,7 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
                 .HasMaxLength(50)
                 .IsRequired();
 
-            entity.Property(e => e.ListId)
-                .HasColumnName("ListId");
+            entity.Property(e => e.ListId);
 
             entity.HasOne(e => e.ListDb)
                 .WithMany(e => e.Statuses)
@@ -114,24 +104,40 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
                     e => JsonSerializer.Deserialize<object>(e, jsonSerializerOptions)!)
                 .IsRequired();
 
-            entity.Property(e => e.CreatedBy)
-                .HasMaxLength(50)
-                .IsRequired();
+            entity.Property(e => e.IsDeleted)
+                .IsRequired()
+                .HasDefaultValue(false);
 
-            entity.Property(e => e.CreatedOn)
-                .IsRequired();
+            entity.Property(e => e.ListId);
 
-            entity.Property(e => e.DeletedBy)
-                .HasMaxLength(50);
-
-            entity.Property(e => e.DeletedOn);
-
-            entity.Property(e => e.ListId)
-                .HasColumnName("ListId");
-
-            entity.HasOne(d => d.ListDb)
+            entity.HasOne(d => d.List)
                 .WithMany(p => p.Items)
                 .HasForeignKey(d => d.ListId);
+        });
+
+        modelBuilder.Entity<ItemHistoryEntryDb>(entity =>
+        {
+            entity.ToTable("ItemHistory");
+
+            entity.HasKey(e => e.Id)
+                .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+            
+            entity.Property(e => e.Type)
+                .IsRequired();
+
+            entity.Property(e => e.On)
+                .IsRequired();
+            
+            entity.Property(e => e.By)
+                .HasMaxLength(50)
+                .IsRequired();
+            
+            entity.Property(e => e.ItemId)
+                .IsRequired();
+
+            entity.HasOne(e => e.Item)
+                .WithMany(e => e.History)
+                .HasForeignKey(e => e.ItemId);
         });
     }
 }

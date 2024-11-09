@@ -1,5 +1,6 @@
 using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Domain;
+using Lister.Lists.Infrastructure.Sql.Entities;
 
 namespace Lister.Lists.Infrastructure.Sql;
 

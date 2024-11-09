@@ -18,7 +18,6 @@ public class GetListItemsQueryHandler(IGetListItems listItemsGetter)
 
         var parsedListId = Guid.Parse(request.ListId);
         var retval = await listItemsGetter.GetAsync(
-            request.UserId,
             parsedListId,
             request.Page,
             request.PageSize,

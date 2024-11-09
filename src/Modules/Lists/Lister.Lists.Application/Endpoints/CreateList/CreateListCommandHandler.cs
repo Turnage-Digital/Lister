@@ -1,5 +1,6 @@
 using AutoMapper;
 using Lister.Lists.Domain;
+using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Views;
 using MediatR;
 
@@ -11,10 +12,8 @@ public class CreateListCommandHandler<TList>(
     : IRequestHandler<CreateListCommand, ListItemDefinition>
     where TList : IWritableList
 {
-    public async Task<ListItemDefinition> Handle(
-        CreateListCommand request,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<ListItemDefinition> Handle(CreateListCommand request,
+        CancellationToken cancellationToken = default)
     {
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), "UserId is null");

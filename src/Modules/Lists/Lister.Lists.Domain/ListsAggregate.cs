@@ -10,15 +10,15 @@ namespace Lister.Lists.Domain;
 public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator mediator)
     where TList : IWritableList
 {
-    public async Task<TList?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken = default)
+    public async Task<TList?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.GetByIdAsync(userId, id, cancellationToken);
+        var retval = await unitOfWork.ListsStore.GetByIdAsync(id, cancellationToken);
         return retval;
     }
 
-    public async Task<TList?> GetByNameAsync(string name, string userId, CancellationToken cancellationToken = default)
+    public async Task<TList?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.GetByNameAsync(userId, name, cancellationToken);
+        var retval = await unitOfWork.ListsStore.GetByNameAsync(name, cancellationToken);
         return retval;
     }
 
@@ -30,12 +30,12 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
         CancellationToken cancellationToken = default
     )
     {
-        var retval = await unitOfWork.ListsStore.InitAsync(createdBy, name, cancellationToken);
+        var retval = await unitOfWork.ListsStore.InitAsync(name, createdBy, cancellationToken);
         await unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
         await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         await unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await mediator.Publish(new ListCreatedEvent(retval.Id!.Value, createdBy), cancellationToken);
+        await mediator.Publish(new ListCreatedEvent(retval, createdBy), cancellationToken);
         return retval;
     }
 
@@ -43,49 +43,57 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
     {
         await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await mediator.Publish(new ListDeletedEvent(list.Id!.Value, deletedBy), cancellationToken);
+        await mediator.Publish(new ListDeletedEvent(list, deletedBy), cancellationToken);
     }
 
+    public async Task<Item?> GetListItemByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var retval = await unitOfWork.ListsStore.GetItemByIdAsync(id, cancellationToken);
+        return retval;
+    }
+    
     public async Task<Item> CreateListItemAsync(
         TList list,
-        string createdBy,
         object bag,
+        string createdBy,
         CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.AddItemAsync(list, createdBy, bag, cancellationToken);
+        var retval = await unitOfWork.ListsStore.CreateItemAsync(list, bag, createdBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await mediator.Publish(new ListItemCreatedEvent(retval.Id!.Value, createdBy), cancellationToken);
+        await mediator.Publish(new ListItemCreatedEvent(retval, createdBy), cancellationToken);
         return retval;
     }
 
     public async Task<IEnumerable<Item>> CreateListItemsAsync(
         TList list,
-        string createdBy,
         IEnumerable<object> bags,
+        string createdBy,
         CancellationToken cancellationToken = default)
     {
         var retval = new List<Item>();
         foreach (var bag in bags)
         {
-            var item = await unitOfWork.ListsStore.AddItemAsync(list, createdBy, bag, cancellationToken);
+            var item = await unitOfWork.ListsStore.CreateItemAsync(list, bag, createdBy, cancellationToken);
             retval.Add(item);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        var ids = retval.Select(i => i.Id!.Value);
-        await mediator.Publish(new ListItemsCreatedEvent(ids, createdBy), cancellationToken);
+        foreach (var item in retval)
+        {
+            await mediator.Publish(new ListItemCreatedEvent(item, createdBy), cancellationToken);
+        }
         return retval;
     }
 
     public async Task DeleteListItemAsync(
         TList list,
+        Item item,
         string deletedBy,
-        int itemId,
         CancellationToken cancellationToken = default)
     {
-        await unitOfWork.ListsStore.DeleteItemAsync(list, deletedBy, itemId, cancellationToken);
+        await unitOfWork.ListsStore.DeleteItemAsync(list, item, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await mediator.Publish(new ListItemDeletedEvent(itemId, deletedBy), cancellationToken);
+        await mediator.Publish(new ListItemDeletedEvent(item, deletedBy), cancellationToken);
     }
 
     public async Task<object> CreateExampleBagAsync(TList list, CancellationToken cancellationToken = default)

@@ -6,7 +6,6 @@ namespace Lister.Lists.Domain.Services;
 public interface IGetListItems
 {
     Task<PagedResponse<Item>> GetAsync(
-        string userId,
         Guid listId,
         int page,
         int pageSize,

@@ -1,3 +1,3 @@
-namespace Lister.Lists.Domain;
+namespace Lister.Lists.Domain.Entities;
 
 public interface IWritableList : IList;

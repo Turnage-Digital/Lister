@@ -1,10 +1,17 @@
+using Lister.Lists.Domain.Entities;
 using MediatR;
 
 namespace Lister.Lists.Domain.Events;
 
-public class ListCreatedEvent(Guid id, string createdBy) : INotification
+public class ListCreatedEvent : INotification
 {
-    public Guid Id { get; } = id;
+    public ListCreatedEvent(IList list, string createdBy)
+    {
+        List = list;
+        CreatedBy = createdBy;
+    }
 
-    public string CreatedBy { get; } = createdBy;
+    public IList List { get; }
+
+    public string CreatedBy { get; }
 }

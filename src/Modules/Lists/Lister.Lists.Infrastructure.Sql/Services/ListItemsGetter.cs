@@ -9,7 +9,7 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
 {
-    public async Task<PagedResponse<Item>> GetAsync(string userId,
+    public async Task<PagedResponse<Item>> GetAsync(
         Guid listId,
         int page,
         int pageSize,
@@ -24,14 +24,13 @@ public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
                            FROM
                                Items i
                            WHERE
-                               i.ListId = @listId AND i.CreatedBy = @userId
+                               i.ListId = @listId
                            /**orderby**/
                            LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();
                            """;
 
         var parameters = new
         {
-            userId,
             listId,
             pageSize,
             offset = page * pageSize
@@ -51,8 +50,6 @@ public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
         var items = data.Select(d => new Item
         {
             Bag = JsonSerializer.Deserialize<object>(d.Bag),
-            CreatedBy = d.CreatedBy,
-            CreatedOn = d.CreatedOn,
             Id = d.Id,
             ListId = listId
         }).ToList();

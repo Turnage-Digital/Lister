@@ -4,19 +4,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
-public class ListItemGetter(ListerDbContext dbContext) : IGetListItem
+public class ItemGetter(ListerDbContext dbContext) : IGetItem
 {
-    public async Task<Item?> GetAsync(string userId, Guid listId, int itemId, CancellationToken cancellationToken)
+    public async Task<Item?> GetAsync(Guid listId, int itemId, CancellationToken cancellationToken)
     {
         var retval = await dbContext.Items
-            .Where(item => item.ListDb.CreatedBy == userId)
             .Where(item => item.ListId == listId)
             .Where(item => item.Id == itemId)
-            // .Select(item => new Item
-            // {
-            //     Id = item.Id,
-            //     Bag = item.Bag
-            // })
+            .Where(item => item.IsDeleted == false)
+            .Select(item => new Item
+            {
+                Bag = item.Bag,
+                ListId = item.ListId,
+                Id = item.Id
+            })
             .SingleOrDefaultAsync(cancellationToken);
         return retval;
     }

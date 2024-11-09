@@ -1,10 +1,17 @@
+using Lister.Lists.Domain.Entities;
 using MediatR;
 
 namespace Lister.Lists.Domain.Events;
 
-public class ListItemDeletedEvent(int id, string deletedBy) : INotification
+public class ListItemDeletedEvent : INotification
 {
-    public int Id { get; } = id;
+    public ListItemDeletedEvent(Item item, string deletedBy)
+    {
+        Item = item;
+        DeletedBy = deletedBy;
+    }
+    
+    public Item Item { get; }
 
-    public string DeletedBy { get; } = deletedBy;
+    public string DeletedBy { get; }
 }

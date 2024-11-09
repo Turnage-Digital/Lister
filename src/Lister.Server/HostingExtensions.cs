@@ -4,7 +4,6 @@ using Lister.Core.Infrastructure.OpenAi;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Server.Extensions;
 using Lister.Users.Infrastructure.Sql;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -22,9 +21,9 @@ internal static class HostingExtensions
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
         builder.Services.AddHttpContextAccessor();
-        
+
         builder.Services.AddDistributedMemoryCache();
-        
+
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -32,7 +31,7 @@ internal static class HostingExtensions
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-        
+
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         var applicationDbContextMigrationAssemblyName = typeof(ApplicationDbContext).Assembly.FullName!;
         var listerDbContextMigrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
@@ -112,7 +111,7 @@ internal static class HostingExtensions
         app.UseAuthorization();
 
         app.MapControllers();
-        
+
         var identityGroup = app
             .MapGroup("/identity")
             .WithTags("Identity");

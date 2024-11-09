@@ -6,11 +6,10 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListNamesGetter(ListerDbContext dbContext) : IGetListNames
 {
-    public async Task<ListName[]> GetAsync(string userId, CancellationToken cancellationToken)
+    public async Task<ListName[]> GetAsync(CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
-            .Where(list => list.CreatedBy == userId)
-            .Where(list => list.DeletedBy == null || list.DeletedOn == null)
+            .Where(list => list.IsDeleted == false)
             .Select(list => new ListName
             {
                 Id = list.Id,

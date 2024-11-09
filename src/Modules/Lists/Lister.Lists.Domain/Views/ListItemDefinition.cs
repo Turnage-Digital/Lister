@@ -5,6 +5,9 @@ namespace Lister.Lists.Domain.Views;
 
 public record ListItemDefinition : IReadOnlyList
 {
+    [JsonPropertyName("id")]
+    public Guid? Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
@@ -13,7 +16,4 @@ public record ListItemDefinition : IReadOnlyList
 
     [JsonPropertyName("statuses")]
     public Status[] Statuses { get; set; } = null!;
-
-    [JsonPropertyName("id")]
-    public Guid? Id { get; set; }
 }

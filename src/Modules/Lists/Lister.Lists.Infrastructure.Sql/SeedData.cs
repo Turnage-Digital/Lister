@@ -3,6 +3,7 @@ using Bogus;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
+using Lister.Lists.Infrastructure.Sql.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Lister.Lists.Infrastructure.Sql;
@@ -49,7 +50,7 @@ public static class SeedData
             var listAggregate = scope.ServiceProvider
                 .GetRequiredService<ListsAggregate<ListDb>>();
 
-            var list = listAggregate.GetByNameAsync("Students", heath!.Id).Result;
+            var list = listAggregate.GetByNameAsync("Students").Result;
             if (list == null)
             {
                 list = listAggregate.CreateAsync(
@@ -111,7 +112,7 @@ public static class SeedData
                     .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.Date.ToString("O"));
                 var students = faker.Generate(500);
 
-                listAggregate.CreateListItemsAsync(list, heath.Id, students).Wait();
+                listAggregate.CreateListItemsAsync(list, students, heath.Id).Wait();
             }
 
             Console.WriteLine("Done seeding database. Exiting.");

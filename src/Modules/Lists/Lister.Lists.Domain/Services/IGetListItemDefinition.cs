@@ -4,5 +4,5 @@ namespace Lister.Lists.Domain.Services;
 
 public interface IGetListItemDefinition
 {
-    Task<ListItemDefinition?> GetAsync(string userId, Guid listId, CancellationToken cancellationToken);
+    Task<ListItemDefinition?> GetAsync(Guid listId, CancellationToken cancellationToken);
 }
