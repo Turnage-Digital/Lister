@@ -121,17 +121,17 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
 
             entity.HasKey(e => e.Id)
                 .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
-            
+
             entity.Property(e => e.Type)
                 .IsRequired();
 
             entity.Property(e => e.On)
                 .IsRequired();
-            
+
             entity.Property(e => e.By)
                 .HasMaxLength(50)
                 .IsRequired();
-            
+
             entity.Property(e => e.ItemId)
                 .IsRequired();
 

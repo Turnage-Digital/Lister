@@ -4,9 +4,10 @@ using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.DeleteList;
 
-public class DeleteListCommandHandler<TList>(ListsAggregate<TList> listsAggregate)
+public class DeleteListCommandHandler<TList, TItem>(ListsAggregate<TList, TItem> listsAggregate)
     : IRequestHandler<DeleteListCommand>
     where TList : IWritableList
+    where TItem : IWritableItem
 {
     public async Task Handle(DeleteListCommand request, CancellationToken cancellationToken = default)
     {

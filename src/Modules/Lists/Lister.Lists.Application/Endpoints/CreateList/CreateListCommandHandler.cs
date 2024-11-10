@@ -6,11 +6,12 @@ using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.CreateList;
 
-public class CreateListCommandHandler<TList>(
-    ListsAggregate<TList> listsAggregate,
+public class CreateListCommandHandler<TList, TItem>(
+    ListsAggregate<TList, TItem> listsAggregate,
     IMapper mapper)
     : IRequestHandler<CreateListCommand, ListItemDefinition>
     where TList : IWritableList
+    where TItem : IWritableItem
 {
     public async Task<ListItemDefinition> Handle(CreateListCommand request,
         CancellationToken cancellationToken = default)

@@ -1,21 +1,16 @@
 using System.Text.Json;
 using Dapper;
 using Lister.Core.Domain;
-using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
 {
-    public async Task<PagedResponse<Item>> GetAsync(
-        Guid listId,
-        int page,
-        int pageSize,
-        string? field,
-        string? sort,
-        CancellationToken cancellationToken)
+    public async Task<PagedResponse<ListItem>> GetAsync(Guid listId, int page, int pageSize, string? field,
+        string? sort, CancellationToken cancellationToken)
     {
         var builder = new SqlBuilder();
         const string sql = """
@@ -47,7 +42,7 @@ public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
         var multi = await connection.QueryMultipleAsync(template.RawSql, template.Parameters);
 
         var data = await multi.ReadAsync<dynamic>();
-        var items = data.Select(d => new Item
+        var items = data.Select(d => new ListItem
         {
             Bag = JsonSerializer.Deserialize<object>(d.Bag),
             Id = d.Id,
@@ -55,7 +50,7 @@ public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
         }).ToList();
         var count = await multi.ReadSingleAsync<long>();
 
-        var retval = new PagedResponse<Item>(items, count);
+        var retval = new PagedResponse<ListItem>(items, count);
         return retval;
     }
 }

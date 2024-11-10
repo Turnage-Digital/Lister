@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Views;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +14,7 @@ namespace Lister.Lists.Application.Endpoints.GetListItem;
 public class GetListItemController(IMediator mediator) : Controller
 {
     [HttpGet("{listId}/items/{itemId:int}")]
-    [ProducesResponseType(typeof(Item), Status200OK)]
+    [ProducesResponseType(typeof(ItemDetails), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]

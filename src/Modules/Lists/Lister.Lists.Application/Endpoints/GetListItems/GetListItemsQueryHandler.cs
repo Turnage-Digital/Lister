@@ -1,14 +1,14 @@
 using Lister.Core.Domain;
-using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Views;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetListItems;
 
 public class GetListItemsQueryHandler(IGetListItems listItemsGetter)
-    : IRequestHandler<GetListItemsQuery, PagedResponse<Item>>
+    : IRequestHandler<GetListItemsQuery, PagedResponse<ListItem>>
 {
-    public async Task<PagedResponse<Item>> Handle(
+    public async Task<PagedResponse<ListItem>> Handle(
         GetListItemsQuery request,
         CancellationToken cancellationToken
     )

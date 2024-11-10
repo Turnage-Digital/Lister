@@ -7,8 +7,9 @@ using MediatR;
 
 namespace Lister.Lists.Domain;
 
-public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator mediator)
+public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfWork, IMediator mediator)
     where TList : IWritableList
+    where TItem : IWritableItem
 {
     public async Task<TList?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -46,34 +47,54 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
         await mediator.Publish(new ListDeletedEvent(list, deletedBy), cancellationToken);
     }
 
-    public async Task<Item?> GetListItemByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<TItem?> GetItemByIdAsync(TList list, int itemId,
+        CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.GetItemByIdAsync(id, cancellationToken);
+        if (list.Id is null)
+        {
+            throw new InvalidOperationException("List must have an Id");
+        }
+
+        var retval = await unitOfWork.ItemsStore.GetByIdAsync(itemId, list.Id.Value, cancellationToken);
         return retval;
     }
-    
-    public async Task<Item> CreateListItemAsync(
+
+    public async Task<TItem> CreateItemAsync(
         TList list,
         object bag,
         string createdBy,
         CancellationToken cancellationToken = default)
     {
-        var retval = await unitOfWork.ListsStore.CreateItemAsync(list, bag, createdBy, cancellationToken);
+        if (list.Id is null)
+        {
+            throw new InvalidOperationException("List must have an Id");
+        }
+
+        var retval = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
+        await unitOfWork.ItemsStore.SetBagAsync(retval, bag, cancellationToken);
+        await unitOfWork.ItemsStore.CreateAsync(retval, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await mediator.Publish(new ListItemCreatedEvent(retval, createdBy), cancellationToken);
         return retval;
     }
 
-    public async Task<IEnumerable<Item>> CreateListItemsAsync(
+    public async Task<IEnumerable<TItem>> CreateItemsAsync(
         TList list,
         IEnumerable<object> bags,
         string createdBy,
         CancellationToken cancellationToken = default)
     {
-        var retval = new List<Item>();
+        if (list.Id is null)
+        {
+            throw new InvalidOperationException("List must have an Id");
+        }
+
+        var retval = new List<TItem>();
         foreach (var bag in bags)
         {
-            var item = await unitOfWork.ListsStore.CreateItemAsync(list, bag, createdBy, cancellationToken);
+            var item = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
+            await unitOfWork.ItemsStore.SetBagAsync(item, bag, cancellationToken);
+            await unitOfWork.ItemsStore.CreateAsync(item, cancellationToken);
             retval.Add(item);
         }
 
@@ -82,16 +103,16 @@ public class ListsAggregate<TList>(IListsUnitOfWork<TList> unitOfWork, IMediator
         {
             await mediator.Publish(new ListItemCreatedEvent(item, createdBy), cancellationToken);
         }
+
         return retval;
     }
 
-    public async Task DeleteListItemAsync(
-        TList list,
-        Item item,
+    public async Task DeleteItemAsync(
+        TItem item,
         string deletedBy,
         CancellationToken cancellationToken = default)
     {
-        await unitOfWork.ListsStore.DeleteItemAsync(list, item, deletedBy, cancellationToken);
+        await unitOfWork.ItemsStore.DeleteAsync(item, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await mediator.Publish(new ListItemDeletedEvent(item, deletedBy), cancellationToken);
     }

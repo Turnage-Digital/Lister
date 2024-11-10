@@ -9,5 +9,5 @@ public record ColumnDb : Column
 
     public Guid? ListId { get; set; }
 
-    public ListDb? ListDb { get; set; }  
+    public ListDb? ListDb { get; set; }
 }

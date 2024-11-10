@@ -1,8 +1,8 @@
-using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Domain.Services;
 
 public interface IGetItem
 {
-    Task<Item?> GetAsync(Guid listId, int itemId, CancellationToken cancellationToken);
+    Task<ItemDetails?> GetAsync(Guid listId, int itemId, CancellationToken cancellationToken);
 }

@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
-using Lister.Core.Domain.ValueObjects;
-using Lister.Lists.Domain.Enums;
 
-namespace Lister.Lists.Domain.Entities;
+namespace Lister.Lists.Domain.Views;
 
-public class Item
+public record ListItem : IReadOnlyItem
 {
     [JsonPropertyName("id")]
     public int? Id { get; set; }

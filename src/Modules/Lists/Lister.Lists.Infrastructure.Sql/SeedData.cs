@@ -48,7 +48,7 @@ public static class SeedData
             }
 
             var listAggregate = scope.ServiceProvider
-                .GetRequiredService<ListsAggregate<ListDb>>();
+                .GetRequiredService<ListsAggregate<ListDb, ItemDb>>();
 
             var list = listAggregate.GetByNameAsync("Students").Result;
             if (list == null)
@@ -112,7 +112,7 @@ public static class SeedData
                     .RuleFor(s => s.DateOfBirth, f => f.Person.DateOfBirth.Date.ToString("O"));
                 var students = faker.Generate(500);
 
-                listAggregate.CreateListItemsAsync(list, students, heath.Id).Wait();
+                listAggregate.CreateItemsAsync(list, students, heath.Id).Wait();
             }
 
             Console.WriteLine("Done seeding database. Exiting.");

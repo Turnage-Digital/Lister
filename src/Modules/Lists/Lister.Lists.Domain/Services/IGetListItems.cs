@@ -1,11 +1,11 @@
 using Lister.Core.Domain;
-using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Domain.Services;
 
 public interface IGetListItems
 {
-    Task<PagedResponse<Item>> GetAsync(
+    Task<PagedResponse<ListItem>> GetAsync(
         Guid listId,
         int page,
         int pageSize,
