@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql;
 
-public class ListsStore(ListerDbContext dbContext)
+public class ListsStore(ListsDbContext dbContext)
     : IListsStore<ListDb>
 {
     private readonly EntityStore<ListDb> _entityStore = new(dbContext);

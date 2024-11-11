@@ -11,19 +11,19 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     where TList : IWritableList
     where TItem : IWritableItem
 {
-    public async Task<TList?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<TList?> GetListByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var retval = await unitOfWork.ListsStore.GetByIdAsync(id, cancellationToken);
         return retval;
     }
 
-    public async Task<TList?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<TList?> GetListByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         var retval = await unitOfWork.ListsStore.GetByNameAsync(name, cancellationToken);
         return retval;
     }
 
-    public async Task<TList> CreateAsync(
+    public async Task<TList> CreateListAsync(
         string createdBy,
         string name,
         IEnumerable<Status> statuses,
@@ -40,7 +40,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         return retval;
     }
 
-    public async Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken = default)
+    public async Task DeleteListAsync(TList list, string deletedBy, CancellationToken cancellationToken = default)
     {
         await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

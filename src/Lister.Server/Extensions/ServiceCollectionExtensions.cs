@@ -1,6 +1,7 @@
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi.Services;
+using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
@@ -17,6 +18,7 @@ using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
 using Lister.Users.Infrastructure.Sql;
 using MediatR;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Server.Extensions;
@@ -42,10 +44,19 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(applicationDbContextMigrationAssemblyName)));
 
-        var listerDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.ListerDbContextMigrationAssemblyName;
-        services.AddDbContext<ListerDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(listerDbContextMigrationAssemblyName)));
+        var dataProtectionKeyDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
+        services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
+        
+        services.AddDataProtection()
+            .SetApplicationName("Lister")
+            .PersistKeysToDbContext<DataProtectionKeyDbContext>();
+
+        var listsDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.ListsDbContextMigrationAssemblyName;
+        services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
 
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();

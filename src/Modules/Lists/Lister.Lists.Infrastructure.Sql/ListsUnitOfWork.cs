@@ -4,10 +4,10 @@ using Lister.Lists.Infrastructure.Sql.Entities;
 
 namespace Lister.Lists.Infrastructure.Sql;
 
-public class ListsUnitOfWork(ListerDbContext dbContext)
-    : UnitOfWork<ListerDbContext>(dbContext), IListsUnitOfWork<ListDb, ItemDb>
+public class ListsUnitOfWork(ListsDbContext dbContext)
+    : UnitOfWork<ListsDbContext>(dbContext), IListsUnitOfWork<ListDb, ItemDb>
 {
-    private readonly ListerDbContext _dbContext = dbContext;
+    private readonly ListsDbContext _dbContext = dbContext;
 
     public IListsStore<ListDb> ListsStore => new ListsStore(_dbContext);
 

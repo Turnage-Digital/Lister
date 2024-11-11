@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql;
 
-public class ListerDbContext(DbContextOptions<ListerDbContext> options)
+public class ListsDbContext(DbContextOptions<ListsDbContext> options)
     : DbContext(options)
 {
     public virtual DbSet<ListDb> Lists { get; set; } = null!;
@@ -131,6 +131,16 @@ public class ListerDbContext(DbContextOptions<ListerDbContext> options)
             entity.Property(e => e.By)
                 .HasMaxLength(50)
                 .IsRequired();
+            
+            var jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            entity.Property(e => e.Bag)
+                .HasColumnType("JSON")
+                .HasConversion(
+                    e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                    e => JsonSerializer.Deserialize<object>(e, jsonSerializerOptions)!);
 
             entity.Property(e => e.ItemId)
                 .IsRequired();

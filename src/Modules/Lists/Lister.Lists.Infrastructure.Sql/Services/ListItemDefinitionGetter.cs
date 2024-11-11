@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
-public class ListItemDefinitionGetter(ListerDbContext dbContext) : IGetListItemDefinition
+public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDefinition
 {
     public async Task<ListItemDefinition?> GetAsync(Guid listId, CancellationToken cancellationToken)
     {

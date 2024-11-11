@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
-public class ListItemsGetter(ListerDbContext dbContext) : IGetListItems
+public class ListItemsGetter(ListsDbContext dbContext) : IGetListItems
 {
     public async Task<PagedResponse<ListItem>> GetAsync(Guid listId, int page, int pageSize, string? field,
         string? sort, CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
-public class ListNamesGetter(ListerDbContext dbContext) : IGetListNames
+public class ListNamesGetter(ListsDbContext dbContext) : IGetListNames
 {
     public async Task<ListName[]> GetAsync(CancellationToken cancellationToken)
     {

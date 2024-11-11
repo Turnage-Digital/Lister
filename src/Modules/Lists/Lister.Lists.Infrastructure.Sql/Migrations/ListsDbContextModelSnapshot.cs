@@ -5,23 +5,20 @@ using Lister.Lists.Infrastructure.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
+namespace Lister.Lists.Infrastructure.Sql.Migrations
 {
-    [DbContext(typeof(ListerDbContext))]
-    [Migration("20241011014624_Initial")]
-    partial class Initial
+    [DbContext(typeof(ListsDbContext))]
+    partial class ListsDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -30,36 +27,21 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
                 {
                     b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("Bag")
                         .IsRequired()
-                        .HasColumnType("JSON")
-                        .HasAnnotation("Relational:JsonPropertyName", "bag");
+                        .HasColumnType("JSON");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasAnnotation("Relational:JsonPropertyName", "createdBy");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)")
-                        .HasAnnotation("Relational:JsonPropertyName", "createdOn");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid?>("ListId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("ListId");
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id")
                         .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
@@ -69,26 +51,16 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
                     b.ToTable("Items", (string)null);
                 });
 
-            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ListDb", b =>
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ListDb", b =>
                 {
                     b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -110,8 +82,7 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<Guid?>("ListId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("ListId");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -131,6 +102,44 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
                     b.ToTable("Columns", (string)null);
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ItemHistoryEntryDb", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("Bag")
+                        .HasColumnType("JSON")
+                        .HasAnnotation("Relational:JsonPropertyName", "bag");
+
+                    b.Property<string>("By")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "by");
+
+                    b.Property<int?>("ItemId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("On")
+                        .HasColumnType("datetime(6)")
+                        .HasAnnotation("Relational:JsonPropertyName", "on");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "type");
+
+                    b.HasKey("Id")
+                        .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemHistory", (string)null);
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusDb", b =>
                 {
                     b.Property<int?>("Id")
@@ -146,8 +155,7 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
                         .HasAnnotation("Relational:JsonPropertyName", "color");
 
                     b.Property<Guid?>("ListId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("ListId");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -165,32 +173,48 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations.Lister
 
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ItemDb", b =>
                 {
-                    b.HasOne("Lister.Lists.Infrastructure.Sql.ListDb", "ListDb")
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "List")
                         .WithMany("Items")
                         .HasForeignKey("ListId");
 
-                    b.Navigation("ListDb");
+                    b.Navigation("List");
                 });
 
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ColumnDb", b =>
                 {
-                    b.HasOne("Lister.Lists.Infrastructure.Sql.ListDb", "ListDb")
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "ListDb")
                         .WithMany("Columns")
                         .HasForeignKey("ListId");
 
                     b.Navigation("ListDb");
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ItemHistoryEntryDb", b =>
+                {
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ItemDb", "Item")
+                        .WithMany("History")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusDb", b =>
                 {
-                    b.HasOne("Lister.Lists.Infrastructure.Sql.ListDb", "ListDb")
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "ListDb")
                         .WithMany("Statuses")
                         .HasForeignKey("ListId");
 
                     b.Navigation("ListDb");
                 });
 
-            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ListDb", b =>
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ItemDb", b =>
+                {
+                    b.Navigation("History");
+                });
+
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ListDb", b =>
                 {
                     b.Navigation("Columns");
 

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql;
 
-public class ItemsStore(ListerDbContext dbContext)
+public class ItemsStore(ListsDbContext dbContext)
     : IItemsStore<ItemDb>
 {
     private readonly EntityStore<ItemDb> _entityStore = new(dbContext);
@@ -45,6 +45,13 @@ public class ItemsStore(ListerDbContext dbContext)
     public Task DeleteAsync(ItemDb item, string deletedBy, CancellationToken cancellationToken)
     {
         item.IsDeleted = true;
+        item.History.Add(new ItemHistoryEntryDb
+        {
+            Type = ItemHistoryType.Deleted,
+            On = DateTime.UtcNow,
+            By = deletedBy,
+            Item = item
+        });
         return Task.CompletedTask;
     }
 

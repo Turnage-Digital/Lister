@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Core.Infrastructure.OpenAi;
+using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Server.Extensions;
 using Lister.Users.Infrastructure.Sql;
@@ -34,13 +35,17 @@ internal static class HostingExtensions
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         var applicationDbContextMigrationAssemblyName = typeof(ApplicationDbContext).Assembly.FullName!;
-        var listerDbContextMigrationAssemblyName = typeof(ListerDbContext).Assembly.FullName!;
+        var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
+        var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
         builder.Services.AddInfrastructure(config =>
         {
             config.DatabaseOptions.ConnectionString = connectionString;
             config.DatabaseOptions.ApplicationDbContextMigrationAssemblyName =
                 applicationDbContextMigrationAssemblyName;
-            config.DatabaseOptions.ListerDbContextMigrationAssemblyName = listerDbContextMigrationAssemblyName;
+            config.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName =
+                dataProtectionKeyDbContextMigrationAssemblyName;
+            config.DatabaseOptions.ListsDbContextMigrationAssemblyName = 
+                listsDbContextMigrationAssemblyName;
         });
         builder.Services.AddDomain();
         builder.Services.AddApplication();
