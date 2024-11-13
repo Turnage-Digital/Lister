@@ -47,7 +47,9 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         await mediator.Publish(new ListDeletedEvent(list, deletedBy), cancellationToken);
     }
 
-    public async Task<TItem?> GetItemByIdAsync(TList list, int itemId,
+    public async Task<TItem?> GetItemByIdAsync(
+        TList list,
+        int itemId,
         CancellationToken cancellationToken = default)
     {
         if (list.Id is null)

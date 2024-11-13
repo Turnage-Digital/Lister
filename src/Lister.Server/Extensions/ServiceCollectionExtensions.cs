@@ -7,7 +7,7 @@ using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
-using Lister.Lists.Application.Endpoints.GetListItem;
+using Lister.Lists.Application.Endpoints.GetItemDetails;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.Services;
@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
             configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
         services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
-        
+
         services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
@@ -60,9 +60,9 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
-        services.AddScoped<IGetItem, ItemGetter>();
+        services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
-        services.AddScoped<IGetListItems, ListItemsGetter>();
+        services.AddScoped<IGetPagedList, PagedListGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();
 
         services.AddAutoMapper(config =>
@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<GetListItemQuery>(); });
+        services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<GetItemDetailsQuery>(); });
 
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(AssignUserBehavior<,>));

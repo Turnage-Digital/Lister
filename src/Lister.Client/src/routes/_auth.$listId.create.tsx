@@ -13,7 +13,7 @@ import {
   Titlebar,
   useSideDrawer,
 } from "../components";
-import { Item } from "../models";
+import { ListItem } from "../models";
 import { listDefinitionQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
@@ -23,7 +23,7 @@ const RouteComponent = () => {
   const { queryClient } = Route.useRouteContext();
 
   const createItemMutation = useMutation({
-    mutationFn: async (item: Item) => {
+    mutationFn: async (item: ListItem) => {
       const request = new Request(`/api/lists/${listId}/items`, {
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +32,7 @@ const RouteComponent = () => {
         body: JSON.stringify(item),
       });
       const response = await fetch(request);
-      const retval: Item = await response.json();
+      const retval: ListItem = await response.json();
       return retval;
     },
     onSuccess: async () => {
@@ -44,13 +44,13 @@ const RouteComponent = () => {
     listDefinitionQueryOptions(listId),
   );
 
-  const defaultListItem: Item = {
+  const defaultListItem: ListItem = {
     id: null,
     listId,
     bag: {},
   };
 
-  const [updated, setUpdated] = useState<Item>(() => {
+  const [updated, setUpdated] = useState<ListItem>(() => {
     const item = window.sessionStorage.getItem(
       listDefinitionQuery.data.id ?? "updated_item",
     );
@@ -84,7 +84,7 @@ const RouteComponent = () => {
     );
 
     const response = await fetch(postRequest);
-    const json: Item = await response.json();
+    const json: ListItem = await response.json();
 
     setUpdated({ ...updated, bag: json.bag });
     closeDrawer();

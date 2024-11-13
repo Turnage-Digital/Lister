@@ -6,7 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
 import { getGridColDefs, Titlebar } from "../components";
-import { Item, ListSearch } from "../models";
+import { ListItem, ListSearch } from "../models";
 import {
   listDefinitionQueryOptions,
   pagedItemsQueryOptions,
@@ -100,7 +100,7 @@ const RouteComponent = () => {
     });
   }
 
-  const rows = pagedItemsQuery.data.items.map((item: Item) => ({
+  const rows = pagedItemsQuery.data.items.map((item: ListItem) => ({
     id: item.id,
     ...item.bag,
   }));

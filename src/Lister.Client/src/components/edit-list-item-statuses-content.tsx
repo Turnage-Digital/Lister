@@ -7,13 +7,13 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import { getStatusFromName, Item, ListItemDefinition } from "../models";
+import { getStatusFromName, ListItem, ListItemDefinition } from "../models";
 
 import StatusChip from "./status-chip";
 
 interface Props {
   listItemDefinition: ListItemDefinition;
-  item: Item;
+  item: ListItem;
   onItemUpdated: (key: string, value: string) => void;
 }
 

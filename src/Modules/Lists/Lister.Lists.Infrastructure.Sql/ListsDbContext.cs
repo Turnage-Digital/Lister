@@ -131,7 +131,7 @@ public class ListsDbContext(DbContextOptions<ListsDbContext> options)
             entity.Property(e => e.By)
                 .HasMaxLength(50)
                 .IsRequired();
-            
+
             var jsonSerializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase

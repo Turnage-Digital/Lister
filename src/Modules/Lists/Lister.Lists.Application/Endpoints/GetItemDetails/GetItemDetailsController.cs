@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Lists.Application.Endpoints.GetListItem;
+namespace Lister.Lists.Application.Endpoints.GetItemDetails;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/")]
-public class GetListItemController(IMediator mediator) : Controller
+public class GetItemDetailsController(IMediator mediator) : Controller
 {
     [HttpGet("{listId}/items/{itemId:int}")]
     [ProducesResponseType(typeof(ItemDetails), Status200OK)]
@@ -24,7 +24,7 @@ public class GetListItemController(IMediator mediator) : Controller
         CancellationToken cancellationToken
     )
     {
-        GetListItemQuery query = new(listId, itemId);
+        GetItemDetailsQuery query = new(listId, itemId);
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }

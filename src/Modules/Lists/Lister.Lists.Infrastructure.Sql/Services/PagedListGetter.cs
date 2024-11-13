@@ -1,27 +1,27 @@
 using System.Text.Json;
 using Dapper;
-using Lister.Core.Domain;
 using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
-public class ListItemsGetter(ListsDbContext dbContext) : IGetListItems
+public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
 {
-    public async Task<PagedResponse<ListItem>> GetAsync(Guid listId, int page, int pageSize, string? field,
+    public async Task<PagedList> GetAsync(Guid listId, int page, int pageSize, string? field,
         string? sort, CancellationToken cancellationToken)
     {
         var builder = new SqlBuilder();
         const string sql = """
                            SELECT SQL_CALC_FOUND_ROWS
-                               i.Bag, i.CreatedBy, i.CreatedOn, i.Id
+                               i.Bag, i.Id, i.ListId
                            FROM
                                Items i
                            WHERE
-                               i.ListId = @listId
+                               i.ListId = @listId AND i.IsDeleted = 0
                            /**orderby**/
-                           LIMIT @pageSize OFFSET @offset; SELECT FOUND_ROWS();
+                           LIMIT @pageSize OFFSET @offset; 
+                           SELECT FOUND_ROWS();
                            """;
 
         var parameters = new
@@ -47,10 +47,15 @@ public class ListItemsGetter(ListsDbContext dbContext) : IGetListItems
             Bag = JsonSerializer.Deserialize<object>(d.Bag),
             Id = d.Id,
             ListId = listId
-        }).ToList();
+        }).ToArray();
         var count = await multi.ReadSingleAsync<long>();
 
-        var retval = new PagedResponse<ListItem>(items, count);
+        var retval = new PagedList
+        {
+            Id = listId,
+            Count = count,
+            Items = items
+        };
         return retval;
     }
 }

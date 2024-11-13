@@ -1,10 +1,10 @@
 import { Card, CardHeader } from "@mui/material";
 import React from "react";
 
-import { Item } from "../models";
+import { ListItem } from "../models";
 
 export interface Props {
-  item: Item;
+  item: ListItem;
 }
 
 const ItemCard = ({ item }: Props) => {

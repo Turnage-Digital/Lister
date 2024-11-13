@@ -44,7 +44,7 @@ internal static class HostingExtensions
                 applicationDbContextMigrationAssemblyName;
             config.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName =
                 dataProtectionKeyDbContextMigrationAssemblyName;
-            config.DatabaseOptions.ListsDbContextMigrationAssemblyName = 
+            config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
                 listsDbContextMigrationAssemblyName;
         });
         builder.Services.AddDomain();

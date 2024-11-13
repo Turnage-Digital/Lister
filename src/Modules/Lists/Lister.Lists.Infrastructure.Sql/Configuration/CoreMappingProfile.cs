@@ -10,6 +10,8 @@ public class CoreMappingProfile : Profile
     {
         CreateMap<ListDb, ListItemDefinition>()
             .ReverseMap();
+        CreateMap<ItemDb, ListItem>()
+            .ReverseMap();
         CreateMap<ItemDb, ItemDetails>()
             .ReverseMap();
     }

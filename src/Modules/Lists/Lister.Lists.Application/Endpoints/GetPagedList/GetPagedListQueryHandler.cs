@@ -1,15 +1,14 @@
-using Lister.Core.Domain;
 using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using MediatR;
 
-namespace Lister.Lists.Application.Endpoints.GetListItems;
+namespace Lister.Lists.Application.Endpoints.GetPagedList;
 
-public class GetListItemsQueryHandler(IGetListItems listItemsGetter)
-    : IRequestHandler<GetListItemsQuery, PagedResponse<ListItem>>
+public class GetPagedListQueryHandler(IGetPagedList pagedListGetter)
+    : IRequestHandler<GetPagedListQuery, PagedList>
 {
-    public async Task<PagedResponse<ListItem>> Handle(
-        GetListItemsQuery request,
+    public async Task<PagedList> Handle(
+        GetPagedListQuery request,
         CancellationToken cancellationToken
     )
     {
@@ -17,7 +16,7 @@ public class GetListItemsQueryHandler(IGetListItems listItemsGetter)
             throw new ArgumentNullException(nameof(request), "UserId is null");
 
         var parsedListId = Guid.Parse(request.ListId);
-        var retval = await listItemsGetter.GetAsync(
+        var retval = await pagedListGetter.GetAsync(
             parsedListId,
             request.Page,
             request.PageSize,

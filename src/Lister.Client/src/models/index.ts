@@ -1,6 +1,6 @@
 export type { Column } from "./column";
 export type { Info } from "./info";
-export type { Item } from "./item";
+export type { ListItem } from "./list-item";
 export type { ListSearch } from "./list-search";
 export type { ListItemDefinition } from "./list-item-definition";
 export type { ListName } from "./list-name";
