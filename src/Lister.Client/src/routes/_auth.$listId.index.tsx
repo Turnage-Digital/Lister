@@ -44,8 +44,10 @@ const RouteComponent = () => {
     },
   });
 
-  const handlePaginationChange = (gridPaginationModel: GridPaginationModel) => {
-    navigate({
+  const handlePaginationChange = async (
+    gridPaginationModel: GridPaginationModel,
+  ) => {
+    await navigate({
       search: (prev) => ({
         ...prev,
         page: gridPaginationModel.page,
@@ -54,23 +56,23 @@ const RouteComponent = () => {
     });
   };
 
-  const handleSortChange = (gridSortModel: GridSortModel) => {
+  const handleSortChange = async (gridSortModel: GridSortModel) => {
     if (gridSortModel.length === 0) {
-      navigate({
+      await navigate({
         search: (prev) => ({ ...prev, field: undefined, sort: undefined }),
       });
     } else {
       const field = gridSortModel[0].field;
       const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
 
-      navigate({
+      await navigate({
         search: (prev) => ({ ...prev, field, sort }),
       });
     }
   };
 
-  const handleViewClicked = (listId: string, itemId: number) => {
-    navigate({ to: "/$listId/$itemId", params: { listId, itemId } });
+  const handleViewClicked = async (listId: string, itemId: number) => {
+    await navigate({ to: "/$listId/$itemId", params: { listId, itemId } });
   };
 
   const handleDeleteClicked = async (listId: string, itemId: number) => {

@@ -4,5 +4,5 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Users.Infrastructure.Sql;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+public class UsersDbContext(DbContextOptions<UsersDbContext> options)
     : IdentityDbContext<IdentityUser>(options);

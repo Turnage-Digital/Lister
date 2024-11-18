@@ -1,9 +1,11 @@
 export type { Column } from "./column";
 export type { Info } from "./info";
+export type { ItemDetails } from "./item-details";
 export type { ListItem } from "./list-item";
 export type { ListSearch } from "./list-search";
 export type { ListItemDefinition } from "./list-item-definition";
 export type { ListName } from "./list-name";
+export type { PagedList } from "./paged-list";
 export type { Status } from "./status";
 export type { StatusColor } from "./status-colors";
 

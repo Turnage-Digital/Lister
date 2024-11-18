@@ -1,7 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { ListItem, ListItemDefinition, ListName, ListSearch } from "./models";
-import { PagedResponse } from "./models/paged-response";
+import {
+  ItemDetails,
+  ListItemDefinition,
+  ListName,
+  ListSearch,
+  PagedList,
+} from "./models";
 
 export const listNamesQueryOptions = () =>
   queryOptions({
@@ -49,7 +54,7 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
         method: "GET",
       });
       const response = await fetch(request);
-      const retval: PagedResponse<ListItem> = await response.json();
+      const retval: PagedList = await response.json();
       return retval;
     },
     enabled: Boolean(listId),
@@ -63,7 +68,7 @@ export const itemQueryOptions = (listId?: string, itemId?: number) =>
         method: "GET",
       });
       const response = await fetch(request);
-      const retval: ListItem = await response.json();
+      const retval: ItemDetails = await response.json();
       return retval;
     },
     enabled: Boolean(listId) && Boolean(itemId),

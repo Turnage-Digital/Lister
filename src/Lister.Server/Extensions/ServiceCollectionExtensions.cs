@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
 
         var applicationDbContextMigrationAssemblyName =
             configuration.DatabaseOptions.ApplicationDbContextMigrationAssemblyName;
-        services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion,
+        services.AddDbContext<UsersDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(applicationDbContextMigrationAssemblyName)));
 
         var dataProtectionKeyDbContextMigrationAssemblyName =

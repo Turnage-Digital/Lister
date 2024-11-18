@@ -63,7 +63,7 @@ const RouteComponent = () => {
       }
 
       auth.login(email);
-      navigate({ to: search.callbackUrl });
+      await navigate({ to: search.callbackUrl });
     } catch (e: any) {
       setError(e.message);
     } finally {

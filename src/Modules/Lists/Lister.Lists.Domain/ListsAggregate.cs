@@ -50,7 +50,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     public async Task<TItem?> GetItemByIdAsync(
         TList list,
         int itemId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (list.Id is null)
         {
@@ -65,7 +66,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         TList list,
         object bag,
         string createdBy,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (list.Id is null)
         {
@@ -84,7 +86,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         TList list,
         IEnumerable<object> bags,
         string createdBy,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (list.Id is null)
         {
@@ -112,7 +115,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     public async Task DeleteItemAsync(
         TItem item,
         string deletedBy,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         await unitOfWork.ItemsStore.DeleteAsync(item, deletedBy, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -34,7 +34,7 @@ internal static class HostingExtensions
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        var applicationDbContextMigrationAssemblyName = typeof(ApplicationDbContext).Assembly.FullName!;
+        var applicationDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
         var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
         builder.Services.AddInfrastructure(config =>
@@ -52,7 +52,7 @@ internal static class HostingExtensions
 
         builder.Services
             .AddIdentityApiEndpoints<IdentityUser>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<UsersDbContext>();
 
         builder.Services
             .ConfigureApplicationCookie(options =>

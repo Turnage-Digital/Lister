@@ -23,8 +23,8 @@ const RouteComponent = () => {
     },
   });
 
-  const handleViewClicked = (listId: string) => {
-    navigate({
+  const handleViewClicked = async (listId: string) => {
+    await navigate({
       to: "/$listId",
       params: { listId },
       search: { page: 0, pageSize: 10 },

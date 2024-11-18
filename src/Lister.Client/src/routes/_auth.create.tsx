@@ -58,10 +58,12 @@ const RouteComponent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     const mutated = await createListMutation.mutateAsync(updated);
     if (mutated.id === null) {
       throw new Error("List was not created.");
     }
+
     window.sessionStorage.removeItem("updated_list");
     navigate({
       to: "/$listId",

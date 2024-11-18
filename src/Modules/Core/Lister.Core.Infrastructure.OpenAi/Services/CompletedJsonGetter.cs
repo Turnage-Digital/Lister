@@ -17,7 +17,7 @@ public class CompletedJsonGetter(IOptions<OpenAiOptions> options) : IGetComplete
             Messages =
             {
                 new ChatRequestSystemMessage($"Here is an example of a JSON object: {example}"),
-                new ChatRequestUserMessage("Can you convert the following text into that object's structure?"),
+                new ChatRequestUserMessage("Convert the following text into that object's structure."),
                 new ChatRequestUserMessage(text)
             }
         };
