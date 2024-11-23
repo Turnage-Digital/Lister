@@ -17,11 +17,38 @@ export default [
     rules: {
       "@shopify/jsx-no-hardcoded-content": "off",
       "@typescript-eslint/naming-convention": "off",
+      "@typescript-eslint/no-misused-promises": "off",
       "id-length": "off",
       "no-process-env": "off",
       "no-implicit-coercion": "off",
       "no-template-curly-in-string": "off",
-      "@typescript-eslint/no-misused-promises": "off",
+      "import/order": [
+        "error",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["sibling", "parent"],
+            "index",
+            "object",
+            "type",
+          ],
+          pathGroups: [
+            {
+              pattern: "react",
+              group: "external",
+              position: "before",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["react"],
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
+          "newlines-between": "always",
+        },
+      ],
     },
   },
 ];

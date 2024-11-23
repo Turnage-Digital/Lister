@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import {
   CssBaseline,
   StyledEngineProvider,
@@ -9,7 +11,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import React from "react";
 import { createRoot } from "react-dom/client";
 
 import { auth } from "./auth";

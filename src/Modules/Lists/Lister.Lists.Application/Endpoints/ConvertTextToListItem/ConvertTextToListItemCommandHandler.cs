@@ -11,7 +11,8 @@ namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 public class ConvertTextToListItemCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
     IGetCompletedJson completedJsonGetter,
-    ILogger<ConvertTextToListItemCommandHandler<TList, TItem>> logger)
+    ILogger<ConvertTextToListItemCommandHandler<TList, TItem>> logger
+)
     : IRequestHandler<ConvertTextToListItemCommand, ListItem>
     where TList : IWritableList
     where TItem : IWritableItem

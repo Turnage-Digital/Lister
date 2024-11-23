@@ -1,3 +1,6 @@
+import * as React from "react";
+import { useState } from "react";
+
 import {
   Box,
   Button,
@@ -13,10 +16,8 @@ import {
   OutlinedInput,
   Stack,
 } from "@mui/material";
-import React, { useState } from "react";
 
 import { Status, statusColors } from "../models";
-
 import StatusBullet from "./status-bullet";
 
 interface Props {

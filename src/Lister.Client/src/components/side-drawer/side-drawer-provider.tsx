@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, ReactNode, useMemo, useState } from "react";
+import * as React from "react";
+import { PropsWithChildren, ReactNode, useMemo, useState } from "react";
 
 import SideDrawerContext from "./side-drawer-context";
 

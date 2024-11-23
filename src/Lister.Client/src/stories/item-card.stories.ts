@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import { ItemCard } from "../components";
+
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "ItemCard",

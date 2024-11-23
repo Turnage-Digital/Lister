@@ -1,5 +1,7 @@
+import * as React from "react";
+import { PropsWithChildren } from "react";
+
 import { Box } from "@mui/material";
-import React, { PropsWithChildren } from "react";
 
 type Props = PropsWithChildren;
 

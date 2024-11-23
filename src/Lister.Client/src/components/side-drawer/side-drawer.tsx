@@ -1,5 +1,6 @@
+import * as React from "react";
+
 import { Dialog, Drawer, useMediaQuery, useTheme } from "@mui/material";
-import React from "react";
 
 import useSideDrawer from "./use-side-drawer";
 

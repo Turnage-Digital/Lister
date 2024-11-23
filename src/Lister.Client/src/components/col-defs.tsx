@@ -1,9 +1,9 @@
+import * as React from "react";
+
 import { Delete, Edit, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import React from "react";
 
 import { Column, getStatusFromName, ListItemDefinition } from "../models";
-
 import StatusChip from "./status-chip";
 
 export const getGridColDefs = (

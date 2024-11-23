@@ -1,7 +1,8 @@
+import * as React from "react";
+
 import { Stack } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import React from "react";
 
 import { Titlebar } from "../components";
 import { itemQueryOptions, listDefinitionQueryOptions } from "../query-options";

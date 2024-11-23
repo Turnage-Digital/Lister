@@ -1,3 +1,6 @@
+import * as React from "react";
+import { useState } from "react";
+
 import { Delete } from "@mui/icons-material";
 import {
   Box,
@@ -16,7 +19,6 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import React, { useState } from "react";
 
 import { Column, ColumnType } from "../models";
 

@@ -1,12 +1,12 @@
-import { fileURLToPath, URL } from "node:url";
-import fs from "fs";
-import path from "path";
 import child_process from "child_process";
+import fs from "fs";
+import { fileURLToPath, URL } from "node:url";
+import path from "path";
 import { env } from "process";
 
 import viteReact from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { defineConfig } from "vite";
 
 const baseFolder =
   env.APPDATA !== undefined && env.APPDATA !== ""
@@ -28,9 +28,9 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         certFilePath,
         "--format",
         "Pem",
-        "--no-password"
+        "--no-password",
       ],
-      { stdio: "inherit" }
+      { stdio: "inherit" },
     ).status !== 0
   ) {
     throw new Error("Could not create certificate.");
@@ -49,24 +49,24 @@ export default defineConfig({
   plugins: [viteReact(), TanStackRouterVite()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url))
-    }
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   server: {
     proxy: {
       "^/api": {
         target,
-        secure: false
+        secure: false,
       },
       "^/identity": {
         target,
-        secure: false
-      }
+        secure: false,
+      },
     },
     port: 3000,
     https: {
       key: fs.readFileSync(keyFilePath),
-      cert: fs.readFileSync(certFilePath)
-    }
-  }
+      cert: fs.readFileSync(certFilePath),
+    },
+  },
 });

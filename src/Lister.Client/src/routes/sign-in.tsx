@@ -1,14 +1,19 @@
+import * as React from "react";
+import { FormEvent, useLayoutEffect, useState } from "react";
+
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import {
   Alert,
   Box,
   Container,
+  IconButton,
+  InputAdornment,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import React, { FormEvent, useLayoutEffect, useState } from "react";
 
 const RouteComponent = () => {
   const router = useRouter();
@@ -18,6 +23,7 @@ const RouteComponent = () => {
     select: ({ auth }) => ({ auth, status: auth.status }),
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,6 +77,9 @@ const RouteComponent = () => {
     }
   };
 
+  const showPasswordType = showPassword ? "text" : "password";
+  const showPasswordIcon = showPassword ? <VisibilityOff /> : <Visibility />;
+
   return (
     <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
       <Stack spacing={2} alignItems="center">
@@ -94,8 +103,22 @@ const RouteComponent = () => {
             name="password"
             id="password"
             label="Password"
-            type="password"
+            type={showPasswordType}
             autoComplete="current-password"
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPasswordIcon}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
 
           <LoadingButton
@@ -115,6 +138,29 @@ const RouteComponent = () => {
             {error}
           </Alert>
         )}
+
+        {/* /!* Register and Forgot Password Links *!/*/}
+        {/* <Stack*/}
+        {/*  direction="row"*/}
+        {/*  spacing={2}*/}
+        {/*  justifyContent="center"*/}
+        {/*  sx={{ mt: 2 }}*/}
+        {/* >*/}
+        {/*  <Link*/}
+        {/*    component="button"*/}
+        {/*    variant="body2"*/}
+        {/*    // onClick={() => navigate({ to: "/register" })}*/}
+        {/*  >*/}
+        {/*    Register*/}
+        {/*  </Link>*/}
+        {/*  <Link*/}
+        {/*    component="button"*/}
+        {/*    variant="body2"*/}
+        {/*    // onClick={() => navigate({ to: "/forgot-password" })}*/}
+        {/*  >*/}
+        {/*    Forgot Password?*/}
+        {/*  </Link>*/}
+        {/* </Stack>*/}
       </Stack>
     </Container>
   );

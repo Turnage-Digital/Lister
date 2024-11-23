@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import {
   FormControl,
   InputLabel,
@@ -5,10 +7,8 @@ import {
   Select,
   Stack,
 } from "@mui/material";
-import React from "react";
 
 import { getStatusFromName, ListItem, ListItemDefinition } from "../models";
-
 import StatusChip from "./status-chip";
 
 interface Props {

@@ -1,6 +1,7 @@
+import * as React from "react";
+
 import { Close } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
-import React from "react";
 
 import useSideDrawer from "./use-side-drawer";
 
