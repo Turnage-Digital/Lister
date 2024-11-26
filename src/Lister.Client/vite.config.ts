@@ -28,9 +28,9 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         certFilePath,
         "--format",
         "Pem",
-        "--no-password",
+        "--no-password"
       ],
-      { stdio: "inherit" },
+      { stdio: "inherit" }
     ).status !== 0
   ) {
     throw new Error("Could not create certificate.");
@@ -49,24 +49,24 @@ export default defineConfig({
   plugins: [viteReact(), TanStackRouterVite()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   server: {
     proxy: {
       "^/api": {
         target,
-        secure: false,
+        secure: false
       },
       "^/identity": {
         target,
-        secure: false,
-      },
+        secure: false
+      }
     },
     port: 3000,
     https: {
       key: fs.readFileSync(keyFilePath),
-      cert: fs.readFileSync(certFilePath),
-    },
-  },
+      cert: fs.readFileSync(certFilePath)
+    }
+  }
 });

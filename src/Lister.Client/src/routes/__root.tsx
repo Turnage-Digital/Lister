@@ -1,17 +1,13 @@
+import * as React from "react";
+import { MouseEvent, useState } from "react";
+
 import { AccountCircle } from "@mui/icons-material";
 import { AppBar, Box, Container, IconButton, Menu, MenuItem, Stack, Toolbar } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet, useRouter } from "@tanstack/react-router";
+
 import { Auth } from "../auth";
 import { SideDrawer } from "../components";
-import * as React
-
-,
-{
-  MouseEvent, useState;
-}
-from;
-"react";
 
 const RootComponent = () => {
   const router = useRouter();
@@ -72,7 +68,7 @@ const RootComponent = () => {
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="xl">
+        <Container component="main" maxWidth="xl">
           <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
           <Outlet />
         </Container>

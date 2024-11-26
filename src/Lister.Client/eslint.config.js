@@ -7,9 +7,9 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        project: "tsconfig.json",
-      },
-    },
+        project: "tsconfig.json"
+      }
+    }
   },
   ...shopifyEslintPlugin.configs.react,
   ...shopifyEslintPlugin.configs.prettier,
@@ -32,23 +32,23 @@ export default [
             ["sibling", "parent"],
             "index",
             "object",
-            "type",
+            "type"
           ],
           pathGroups: [
             {
               pattern: "react",
               group: "external",
-              position: "before",
-            },
+              position: "before"
+            }
           ],
           pathGroupsExcludedImportTypes: ["react"],
           alphabetize: {
             order: "asc",
-            caseInsensitive: true,
+            caseInsensitive: true
           },
-          "newlines-between": "always",
-        },
-      ],
-    },
-  },
+          "newlines-between": "always"
+        }
+      ]
+    }
+  }
 ];

@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "ItemCard",
-  component: ItemCard,
+  component: ItemCard
 } satisfies Meta<typeof ItemCard>;
 
 export default meta;
@@ -22,8 +22,8 @@ export const Default: Story = {
         status: "Active",
         address: "The Sh*tmobile",
         zipCode: "34609",
-        dateOfBirth: "1970-01-01T05:00:00.0000000Z",
-      },
-    },
-  },
+        dateOfBirth: "1970-01-01T05:00:00.0000000Z"
+      }
+    }
+  }
 };

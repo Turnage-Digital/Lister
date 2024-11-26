@@ -14,7 +14,7 @@ import {
   Menu,
   MenuItem,
   OutlinedInput,
-  Stack,
+  Stack
 } from "@mui/material";
 
 import { Status, statusColors } from "../models";
@@ -75,7 +75,7 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
               type="text"
               label="Status"
               sx={{
-                background: "white",
+                background: "white"
               }}
               value={statusName ?? ""}
               onChange={(event) => setStatusName(event.target.value)}
@@ -113,7 +113,7 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
                   label={status.name}
                   sx={{
                     color: "white",
-                    backgroundColor: status.color,
+                    backgroundColor: status.color
                   }}
                   onDelete={() => handleRemoveClicked(status.name)}
                 />

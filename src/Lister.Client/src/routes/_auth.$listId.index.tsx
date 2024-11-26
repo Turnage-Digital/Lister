@@ -8,10 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { getGridColDefs, Titlebar } from "../components";
 import { ListItem, ListSearch } from "../models";
-import {
-  listDefinitionQueryOptions,
-  pagedItemsQueryOptions,
-} from "../query-options";
+import { listDefinitionQueryOptions, pagedItemsQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const { listId } = Route.useParams();
@@ -20,54 +17,54 @@ const RouteComponent = () => {
   const search = Route.useSearch();
 
   const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId),
+    listDefinitionQueryOptions(listId)
   );
 
   const pagedItemsQuery = useSuspenseQuery(
-    pagedItemsQueryOptions(search, listId),
+    pagedItemsQueryOptions(search, listId)
   );
 
   const deleteItemMutation = useMutation({
     mutationFn: async ({
-      listId,
-      itemId,
-    }: {
+                         listId,
+                         itemId
+                       }: {
       listId: string;
       itemId: number;
     }) => {
       const request = new Request(`/api/lists/${listId}/items/${itemId}`, {
-        method: "DELETE",
+        method: "DELETE"
       });
       await fetch(request);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
-    },
+    }
   });
 
   const handlePaginationChange = async (
-    gridPaginationModel: GridPaginationModel,
+    gridPaginationModel: GridPaginationModel
   ) => {
     await navigate({
       search: (prev) => ({
         ...prev,
         page: gridPaginationModel.page,
-        pageSize: gridPaginationModel.pageSize,
-      }),
+        pageSize: gridPaginationModel.pageSize
+      })
     });
   };
 
   const handleSortChange = async (gridSortModel: GridSortModel) => {
     if (gridSortModel.length === 0) {
       await navigate({
-        search: (prev) => ({ ...prev, field: undefined, sort: undefined }),
+        search: (prev) => ({ ...prev, field: undefined, sort: undefined })
       });
     } else {
       const field = gridSortModel[0].field;
       const sort = gridSortModel[0].sort === "desc" ? "desc" : "asc";
 
       await navigate({
-        search: (prev) => ({ ...prev, field, sort }),
+        search: (prev) => ({ ...prev, field, sort })
       });
     }
   };
@@ -87,40 +84,40 @@ const RouteComponent = () => {
   const gridColDefs = getGridColDefs(
     listDefinitionQuery.data,
     handleViewClicked,
-    handleDeleteClicked,
+    handleDeleteClicked
   );
 
   const pagination: GridPaginationModel = {
     page: search.page,
-    pageSize: search.pageSize,
+    pageSize: search.pageSize
   };
 
   const sort: GridSortModel = [];
   if (search.field && search.sort) {
     sort.push({
       field: search.field,
-      sort: search.sort === "desc" ? "desc" : "asc",
+      sort: search.sort === "desc" ? "desc" : "asc"
     });
   }
 
   const rows = pagedItemsQuery.data.items.map((item: ListItem) => ({
     id: item.id,
-    ...item.bag,
+    ...item.bag
   }));
 
   const actions = [
     {
       title: "Add an Item",
       icon: <AddCircle />,
-      onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
-    },
+      onClick: () => navigate({ to: "/$listId/create", params: { listId } })
+    }
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
-    },
+      onClick: () => navigate({ to: "/" })
+    }
   ];
 
   return (
@@ -166,7 +163,7 @@ export const Route = createFileRoute("/_auth/$listId/")({
   loaderDeps: ({ search }) => search,
   loader: (options) => {
     options.context.queryClient.ensureQueryData(
-      pagedItemsQueryOptions(options.deps, options.params.listId),
+      pagedItemsQueryOptions(options.deps, options.params.listId)
     );
-  },
+  }
 });

@@ -12,7 +12,7 @@ import {
   EditListNameContent,
   EditListStatusesContent,
   FormBlock,
-  Titlebar,
+  Titlebar
 } from "../components";
 import { ListItemDefinition } from "../models";
 
@@ -24,10 +24,10 @@ const RouteComponent = () => {
     mutationFn: async (list: ListItemDefinition) => {
       const request = new Request("/api/lists", {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         method: "POST",
-        body: JSON.stringify(list),
+        body: JSON.stringify(list)
       });
       const response = await fetch(request);
       const retval: ListItemDefinition = await response.json();
@@ -35,14 +35,14 @@ const RouteComponent = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
-    },
+    }
   });
 
   const defaultListDefinition: ListItemDefinition = {
     id: null,
     name: "",
     columns: [],
-    statuses: [],
+    statuses: []
   };
 
   const [updated, setUpdated] = useState<ListItemDefinition>(() => {
@@ -70,15 +70,15 @@ const RouteComponent = () => {
     navigate({
       to: "/$listId",
       params: { listId: mutated.id },
-      search: { page: 0, pageSize: 10 },
+      search: { page: 0, pageSize: 10 }
     });
   };
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
-    },
+      onClick: () => navigate({ to: "/" })
+    }
   ];
 
   return (
@@ -127,7 +127,7 @@ const RouteComponent = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" },
+          justifyContent: { xs: "center", md: "flex-end" }
         }}
       >
         <LoadingButton
@@ -145,5 +145,5 @@ const RouteComponent = () => {
 };
 
 export const Route = createFileRoute("/_auth/create")({
-  component: RouteComponent,
+  component: RouteComponent
 });

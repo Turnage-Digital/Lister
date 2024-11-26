@@ -9,7 +9,7 @@ import StatusChip from "./status-chip";
 export const getGridColDefs = (
   listItemDefinition: ListItemDefinition,
   handleViewClicked: (listId: string, itemId: number) => void,
-  handleDeleteClicked: (listId: string, itemId: number) => void,
+  handleDeleteClicked: (listId: string, itemId: number) => void
 ): GridColDef[] => {
   const retval: GridColDef[] = [];
 
@@ -18,14 +18,14 @@ export const getGridColDefs = (
     headerName: "ID",
     width: 75,
     sortable: false,
-    disableColumnMenu: true,
+    disableColumnMenu: true
   });
 
   const mapped = listItemDefinition.columns.map((column: Column) => {
     const retval: GridColDef = {
       field: column.property!,
       headerName: column.name,
-      flex: 1,
+      flex: 1
     };
 
     if (column.type === "Date") {
@@ -48,7 +48,7 @@ export const getGridColDefs = (
       <StatusChip
         status={getStatusFromName(listItemDefinition.statuses, params.value)}
       />
-    ),
+    )
   });
 
   retval.push({
@@ -85,9 +85,9 @@ export const getGridColDefs = (
           onClick={() =>
             handleDeleteClicked(listItemDefinition.id!, id as number)
           }
-        />,
+        />
       ];
-    },
+    }
   });
 
   return retval;

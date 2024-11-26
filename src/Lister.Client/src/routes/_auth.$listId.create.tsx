@@ -13,7 +13,7 @@ import {
   FormBlock,
   SmartPasteDialog,
   Titlebar,
-  useSideDrawer,
+  useSideDrawer
 } from "../components";
 import { ListItem } from "../models";
 import { listDefinitionQueryOptions } from "../query-options";
@@ -28,10 +28,10 @@ const RouteComponent = () => {
     mutationFn: async (item: ListItem) => {
       const request = new Request(`/api/lists/${listId}/items`, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         method: "POST",
-        body: JSON.stringify(item),
+        body: JSON.stringify(item)
       });
       const response = await fetch(request);
       const retval: ListItem = await response.json();
@@ -39,22 +39,22 @@ const RouteComponent = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
-    },
+    }
   });
 
   const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId),
+    listDefinitionQueryOptions(listId)
   );
 
   const defaultListItem: ListItem = {
     id: null,
     listId,
-    bag: {},
+    bag: {}
   };
 
   const [updated, setUpdated] = useState<ListItem>(() => {
     const item = window.sessionStorage.getItem(
-      listDefinitionQuery.data.id ?? "updated_item",
+      listDefinitionQuery.data.id ?? "updated_item"
     );
     return item ? JSON.parse(item) : defaultListItem;
   });
@@ -62,7 +62,7 @@ const RouteComponent = () => {
   useEffect(() => {
     window.sessionStorage.setItem(
       listDefinitionQuery.data.id ?? "updated_item",
-      JSON.stringify(updated),
+      JSON.stringify(updated)
     );
   }, [listDefinitionQuery, updated]);
 
@@ -78,11 +78,11 @@ const RouteComponent = () => {
       `/api/lists/${listDefinitionQuery.data.id}/items/convert-text-to-list-item`,
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         method: "POST",
-        body: JSON.stringify(command),
-      },
+        body: JSON.stringify(command)
+      }
     );
 
     const response = await fetch(postRequest);
@@ -99,11 +99,11 @@ const RouteComponent = () => {
       throw new Error("Item was not created.");
     }
     window.sessionStorage.removeItem(
-      listDefinitionQuery.data.id ?? "updated_item",
+      listDefinitionQuery.data.id ?? "updated_item"
     );
     navigate({
       to: "/$listId/$itemId",
-      params: { listId, itemId: mutated.id },
+      params: { listId, itemId: mutated.id }
     });
   };
 
@@ -116,19 +116,19 @@ const RouteComponent = () => {
       title: "Smart Paste",
       icon: <ContentPaste />,
       onClick: () =>
-        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />),
-    },
+        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />)
+    }
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate({ to: "/" })
     },
     {
       title: listDefinitionQuery.data.name,
-      onClick: () => navigate({ to: `/${listId}` }),
-    },
+      onClick: () => navigate({ to: `/${listId}` })
+    }
   ];
 
   return (
@@ -172,7 +172,7 @@ const RouteComponent = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" },
+          justifyContent: { xs: "center", md: "flex-end" }
         }}
       >
         <LoadingButton
@@ -190,5 +190,5 @@ const RouteComponent = () => {
 };
 
 export const Route = createFileRoute("/_auth/$listId/create")({
-  component: RouteComponent,
+  component: RouteComponent
 });

@@ -4,15 +4,15 @@ const theme = createTheme({
   cssVariables: true,
   palette: {
     primary: {
-      main: "#334E68",
+      main: "#334E68"
     },
     background: {
-      default: "#FAFAFA",
-    },
+      default: "#FAFAFA"
+    }
   },
   typography: {
-    fontFamily: "Inter, sans-serif",
-  },
+    fontFamily: "Poppins, sans-serif"
+  }
 });
 
 export default theme;

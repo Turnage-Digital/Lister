@@ -1,15 +1,7 @@
 import * as React from "react";
 
 import { Delete, Visibility } from "@mui/icons-material";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Grid2,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Card, CardActions, CardContent, Grid2, IconButton, Tooltip, Typography } from "@mui/material";
 
 import { ListName } from "../models";
 
