@@ -75,6 +75,32 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ListHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    On = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    By = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Bag = table.Column<string>(type: "JSON", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ListHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ListHistory_Lists_ListId",
+                        column: x => x.ListId,
+                        principalTable: "Lists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Statuses",
                 columns: table => new
                 {
@@ -139,6 +165,11 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 column: "ListId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ListHistory_ListId",
+                table: "ListHistory",
+                column: "ListId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Statuses_ListId",
                 table: "Statuses",
                 column: "ListId");
@@ -152,6 +183,9 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemHistory");
+
+            migrationBuilder.DropTable(
+                name: "ListHistory");
 
             migrationBuilder.DropTable(
                 name: "Statuses");

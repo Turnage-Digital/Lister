@@ -42,6 +42,41 @@ public class ListsDbContext(DbContextOptions<ListsDbContext> options)
                 .WithOne(e => e.List)
                 .HasForeignKey(e => e.ListId);
         });
+        
+        modelBuilder.Entity<ListHistoryEntryDb>(entity =>
+        {
+            entity.ToTable("ListHistory");
+
+            entity.HasKey(e => e.Id)
+                .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+
+            entity.Property(e => e.Type)
+                .IsRequired();
+
+            entity.Property(e => e.On)
+                .IsRequired();
+
+            entity.Property(e => e.By)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            var jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            entity.Property(e => e.Bag)
+                .HasColumnType("JSON")
+                .HasConversion(
+                    e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                    e => JsonSerializer.Deserialize<object>(e, jsonSerializerOptions)!);
+
+            entity.Property(e => e.ListId)
+                .IsRequired();
+
+            entity.HasOne(e => e.List)
+                .WithMany(e => e.History)
+                .HasForeignKey(e => e.ListId);
+        });
 
         modelBuilder.Entity<ColumnDb>(entity =>
         {

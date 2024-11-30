@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Core.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(DataProtectionKeyDbContext))]
-    [Migration("20241118140627_Initial")]
+    [Migration("20241130184501_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

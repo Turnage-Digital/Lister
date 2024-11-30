@@ -6,7 +6,7 @@ namespace Lister.Lists.Infrastructure.Sql.ValueObjects;
 
 public record ListHistoryEntryDb : Entry<ListHistoryType>
 {
-    public Guid? Id { get; set; }
+    public int? Id { get; set; }
 
     public Guid? ListId { get; set; }
 
