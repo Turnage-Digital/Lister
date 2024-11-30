@@ -1,5 +1,6 @@
 using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Domain;
+using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.ValueObjects;
@@ -38,55 +39,69 @@ public class ListsStore(ListsDbContext dbContext)
         {
             Name = name
         };
+        retval.History.Add(new ListHistoryEntryDb
+        {
+            Type = ListHistoryType.Created,
+            On = DateTime.UtcNow,
+            By = createdBy,
+            List = retval
+        });
         return Task.FromResult(retval);
     }
 
-    public async Task CreateAsync(ListDb listDB, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(ListDb listDb, CancellationToken cancellationToken)
     {
-        await _entityStore.CreateAsync(listDB, cancellationToken);
+        await _entityStore.CreateAsync(listDb, cancellationToken);
     }
 
-    public Task DeleteAsync(ListDb listDB, string deletedBy, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(ListDb listDb, string deletedBy, CancellationToken cancellationToken)
     {
-        listDB.IsDeleted = true;
+        listDb.IsDeleted = true;
+        listDb.History.Add(new ListHistoryEntryDb
+        {
+            Type = ListHistoryType.Deleted,
+            On = DateTime.UtcNow,
+            By = deletedBy,
+            List = listDb
+        });
         return Task.CompletedTask;
     }
 
     public Task SetColumnsAsync(
-        ListDb listDB,
+        ListDb listDb,
         IEnumerable<Column> columns,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken
     )
     {
-        listDB.Columns = columns
-            .Select(pd => new ColumnDb { Name = pd.Name, Type = pd.Type, ListDb = listDB })
+        listDb.Columns = columns
+            .Select(pd => new ColumnDb { Name = pd.Name, Type = pd.Type, ListDb = listDb })
             .ToList();
         return Task.CompletedTask;
     }
 
-    public Task<Column[]> GetColumnsAsync(ListDb listDB, CancellationToken cancellationToken = default)
+    public Task<Column[]> GetColumnsAsync(ListDb listDb, CancellationToken cancellationToken)
     {
-        var retval = listDB.Columns
+        var retval = listDb.Columns
             .Select(pd => new Column { Name = pd.Name, Type = pd.Type })
             .ToArray();
         return Task.FromResult(retval);
     }
 
     public Task SetStatusesAsync(
-        ListDb listDB,
+        ListDb listDb,
         IEnumerable<Status> statuses,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken
     )
     {
-        listDB.Statuses = statuses
-            .Select(sd => new StatusDb { Name = sd.Name, Color = sd.Color, ListDb = listDB })
+        listDb.Statuses = statuses
+            .Select(sd => new StatusDb { Name = sd.Name, Color = sd.Color, ListDb = listDb })
             .ToList();
         return Task.CompletedTask;
     }
 
-    public Task<Status[]> GetStatusesAsync(ListDb listDB, CancellationToken cancellationToken = default)
+    public Task<Status[]> GetStatusesAsync(ListDb listDb, CancellationToken cancellationToken)
     {
-        var retval = listDB.Statuses
+        var retval = listDb.Statuses
             .Select(sd => new Status { Name = sd.Name, Color = sd.Color })
             .ToArray();
         return Task.FromResult(retval);

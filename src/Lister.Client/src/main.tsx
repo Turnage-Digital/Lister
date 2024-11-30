@@ -1,6 +1,10 @@
 import * as React from "react";
 
-import { CssBaseline, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import {
+  CssBaseline,
+  StyledEngineProvider,
+  ThemeProvider,
+} from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,10 +25,10 @@ export const router = createRouter({
   defaultPendingComponent: Loading,
   context: {
     auth,
-    queryClient
+    queryClient,
   },
   defaultPreload: "intent",
-  defaultPreloadStaleTime: 0
+  defaultPreloadStaleTime: 0,
 });
 
 declare module "@tanstack/react-router" {
@@ -50,5 +54,5 @@ root.render(
         </SideDrawerProvider>
       </LocalizationProvider>
     </ThemeProvider>
-  </StyledEngineProvider>
+  </StyledEngineProvider>,
 );

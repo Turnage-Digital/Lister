@@ -10,7 +10,7 @@ const RouteComponent = () => {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const { auth, status } = Route.useRouteContext({
-    select: ({ auth }) => ({ auth, status: auth.status })
+    select: ({ auth }) => ({ auth, status: auth.status }),
   });
   const [showForgotPassword, setShowForgotPassword] = React.useState(false);
 
@@ -77,7 +77,7 @@ export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,
   validateSearch: (search): SignInSearch => {
     return {
-      callbackUrl: search.callbackUrl as string | undefined
+      callbackUrl: search.callbackUrl as string | undefined,
     };
-  }
+  },
 });

@@ -15,7 +15,7 @@ const SideDrawerFooter = ({ children }: Props) => {
         backgroundColor: theme.palette.grey[50],
         display: "flex",
         width: "100%",
-        zIndex: 9999
+        zIndex: 9999,
       })}
     >
       {children}

@@ -9,7 +9,7 @@ import {
   SideDrawerContent,
   SideDrawerFooter,
   SideDrawerHeader,
-  useSideDrawer
+  useSideDrawer,
 } from "./side-drawer";
 
 interface Props {

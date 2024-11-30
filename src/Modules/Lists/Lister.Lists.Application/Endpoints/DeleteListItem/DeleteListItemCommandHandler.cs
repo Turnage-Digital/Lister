@@ -9,7 +9,7 @@ public class DeleteListItemCommandHandler<TList, TItem>(ListsAggregate<TList, TI
     where TList : IWritableList
     where TItem : IWritableItem
 {
-    public async Task Handle(DeleteListItemCommand request, CancellationToken cancellationToken = default)
+    public async Task Handle(DeleteListItemCommand request, CancellationToken cancellationToken)
     {
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), $"{request.UserId} cannot be null");

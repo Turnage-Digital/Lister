@@ -12,7 +12,7 @@ const RouteComponent = () => {
   const navigate = Route.useNavigate();
 
   const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId)
+    listDefinitionQueryOptions(listId),
   );
 
   const itemQuery = useSuspenseQuery(itemQueryOptions(listId, itemId));
@@ -24,12 +24,12 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" })
+      onClick: () => navigate({ to: "/" }),
     },
     {
       title: listDefinitionQuery.data.name || "",
-      onClick: () => navigate({ to: `/${listId}` })
-    }
+      onClick: () => navigate({ to: `/${listId}` }),
+    },
   ];
 
   return (
@@ -50,19 +50,19 @@ export const Route = createFileRoute("/_auth/$listId/$itemId")({
     parse: (params: any) => {
       return {
         listId: params.listId as string,
-        itemId: parseInt(params.itemId, 10)
+        itemId: parseInt(params.itemId, 10),
       };
     },
     stringify: (params: any) => {
       return {
         listId: params.listId as string,
-        itemId: params.itemId.toString()
+        itemId: params.itemId.toString(),
       };
-    }
+    },
   },
   loader: (options) => {
     options.context.queryClient.ensureQueryData(
-      itemQueryOptions(options.params.listId, options.params.itemId)
+      itemQueryOptions(options.params.listId, options.params.itemId),
     );
-  }
+  },
 });

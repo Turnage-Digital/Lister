@@ -16,7 +16,7 @@ const StatusBullet = ({ statusColor }: Props) => {
         borderRadius: "50%",
         height: theme.spacing(2),
         width: theme.spacing(2),
-        backgroundColor: statusColor.value
+        backgroundColor: statusColor.value,
       })}
     />
   );

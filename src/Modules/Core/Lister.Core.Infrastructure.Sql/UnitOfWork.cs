@@ -8,7 +8,7 @@ public abstract class UnitOfWork<TContext>(TContext dbContext)
 {
     private bool _disposed;
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
         var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 

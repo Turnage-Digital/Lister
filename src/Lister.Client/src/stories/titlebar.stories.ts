@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Titlebar",
-  component: Titlebar
+  component: Titlebar,
 } satisfies Meta<typeof Titlebar>;
 
 export default meta;
@@ -15,10 +15,10 @@ export const ListsPage: Story = {
     title: "Lists",
     actions: [
       {
-        title: "Create a List"
-      }
-    ]
-  }
+        title: "Create a List",
+      },
+    ],
+  },
 };
 
 export const ListPage: Story = {
@@ -26,15 +26,15 @@ export const ListPage: Story = {
     title: "Students",
     actions: [
       {
-        title: "Create an Item"
-      }
+        title: "Create an Item",
+      },
     ],
     breadcrumbs: [
       {
-        title: "Lists"
-      }
-    ]
-  }
+        title: "Lists",
+      },
+    ],
+  },
 };
 
 export const ItemPage: Story = {
@@ -42,11 +42,11 @@ export const ItemPage: Story = {
     title: "ID 6732",
     breadcrumbs: [
       {
-        title: "Lists"
+        title: "Lists",
       },
       {
-        title: "Students"
-      }
-    ]
-  }
+        title: "Students",
+      },
+    ],
+  },
 };

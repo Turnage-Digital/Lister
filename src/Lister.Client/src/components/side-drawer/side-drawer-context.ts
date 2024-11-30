@@ -8,12 +8,10 @@ export interface SideDrawerValue {
 }
 
 const defaultValue: SideDrawerValue = {
-  openDrawer: () => {
-  },
-  closeDrawer: () => {
-  },
+  openDrawer: () => {},
+  closeDrawer: () => {},
   title: "",
-  content: null
+  content: null,
 };
 
 const SideDrawerContext = createContext<SideDrawerValue>(defaultValue);

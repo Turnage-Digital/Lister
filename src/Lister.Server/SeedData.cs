@@ -6,7 +6,7 @@ using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace Lister.Lists.Infrastructure.Sql;
+namespace Lister.Server;
 
 #if DEBUG
 public static class SeedData
@@ -24,22 +24,22 @@ public static class SeedData
             var userManager = scope.ServiceProvider
                 .GetRequiredService<UserManager<IdentityUser>>();
 
-            var heath = userManager.FindByNameAsync("heath").Result;
+            var heath = userManager.FindByNameAsync("heath@email.com").Result;
             if (heath == null)
             {
-                CreateUser(userManager, "heath", "heath@email.com", "Pass123$", "Heath Turnage",
+                CreateUser(userManager, "heath@email.com", "heath@email.com", "Pass123$", "Heath Turnage",
                     "Heath", "Turnage", "https://lister.com");
-                heath = userManager.FindByNameAsync("heath").Result;
+                heath = userManager.FindByNameAsync("heath@email.com").Result;
             }
             else
             {
                 Console.WriteLine("heath already exists");
             }
 
-            var erika = userManager.FindByNameAsync("erika").Result;
+            var erika = userManager.FindByNameAsync("erika@email.com").Result;
             if (erika == null)
             {
-                CreateUser(userManager, "erika", "erika@email.com", "Pass123$", "Erika Turnage",
+                CreateUser(userManager, "erika@email.com", "erika@email.com", "Pass123$", "Erika Turnage",
                     "Erika", "Turnage", "https://lister.com");
             }
             else

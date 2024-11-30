@@ -2,7 +2,15 @@ import * as React from "react";
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Alert, Checkbox, FormControlLabel, IconButton, InputAdornment, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+} from "@mui/material";
 
 export interface Props {
   onSignedIn: (email: string) => void;
@@ -13,7 +21,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
   const [loading, setLoading] = React.useState(false);
 
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
-    null
+    null,
   );
   const [emailErrorMessage, setEmailErrorMessage] = React.useState<
     string | null
@@ -23,8 +31,9 @@ const SignInForm = ({ onSignedIn }: Props) => {
   >(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (emailErrorMessage || passwordErrorMessage) {
-      event.preventDefault();
       return;
     }
 
@@ -39,20 +48,20 @@ const SignInForm = ({ onSignedIn }: Props) => {
       const input = { email, password };
       const request = new Request("/identity/login?useCookies=true", {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(input)
+        body: JSON.stringify(input),
       });
       const response = await fetch(request);
       if (!response.ok) {
-        setFormErrorMessage("Invalid username or password");
+        setFormErrorMessage("Invalid email or password.");
         return;
       }
 
       onSignedIn(email);
-    } catch (e: any) {
-      setFormErrorMessage(e.message);
+    } catch {
+      setFormErrorMessage("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -64,18 +73,18 @@ const SignInForm = ({ onSignedIn }: Props) => {
 
     let retval = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (email.value && /\S+@\S+\.\S+/.test(email.value)) {
+      setEmailErrorMessage(null);
+    } else {
       setEmailErrorMessage("Please enter a valid email address.");
       retval = false;
-    } else {
-      setEmailErrorMessage(null);
     }
 
-    if (!password.value || password.value.length < 6) {
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      retval = false;
-    } else {
+    if (password.value) {
       setPasswordErrorMessage(null);
+    } else {
+      setPasswordErrorMessage("Please enter a password.");
+      retval = false;
     }
 
     return retval;
@@ -134,8 +143,8 @@ const SignInForm = ({ onSignedIn }: Props) => {
                   {showPasswordIcon}
                 </IconButton>
               </InputAdornment>
-            )
-          }
+            ),
+          },
         }}
       />
 

@@ -1,6 +1,14 @@
 import * as React from "react";
 
-import { Box, Breadcrumbs, Button, Grid2, Link, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Grid2,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 export interface Action {
   title: string;
@@ -39,7 +47,7 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
           size={{ xs: 12, md: 3 }}
           sx={{
             display: { xs: "none", md: "flex" },
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           <Stack direction="row" spacing={2}>

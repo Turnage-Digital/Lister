@@ -7,7 +7,7 @@ public class EntityStore<TEntity>(DbContext dbContext)
 {
     private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
 
-    public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         await _dbSet.AddAsync(entity, cancellationToken);
     }

@@ -6,9 +6,9 @@ export const Route = createFileRoute("/_auth")({
       throw redirect({
         to: "/sign-in",
         search: {
-          callbackUrl: location.href
-        }
+          callbackUrl: location.href,
+        },
       });
     }
-  }
+  },
 });

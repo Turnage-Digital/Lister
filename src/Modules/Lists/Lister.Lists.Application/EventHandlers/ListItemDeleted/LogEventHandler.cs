@@ -8,7 +8,7 @@ public class LogEventHandler(ILogger<LogEventHandler> logger) : INotificationHan
 {
     public Task Handle(ListItemDeletedEvent notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation("ListItemDeletedEvent: {notification}", notification);
+        logger.LogInformation("ListItemDeletedEvent: {notification}", new { notification.Item.Id, notification.DeletedBy });
         return Task.CompletedTask;
     }
 }

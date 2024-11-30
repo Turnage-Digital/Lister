@@ -16,4 +16,6 @@ public class ListDb : IWritableList
     public ICollection<StatusDb> Statuses { get; set; } = new HashSet<StatusDb>();
 
     public ICollection<ItemDb> Items { get; set; } = new HashSet<ItemDb>();
+    
+    public ICollection<ListHistoryEntryDb> History { get; set; } = new HashSet<ListHistoryEntryDb>();
 }

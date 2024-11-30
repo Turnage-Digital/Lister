@@ -73,7 +73,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         {
             throw new InvalidOperationException("List must have an Id");
         }
-
+        
         var retval = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
         await unitOfWork.ItemsStore.SetBagAsync(retval, bag, cancellationToken);
         await unitOfWork.ItemsStore.CreateAsync(retval, cancellationToken);

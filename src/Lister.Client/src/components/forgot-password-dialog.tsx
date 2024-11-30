@@ -1,6 +1,14 @@
 import * as React from "react";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 interface Props {
   open: boolean;
@@ -25,7 +33,7 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
       onClose={onClose}
       PaperProps={{
         component: "form",
-        onSubmit: handleSubmit
+        onSubmit: handleSubmit,
       }}
     >
       <DialogTitle>Reset password</DialogTitle>
