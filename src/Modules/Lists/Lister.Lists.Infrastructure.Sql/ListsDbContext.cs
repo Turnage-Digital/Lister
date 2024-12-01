@@ -42,7 +42,7 @@ public class ListsDbContext(DbContextOptions<ListsDbContext> options)
                 .WithOne(e => e.List)
                 .HasForeignKey(e => e.ListId);
         });
-        
+
         modelBuilder.Entity<ListHistoryEntryDb>(entity =>
         {
             entity.ToTable("ListHistory");

@@ -4,7 +4,6 @@ using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Views;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 

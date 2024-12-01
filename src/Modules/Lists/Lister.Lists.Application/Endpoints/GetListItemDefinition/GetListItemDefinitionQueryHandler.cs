@@ -3,7 +3,6 @@ using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 
 namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 

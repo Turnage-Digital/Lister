@@ -10,12 +10,6 @@ namespace Lister.Lists.Tests;
 [TestFixture]
 public class ListsAggregateTests
 {
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
-    private Mock<IMediator> _mediator;
-    private ListsAggregate<ListDb, ItemDb> _listsAggregate;
-
-    const string BY = "heath";
-
     [SetUp]
     public void SetUp()
     {
@@ -30,6 +24,12 @@ public class ListsAggregateTests
 
         _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
     }
+
+    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
+    private Mock<IMediator> _mediator;
+    private ListsAggregate<ListDb, ItemDb> _listsAggregate;
+
+    private const string BY = "heath";
 
     [Test]
     public async Task GetListByIdAsync_ReturnsList_WhenIdExists()
