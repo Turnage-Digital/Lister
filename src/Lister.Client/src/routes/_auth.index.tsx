@@ -24,14 +24,6 @@ const RouteComponent = () => {
     },
   });
 
-  const handleViewClicked = async (listId: string) => {
-    await navigate({
-      to: "/$listId",
-      params: { listId },
-      search: { page: 0, pageSize: 10 },
-    });
-  };
-
   const handleDeleteClicked = async (listId: string) => {
     await deleteListMutation.mutateAsync(listId);
   };
@@ -58,7 +50,6 @@ const RouteComponent = () => {
           <ListCard
             key={listName.id}
             listName={listName}
-            onViewClick={() => handleViewClicked(listName.id)}
             onDeleteClick={() => handleDeleteClicked(listName.id)}
           />
         ))}

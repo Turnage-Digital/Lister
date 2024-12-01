@@ -140,7 +140,7 @@ const RouteComponent = () => {
       sx={{ px: 2, py: 4 }}
     >
       <Titlebar
-        title="Add an Item"
+        title="Create an Item"
         actions={actions}
         breadcrumbs={breadcrumbs}
       />

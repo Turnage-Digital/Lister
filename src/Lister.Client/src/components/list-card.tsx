@@ -12,14 +12,14 @@ import {
 } from "@mui/material";
 
 import { ListName } from "../models";
+import PreloadIconButton from "./preload-icon-button";
 
 export interface Props {
   listName: ListName;
-  onViewClick: (id: string) => void;
   onDeleteClick: (id: string) => void;
 }
 
-const ListCard = ({ listName, onViewClick, onDeleteClick }: Props) => {
+const ListCard = ({ listName, onDeleteClick }: Props) => {
   return (
     <Grid2 key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
       <Card>
@@ -30,9 +30,14 @@ const ListCard = ({ listName, onViewClick, onDeleteClick }: Props) => {
         </CardContent>
         <CardActions sx={{ justifyContent: "flex-end" }}>
           <Tooltip title={`View ${listName.name}`}>
-            <IconButton onClick={() => onViewClick(listName.id)}>
+            <PreloadIconButton
+              to="/$listId"
+              params={{ listId: listName.id }}
+              search={{ page: 0, pageSize: 10 }}
+              preload="intent"
+            >
               <Visibility />
-            </IconButton>
+            </PreloadIconButton>
           </Tooltip>
           <Tooltip title={`Delete ${listName.name}`}>
             <IconButton onClick={() => onDeleteClick(listName.id)}>

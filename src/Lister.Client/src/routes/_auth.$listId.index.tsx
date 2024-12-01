@@ -110,7 +110,7 @@ const RouteComponent = () => {
 
   const actions = [
     {
-      title: "Add an Item",
+      title: "Create an Item",
       icon: <AddCircle />,
       onClick: () => navigate({ to: "/$listId/create", params: { listId } }),
     },
