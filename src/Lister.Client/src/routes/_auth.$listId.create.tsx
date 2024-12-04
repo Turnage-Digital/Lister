@@ -101,7 +101,7 @@ const RouteComponent = () => {
     window.sessionStorage.removeItem(
       listDefinitionQuery.data.id ?? "updated_item",
     );
-    navigate({
+    await navigate({
       to: "/$listId/$itemId",
       params: { listId, itemId: mutated.id },
     });

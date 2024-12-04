@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { IconButton, IconButtonProps } from "@mui/material";
-import { createLink, LinkComponent } from "@tanstack/react-router";
+import { createLink } from "@tanstack/react-router";
 
 const MUILinkComponent = React.forwardRef<HTMLAnchorElement, IconButtonProps>(
   (props, ref) => {
@@ -10,10 +10,6 @@ const MUILinkComponent = React.forwardRef<HTMLAnchorElement, IconButtonProps>(
 );
 MUILinkComponent.displayName = "MUILinkComponent";
 
-const CreatedLinkComponent = createLink(MUILinkComponent);
-
-const PreloadIconButton: LinkComponent<typeof MUILinkComponent> = (props) => {
-  return <CreatedLinkComponent preload="intent" {...props} />;
-};
+const PreloadIconButton = createLink(MUILinkComponent);
 
 export default PreloadIconButton;

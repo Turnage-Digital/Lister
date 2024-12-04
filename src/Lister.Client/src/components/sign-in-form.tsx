@@ -4,8 +4,6 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import {
   Alert,
-  Checkbox,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   Stack,
@@ -13,7 +11,7 @@ import {
 } from "@mui/material";
 
 export interface Props {
-  onSignedIn: (email: string) => void;
+  onSignedIn: (email: string) => Promise<void>;
 }
 
 const SignInForm = ({ onSignedIn }: Props) => {
@@ -59,7 +57,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
         return;
       }
 
-      onSignedIn(email);
+      await onSignedIn(email);
     } catch {
       setFormErrorMessage("An unexpected error occurred.");
     } finally {
@@ -98,7 +96,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
 
   return (
     <Stack
-      spacing={2}
+      spacing={3}
       component="form"
       method="post"
       onSubmit={handleSubmit}
@@ -148,10 +146,10 @@ const SignInForm = ({ onSignedIn }: Props) => {
         }}
       />
 
-      <FormControlLabel
-        control={<Checkbox value="remember" color="primary" />}
-        label="Remember me"
-      />
+      {/* <FormControlLabel*/}
+      {/*  control={<Checkbox value="remember" color="primary" />}*/}
+      {/*  label="Remember me"*/}
+      {/* />*/}
 
       <LoadingButton
         type="submit"

@@ -67,7 +67,7 @@ const RouteComponent = () => {
     }
 
     window.sessionStorage.removeItem("updated_list");
-    navigate({
+    await navigate({
       to: "/$listId",
       params: { listId: mutated.id },
       search: { page: 0, pageSize: 10 },
