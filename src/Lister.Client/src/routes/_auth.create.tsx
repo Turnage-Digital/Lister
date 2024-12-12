@@ -84,10 +84,10 @@ const RouteComponent = () => {
   return (
     <Stack
       component="form"
-      spacing={4}
       divider={<Divider />}
       onSubmit={handleSubmit}
       sx={{ px: 2, py: 4 }}
+      spacing={4}
     >
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
 

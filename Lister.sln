@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{AB
 		LICENSE = LICENSE
 		README.md = README.md
 		nuget.config = nuget.config
-		ef-reset.sh = ef-reset.sh
+		ef-reset.ps1 = ef-reset.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1AA1A271-B127-4AB4-A137-67CDC4655917}"

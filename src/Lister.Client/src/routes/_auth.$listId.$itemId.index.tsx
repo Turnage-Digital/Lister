@@ -4,7 +4,7 @@ import { Stack } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Titlebar } from "../components";
+import { ItemCard, Titlebar } from "../components";
 import { itemQueryOptions, listDefinitionQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
@@ -33,8 +33,10 @@ const RouteComponent = () => {
   ];
 
   return (
-    <Stack sx={{ px: 2, py: 4 }}>
+    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar title={`ID ${itemQuery.data.id}`} breadcrumbs={breadcrumbs} />
+      
+      <ItemCard item={itemQuery.data} />
     </Stack>
   );
 };

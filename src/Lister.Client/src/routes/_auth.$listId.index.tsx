@@ -124,7 +124,7 @@ const RouteComponent = () => {
   ];
 
   return (
-    <Stack sx={{ px: 2, py: 4 }}>
+    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar
         title={listDefinitionQuery.data.name}
         actions={actions}

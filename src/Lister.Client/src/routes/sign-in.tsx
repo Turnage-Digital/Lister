@@ -34,38 +34,36 @@ const RouteComponent = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
-      <Stack spacing={3}>
-        <Typography variant="h5">Sign in</Typography>
+    <Stack sx={{ width: "450px", mx: "auto", px: 2, py: 4 }} spacing={4}>
+      <Typography variant="h5">Sign in</Typography>
 
-        <SignInForm onSignedIn={handleSignedIn} />
+      <SignInForm onSignedIn={handleSignedIn} />
 
-        {/* <ForgotPasswordDialog*/}
-        {/*  open={showForgotPassword}*/}
-        {/*  onClose={handleForgotPasswordClose}*/}
-        {/*  onSubmit={(_) => {*/}
-        {/*    // console.log("forgot password", email);*/}
-        {/*  }}*/}
-        {/* />*/}
+      {/* <ForgotPasswordDialog*/}
+      {/*  open={showForgotPassword}*/}
+      {/*  onClose={handleForgotPasswordClose}*/}
+      {/*  onSubmit={(_) => {*/}
+      {/*    // console.log("forgot password", email);*/}
+      {/*  }}*/}
+      {/* />*/}
 
-        {/* <Typography variant="body1">*/}
-        {/*  <Link*/}
-        {/*    component="button"*/}
-        {/*    type="button"*/}
-        {/*    onClick={handleForgotPasswordClick}*/}
-        {/*  >*/}
-        {/*    Forgot your password?*/}
-        {/*  </Link>*/}
-        {/* </Typography>*/}
+      {/* <Typography variant="body1">*/}
+      {/*  <Link*/}
+      {/*    component="button"*/}
+      {/*    type="button"*/}
+      {/*    onClick={handleForgotPasswordClick}*/}
+      {/*  >*/}
+      {/*    Forgot your password?*/}
+      {/*  </Link>*/}
+      {/* </Typography>*/}
 
-        {/* <Typography variant="body1">*/}
-        {/*  Don&apos;t have an account?{" "}*/}
-        {/*  <Link component="button" type="button">*/}
-        {/*    Sign up*/}
-        {/*  </Link>*/}
-        {/* </Typography>*/}
-      </Stack>
-    </Container>
+      {/* <Typography variant="body1">*/}
+      {/*  Don&apos;t have an account?{" "}*/}
+      {/*  <Link component="button" type="button">*/}
+      {/*    Sign up*/}
+      {/*  </Link>*/}
+      {/* </Typography>*/}
+    </Stack>
   );
 };
 

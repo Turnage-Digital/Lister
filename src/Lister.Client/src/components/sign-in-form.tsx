@@ -146,11 +146,6 @@ const SignInForm = ({ onSignedIn }: Props) => {
         }}
       />
 
-      {/* <FormControlLabel*/}
-      {/*  control={<Checkbox value="remember" color="primary" />}*/}
-      {/*  label="Remember me"*/}
-      {/* />*/}
-
       <LoadingButton
         type="submit"
         variant="contained"
