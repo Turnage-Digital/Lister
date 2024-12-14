@@ -1,17 +1,17 @@
 .vscode
-.idea/*
-!.idea/rcb-settings.xml
+.idea
 .vs
 .fleet
-.idea
-
 .DS_Store
 
 bin
 obj
 node_modules
+dist
 
-*.user
+tsconfig.tsbuildinfo
+*storybook.log
 
-lister.db*
-.env.development.local
+/src/Lister/wwwroot/favicon.ico
+/src/Lister/wwwroot/index.html
+/src/Lister/wwwroot/assets/
