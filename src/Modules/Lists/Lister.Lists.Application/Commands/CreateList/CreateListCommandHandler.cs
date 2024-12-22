@@ -14,8 +14,10 @@ public class CreateListCommandHandler<TList, TItem>(
     where TList : IWritableList
     where TItem : IWritableItem
 {
-    public async Task<ListItemDefinition> Handle(CreateListCommand request,
-        CancellationToken cancellationToken)
+    public async Task<ListItemDefinition> Handle(
+        CreateListCommand request,
+        CancellationToken cancellationToken
+    )
     {
         if (request.UserId is null)
             throw new ArgumentNullException(nameof(request), "UserId is null");

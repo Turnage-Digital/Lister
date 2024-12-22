@@ -16,6 +16,9 @@ using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
+using Lister.Server.Services;
+using Lister.Users.Application.Behaviors;
+using Lister.Users.Domain.Services;
 using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
@@ -25,25 +28,42 @@ namespace Lister.Server.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        Action<InfrastructureConfiguration> configuration)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        Action<InfrastructureConfiguration> configuration
+    )
     {
         var coreConfiguration = new InfrastructureConfiguration();
         configuration(coreConfiguration);
         return services.AddInfrastructure(coreConfiguration);
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-        InfrastructureConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        InfrastructureConfiguration configuration
+    )
     {
         var connectionString = configuration.DatabaseOptions.ConnectionString;
         var serverVersion = ServerVersion.AutoDetect(connectionString);
+        
+        /* Core */
+        var dataProtectionKeyDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
+        services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
 
+        services.AddDataProtection()
+            .SetApplicationName("Lister")
+            .PersistKeysToDbContext<DataProtectionKeyDbContext>();
+        
+        /* Users */
         var usersDbContextMigrationAssemblyName =
             configuration.DatabaseOptions.UsersDbContextMigrationAssemblyName;
         services.AddDbContext<UsersDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(usersDbContextMigrationAssemblyName)));
 
+        services.AddScoped<IGetCurrentUser, CurrentUserGetter>();
+        
         /*
          *   "Identity": {
              "Password": {
@@ -67,15 +87,7 @@ public static class ServiceCollectionExtensions
         //         builder.Configuration.GetSection("Identity").Bind(options))
         //     .AddEntityFrameworkStores<UsersDbContext>();
 
-        var dataProtectionKeyDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
-        services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
-
-        services.AddDataProtection()
-            .SetApplicationName("Lister")
-            .PersistKeysToDbContext<DataProtectionKeyDbContext>();
-
+        /* Lists */
         var listsDbContextMigrationAssemblyName =
             configuration.DatabaseOptions.ListsDbContextMigrationAssemblyName;
         services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
@@ -87,9 +99,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetPagedList, PagedListGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();
-
+        
+        /* Automapper */
         services.AddAutoMapper(config =>
-            config.AddProfile<CoreMappingProfile>());
+            config.AddProfile<ListsMappingProfile>());
 
         return services;
     }

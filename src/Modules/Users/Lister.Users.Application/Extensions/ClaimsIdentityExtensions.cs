@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Lister.Core.Application.Extensions;
+namespace Lister.Users.Application.Extensions;
 
 public static class ClaimsIdentityExtensions
 {

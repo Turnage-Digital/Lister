@@ -1,9 +1,11 @@
 using System.Security.Claims;
-using Lister.Core.Application.Extensions;
-using Lister.Core.Application.Services;
+using Lister.Core.Application;
+using Lister.Core.Domain.Services;
+using Lister.Users.Application.Extensions;
+using Lister.Users.Domain.Services;
 using MediatR;
 
-namespace Lister.Core.Application.Behaviors;
+namespace Lister.Users.Application.Behaviors;
 
 public class AssignUserBehavior<TRequest, TResponse>(IGetCurrentUser getter)
     : IPipelineBehavior<TRequest, TResponse>
@@ -34,7 +36,7 @@ public class AssignUserBehavior<TRequest, TResponse>(IGetCurrentUser getter)
     private string GetUserId()
     {
         var user = getter.CurrentUser;
-        var identity = (ClaimsIdentity)user.Identity!;
+        var identity = (ClaimsIdentity)user!.Identity!;
         var retval = identity.GetUserId();
         return retval;
     }

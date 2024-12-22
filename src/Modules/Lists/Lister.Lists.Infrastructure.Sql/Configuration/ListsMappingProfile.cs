@@ -4,9 +4,9 @@ using Lister.Lists.Infrastructure.Sql.Entities;
 
 namespace Lister.Lists.Infrastructure.Sql.Configuration;
 
-public class CoreMappingProfile : Profile
+public class ListsMappingProfile : Profile
 {
-    public CoreMappingProfile()
+    public ListsMappingProfile()
     {
         CreateMap<ListDb, ListItemDefinition>()
             .ReverseMap();

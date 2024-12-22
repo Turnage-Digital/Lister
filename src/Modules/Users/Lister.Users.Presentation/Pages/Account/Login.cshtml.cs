@@ -16,7 +16,8 @@ public class Login(
 {
     public string? ReturnUrl { get; set; }
 
-    [BindProperty] public InputModel Input { get; set; } = new();
+    [BindProperty]
+    public InputModel Input { get; set; } = new();
 
     public IActionResult OnGet(string? returnUrl = null)
     {
@@ -48,7 +49,8 @@ public class Login(
 
     public class InputModel
     {
-        [Required] public string? UserName { get; init; }
+        [Required]
+        public string? UserName { get; init; }
 
         [Required]
         [DataType(DataType.Password)]

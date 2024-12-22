@@ -20,7 +20,8 @@ public class ForgotPassword(
 {
     public string? ReturnUrl { get; set; }
 
-    [BindProperty] public InputModel Input { get; set; } = new();
+    [BindProperty]
+    public InputModel Input { get; set; } = new();
 
     public IActionResult OnGet(string? returnUrl = null)
     {
@@ -55,6 +56,7 @@ public class ForgotPassword(
 
     public class InputModel
     {
-        [Required] public string? UserName { get; init; }
+        [Required]
+        public string? UserName { get; init; }
     }
 }

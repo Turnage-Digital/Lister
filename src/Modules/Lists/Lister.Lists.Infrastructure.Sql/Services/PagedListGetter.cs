@@ -8,8 +8,14 @@ namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
 {
-    public async Task<PagedList> GetAsync(Guid listId, int page, int pageSize, string? field,
-        string? sort, CancellationToken cancellationToken)
+    public async Task<PagedList> GetAsync(
+        Guid listId,
+        int page,
+        int pageSize,
+        string? field,
+        string? sort,
+        CancellationToken cancellationToken
+    )
     {
         var builder = new SqlBuilder();
         const string sql = """
@@ -43,11 +49,12 @@ public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
 
         var data = await multi.ReadAsync<dynamic>();
         var items = data.Select(d => new ListItem
-        {
-            Bag = JsonSerializer.Deserialize<object>(d.Bag),
-            Id = d.Id,
-            ListId = listId
-        }).ToArray();
+            {
+                Bag = JsonSerializer.Deserialize<object>(d.Bag),
+                Id = d.Id,
+                ListId = listId
+            })
+            .ToArray();
         var count = await multi.ReadSingleAsync<long>();
 
         var retval = new PagedList

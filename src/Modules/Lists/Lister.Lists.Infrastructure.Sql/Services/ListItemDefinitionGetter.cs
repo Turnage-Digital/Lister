@@ -21,13 +21,15 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
                     {
                         Name = column.Name,
                         Type = column.Type
-                    }).ToArray(),
+                    })
+                    .ToArray(),
                 Statuses = list.Statuses
                     .Select(status => new Status
                     {
                         Name = status.Name,
                         Color = status.Color
-                    }).ToArray()
+                    })
+                    .ToArray()
             })
             .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);

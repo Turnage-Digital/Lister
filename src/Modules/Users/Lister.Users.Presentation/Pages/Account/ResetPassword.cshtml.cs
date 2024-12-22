@@ -16,7 +16,8 @@ public class ResetPassword(UserManager<User> userManager) : PageModel
 
     public string? ReturnUrl { get; set; }
 
-    [BindProperty] public InputModel Input { get; set; } = new();
+    [BindProperty]
+    public InputModel Input { get; set; } = new();
 
     public IActionResult OnGet(string? code = null, string? returnUrl = null)
     {
@@ -49,7 +50,8 @@ public class ResetPassword(UserManager<User> userManager) : PageModel
 
     public class InputModel
     {
-        [Required] public string? UserName { get; init; }
+        [Required]
+        public string? UserName { get; init; }
 
         [Required]
         [DataType(DataType.Password)]

@@ -26,7 +26,7 @@ public class CreateListItemController(IMediator mediator) : Controller
         CancellationToken cancellationToken
     )
     {
-        if (ModelState.IsValid is false) 
+        if (ModelState.IsValid is false)
             return BadRequest(ModelState);
 
         CreateListItemCommand command = new(listId, request.Bag);
