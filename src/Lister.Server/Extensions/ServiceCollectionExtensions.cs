@@ -2,12 +2,12 @@ using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
-using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
-using Lister.Lists.Application.Endpoints.CreateList;
-using Lister.Lists.Application.Endpoints.CreateListItem;
-using Lister.Lists.Application.Endpoints.DeleteList;
-using Lister.Lists.Application.Endpoints.DeleteListItem;
-using Lister.Lists.Application.Endpoints.GetItemDetails;
+using Lister.Lists.Application.Commands.ConvertTextToListItem;
+using Lister.Lists.Application.Commands.CreateList;
+using Lister.Lists.Application.Commands.CreateListItem;
+using Lister.Lists.Application.Commands.DeleteList;
+using Lister.Lists.Application.Commands.DeleteListItem;
+using Lister.Lists.Application.Queries.GetItemDetails;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.Services;
@@ -39,10 +39,33 @@ public static class ServiceCollectionExtensions
         var connectionString = configuration.DatabaseOptions.ConnectionString;
         var serverVersion = ServerVersion.AutoDetect(connectionString);
 
-        var applicationDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.ApplicationDbContextMigrationAssemblyName;
+        var usersDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.UsersDbContextMigrationAssemblyName;
         services.AddDbContext<UsersDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(applicationDbContextMigrationAssemblyName)));
+            optionsBuilder => optionsBuilder.MigrationsAssembly(usersDbContextMigrationAssemblyName)));
+
+        /*
+         *   "Identity": {
+             "Password": {
+               "RequireDigit": true,
+               "RequiredLength": 8,
+               "RequireNonAlphanumeric": true,
+               "RequireLowercase": true,
+               "RequireUppercase": true,
+               "RequiredUniqueChars": 6
+             },
+             "Lockout": {
+               "DefaultLockoutTimeSpan": "00:05:00",
+               "MaxFailedAccessAttemptsBeforeLockout": 3
+             },
+             "SignIn": {
+               "RequireConfirmedEmail": false
+             }
+           },
+         */
+        // services.AddDefaultIdentity<ApplicationUser>(options =>
+        //         builder.Configuration.GetSection("Identity").Bind(options))
+        //     .AddEntityFrameworkStores<UsersDbContext>();
 
         var dataProtectionKeyDbContextMigrationAssemblyName =
             configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;

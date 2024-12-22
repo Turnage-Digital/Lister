@@ -1,5 +1,5 @@
 using Lister.Core.Domain.Services;
-using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
+using Lister.Lists.Application.Commands.ConvertTextToListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using MediatR;

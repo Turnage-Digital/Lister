@@ -1,5 +1,5 @@
 using AutoMapper;
-using Lister.Lists.Application.Endpoints.CreateListItem;
+using Lister.Lists.Application.Commands.CreateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Views;

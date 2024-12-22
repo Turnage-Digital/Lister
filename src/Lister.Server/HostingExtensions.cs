@@ -5,7 +5,6 @@ using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Server.Extensions;
 using Lister.Users.Infrastructure.Sql;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -34,14 +33,14 @@ internal static class HostingExtensions
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        var applicationDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
+        var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
         var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
         builder.Services.AddInfrastructure(config =>
         {
             config.DatabaseOptions.ConnectionString = connectionString;
-            config.DatabaseOptions.ApplicationDbContextMigrationAssemblyName =
-                applicationDbContextMigrationAssemblyName;
+            config.DatabaseOptions.UsersDbContextMigrationAssemblyName =
+                usersDbContextMigrationAssemblyName;
             config.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName =
                 dataProtectionKeyDbContextMigrationAssemblyName;
             config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
@@ -49,10 +48,6 @@ internal static class HostingExtensions
         });
         builder.Services.AddDomain();
         builder.Services.AddApplication();
-
-        builder.Services
-            .AddIdentityApiEndpoints<IdentityUser>()
-            .AddEntityFrameworkStores<UsersDbContext>();
 
         builder.Services
             .ConfigureApplicationCookie(options =>
@@ -74,7 +69,6 @@ internal static class HostingExtensions
             builder.Configuration.GetSection("OpenAI"));
 
         if (builder.Environment.IsDevelopment())
-        {
             builder.Services
                 .AddEndpointsApiExplorer()
                 .AddSwaggerGen(options =>
@@ -85,7 +79,6 @@ internal static class HostingExtensions
                         Title = "Lister API"
                     });
                 });
-        }
 
         var retval = builder.Build();
         return retval;
@@ -117,23 +110,6 @@ internal static class HostingExtensions
 
         app.MapControllers();
 
-        var identityGroup = app
-            .MapGroup("/identity")
-            .WithTags("Identity");
-
-        identityGroup.MapIdentityApi<IdentityUser>();
-
-        identityGroup.MapPost("logout",
-            async (SignInManager<IdentityUser> signInManager) =>
-            {
-                await signInManager.SignOutAsync();
-                return Results.Ok();
-            }
-        );
-
-#if DEBUG
-        SeedData.EnsureSeedData(app);
-#endif
         return app;
     }
 }

@@ -10,266 +10,266 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as SignInImport } from './routes/sign-in'
-import { Route as AuthImport } from './routes/_auth'
-import { Route as AuthIndexImport } from './routes/_auth.index'
-import { Route as AuthCreateImport } from './routes/_auth.create'
-import { Route as AuthListIdImport } from './routes/_auth.$listId'
-import { Route as AuthListIdIndexImport } from './routes/_auth.$listId.index'
-import { Route as AuthListIdCreateImport } from './routes/_auth.$listId.create'
-import { Route as AuthListIdItemIdImport } from './routes/_auth.$listId.$itemId'
-import { Route as AuthListIdItemIdIndexImport } from './routes/_auth.$listId.$itemId.index'
+import {Route as rootRoute} from './routes/__root'
+import {Route as SignInImport} from './routes/sign-in'
+import {Route as AuthImport} from './routes/_auth'
+import {Route as AuthIndexImport} from './routes/_auth.index'
+import {Route as AuthCreateImport} from './routes/_auth.create'
+import {Route as AuthListIdImport} from './routes/_auth.$listId'
+import {Route as AuthListIdIndexImport} from './routes/_auth.$listId.index'
+import {Route as AuthListIdCreateImport} from './routes/_auth.$listId.create'
+import {Route as AuthListIdItemIdImport} from './routes/_auth.$listId.$itemId'
+import {Route as AuthListIdItemIdIndexImport} from './routes/_auth.$listId.$itemId.index'
 
 // Create/Update Routes
 
 const SignInRoute = SignInImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRoute,
+    id: '/sign-in',
+    path: '/sign-in',
+    getParentRoute: () => rootRoute,
 } as any)
 
 const AuthRoute = AuthImport.update({
-  id: '/_auth',
-  getParentRoute: () => rootRoute,
+    id: '/_auth',
+    getParentRoute: () => rootRoute,
 } as any)
 
 const AuthIndexRoute = AuthIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthCreateRoute = AuthCreateImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => AuthRoute,
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthListIdRoute = AuthListIdImport.update({
-  id: '/$listId',
-  path: '/$listId',
-  getParentRoute: () => AuthRoute,
+    id: '/$listId',
+    path: '/$listId',
+    getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthListIdIndexRoute = AuthListIdIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthListIdRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthListIdRoute,
 } as any)
 
 const AuthListIdCreateRoute = AuthListIdCreateImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => AuthListIdRoute,
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => AuthListIdRoute,
 } as any)
 
 const AuthListIdItemIdRoute = AuthListIdItemIdImport.update({
-  id: '/$itemId',
-  path: '/$itemId',
-  getParentRoute: () => AuthListIdRoute,
+    id: '/$itemId',
+    path: '/$itemId',
+    getParentRoute: () => AuthListIdRoute,
 } as any)
 
 const AuthListIdItemIdIndexRoute = AuthListIdItemIdIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthListIdItemIdRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthListIdItemIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthImport
-      parentRoute: typeof rootRoute
+    interface FileRoutesByPath {
+        '/_auth': {
+            id: '/_auth'
+            path: ''
+            fullPath: ''
+            preLoaderRoute: typeof AuthImport
+            parentRoute: typeof rootRoute
+        }
+        '/sign-in': {
+            id: '/sign-in'
+            path: '/sign-in'
+            fullPath: '/sign-in'
+            preLoaderRoute: typeof SignInImport
+            parentRoute: typeof rootRoute
+        }
+        '/_auth/$listId': {
+            id: '/_auth/$listId'
+            path: '/$listId'
+            fullPath: '/$listId'
+            preLoaderRoute: typeof AuthListIdImport
+            parentRoute: typeof AuthImport
+        }
+        '/_auth/create': {
+            id: '/_auth/create'
+            path: '/create'
+            fullPath: '/create'
+            preLoaderRoute: typeof AuthCreateImport
+            parentRoute: typeof AuthImport
+        }
+        '/_auth/': {
+            id: '/_auth/'
+            path: '/'
+            fullPath: '/'
+            preLoaderRoute: typeof AuthIndexImport
+            parentRoute: typeof AuthImport
+        }
+        '/_auth/$listId/$itemId': {
+            id: '/_auth/$listId/$itemId'
+            path: '/$itemId'
+            fullPath: '/$listId/$itemId'
+            preLoaderRoute: typeof AuthListIdItemIdImport
+            parentRoute: typeof AuthListIdImport
+        }
+        '/_auth/$listId/create': {
+            id: '/_auth/$listId/create'
+            path: '/create'
+            fullPath: '/$listId/create'
+            preLoaderRoute: typeof AuthListIdCreateImport
+            parentRoute: typeof AuthListIdImport
+        }
+        '/_auth/$listId/': {
+            id: '/_auth/$listId/'
+            path: '/'
+            fullPath: '/$listId/'
+            preLoaderRoute: typeof AuthListIdIndexImport
+            parentRoute: typeof AuthListIdImport
+        }
+        '/_auth/$listId/$itemId/': {
+            id: '/_auth/$listId/$itemId/'
+            path: '/'
+            fullPath: '/$listId/$itemId/'
+            preLoaderRoute: typeof AuthListIdItemIdIndexImport
+            parentRoute: typeof AuthListIdItemIdImport
+        }
     }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInImport
-      parentRoute: typeof rootRoute
-    }
-    '/_auth/$listId': {
-      id: '/_auth/$listId'
-      path: '/$listId'
-      fullPath: '/$listId'
-      preLoaderRoute: typeof AuthListIdImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/create': {
-      id: '/_auth/create'
-      path: '/create'
-      fullPath: '/create'
-      preLoaderRoute: typeof AuthCreateImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/': {
-      id: '/_auth/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthIndexImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/$listId/$itemId': {
-      id: '/_auth/$listId/$itemId'
-      path: '/$itemId'
-      fullPath: '/$listId/$itemId'
-      preLoaderRoute: typeof AuthListIdItemIdImport
-      parentRoute: typeof AuthListIdImport
-    }
-    '/_auth/$listId/create': {
-      id: '/_auth/$listId/create'
-      path: '/create'
-      fullPath: '/$listId/create'
-      preLoaderRoute: typeof AuthListIdCreateImport
-      parentRoute: typeof AuthListIdImport
-    }
-    '/_auth/$listId/': {
-      id: '/_auth/$listId/'
-      path: '/'
-      fullPath: '/$listId/'
-      preLoaderRoute: typeof AuthListIdIndexImport
-      parentRoute: typeof AuthListIdImport
-    }
-    '/_auth/$listId/$itemId/': {
-      id: '/_auth/$listId/$itemId/'
-      path: '/'
-      fullPath: '/$listId/$itemId/'
-      preLoaderRoute: typeof AuthListIdItemIdIndexImport
-      parentRoute: typeof AuthListIdItemIdImport
-    }
-  }
 }
 
 // Create and export the route tree
 
 interface AuthListIdItemIdRouteChildren {
-  AuthListIdItemIdIndexRoute: typeof AuthListIdItemIdIndexRoute
+    AuthListIdItemIdIndexRoute: typeof AuthListIdItemIdIndexRoute
 }
 
 const AuthListIdItemIdRouteChildren: AuthListIdItemIdRouteChildren = {
-  AuthListIdItemIdIndexRoute: AuthListIdItemIdIndexRoute,
+    AuthListIdItemIdIndexRoute: AuthListIdItemIdIndexRoute,
 }
 
 const AuthListIdItemIdRouteWithChildren =
-  AuthListIdItemIdRoute._addFileChildren(AuthListIdItemIdRouteChildren)
+    AuthListIdItemIdRoute._addFileChildren(AuthListIdItemIdRouteChildren)
 
 interface AuthListIdRouteChildren {
-  AuthListIdItemIdRoute: typeof AuthListIdItemIdRouteWithChildren
-  AuthListIdCreateRoute: typeof AuthListIdCreateRoute
-  AuthListIdIndexRoute: typeof AuthListIdIndexRoute
+    AuthListIdItemIdRoute: typeof AuthListIdItemIdRouteWithChildren
+    AuthListIdCreateRoute: typeof AuthListIdCreateRoute
+    AuthListIdIndexRoute: typeof AuthListIdIndexRoute
 }
 
 const AuthListIdRouteChildren: AuthListIdRouteChildren = {
-  AuthListIdItemIdRoute: AuthListIdItemIdRouteWithChildren,
-  AuthListIdCreateRoute: AuthListIdCreateRoute,
-  AuthListIdIndexRoute: AuthListIdIndexRoute,
+    AuthListIdItemIdRoute: AuthListIdItemIdRouteWithChildren,
+    AuthListIdCreateRoute: AuthListIdCreateRoute,
+    AuthListIdIndexRoute: AuthListIdIndexRoute,
 }
 
 const AuthListIdRouteWithChildren = AuthListIdRoute._addFileChildren(
-  AuthListIdRouteChildren,
+    AuthListIdRouteChildren,
 )
 
 interface AuthRouteChildren {
-  AuthListIdRoute: typeof AuthListIdRouteWithChildren
-  AuthCreateRoute: typeof AuthCreateRoute
-  AuthIndexRoute: typeof AuthIndexRoute
+    AuthListIdRoute: typeof AuthListIdRouteWithChildren
+    AuthCreateRoute: typeof AuthCreateRoute
+    AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthListIdRoute: AuthListIdRouteWithChildren,
-  AuthCreateRoute: AuthCreateRoute,
-  AuthIndexRoute: AuthIndexRoute,
+    AuthListIdRoute: AuthListIdRouteWithChildren,
+    AuthCreateRoute: AuthCreateRoute,
+    AuthIndexRoute: AuthIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '': typeof AuthRouteWithChildren
-  '/sign-in': typeof SignInRoute
-  '/$listId': typeof AuthListIdRouteWithChildren
-  '/create': typeof AuthCreateRoute
-  '/': typeof AuthIndexRoute
-  '/$listId/$itemId': typeof AuthListIdItemIdRouteWithChildren
-  '/$listId/create': typeof AuthListIdCreateRoute
-  '/$listId/': typeof AuthListIdIndexRoute
-  '/$listId/$itemId/': typeof AuthListIdItemIdIndexRoute
+    '': typeof AuthRouteWithChildren
+    '/sign-in': typeof SignInRoute
+    '/$listId': typeof AuthListIdRouteWithChildren
+    '/create': typeof AuthCreateRoute
+    '/': typeof AuthIndexRoute
+    '/$listId/$itemId': typeof AuthListIdItemIdRouteWithChildren
+    '/$listId/create': typeof AuthListIdCreateRoute
+    '/$listId/': typeof AuthListIdIndexRoute
+    '/$listId/$itemId/': typeof AuthListIdItemIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/sign-in': typeof SignInRoute
-  '/create': typeof AuthCreateRoute
-  '/': typeof AuthIndexRoute
-  '/$listId/create': typeof AuthListIdCreateRoute
-  '/$listId': typeof AuthListIdIndexRoute
-  '/$listId/$itemId': typeof AuthListIdItemIdIndexRoute
+    '/sign-in': typeof SignInRoute
+    '/create': typeof AuthCreateRoute
+    '/': typeof AuthIndexRoute
+    '/$listId/create': typeof AuthListIdCreateRoute
+    '/$listId': typeof AuthListIdIndexRoute
+    '/$listId/$itemId': typeof AuthListIdItemIdIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/_auth': typeof AuthRouteWithChildren
-  '/sign-in': typeof SignInRoute
-  '/_auth/$listId': typeof AuthListIdRouteWithChildren
-  '/_auth/create': typeof AuthCreateRoute
-  '/_auth/': typeof AuthIndexRoute
-  '/_auth/$listId/$itemId': typeof AuthListIdItemIdRouteWithChildren
-  '/_auth/$listId/create': typeof AuthListIdCreateRoute
-  '/_auth/$listId/': typeof AuthListIdIndexRoute
-  '/_auth/$listId/$itemId/': typeof AuthListIdItemIdIndexRoute
+    __root__: typeof rootRoute
+    '/_auth': typeof AuthRouteWithChildren
+    '/sign-in': typeof SignInRoute
+    '/_auth/$listId': typeof AuthListIdRouteWithChildren
+    '/_auth/create': typeof AuthCreateRoute
+    '/_auth/': typeof AuthIndexRoute
+    '/_auth/$listId/$itemId': typeof AuthListIdItemIdRouteWithChildren
+    '/_auth/$listId/create': typeof AuthListIdCreateRoute
+    '/_auth/$listId/': typeof AuthListIdIndexRoute
+    '/_auth/$listId/$itemId/': typeof AuthListIdItemIdIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | ''
-    | '/sign-in'
-    | '/$listId'
-    | '/create'
-    | '/'
-    | '/$listId/$itemId'
-    | '/$listId/create'
-    | '/$listId/'
-    | '/$listId/$itemId/'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/sign-in'
-    | '/create'
-    | '/'
-    | '/$listId/create'
-    | '/$listId'
-    | '/$listId/$itemId'
-  id:
-    | '__root__'
-    | '/_auth'
-    | '/sign-in'
-    | '/_auth/$listId'
-    | '/_auth/create'
-    | '/_auth/'
-    | '/_auth/$listId/$itemId'
-    | '/_auth/$listId/create'
-    | '/_auth/$listId/'
-    | '/_auth/$listId/$itemId/'
-  fileRoutesById: FileRoutesById
+    fileRoutesByFullPath: FileRoutesByFullPath
+    fullPaths:
+        | ''
+        | '/sign-in'
+        | '/$listId'
+        | '/create'
+        | '/'
+        | '/$listId/$itemId'
+        | '/$listId/create'
+        | '/$listId/'
+        | '/$listId/$itemId/'
+    fileRoutesByTo: FileRoutesByTo
+    to:
+        | '/sign-in'
+        | '/create'
+        | '/'
+        | '/$listId/create'
+        | '/$listId'
+        | '/$listId/$itemId'
+    id:
+        | '__root__'
+        | '/_auth'
+        | '/sign-in'
+        | '/_auth/$listId'
+        | '/_auth/create'
+        | '/_auth/'
+        | '/_auth/$listId/$itemId'
+        | '/_auth/$listId/create'
+        | '/_auth/$listId/'
+        | '/_auth/$listId/$itemId/'
+    fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  AuthRoute: typeof AuthRouteWithChildren
-  SignInRoute: typeof SignInRoute
+    AuthRoute: typeof AuthRouteWithChildren
+    SignInRoute: typeof SignInRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthRoute: AuthRouteWithChildren,
-  SignInRoute: SignInRoute,
+    AuthRoute: AuthRouteWithChildren,
+    SignInRoute: SignInRoute,
 }
 
 export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+    ._addFileChildren(rootRouteChildren)
+    ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {

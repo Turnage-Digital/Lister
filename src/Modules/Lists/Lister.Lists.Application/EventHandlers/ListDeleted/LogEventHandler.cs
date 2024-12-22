@@ -1,5 +1,6 @@
 using Lister.Lists.Domain.Events;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Lister.Lists.Application.EventHandlers.ListDeleted;
 

@@ -1,6 +1,6 @@
 export interface ItemDetails {
-  id: number;
-  listId: string;
-  bag: any;
-  // history: ItemHistory[];
+    id: number;
+    listId: string;
+    bag: any;
+    // history: ItemHistory[];
 }

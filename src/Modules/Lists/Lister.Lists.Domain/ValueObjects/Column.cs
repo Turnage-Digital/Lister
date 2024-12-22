@@ -5,8 +5,7 @@ namespace Lister.Lists.Domain.ValueObjects;
 
 public record Column
 {
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
+    [JsonPropertyName("name")] public string Name { get; set; } = null!;
 
     [JsonPropertyName("property")]
     public string Property
@@ -20,6 +19,5 @@ public record Column
         }
     }
 
-    [JsonPropertyName("type")]
-    public ColumnType Type { get; set; }
+    [JsonPropertyName("type")] public ColumnType Type { get; set; }
 }

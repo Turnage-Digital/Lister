@@ -1,15 +1,15 @@
 export interface Status {
-  name: string;
-  color: string;
+    name: string;
+    color: string;
 }
 
 export const getStatusFromName = (
-  statuses: Status[],
-  name: string,
+    statuses: Status[],
+    name: string,
 ): Status | undefined => {
-  const retval = statuses.find((status) => status.name === name);
-  if (!retval) {
-    return undefined;
-  }
-  return retval;
+    const retval = statuses.find((status) => status.name === name);
+    if (!retval) {
+        return undefined;
+    }
+    return retval;
 };

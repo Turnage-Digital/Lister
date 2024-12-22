@@ -46,11 +46,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Users.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Lists.Tests", "src\Modules\Lists\Lister.Lists.Tests\Lister.Lists.Tests.csproj", "{32A47E2E-CC58-45BB-90B5-DD1F68E2D3DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Users.Presentation.Razor", "src\Modules\Users\Lister.Users.Presentation.Razor\Lister.Users.Presentation.Razor.csproj", "{D71921C6-90D5-4272-BA59-74C6F401B23C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Users.Presentation", "src\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj", "{D71921C6-90D5-4272-BA59-74C6F401B23C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Users.Application", "src\Modules\Users\Lister.Users.Application\Lister.Users.Application.csproj", "{2A7F0DCD-368F-4179-9B6F-3A71D5AF3CC3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Users.Domain", "src\Modules\Users\Lister.Users.Domain\Lister.Users.Domain.csproj", "{ACDCF3E9-5C74-4CC5-9941-21B16CD22003}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Lists.Presentation", "src\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj", "{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,7 @@ Global
 		{D71921C6-90D5-4272-BA59-74C6F401B23C} = {96EBDEE2-7BD7-41FA-882D-E2700EA4C790}
 		{2A7F0DCD-368F-4179-9B6F-3A71D5AF3CC3} = {96EBDEE2-7BD7-41FA-882D-E2700EA4C790}
 		{ACDCF3E9-5C74-4CC5-9941-21B16CD22003} = {96EBDEE2-7BD7-41FA-882D-E2700EA4C790}
+		{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D} = {0F8609A7-BB48-4D08-AAC3-C71D82E86F27}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1DAD2A4C-7104-45DD-8301-DC868B8A6C6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -137,5 +140,9 @@ Global
 		{ACDCF3E9-5C74-4CC5-9941-21B16CD22003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACDCF3E9-5C74-4CC5-9941-21B16CD22003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACDCF3E9-5C74-4CC5-9941-21B16CD22003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF37EE1-F0E2-441F-A5EB-1BD7D0C7183D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

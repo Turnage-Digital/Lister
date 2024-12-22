@@ -1,7 +1,7 @@
-import { ColumnType } from "./column-type";
+import {ColumnType} from "./column-type";
 
 export interface Column {
-  name: string;
-  property?: string;
-  type: ColumnType;
+    name: string;
+    property?: string;
+    type: ColumnType;
 }

@@ -1,4 +1,4 @@
 export interface Info {
-  email: string;
-  isEmailConfirmed: boolean;
+    email: string;
+    isEmailConfirmed: boolean;
 }

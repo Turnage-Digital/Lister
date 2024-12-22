@@ -53,10 +53,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         CancellationToken cancellationToken = default
     )
     {
-        if (list.Id is null)
-        {
-            throw new InvalidOperationException("List must have an Id");
-        }
+        if (list.Id is null) throw new InvalidOperationException("List must have an Id");
 
         var retval = await unitOfWork.ItemsStore.GetByIdAsync(itemId, list.Id.Value, cancellationToken);
         return retval;
@@ -69,10 +66,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         CancellationToken cancellationToken = default
     )
     {
-        if (list.Id is null)
-        {
-            throw new InvalidOperationException("List must have an Id");
-        }
+        if (list.Id is null) throw new InvalidOperationException("List must have an Id");
 
         var retval = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
         await unitOfWork.ItemsStore.SetBagAsync(retval, bag, cancellationToken);
@@ -89,10 +83,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         CancellationToken cancellationToken = default
     )
     {
-        if (list.Id is null)
-        {
-            throw new InvalidOperationException("List must have an Id");
-        }
+        if (list.Id is null) throw new InvalidOperationException("List must have an Id");
 
         var retval = new List<TItem>();
         foreach (var bag in bags)
@@ -105,9 +96,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         foreach (var item in retval)
-        {
             await mediator.Publish(new ListItemCreatedEvent(item, createdBy), cancellationToken);
-        }
 
         return retval;
     }

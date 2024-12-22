@@ -1,32 +1,32 @@
 import * as React from "react";
 
-import { Stack, TextField } from "@mui/material";
+import {Stack, TextField} from "@mui/material";
 
 interface Props {
-  name: string | null;
-  onNameChanged: (name: string) => void;
+    name: string | null;
+    onNameChanged: (name: string) => void;
 }
 
-const EditListNameContent = ({ name, onNameChanged }: Props) => {
-  return (
-    <Stack spacing={2}>
-      <TextField
-        name="name"
-        id="name"
-        label="Name"
-        margin="normal"
-        required
-        fullWidth
-        sx={{
-          background: "white",
-        }}
-        value={name ?? ""}
-        onChange={(event) => {
-          onNameChanged(event.target.value);
-        }}
-      />
-    </Stack>
-  );
+const EditListNameContent = ({name, onNameChanged}: Props) => {
+    return (
+        <Stack spacing={2}>
+            <TextField
+                name="name"
+                id="name"
+                label="Name"
+                margin="normal"
+                required
+                fullWidth
+                sx={{
+                    background: "white",
+                }}
+                value={name ?? ""}
+                onChange={(event) => {
+                    onNameChanged(event.target.value);
+                }}
+            />
+        </Stack>
+    );
 };
 
 export default EditListNameContent;

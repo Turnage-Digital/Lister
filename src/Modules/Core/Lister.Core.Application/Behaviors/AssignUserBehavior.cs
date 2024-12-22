@@ -1,10 +1,11 @@
 using System.Security.Claims;
 using Lister.Core.Application.Extensions;
+using Lister.Core.Application.Services;
 using MediatR;
 
 namespace Lister.Core.Application.Behaviors;
 
-public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpContextAccessor)
+public class AssignUserBehavior<TRequest, TResponse>(IGetCurrentUser getter)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
@@ -32,7 +33,7 @@ public class AssignUserBehavior<TRequest, TResponse>(IHttpContextAccessor httpCo
 
     private string GetUserId()
     {
-        var user = httpContextAccessor.HttpContext!.User;
+        var user = getter.CurrentUser;
         var identity = (ClaimsIdentity)user.Identity!;
         var retval = identity.GetUserId();
         return retval;

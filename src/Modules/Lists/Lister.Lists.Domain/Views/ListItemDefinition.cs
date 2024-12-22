@@ -5,15 +5,11 @@ namespace Lister.Lists.Domain.Views;
 
 public record ListItemDefinition : IReadOnlyList
 {
-    [JsonPropertyName("id")]
-    public Guid? Id { get; set; }
+    [JsonPropertyName("name")] public string Name { get; set; } = null!;
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
+    [JsonPropertyName("columns")] public Column[] Columns { get; set; } = null!;
 
-    [JsonPropertyName("columns")]
-    public Column[] Columns { get; set; } = null!;
+    [JsonPropertyName("statuses")] public Status[] Statuses { get; set; } = null!;
 
-    [JsonPropertyName("statuses")]
-    public Status[] Statuses { get; set; } = null!;
+    [JsonPropertyName("id")] public Guid? Id { get; set; }
 }
