@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Lister.Users.Presentation.Pages.Account;
 
 [AllowAnonymous]
-public class Login(
+public class LoginModel(
     UserManager<User> userManager,
     SignInManager<User> signInManager
 )
@@ -29,9 +29,12 @@ public class Login(
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
 
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
-        var user = await userManager.FindByNameAsync(Input.UserName!);
+        var user = await userManager.FindByEmailAsync(Input.EmailAddress!);
         if (user != null)
         {
             var result = await signInManager.CheckPasswordSignInAsync(user, Input.Password!, true);
@@ -42,7 +45,7 @@ public class Login(
             }
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid username or password");
+        ModelState.AddModelError(string.Empty, "Invalid email address or password");
 
         return Page();
     }
@@ -50,7 +53,8 @@ public class Login(
     public class InputModel
     {
         [Required]
-        public string? UserName { get; init; }
+        [EmailAddress]
+        public string? EmailAddress { get; init; }
 
         [Required]
         [DataType(DataType.Password)]

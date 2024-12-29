@@ -27,7 +27,9 @@ public class ConvertTextToListItemController(IMediator mediator) : Controller
     )
     {
         if (ModelState.IsValid is false)
+        {
             return BadRequest(ModelState);
+        }
 
         ConvertTextToListItemCommand command = new(listId, request.Text);
         var result = await mediator.Send(command, cancellationToken);

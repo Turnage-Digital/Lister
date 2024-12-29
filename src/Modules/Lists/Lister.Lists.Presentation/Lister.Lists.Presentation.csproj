@@ -6,8 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     </PropertyGroup>
-
-
+    
     <ItemGroup>
         <SupportedPlatform Include="browser"/>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
@@ -20,5 +19,14 @@
     <ItemGroup>
         <ProjectReference Include="..\Lister.Lists.Application\Lister.Lists.Application.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
+    <Target Name="BuildTailwind" BeforeTargets="Build">
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/app.css"/>
+    </Target>
 
 </Project>

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace Lister.Users.Presentation.Pages.Account;
 
 [AllowAnonymous]
-public class ForgotPassword(
+public class ForgotPasswordModel(
     UserManager<User> userManager,
     IEmailSender emailSender
 )
@@ -33,10 +33,16 @@ public class ForgotPassword(
     {
         ReturnUrl = returnUrl ?? Url.Content("~/");
 
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
-        var user = await userManager.FindByNameAsync(Input.UserName!);
-        if (user == null) return RedirectToPage(nameof(ForgotPasswordConfirmation));
+        var user = await userManager.FindByEmailAsync(Input.EmailAddress!);
+        if (user == null)
+        {
+            return RedirectToPage(nameof(ForgotPasswordConfirmationModel));
+        }
 
         var code = await userManager.GeneratePasswordResetTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -51,12 +57,13 @@ public class ForgotPassword(
             "Reset Password",
             $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>clicking here</a>.");
 
-        return RedirectToPage(nameof(ForgotPasswordConfirmation), new { ReturnUrl });
+        return RedirectToPage(nameof(ForgotPasswordConfirmationModel), new { ReturnUrl });
     }
 
     public class InputModel
     {
         [Required]
-        public string? UserName { get; init; }
+        [EmailAddress]
+        public string? EmailAddress { get; init; }
     }
 }

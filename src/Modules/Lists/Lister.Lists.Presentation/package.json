@@ -1,5 +1,5 @@
 {
-  "name": "users",
+  "name": "lists",
   "version": "1.0.0",
   "scripts": {
     "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/app.css --watch"

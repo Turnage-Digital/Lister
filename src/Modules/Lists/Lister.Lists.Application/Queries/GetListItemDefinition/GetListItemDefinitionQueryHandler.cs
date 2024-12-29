@@ -20,7 +20,9 @@ public class GetListItemDefinitionQueryHandler(
     )
     {
         if (request.UserId is null)
+        {
             throw new ArgumentNullException(nameof(request), "UserId is null");
+        }
 
         ListItemDefinition? retval;
 
@@ -50,7 +52,9 @@ public class GetListItemDefinitionQueryHandler(
     )
     {
         if (value == null)
+        {
             return;
+        }
 
         var serialized = JsonSerializer.Serialize(value);
         var options = new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };

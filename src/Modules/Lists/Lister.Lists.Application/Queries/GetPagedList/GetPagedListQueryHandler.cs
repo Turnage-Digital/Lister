@@ -13,7 +13,9 @@ public class GetPagedListQueryHandler(IGetPagedList pagedListGetter)
     )
     {
         if (request.UserId is null)
+        {
             throw new ArgumentNullException(nameof(request), "UserId is null");
+        }
 
         var parsedListId = Guid.Parse(request.ListId);
         var retval = await pagedListGetter.GetAsync(

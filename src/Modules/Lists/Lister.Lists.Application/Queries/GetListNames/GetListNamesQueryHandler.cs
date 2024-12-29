@@ -13,7 +13,9 @@ public class GetListNamesQueryHandler(IGetListNames listNamesGetter)
     )
     {
         if (request.UserId is null)
+        {
             throw new ArgumentNullException(nameof(request), "UserId is null");
+        }
 
         var retval = await listNamesGetter.GetAsync(cancellationToken);
         return retval;

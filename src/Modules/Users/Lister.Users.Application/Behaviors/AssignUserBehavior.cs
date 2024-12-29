@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Lister.Core.Application;
-using Lister.Core.Domain.Services;
 using Lister.Users.Application.Extensions;
 using Lister.Users.Domain.Services;
 using MediatR;

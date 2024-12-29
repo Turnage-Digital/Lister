@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Lister.Users.Presentation.Pages.Account;
 
 [AllowAnonymous]
-public class Logout(SignInManager<User> signInManager) : PageModel
+public class LogoutModel(SignInManager<User> signInManager) : PageModel
 {
     public async Task<IActionResult> OnGet()
     {
-        if (User.Identity is not null && User.Identity.IsAuthenticated) return Page();
+        if (User.Identity is not null && User.Identity.IsAuthenticated)
+        {
+            return Page();
+        }
 
         await signInManager.SignOutAsync();
         return RedirectToPage();

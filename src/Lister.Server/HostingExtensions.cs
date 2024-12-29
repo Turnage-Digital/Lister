@@ -27,7 +27,6 @@ using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -90,12 +89,14 @@ internal static class HostingExtensions
             })
             .AddEntityFrameworkStores<UsersDbContext>()
             .AddDefaultTokenProviders();
-        
+
         builder.Services
             .ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
             });
 
         builder.Services.AddDataProtection()
@@ -106,6 +107,7 @@ internal static class HostingExtensions
             builder.Configuration.GetSection("OpenAI"));
 
         if (builder.Environment.IsDevelopment())
+        {
             builder.Services
                 .AddEndpointsApiExplorer()
                 .AddSwaggerGen(options =>
@@ -116,6 +118,7 @@ internal static class HostingExtensions
                         Title = "Lister API"
                     });
                 });
+        }
 
         var retval = builder.Build();
         return retval;
@@ -133,11 +136,10 @@ internal static class HostingExtensions
         else
         {
             app.UseExceptionHandler();
+            app.UseHsts();
         }
 
         app.UseHttpsRedirection();
-        app.UseHsts();
-
         app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
@@ -230,6 +232,6 @@ internal static class HostingExtensions
 
     private class InfrastructureConfiguration
     {
-        public DatabaseOptions DatabaseOptions { get; set; } = new();
+        public DatabaseOptions DatabaseOptions { get; } = new();
     }
 }

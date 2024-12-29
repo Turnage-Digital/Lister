@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace Lister.Users.Presentation.Pages.Account;
 
 [AllowAnonymous]
-public class ResetPassword(UserManager<User> userManager) : PageModel
+public class ResetPasswordModel(UserManager<User> userManager) : PageModel
 {
     public string? Code { get; set; }
 
@@ -21,7 +21,10 @@ public class ResetPassword(UserManager<User> userManager) : PageModel
 
     public IActionResult OnGet(string? code = null, string? returnUrl = null)
     {
-        if (code == null) return BadRequest("A code must be supplied for password reset.");
+        if (code == null)
+        {
+            return BadRequest("A code must be supplied for password reset.");
+        }
 
         Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         ReturnUrl = returnUrl ?? Url.Content("~/");
@@ -30,20 +33,35 @@ public class ResetPassword(UserManager<User> userManager) : PageModel
 
     public async Task<IActionResult> OnPostAsync(string? code = null, string? returnUrl = null)
     {
-        if (code == null) return BadRequest("A code must be supplied for password reset.");
+        if (code == null)
+        {
+            return BadRequest("A code must be supplied for password reset.");
+        }
 
         Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         ReturnUrl = returnUrl ?? Url.Content("~/");
 
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
-        var user = await userManager.FindByNameAsync(Input.UserName!);
-        if (user == null) return RedirectToPage(nameof(ResetPasswordConfirmation), new { ReturnUrl });
+        var user = await userManager.FindByEmailAsync(Input.EmailAddress!);
+        if (user == null)
+        {
+            return RedirectToPage(nameof(ResetPasswordConfirmationModel), new { ReturnUrl });
+        }
 
         var result = await userManager.ResetPasswordAsync(user, Code, Input.Password!);
-        if (result.Succeeded) return RedirectToPage(nameof(ResetPasswordConfirmation), new { ReturnUrl });
+        if (result.Succeeded)
+        {
+            return RedirectToPage(nameof(ResetPasswordConfirmationModel), new { ReturnUrl });
+        }
 
-        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
 
         return Page();
     }
@@ -51,7 +69,8 @@ public class ResetPassword(UserManager<User> userManager) : PageModel
     public class InputModel
     {
         [Required]
-        public string? UserName { get; init; }
+        [EmailAddress]
+        public string? EmailAddress { get; init; }
 
         [Required]
         [DataType(DataType.Password)]

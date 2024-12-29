@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Lister.Users.Presentation.Pages.Account;
 
 [AllowAnonymous]
-public class ForgotPasswordConfirmation : PageModel
+public class ForgotPasswordConfirmationModel : PageModel
 {
     public string? ReturnUrl { get; set; }
 

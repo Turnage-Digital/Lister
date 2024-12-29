@@ -27,7 +27,9 @@ public class CreateListItemController(IMediator mediator) : Controller
     )
     {
         if (ModelState.IsValid is false)
+        {
             return BadRequest(ModelState);
+        }
 
         CreateListItemCommand command = new(listId, request.Bag);
         var result = await mediator.Send(command, cancellationToken);

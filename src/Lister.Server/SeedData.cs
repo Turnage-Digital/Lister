@@ -38,10 +38,14 @@ public static class SeedData
 
             var erika = userManager.FindByNameAsync("erika@email.com").Result;
             if (erika == null)
+            {
                 CreateUser(userManager, "erika@email.com", "erika@email.com", "Pass123$", "Erika Turnage",
                     "Erika", "Turnage", "https://lister.com");
+            }
             else
+            {
                 Console.WriteLine("erika already exists");
+            }
 
             var listAggregate = scope.ServiceProvider
                 .GetRequiredService<ListsAggregate<ListDb, ItemDb>>();
@@ -139,7 +143,10 @@ public static class SeedData
         };
 
         var result = userManager.CreateAsync(user, password).Result;
-        if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().Description);
+        }
 
         result = userManager.AddClaimsAsync(user, [
                 new Claim(JwtClaimTypes.Name, name),
@@ -149,7 +156,10 @@ public static class SeedData
             ])
             .Result;
 
-        if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().Description);
+        }
 
         Console.WriteLine($"{userName} created");
     }

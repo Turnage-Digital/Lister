@@ -10,7 +10,9 @@ public class GetItemDetailsQueryHandler(IGetItemDetails itemDetailsGetter)
     public async Task<ItemDetails?> Handle(GetItemDetailsQuery request, CancellationToken cancellationToken)
     {
         if (request.UserId is null)
+        {
             throw new ArgumentNullException(nameof(request), "UserId is null");
+        }
 
         var parsedListId = Guid.Parse(request.ListId);
         var retval = await itemDetailsGetter.GetAsync(parsedListId, request.ItemId, cancellationToken);
