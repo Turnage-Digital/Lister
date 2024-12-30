@@ -22,6 +22,12 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\" />
+      <Folder Include="wwwroot\dist\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Pages\Shared\_ListsLayout.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Shared\_ValidationSummary.cshtml" />
     </ItemGroup>
 
     <Target Name="BuildTailwind" BeforeTargets="Build">

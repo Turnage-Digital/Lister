@@ -2,7 +2,7 @@
   "name": "users",
   "version": "1.0.0",
   "scripts": {
-    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/app.css --watch"
+    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/users-app.css --watch"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"

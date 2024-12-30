@@ -33,4 +33,8 @@
         <ProjectReference Include="..\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\dist\app.css" />
+    </ItemGroup>
+
 </Project>
