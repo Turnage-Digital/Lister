@@ -8,7 +8,6 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <SupportedPlatform Include="browser"/>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
@@ -19,20 +18,11 @@
     <ItemGroup>
         <ProjectReference Include="..\Lister.Lists.Application\Lister.Lists.Application.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="wwwroot\" />
-      <Folder Include="wwwroot\dist\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <UpToDateCheckInput Remove="Pages\Shared\_ListsLayout.cshtml" />
-      <UpToDateCheckInput Remove="Pages\Shared\_ValidationSummary.cshtml" />
-    </ItemGroup>
+    
 
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/app.css"/>
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/lists-app.css"/>
     </Target>
 
 </Project>
