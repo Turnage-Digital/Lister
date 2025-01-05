@@ -52,8 +52,8 @@ public class LoginModel(
 
     public class InputModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "The Email Address field is required.")]
+        [EmailAddress(ErrorMessage = "The Email Address field is not a valid e-mail address.")]
         public string? EmailAddress { get; init; }
 
         [Required]

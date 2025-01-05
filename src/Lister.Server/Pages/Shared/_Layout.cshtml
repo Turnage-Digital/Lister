@@ -8,6 +8,7 @@
     @await RenderSectionAsync("css", required: false)
 </head>
 <body class="h-full">
-@RenderBody()
+    @RenderBody()
+    @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

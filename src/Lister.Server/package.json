@@ -2,7 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "scripts": {
-    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/app.css --watch"
+    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/css/dist/app.css --watch"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "jquery-validation": "^1.21.0",
+    "jquery-validation-unobtrusive": "^4.0.0"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"
