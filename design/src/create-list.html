@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lister - Create List</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Material Icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+
+  <body class="flex h-full min-h-screen flex-col font-sans">
+    <!-- Header Section -->
+    <header class="bg-blue-600 shadow-sm">
+      <div class="mx-8 my-4 flex items-center justify-between">
+        <!-- Site Title -->
+        <h2 class="text-2xl font-bold text-white">Lister</h2>
+
+        <!-- Account Icon and Menu -->
+        <!-- Icon Button -->
+        <button
+          id="accountBtn"
+          class="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-colors hover:bg-blue-700"
+          aria-label="Account Menu"
+        >
+          <span class="material-icons text-2xl text-white">account_circle</span>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          id="accountMenu"
+          class="absolute right-0 mt-2 hidden w-28 rounded border border-gray-300 bg-white text-black shadow-md"
+        >
+          <ul class="py-1">
+            <li>
+              <a
+                href="#"
+                class="block px-4 py-2 transition-colors hover:bg-gray-100"
+              >
+                Log Out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="container mx-auto my-4 grow">
+      <div class="m-8 mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md">
+        <form id="listForm">
+          <!-- List Name Section -->
+          <div class="mb-6">
+            <h3 class="mb-2 text-xl font-semibold">List Name</h3>
+            <p class="mb-2 text-gray-600">Blurb about naming a list.</p>
+            <input
+              type="text"
+              class="w-full rounded border border-gray-300 px-3 py-2"
+              placeholder="Enter list name"
+            />
+          </div>
+
+          <!-- Columns Section -->
+          <div class="mb-6">
+            <h3 class="mb-2 text-xl font-semibold">Columns</h3>
+            <p class="mb-2 text-gray-600">Blurb about columns for a list.</p>
+            <div id="columnsContainer" class="space-y-2">
+              <input
+                type="text"
+                class="w-full rounded border border-gray-300 px-3 py-2"
+                placeholder="Column Name"
+              />
+            </div>
+            <button
+              type="button"
+              class="mt-3 w-full rounded bg-gray-200 px-4 py-2 text-gray-800"
+              onclick="addColumn()"
+            >
+              + Add Column
+            </button>
+          </div>
+
+          <!-- Statuses Section -->
+          <div class="mb-6">
+            <h3 class="mb-2 text-xl font-semibold">Statuses</h3>
+            <p class="mb-2 text-gray-600">Blurb about statuses for an item.</p>
+            <div id="statusesContainer" class="space-y-2">
+              <input
+                type="text"
+                class="w-full rounded border border-gray-300 px-3 py-2"
+                placeholder="Status Name"
+              />
+            </div>
+            <button
+              type="button"
+              class="mt-3 w-full rounded bg-gray-200 px-4 py-2 text-gray-800"
+              onclick="addStatus()"
+            >
+              + Add Status
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="mt-6 flex w-full items-center justify-center rounded bg-blue-600 px-4 py-2 text-white"
+          >
+            <span class="material-icons mr-2">save</span> Submit
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <script type="module">
+      function addColumn() {
+        const container = document.getElementById("columnsContainer");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "w-full border border-gray-300 rounded px-3 py-2";
+        input.placeholder = "Column Name";
+        container.appendChild(input);
+      }
+
+      function addStatus() {
+        const container = document.getElementById("statusesContainer");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "w-full border border-gray-300 rounded px-3 py-2";
+        input.placeholder = "Status Name";
+        container.appendChild(input);
+      }
+    </script>
+  </body>
+</html>

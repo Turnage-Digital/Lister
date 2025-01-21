@@ -1,37 +1,42 @@
 ﻿<Solution>
-  <Folder Name="/solution/">
-    <File Path="global.json" />
-    <File Path=".gitignore" />
-    <File Path="docker-compose.yml" />
-    <File Path="LICENSE" />
-    <File Path="README.md" />
-    <File Path="nuget.config" />
-    <File Path="ef-reset.ps1" />
-  </Folder>
-  <Folder Name="/src/">
-    <Project Path="src\Lister.Server\Lister.Server.csproj" Type="Classic C#" />
-  </Folder>
-  <Folder Name="/src/Modules/" />
-  <Folder Name="/src/Modules/Core/">
-    <Project Path="src\Modules\Core\Lister.Core.Application\Lister.Core.Application.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Core\Lister.Core.Domain\Lister.Core.Domain.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Core\Lister.Core.Infrastructure.OpenAi\Lister.Core.Infrastructure.OpenAi.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj" Type="Classic C#" />
-  </Folder>
-  <Folder Name="/src/Modules/Lists/">
-    <Project Path="src\Modules\Lists\Lister.Client\Lister.Client.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
-      <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU" />
-    </Project>
-    <Project Path="src\Modules\Lists\Lister.Lists.Application\Lister.Lists.Application.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Lists\Lister.Lists.Domain\Lister.Lists.Domain.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Lists\Lister.Lists.Tests\Lister.Lists.Tests.csproj" Type="Classic C#" />
-  </Folder>
-  <Folder Name="/src/Modules/Users/">
-    <Project Path="src\Modules\Users\Lister.Users.Application\Lister.Users.Application.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Users\Lister.Users.Domain\Lister.Users.Domain.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Users\Lister.Users.Infrastructure.Sql\Lister.Users.Infrastructure.Sql.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj" Type="Classic C#" />
-  </Folder>
+    <Folder Name="/solution/">
+        <File Path="global.json"/>
+        <File Path=".gitignore"/>
+        <File Path="docker-compose.yml"/>
+        <File Path="LICENSE"/>
+        <File Path="README.md"/>
+        <File Path="nuget.config"/>
+        <File Path="ef-reset.ps1"/>
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="src\Lister.Server\Lister.Server.csproj" Type="Classic C#"/>
+    </Folder>
+    <Folder Name="/src/Modules/"/>
+    <Folder Name="/src/Modules/Core/">
+        <Project Path="src\Modules\Core\Lister.Core.Application\Lister.Core.Application.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Core\Lister.Core.Domain\Lister.Core.Domain.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Core\Lister.Core.Infrastructure.OpenAi\Lister.Core.Infrastructure.OpenAi.csproj"
+                 Type="Classic C#"/>
+        <Project Path="src\Modules\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj"
+                 Type="Classic C#"/>
+    </Folder>
+    <Folder Name="/src/Modules/Lists/">
+        <Project Path="src\Modules\Lists\Lister.Client\Lister.Client.esproj"
+                 Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
+            <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU"/>
+        </Project>
+        <Project Path="src\Modules\Lists\Lister.Lists.Application\Lister.Lists.Application.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Lists\Lister.Lists.Domain\Lister.Lists.Domain.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj"
+                 Type="Classic C#"/>
+        <Project Path="src\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Lists\Lister.Lists.Tests\Lister.Lists.Tests.csproj" Type="Classic C#"/>
+    </Folder>
+    <Folder Name="/src/Modules/Users/">
+        <Project Path="src\Modules\Users\Lister.Users.Application\Lister.Users.Application.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Users\Lister.Users.Domain\Lister.Users.Domain.csproj" Type="Classic C#"/>
+        <Project Path="src\Modules\Users\Lister.Users.Infrastructure.Sql\Lister.Users.Infrastructure.Sql.csproj"
+                 Type="Classic C#"/>
+        <Project Path="src\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj" Type="Classic C#"/>
+    </Folder>
 </Solution>
