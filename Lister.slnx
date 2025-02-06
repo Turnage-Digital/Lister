@@ -19,6 +19,8 @@
                  Type="Classic C#"/>
         <Project Path="src\Modules\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj"
                  Type="Classic C#"/>
+        <Project Path="src\Modules\Core\Lister.Core.Presentation.Controls\Lister.Core.Presentation.Controls.csproj"
+                 Type="Classic C#"/>
     </Folder>
     <Folder Name="/src/Modules/Lists/">
         <Project Path="src\Modules\Lists\Lister.Client\Lister.Client.esproj"

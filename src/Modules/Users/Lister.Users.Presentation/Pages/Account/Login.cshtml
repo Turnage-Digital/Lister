@@ -9,14 +9,14 @@
 
 <div class="flex flex-col h-full py-12 sm:px-6">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 class="mt-6 text-center text-3xl font-medium text-[#414b55]">@ViewData["Title"]</h2>
+        <h2 class="mt-6 text-center text-3xl font-medium text-gray-700">@ViewData["Title"]</h2>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="px-4 py-8 bg-white shadow-md sm:rounded-lg sm:px-10">
             <form asp-page="Login" class="space-y-6">
                 <div>
-                    <label asp-for="Input.EmailAddress" class="font-medium text-[#414b55]">Email Address</label>
+                    <label asp-for="Input.EmailAddress" class="font-medium text-gray-700">Email Address</label>
                     <div class="mt-2">
                         <input asp-for="Input.EmailAddress" type="text" autocomplete="email" required autofocus
                                class="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm"/>
@@ -25,7 +25,7 @@
                 </div>
 
                 <div>
-                    <label asp-for="Input.Password" class="font-medium text-[#414b55]">Password</label>
+                    <label asp-for="Input.Password" class="font-medium text-gray-700">Password</label>
                     <div class="mt-2">
                         <input asp-for="Input.Password" type="password" autocomplete="current-password" required
                                class="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm"/>
