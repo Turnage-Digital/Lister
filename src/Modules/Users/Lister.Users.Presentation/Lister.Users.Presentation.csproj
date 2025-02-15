@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Core\Lister.Core.Presentation\Lister.Core.Presentation.csproj" />
         <ProjectReference Include="..\Lister.Users.Application\Lister.Users.Application.csproj"/>
     </ItemGroup>
 

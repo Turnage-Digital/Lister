@@ -47,7 +47,10 @@ internal static class HostingExtensions
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
 
-        builder.Services.AddRazorPages();
+        builder.Services.AddRazorPages(options =>
+        {
+            options.Conventions.AuthorizePage("/Index");
+        });
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {

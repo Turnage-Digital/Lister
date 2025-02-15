@@ -19,6 +19,10 @@
         <Folder Include="wwwroot\"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\dist\core-app.css" />
+    </ItemGroup>
+
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
         <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/core-app.css --minify"/>

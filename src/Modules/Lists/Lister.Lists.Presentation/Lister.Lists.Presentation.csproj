@@ -16,8 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Core\Lister.Core.Presentation.Controls\Lister.Core.Presentation.Controls.csproj" />
+        <ProjectReference Include="..\..\Core\Lister.Core.Presentation\Lister.Core.Presentation.csproj" />
         <ProjectReference Include="..\Lister.Lists.Application\Lister.Lists.Application.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <Target Name="BuildTailwind" BeforeTargets="Build">
