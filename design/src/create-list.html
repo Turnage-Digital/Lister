@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lister - Create List</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Material Icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+
+  <body class="flex h-full min-h-screen flex-col font-sans">
+    <!-- Header Section -->
+    <header class="bg-blue-600 shadow-sm">
+      <div class="mx-8 my-4 flex items-center justify-between">
+        <!-- Site Title -->
+        <h2 class="text-2xl font-bold text-white">Lister</h2>
+
+        <!-- Account Icon and Menu -->
+        <button
+          id="accountBtn"
+          class="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-colors hover:bg-blue-700"
+          aria-label="Account Menu"
+        >
+          <span class="material-icons text-2xl text-white">account_circle</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="container mx-auto grow p-8">
+      <form class="flex flex-col space-y-10">
+        <!-- Title Bar -->
+        <div class="flex flex-col space-y-4">
+          <h1 class="text-3xl">Create a List</h1>
+          <nav class="text-gray-600">Lists > Create a List</nav>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <!-- List Name Section -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="flex flex-col space-y-4">
+            <h3 class="text-xl font-semibold">Name</h3>
+            <p class="text-gray-600">Blurb about naming a list.</p>
+          </div>
+
+          <div>
+            <input
+              type="text"
+              id="listName"
+              class="w-full rounded border border-gray-300 px-3 py-2"
+              placeholder="Enter list name"
+            />
+          </div>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <!-- Columns Section -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="flex flex-col space-y-4">
+            <h3 class="text-xl font-semibold">Columns</h3>
+            <p class="text-gray-600">Blurb about columns for a list.</p>
+          </div>
+          <div>
+            <div class="mb-2 flex space-x-2">
+              <input
+                type="text"
+                id="columnInput"
+                class="w-full rounded border border-gray-300 px-3 py-2"
+                placeholder="Column Name"
+              />
+              <button
+                type="button"
+                id="addColumnBtn"
+                class="rounded bg-gray-200 text-gray-800"
+              >
+                + Add
+              </button>
+            </div>
+            <!-- Table for columns -->
+            <table class="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="border border-gray-300">Name</th>
+                  <th class="border border-gray-300">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="columnsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <!-- Statuses Section -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="flex flex-col space-y-4">
+            <h3 class="text-xl font-semibold">Statuses</h3>
+            <p class="text-gray-600">Blurb about statuses for an item.</p>
+          </div>
+          <div>
+            <div class="mb-2 flex space-x-2">
+              <input
+                type="text"
+                id="statusInput"
+                class="w-full rounded border border-gray-300 px-3 py-2"
+                placeholder="Status Name"
+              />
+              <button
+                type="button"
+                id="addStatusBtn"
+                class="rounded bg-gray-200 text-gray-800"
+              >
+                + Add
+              </button>
+            </div>
+            <!-- Status Pills -->
+            <div id="statusesContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <hr class="border-gray-300" />
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-500"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

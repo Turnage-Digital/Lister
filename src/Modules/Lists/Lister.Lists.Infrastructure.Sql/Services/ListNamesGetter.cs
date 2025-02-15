@@ -13,7 +13,8 @@ public class ListNamesGetter(ListsDbContext dbContext) : IGetListNames
             .Select(list => new ListName
             {
                 Id = list.Id,
-                Name = list.Name
+                Name = list.Name,
+                Count = list.Items.Count(item => item.IsDeleted == false)
             })
             .ToArrayAsync(cancellationToken);
         return retval;

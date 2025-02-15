@@ -1,11 +1,33 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Lister.Core.Application.Behaviors;
+using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
+using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
+using Lister.Lists.Application.Commands.ConvertTextToListItem;
+using Lister.Lists.Application.Commands.CreateList;
+using Lister.Lists.Application.Commands.CreateListItem;
+using Lister.Lists.Application.Commands.DeleteList;
+using Lister.Lists.Application.Commands.DeleteListItem;
+using Lister.Lists.Application.Queries.GetItemDetails;
+using Lister.Lists.Domain;
+using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
-using Lister.Server.Extensions;
+using Lister.Lists.Infrastructure.Sql.Configuration;
+using Lister.Lists.Infrastructure.Sql.Entities;
+using Lister.Lists.Infrastructure.Sql.Services;
+using Lister.Server.Services;
+using Lister.Users.Application.Behaviors;
+using Lister.Users.Domain.Entities;
+using Lister.Users.Domain.Services;
 using Lister.Users.Infrastructure.Sql;
+using MediatR;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -21,10 +43,14 @@ internal static class HostingExtensions
             .WriteTo.Seq(builder.Configuration["SeqUrl"]!)
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
-        builder.Services.AddHttpContextAccessor();
 
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
 
+        builder.Services.AddRazorPages(options =>
+        {
+            options.Conventions.AuthorizePage("/Index");
+        });
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -34,41 +60,51 @@ internal static class HostingExtensions
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        var applicationDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
+        var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
         var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
+
         builder.Services.AddInfrastructure(config =>
         {
             config.DatabaseOptions.ConnectionString = connectionString;
-            config.DatabaseOptions.ApplicationDbContextMigrationAssemblyName =
-                applicationDbContextMigrationAssemblyName;
+            config.DatabaseOptions.UsersDbContextMigrationAssemblyName =
+                usersDbContextMigrationAssemblyName;
             config.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName =
                 dataProtectionKeyDbContextMigrationAssemblyName;
             config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
                 listsDbContextMigrationAssemblyName;
         });
+
         builder.Services.AddDomain();
         builder.Services.AddApplication();
 
-        builder.Services
-            .AddIdentityApiEndpoints<IdentityUser>()
-            .AddEntityFrameworkStores<UsersDbContext>();
+        builder.Services.AddDefaultIdentity<User>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredUniqueChars = 6;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<UsersDbContext>()
+            .AddDefaultTokenProviders();
 
         builder.Services
             .ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
-
-                options.Events.OnRedirectToAccessDenied =
-                    options.Events.OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.CompletedTask;
-                    };
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
             });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddDataProtection()
+            .SetApplicationName("Lister")
+            .PersistKeysToDbContext<DataProtectionKeyDbContext>();
 
         builder.Services.Configure<OpenAiOptions>(
             builder.Configuration.GetSection("OpenAI"));
@@ -103,11 +139,10 @@ internal static class HostingExtensions
         else
         {
             app.UseExceptionHandler();
+            app.UseHsts();
         }
 
         app.UseHttpsRedirection();
-        app.UseHsts();
-
         app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
@@ -115,25 +150,91 @@ internal static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.MapRazorPages();
         app.MapControllers();
 
-        var identityGroup = app
-            .MapGroup("/identity")
-            .WithTags("Identity");
-
-        identityGroup.MapIdentityApi<IdentityUser>();
-
-        identityGroup.MapPost("logout",
-            async (SignInManager<IdentityUser> signInManager) =>
-            {
-                await signInManager.SignOutAsync();
-                return Results.Ok();
-            }
-        );
-
-#if DEBUG
-        SeedData.EnsureSeedData(app);
-#endif
         return app;
+    }
+
+    private static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        Action<InfrastructureConfiguration> configuration
+    )
+    {
+        var coreConfiguration = new InfrastructureConfiguration();
+        configuration(coreConfiguration);
+        return services.AddInfrastructure(coreConfiguration);
+    }
+
+    private static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        InfrastructureConfiguration configuration
+    )
+    {
+        var connectionString = configuration.DatabaseOptions.ConnectionString;
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+        /* Core */
+        var dataProtectionKeyDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
+        services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
+
+        /* Users */
+        var usersDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.UsersDbContextMigrationAssemblyName;
+        services.AddDbContext<UsersDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(usersDbContextMigrationAssemblyName)));
+        services.AddScoped<IGetCurrentUser, CurrentUserGetter>();
+
+        /* Lists */
+        var listsDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.ListsDbContextMigrationAssemblyName;
+        services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
+        services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
+        services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
+        services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
+        services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
+        services.AddScoped<IGetPagedList, PagedListGetter>();
+        services.AddScoped<IGetListNames, ListNamesGetter>();
+
+        /* Automapper */
+        services.AddAutoMapper(config =>
+            config.AddProfile<ListsMappingProfile>());
+
+        return services;
+    }
+
+    private static IServiceCollection AddDomain(this IServiceCollection services)
+    {
+        services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
+        services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>(); });
+        return services;
+    }
+
+    private static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<GetItemDetailsQuery>(); });
+        services.AddTransient(typeof(IPipelineBehavior<,>),
+            typeof(AssignUserBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>),
+            typeof(LoggingBehavior<,>));
+        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
+            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
+            typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
+            typeof(CreateListCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
+            typeof(DeleteListCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
+            typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
+        return services;
+    }
+
+    private class InfrastructureConfiguration
+    {
+        public DatabaseOptions DatabaseOptions { get; } = new();
     }
 }

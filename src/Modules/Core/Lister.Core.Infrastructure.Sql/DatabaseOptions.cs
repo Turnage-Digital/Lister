@@ -4,7 +4,7 @@ public class DatabaseOptions
 {
     public string ConnectionString { get; set; } = null!;
 
-    public string ApplicationDbContextMigrationAssemblyName { get; set; } = null!;
+    public string UsersDbContextMigrationAssemblyName { get; set; } = null!;
 
     public string DataProtectionKeyDbContextMigrationAssemblyName { get; set; } = null!;
 

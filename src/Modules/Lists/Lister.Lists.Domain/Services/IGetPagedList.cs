@@ -10,5 +10,6 @@ public interface IGetPagedList
         int pageSize,
         string? field,
         string? sort,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }

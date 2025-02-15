@@ -38,8 +38,12 @@ public abstract class UnitOfWork<TContext>(TContext dbContext)
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
+        {
             if (disposing)
+            {
                 dbContext.Dispose();
+            }
+        }
 
         _disposed = true;
     }

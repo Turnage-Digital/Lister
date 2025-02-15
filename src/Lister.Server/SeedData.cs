@@ -54,53 +54,54 @@ public static class SeedData
             if (list == null)
             {
                 list = listAggregate.CreateListAsync(
-                    heath!.Id,
-                    "Students",
-                    [
-                        new Status
-                        {
-                            Name = "Active",
-                            Color = "#FFCA28"
-                        },
-                        new Status
-                        {
-                            Name = "Inactive",
-                            Color = "#607d8b"
-                        }
-                    ],
-                    [
-                        new Column
-                        {
-                            Name = "Name",
-                            Type = ColumnType.Text
-                        },
-                        new Column
-                        {
-                            Name = "Address",
-                            Type = ColumnType.Text
-                        },
-                        new Column
-                        {
-                            Name = "City",
-                            Type = ColumnType.Text
-                        },
-                        new Column
-                        {
-                            Name = "State",
-                            Type = ColumnType.Text
-                        },
-                        new Column
-                        {
-                            Name = "Zip Code",
-                            Type = ColumnType.Text
-                        },
-                        new Column
-                        {
-                            Name = "Date Of Birth",
-                            Type = ColumnType.Date
-                        }
-                    ]
-                ).Result;
+                        heath!.Id,
+                        "Students",
+                        [
+                            new Status
+                            {
+                                Name = "Active",
+                                Color = "#FFCA28"
+                            },
+                            new Status
+                            {
+                                Name = "Inactive",
+                                Color = "#607d8b"
+                            }
+                        ],
+                        [
+                            new Column
+                            {
+                                Name = "Name",
+                                Type = ColumnType.Text
+                            },
+                            new Column
+                            {
+                                Name = "Address",
+                                Type = ColumnType.Text
+                            },
+                            new Column
+                            {
+                                Name = "City",
+                                Type = ColumnType.Text
+                            },
+                            new Column
+                            {
+                                Name = "State",
+                                Type = ColumnType.Text
+                            },
+                            new Column
+                            {
+                                Name = "Zip Code",
+                                Type = ColumnType.Text
+                            },
+                            new Column
+                            {
+                                Name = "Date Of Birth",
+                                Type = ColumnType.Date
+                            }
+                        ]
+                    )
+                    .Result;
 
                 var faker = new Faker<Student>()
                     .RuleFor(s => s.City, f => f.Person.Address.City)
@@ -142,14 +143,18 @@ public static class SeedData
         };
 
         var result = userManager.CreateAsync(user, password).Result;
-        if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().Description);
+        }
 
         result = userManager.AddClaimsAsync(user, [
-            new Claim(JwtClaimTypes.Name, name),
-            new Claim(JwtClaimTypes.GivenName, givenName),
-            new Claim(JwtClaimTypes.FamilyName, familyName),
-            new Claim(JwtClaimTypes.WebSite, website)
-        ]).Result;
+                new Claim(JwtClaimTypes.Name, name),
+                new Claim(JwtClaimTypes.GivenName, givenName),
+                new Claim(JwtClaimTypes.FamilyName, familyName),
+                new Claim(JwtClaimTypes.WebSite, website)
+            ])
+            .Result;
 
         if (!result.Succeeded)
         {

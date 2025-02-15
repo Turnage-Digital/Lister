@@ -1,9 +1,10 @@
 using MediatR;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Lister.Core.Application.Behaviors;
 
-public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     public async Task<TResponse> Handle(
@@ -15,12 +16,12 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         TResponse retval;
         if (request is RequestBase<TResponse> requestBase)
         {
-            Log.Information("Handling {request}",
+            logger.LogInformation("Handling {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
 
             retval = await next();
 
-            Log.Information("Handled {request}",
+            logger.LogInformation("Handled {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
         }
         else
