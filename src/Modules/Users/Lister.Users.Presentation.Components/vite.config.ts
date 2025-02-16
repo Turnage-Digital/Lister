@@ -12,4 +12,7 @@ export default defineConfig({
       fileName: "users-components",
     },
   },
+  define: {
+    "process.env": {},
+  },
 });

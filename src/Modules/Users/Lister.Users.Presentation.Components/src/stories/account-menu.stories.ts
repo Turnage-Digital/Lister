@@ -1,4 +1,4 @@
-import { AccountMenu } from "../components";
+import { AccountMenu } from "../components/account-menu";
 
 import type { Meta, StoryObj } from "@storybook/react";
 

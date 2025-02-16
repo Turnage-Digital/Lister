@@ -2,7 +2,7 @@ import React from "react";
 
 import { createRoot } from "react-dom/client";
 
-import AccountMenu from "./account-menu";
+import { AccountMenu } from "./account-menu";
 
 const accountMenuRoot = document.getElementById("account-menu");
 if (accountMenuRoot) {

@@ -5,6 +5,8 @@
 @section css {
     <link rel="stylesheet" href="/_content/Lister.Core.Presentation/dist/css/core-app.css">
     <link rel="stylesheet" href="/_content/Lister.Lists.Presentation/dist/css/lists-app.css">
+    <!-- this bothers me -->
+    <link rel="stylesheet" href="/_content/Lister.Users.Presentation.Components/dist/css/users-components.css">
 }
 
 <partial name="_Header"/>
@@ -13,4 +15,6 @@
 
 @section scripts {
     @await RenderSectionAsync("scripts", false)
+    <!-- this bothers me -->
+    <script type="module" src="/_content/Lister.Users.Presentation.Components/dist/js/users-components.js"></script>
 }

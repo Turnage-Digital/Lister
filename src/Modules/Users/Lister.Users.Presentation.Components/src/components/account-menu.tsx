@@ -11,4 +11,4 @@ const AccountMenu = () => {
   );
 };
 
-export default AccountMenu;
+export { AccountMenu };
