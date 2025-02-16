@@ -21,9 +21,7 @@
   </Folder>
   <Folder Name="/src/Modules/Lists/">
     <Project Path="src\Modules\Lists\Lister.Lists.Application\Lister.Lists.Application.csproj" Type="Classic C#" />
-    <Project Path="src\Modules\Lists\Lister.Lists.Components\Lister.Lists.Components.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
-      <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU" />
-    </Project>
+    <Project Path="src\Modules\Lists\Lister.Lists.Components\Lister.Lists.Components.csproj" Type="Classic C#" />
     <Project Path="src\Modules\Lists\Lister.Lists.Domain\Lister.Lists.Domain.csproj" Type="Classic C#" />
     <Project Path="src\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj" Type="Classic C#" />
     <Project Path="src\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj" Type="Classic C#" />
