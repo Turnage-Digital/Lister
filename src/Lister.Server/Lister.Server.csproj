@@ -29,6 +29,7 @@
         <ProjectReference Include="..\Modules\Core\Lister.Core.Infrastructure.OpenAi\Lister.Core.Infrastructure.OpenAi.csproj"/>
         <ProjectReference Include="..\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj"/>
         <ProjectReference Include="..\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj"/>
+        <ProjectReference Include="..\Modules\Users\Lister.Users.Presentation.Components\Lister.Users.Presentation.Components.csproj" />
         <ProjectReference Include="..\Modules\Users\Lister.Users.Infrastructure.Sql\Lister.Users.Infrastructure.Sql.csproj"/>
         <ProjectReference Include="..\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj"/>
     </ItemGroup>

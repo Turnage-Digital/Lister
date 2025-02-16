@@ -5,8 +5,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/lists-comp-app.css --watch"
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "react": "^18.3.1",

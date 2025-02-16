@@ -20,10 +20,10 @@
         <DependentUpon>package.json</DependentUpon>
       </Content>
     </ItemGroup>
-
+    
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npm install"/>
-        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/lists-comp-app.css --minify"/>
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/users-components.css --minify"/>
     </Target>
 
     <Target Name="BuildVite" BeforeTargets="Build">

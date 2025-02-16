@@ -8,12 +8,8 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: "./src/index.ts",
-      name: "react-library",
       formats: ["es"],
-      fileName: "react-library",
-    },
-    rollupOptions: {
-      external: ["react", "react-dom"],
+      fileName: "users-components",
     },
   },
 });
