@@ -16,11 +16,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\dist\core-app.css" />
+      <Content Update="package-lock.json">
+        <DependentUpon>package.json</DependentUpon>
+      </Content>
     </ItemGroup>
 
     <Target Name="BuildTailwind" BeforeTargets="Build">
