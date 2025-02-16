@@ -4,13 +4,13 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "../wwwroot/dist/js",
+    outDir: "./wwwroot/dist/js",
     emptyOutDir: true,
     lib: {
       entry: "./src/index.ts",
       name: "react-library",
       formats: ["es"],
-      fileName: "react-library.js",
+      fileName: "react-library",
     },
     rollupOptions: {
       external: ["react", "react-dom"],

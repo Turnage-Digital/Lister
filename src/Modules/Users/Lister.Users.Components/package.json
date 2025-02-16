@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/lists-comp-app.css --watch"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -27,6 +28,7 @@
     "eslint": "^8.57.1",
     "eslint-plugin-storybook": "^0.11.3",
     "storybook": "^8.5.6",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.6.3",
     "vite": "^5.4.8"
   },
