@@ -24,6 +24,14 @@
       <Folder Include="wwwroot\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Script Include="ClientApp\tsconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="ClientApp\package.json" />
+    </ItemGroup>
+
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
         <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/lists-app.css --minify"/>
