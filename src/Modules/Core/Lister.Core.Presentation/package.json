@@ -2,7 +2,7 @@
   "name": "lists",
   "version": "1.0.0",
   "scripts": {
-    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/core-app.css --watch"
+    "tailwind-watch": "npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/core-app.css --watch"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"

@@ -25,7 +25,7 @@
 
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/core-app.css --minify"/>
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/core-app.css --minify"/>
     </Target>
 
 </Project>
