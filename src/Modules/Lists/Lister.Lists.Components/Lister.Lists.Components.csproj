@@ -26,9 +26,19 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include=".storybook\main.ts" />
+      <None Include=".storybook\preview.ts" />
+    </ItemGroup>
+
     <Target Name="BuildTailwind" BeforeTargets="Build">
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
         <Exec WorkingDirectory="$(SpaRoot)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/lists-comp-app.css --minify"/>
+    </Target>
+
+    <Target Name="BuildVite" BeforeTargets="Build">
+        <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+        <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)" />
     </Target>
 
 </Project>
