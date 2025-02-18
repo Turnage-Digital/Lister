@@ -7,9 +7,19 @@ export default defineConfig({
     outDir: "./wwwroot/dist/js",
     emptyOutDir: true,
     lib: {
+      name: "UsersComponents",
+      formats: ["iife"],
       entry: "./src/index.ts",
-      formats: ["es"],
-      fileName: "users-components",
+    },
+    rollupOptions: {
+      external: ["react", "react-dom"],
+      output: {
+        entryFileNames: "users-components.js",
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+        },
+      },
     },
   },
   define: {
