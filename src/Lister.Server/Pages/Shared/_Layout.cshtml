@@ -6,10 +6,12 @@
     <title>@ViewData["Title"] - Lister</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
     <link rel="stylesheet" href="~/dist/css/app.css" />
+    <link rel="stylesheet" href="/_content/Lister.Client/dist/css/client.css">
 </head>
 <body class="flex h-full flex-col">
 <partial name="_Header" />
 @RenderBody()
+<script type="module" src="/_content/Lister.Client/dist/js/client.js"></script>
 @await RenderSectionAsync("scripts", false)
 </body>
 </html> 
