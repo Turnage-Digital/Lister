@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Lister</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
-    @await RenderSectionAsync("css", false)
+    <link rel="stylesheet" href="/_content/Lister.Core.Presentation/dist/css/core.css"/>
+    <link rel="stylesheet" href="/_content/Lister.Lists.Presentation/dist/css/lists.css"/>
+    <link rel="stylesheet" href="/_content/Lister.Users.Presentation/dist/css/users.css"/>
+    <link rel="stylesheet" href="/_content/Lister.Client/dist/css/client.css">
 </head>
 <body class="flex h-full flex-col">
+<partial name="_Header" />
 @RenderBody()
+<script type="module" src="/_content/Lister.Client/dist/js/client.js"></script>
 @await RenderSectionAsync("scripts", false)
 </body>
 </html> 

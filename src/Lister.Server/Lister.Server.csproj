@@ -27,21 +27,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Lister.Client\Lister.Client.csproj" />
-        <ProjectReference Include="..\Modules\Lists\Lister.Lists.Application\Lister.Lists.Application.csproj" />
         <ProjectReference Include="..\Modules\Lists\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj"/>
-        <ProjectReference Include="..\Modules\Users\Lister.Users.Application\Lister.Users.Application.csproj" />
+        <ProjectReference Include="..\Modules\Lists\Lister.Lists.Presentation\Lister.Lists.Presentation.csproj" />
         <ProjectReference Include="..\Modules\Users\Lister.Users.Infrastructure.Sql\Lister.Users.Infrastructure.Sql.csproj"/>
+        <ProjectReference Include="..\Modules\Users\Lister.Users.Presentation\Lister.Users.Presentation.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Content Update="package-lock.json">
-        <DependentUpon>package.json</DependentUpon>
-      </Content>
-    </ItemGroup>
-
-    <Target Name="wwwroot" BeforeTargets="Build">
-        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npm install"/>
-        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npx tailwindcss -i ./app.css -o ./wwwroot/dist/css/app.css --minify"/>
-    </Target>
 
 </Project>
