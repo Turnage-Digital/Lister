@@ -1,11 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Core.Application.Behaviors;
-using Lister.Core.Domain.Services;
-using Lister.Core.Infrastructure.OpenAi;
-using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
-using Lister.Lists.Application.Commands.ConvertTextToListItem;
 using Lister.Lists.Application.Commands.CreateList;
 using Lister.Lists.Application.Commands.CreateListItem;
 using Lister.Lists.Application.Commands.DeleteList;
@@ -63,7 +59,6 @@ internal static class HostingExtensions
         var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
         var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
-
         builder.Services.AddInfrastructure(config =>
         {
             config.DatabaseOptions.ConnectionString = connectionString;
@@ -74,7 +69,6 @@ internal static class HostingExtensions
             config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
                 listsDbContextMigrationAssemblyName;
         });
-
         builder.Services.AddDomain();
         builder.Services.AddApplication();
 
@@ -105,9 +99,6 @@ internal static class HostingExtensions
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
-
-        builder.Services.Configure<OpenAiOptions>(
-            builder.Configuration.GetSection("OpenAI"));
 
         if (builder.Environment.IsDevelopment())
         {
@@ -193,7 +184,6 @@ internal static class HostingExtensions
         services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
-        services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetPagedList, PagedListGetter>();
@@ -222,8 +212,6 @@ internal static class HostingExtensions
             typeof(LoggingBehavior<,>));
         services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
             typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
-            typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
             typeof(CreateListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
