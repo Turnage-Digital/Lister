@@ -18,6 +18,7 @@
   <Folder Name="/src/Modules/Core/">
     <Project Path="src\Modules\Core\Lister.Core.Application\Lister.Core.Application.csproj" Type="Classic C#" />
     <Project Path="src\Modules\Core\Lister.Core.Domain\Lister.Core.Domain.csproj" Type="Classic C#" />
+    <Project Path="src\Modules\Core\Lister.Core.Infrastructure.OpenAi\Lister.Core.Infrastructure.OpenAi.csproj" Type="Classic C#" />
     <Project Path="src\Modules\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/Modules/Lists/">

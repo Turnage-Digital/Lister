@@ -64,7 +64,6 @@ export const getGridColDefs = (
           showInMenu
           icon={<Visibility />}
           label="View"
-          color="primary"
           onClick={() =>
             handleViewClicked(listItemDefinition.id!, id as number)
           }
@@ -74,14 +73,12 @@ export const getGridColDefs = (
           showInMenu
           icon={<Edit />}
           label="Edit"
-          color="primary"
         />,
         <GridActionsCellItem
           key={`${id}-delete`}
           showInMenu
           icon={<Delete />}
           label="Delete"
-          color="primary"
           onClick={() =>
             handleDeleteClicked(listItemDefinition.id!, id as number)
           }

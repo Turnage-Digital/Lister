@@ -1,9 +1,9 @@
 import * as React from "react";
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import {
   Alert,
+  Button,
   IconButton,
   InputAdornment,
   Stack,
@@ -146,7 +146,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
         }}
       />
 
-      <LoadingButton
+      <Button
         type="submit"
         variant="contained"
         size="large"
@@ -155,7 +155,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
         onClick={validateInputs}
       >
         Sign in
-      </LoadingButton>
+      </Button>
 
       {formErrorMessage && (
         <Alert severity="error" sx={{ width: "100%" }}>

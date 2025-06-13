@@ -35,7 +35,7 @@ const RouteComponent = () => {
   return (
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar title={`ID ${itemQuery.data.id}`} breadcrumbs={breadcrumbs} />
-      
+
       <ItemCard item={itemQuery.data} />
     </Stack>
   );

@@ -90,17 +90,21 @@ const RouteComponent = () => {
     handleDeleteClicked,
   );
 
-  const pagination: GridPaginationModel = {
+  const paginationModel: GridPaginationModel = {
     page: search.page,
     pageSize: search.pageSize,
   };
 
-  const sort: GridSortModel = [];
+  let sortModel: GridSortModel;
   if (search.field && search.sort) {
-    sort.push({
-      field: search.field,
-      sort: search.sort === "desc" ? "desc" : "asc",
-    });
+    sortModel = [
+      {
+        field: search.field,
+        sort: search.sort === "desc" ? "desc" : "asc",
+      },
+    ];
+  } else {
+    sortModel = [];
   }
 
   const rows = pagedItemsQuery.data.items.map((item: ListItem) => ({
@@ -138,12 +142,18 @@ const RouteComponent = () => {
           getRowId={(row) => row.id}
           rowCount={pagedItemsQuery.data.count}
           paginationMode="server"
-          paginationModel={pagination}
           pageSizeOptions={[10, 25, 50]}
           onPaginationModelChange={handlePaginationChange}
           sortingMode="server"
-          sortModel={sort}
           onSortModelChange={handleSortChange}
+          initialState={{
+            pagination: {
+              paginationModel,
+            },
+            sorting: {
+              sortModel,
+            },
+          }}
           disableColumnFilter
           disableColumnSelector
           disableRowSelectionOnClick

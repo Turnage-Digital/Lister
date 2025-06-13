@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ReactNode } from "react";
 
-import { Grid2, Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 
 interface Props {
   title: string;
@@ -11,8 +11,8 @@ interface Props {
 
 const FormBlock = ({ title, blurb, content }: Props) => {
   return (
-    <Grid2 container>
-      <Grid2 size={{ xs: 12, md: 4 }}>
+    <Grid container>
+      <Grid size={{ xs: 12, md: 4 }}>
         <Stack spacing={2} sx={{ pb: { xs: 4, md: 0 } }}>
           <Typography color="primary" fontWeight="medium" variant="h6">
             {title}
@@ -25,9 +25,9 @@ const FormBlock = ({ title, blurb, content }: Props) => {
             {blurb}
           </Typography>
         </Stack>
-      </Grid2>
-      <Grid2 size={{ xs: 12, md: 4 }}>{content}</Grid2>
-    </Grid2>
+      </Grid>
+      <Grid size={{ xs: 12, md: 4 }}>{content}</Grid>
+    </Grid>
   );
 };
 

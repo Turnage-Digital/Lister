@@ -5,7 +5,7 @@ import {
   Card,
   CardActions,
   CardContent,
-  Grid2,
+  Grid,
   IconButton,
   Tooltip,
   Typography,
@@ -21,7 +21,7 @@ export interface Props {
 
 const ListCard = ({ listName, onDeleteClick }: Props) => {
   return (
-    <Grid2 key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
+    <Grid key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
       <Card>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
@@ -46,7 +46,7 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
           </Tooltip>
         </CardActions>
       </Card>
-    </Grid2>
+    </Grid>
   );
 };
 

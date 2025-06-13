@@ -4,7 +4,7 @@ import {
   Box,
   Breadcrumbs,
   Button,
-  Grid2,
+  Grid,
   Link,
   Stack,
   Typography,
@@ -29,8 +29,8 @@ export interface TitlebarProps {
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   return (
-    <Grid2 container>
-      <Grid2 size={{ xs: 12, md: 9 }}>
+    <Grid container>
+      <Grid size={{ xs: 12, md: 9 }}>
         <Typography
           color="primary"
           fontWeight="medium"
@@ -40,10 +40,10 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
         >
           {title}
         </Typography>
-      </Grid2>
+      </Grid>
 
       {actions && actions.length > 0 && (
-        <Grid2
+        <Grid
           size={{ xs: 12, md: 3 }}
           sx={{
             display: { xs: "none", md: "flex" },
@@ -63,11 +63,11 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
               </Box>
             ))}
           </Stack>
-        </Grid2>
+        </Grid>
       )}
 
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <Grid2 size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           <Breadcrumbs separator="›">
             {breadcrumbs.map((breadcrumb) => (
               <Link
@@ -81,9 +81,9 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
             ))}
             <Typography color="text.secondary">{title}</Typography>
           </Breadcrumbs>
-        </Grid2>
+        </Grid>
       )}
-    </Grid2>
+    </Grid>
   );
 };
 

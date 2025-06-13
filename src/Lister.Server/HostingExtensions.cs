@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Core.Application.Behaviors;
+using Lister.Core.Domain.Services;
+using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
@@ -72,26 +74,19 @@ internal static class HostingExtensions
             .AddIdentityApiEndpoints<User>()
             .AddEntityFrameworkStores<UsersDbContext>();
 
-        // builder.Services
-        //     .ConfigureApplicationCookie(options =>
-        //     {
-        //         options.Cookie.HttpOnly = true;
-        //         options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        //
-        //         options.Events.OnRedirectToAccessDenied =
-        //             options.Events.OnRedirectToLogin = context =>
-        //             {
-        //                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        //                 return Task.CompletedTask;
-        //             };
-        //     });
+        builder.Services
+            .ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            });
         
         builder.Services.AddAuthorization();
 
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
-
+        
         if (builder.Environment.IsDevelopment())
         {
             builder.Services
@@ -139,19 +134,19 @@ internal static class HostingExtensions
             .MapGroup("/identity")
             .WithTags("Identity");
 
-        identityGroup.MapIdentityApi<IdentityUser>();
+        identityGroup.MapIdentityApi<User>();
 
         identityGroup.MapPost("logout",
-            async (SignInManager<IdentityUser> signInManager) =>
+            async (SignInManager<User> signInManager) =>
             {
                 await signInManager.SignOutAsync();
                 return Results.Ok();
             }
         );
         
-// #if DEBUG
-//         SeedData.EnsureSeedData(app);
-// #endif
+#if DEBUG
+        SeedData.EnsureSeedData(app);
+#endif
 
         return app;
     }
@@ -193,6 +188,7 @@ internal static class HostingExtensions
         services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
+        services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetPagedList, PagedListGetter>();

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { PlaylistAdd } from "@mui/icons-material";
-import { Grid2, Stack } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -45,7 +45,7 @@ const RouteComponent = () => {
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar title="Lists" actions={actions} />
 
-      <Grid2 container spacing={2} sx={{ my: 2 }}>
+      <Grid container spacing={2} sx={{ my: 2 }}>
         {listNamesQuery.data.map((listName) => (
           <ListCard
             key={listName.id}
@@ -53,7 +53,7 @@ const RouteComponent = () => {
             onDeleteClick={() => handleDeleteClicked(listName.id)}
           />
         ))}
-      </Grid2>
+      </Grid>
     </Stack>
   );
 };

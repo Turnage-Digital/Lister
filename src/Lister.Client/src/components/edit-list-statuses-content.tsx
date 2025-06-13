@@ -6,7 +6,7 @@ import {
   Button,
   Chip,
   FormControl,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -105,10 +105,10 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
           </Box>
         </Stack>
 
-        <Grid2 container spacing={2}>
+        <Grid container spacing={2}>
           {statuses &&
             statuses.map((status) => (
-              <Grid2 key={status.name}>
+              <Grid key={status.name}>
                 <Chip
                   label={status.name}
                   sx={{
@@ -117,9 +117,9 @@ const EditListStatusesContent = ({ statuses, onStatusesChanged }: Props) => {
                   }}
                   onDelete={() => handleRemoveClicked(status.name)}
                 />
-              </Grid2>
+              </Grid>
             ))}
-        </Grid2>
+        </Grid>
       </Stack>
 
       <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
