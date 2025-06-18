@@ -2,8 +2,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain.Services;
+using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
+using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
@@ -86,6 +88,9 @@ internal static class HostingExtensions
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
+        
+        builder.Services.Configure<OpenAiOptions>(
+            builder.Configuration.GetSection("OpenAi"));
         
         if (builder.Environment.IsDevelopment())
         {
@@ -215,10 +220,12 @@ internal static class HostingExtensions
             typeof(AssignUserBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
-        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
-            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
+            typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
             typeof(CreateListCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
+            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
             typeof(DeleteListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
