@@ -4,7 +4,9 @@ using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
+using Lister.Users.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 namespace Lister.Server;
 
@@ -19,10 +21,10 @@ public static class SeedData
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
 
-            Console.WriteLine("Seeding database...");
+            Log.Information("Seeding database...");
 
             var userManager = scope.ServiceProvider
-                .GetRequiredService<UserManager<IdentityUser>>();
+                .GetRequiredService<UserManager<User>>();
 
             var heath = userManager.FindByNameAsync("heath@email.com").Result;
             if (heath == null)
@@ -33,7 +35,7 @@ public static class SeedData
             }
             else
             {
-                Console.WriteLine("heath already exists");
+                Log.Information("Heath already exists");
             }
 
             var erika = userManager.FindByNameAsync("erika@email.com").Result;
@@ -44,7 +46,7 @@ public static class SeedData
             }
             else
             {
-                Console.WriteLine("erika already exists");
+                Log.Information("Erika already exists");
             }
 
             var listAggregate = scope.ServiceProvider
@@ -116,16 +118,16 @@ public static class SeedData
                 listAggregate.CreateItemsAsync(list, students, heath.Id).Wait();
             }
 
-            Console.WriteLine("Done seeding database. Exiting.");
+            Log.Information("Done seeding database. Exiting.");
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error(e, "Error seeding database");
         }
     }
 
     private static void CreateUser(
-        UserManager<IdentityUser> userManager,
+        UserManager<User> userManager,
         string userName,
         string email,
         string password,
@@ -135,7 +137,7 @@ public static class SeedData
         string website
     )
     {
-        var user = new IdentityUser
+        var user = new User
         {
             UserName = userName,
             Email = email,

@@ -19,6 +19,7 @@ public class ListsStore(ListsDbContext dbContext)
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
             .Where(list => list.Id == id)
+            .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
         return retval;
     }
@@ -29,6 +30,7 @@ public class ListsStore(ListsDbContext dbContext)
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
             .Where(list => list.Name == name)
+            .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
         return retval;
     }

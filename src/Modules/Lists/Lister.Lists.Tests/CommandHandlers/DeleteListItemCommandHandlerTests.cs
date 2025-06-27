@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Commands.DeleteListItem;
+using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using MediatR;

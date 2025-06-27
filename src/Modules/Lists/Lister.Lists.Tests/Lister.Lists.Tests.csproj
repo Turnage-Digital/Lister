@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Lists.Application\Lister.Lists.Application.csproj"/>
+        <ProjectReference Include="..\Lister.Lists.Application\Lister.Lists.Application.csproj" />
         <ProjectReference Include="..\Lister.Lists.Infrastructure.Sql\Lister.Lists.Infrastructure.Sql.csproj"/>
     </ItemGroup>
 

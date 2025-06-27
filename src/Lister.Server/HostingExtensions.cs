@@ -5,12 +5,12 @@ using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
-using Lister.Lists.Application.Commands.ConvertTextToListItem;
-using Lister.Lists.Application.Commands.CreateList;
-using Lister.Lists.Application.Commands.CreateListItem;
-using Lister.Lists.Application.Commands.DeleteList;
-using Lister.Lists.Application.Commands.DeleteListItem;
-using Lister.Lists.Application.Queries.GetItemDetails;
+using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
+using Lister.Lists.Application.Endpoints.CreateList;
+using Lister.Lists.Application.Endpoints.CreateListItem;
+using Lister.Lists.Application.Endpoints.DeleteList;
+using Lister.Lists.Application.Endpoints.DeleteListItem;
+using Lister.Lists.Application.Endpoints.GetItemDetails;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.Services;
@@ -46,11 +46,7 @@ internal static class HostingExtensions
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
-
-        builder.Services.AddRazorPages(options =>
-        {
-            options.Conventions.AuthorizePage("/Index");
-        });
+        
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -63,7 +59,6 @@ internal static class HostingExtensions
         var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
         var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
-
         builder.Services.AddInfrastructure(config =>
         {
             config.DatabaseOptions.ConnectionString = connectionString;
@@ -74,41 +69,29 @@ internal static class HostingExtensions
             config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
                 listsDbContextMigrationAssemblyName;
         });
-
         builder.Services.AddDomain();
         builder.Services.AddApplication();
 
-        builder.Services.AddDefaultIdentity<User>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequiredUniqueChars = 6;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 3;
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<UsersDbContext>()
-            .AddDefaultTokenProviders();
+        builder.Services
+            .AddIdentityApiEndpoints<User>()
+            .AddEntityFrameworkStores<UsersDbContext>();
 
         builder.Services
             .ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
             });
+        
+        builder.Services.AddAuthorization();
 
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
-
+        
         builder.Services.Configure<OpenAiOptions>(
-            builder.Configuration.GetSection("OpenAI"));
-
+            builder.Configuration.GetSection("OpenAi"));
+        
         if (builder.Environment.IsDevelopment())
         {
             builder.Services
@@ -149,9 +132,26 @@ internal static class HostingExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.MapRazorPages();
+        
         app.MapControllers();
+        
+        var identityGroup = app
+            .MapGroup("/identity")
+            .WithTags("Identity");
+
+        identityGroup.MapIdentityApi<User>();
+
+        identityGroup.MapPost("logout",
+            async (SignInManager<User> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return Results.Ok();
+            }
+        );
+        
+#if DEBUG
+        SeedData.EnsureSeedData(app);
+#endif
 
         return app;
     }
@@ -220,12 +220,12 @@ internal static class HostingExtensions
             typeof(AssignUserBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
-        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
-            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
             typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
             typeof(CreateListCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
+            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
             typeof(DeleteListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
