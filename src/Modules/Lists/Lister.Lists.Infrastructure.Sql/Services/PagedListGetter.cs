@@ -47,8 +47,8 @@ public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
         var connection = dbContext.Database.GetDbConnection();
         var multi = await connection.QueryMultipleAsync(template.RawSql, template.Parameters);
 
-        var data = await multi.ReadAsync<dynamic>();
-        var items = data.Select(d => new ListItem
+        var read = await multi.ReadAsync<dynamic>();
+        var items = read.Select(d => new ListItem
             {
                 Bag = JsonSerializer.Deserialize<object>(d.Bag),
                 Id = d.Id,

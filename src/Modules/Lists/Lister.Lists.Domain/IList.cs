@@ -1,4 +1,4 @@
-namespace Lister.Lists.Domain.Entities;
+namespace Lister.Lists.Domain;
 
 public interface IList
 {

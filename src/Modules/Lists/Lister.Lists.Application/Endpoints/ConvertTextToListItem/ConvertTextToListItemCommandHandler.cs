@@ -24,14 +24,20 @@ public class ConvertTextToListItemCommandHandler<TList, TItem>(
         var parsed = Guid.Parse(request.ListId);
         var list = await listsAggregate.GetListByIdAsync(parsed, cancellationToken);
         if (list is null)
+        {
             throw new InvalidOperationException($"List with id {request.ListId} does not exist");
+        }
 
         var exampleBag = await listsAggregate.CreateExampleBagAsync(list, cancellationToken);
         var exampleJson = JsonSerializer.Serialize(exampleBag);
         logger.LogInformation("Example JSON: {exampleJson}", exampleJson);
 
         var completedJson = await completedJsonGetter.Get(exampleJson, request.Text, cancellationToken);
-        var completedBag = JsonSerializer.Deserialize<object>(completedJson);
+        object? completedBag = null;
+        if (completedJson is not null)
+        {
+            completedBag = JsonSerializer.Deserialize<object>(completedJson);
+        }
 
         var retval = new ListItem { Bag = completedBag ?? new object() };
         return retval;
