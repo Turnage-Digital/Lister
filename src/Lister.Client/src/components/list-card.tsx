@@ -21,32 +21,30 @@ export interface Props {
 
 const ListCard = ({ listName, onDeleteClick }: Props) => {
   return (
-    <Grid key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
-      <Card>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {listName.name}
-          </Typography>
-        </CardContent>
-        <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Tooltip title={`View ${listName.name}`}>
-            <PreloadIconButton
-              to="/$listId"
-              params={{ listId: listName.id }}
-              search={{ page: 0, pageSize: 10 }}
-              preload="intent"
-            >
-              <Visibility />
-            </PreloadIconButton>
-          </Tooltip>
-          <Tooltip title={`Delete ${listName.name}`}>
-            <IconButton onClick={() => onDeleteClick(listName.id)}>
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </CardActions>
-      </Card>
-    </Grid>
+    <Card>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {listName.name}
+        </Typography>
+      </CardContent>
+      <CardActions sx={{ justifyContent: "flex-end" }}>
+        <Tooltip title={`View ${listName.name}`}>
+          <PreloadIconButton
+            to="/$listId"
+            params={{ listId: listName.id }}
+            search={{ page: 0, pageSize: 10 }}
+            preload="intent"
+          >
+            <Visibility />
+          </PreloadIconButton>
+        </Tooltip>
+        <Tooltip title={`Delete ${listName.name}`}>
+          <IconButton onClick={() => onDeleteClick(listName.id)}>
+            <Delete />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
   );
 };
 

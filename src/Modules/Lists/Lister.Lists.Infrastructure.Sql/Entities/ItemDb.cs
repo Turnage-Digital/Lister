@@ -9,9 +9,10 @@ public class ItemDb : IWritableItem
 
     public bool IsDeleted { get; set; }
 
-    public ListDb List { get; set; } = null!;
+    public ListDb List { get; init; } = null!;
 
-    public ICollection<ItemHistoryEntryDb> History { get; set; } = new HashSet<ItemHistoryEntryDb>();
+    public ICollection<ItemHistoryEntryDb> History { get; init; } = new HashSet<ItemHistoryEntryDb>();
+    
     public int? Id { get; set; }
 
     public Guid? ListId { get; set; }

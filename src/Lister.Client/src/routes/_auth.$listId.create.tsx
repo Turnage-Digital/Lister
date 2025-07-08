@@ -16,7 +16,7 @@ import {
   useSideDrawer,
 } from "../components";
 import { ListItem } from "../models";
-import { listDefinitionQueryOptions } from "../query-options";
+import { listItemDefinitionQueryOptions } from "../query-options";
 
 const RouteComponent = () => {
   const { openDrawer, closeDrawer } = useSideDrawer();
@@ -42,8 +42,8 @@ const RouteComponent = () => {
     },
   });
 
-  const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId),
+  const listItemDefinitionQuery = useSuspenseQuery(
+    listItemDefinitionQueryOptions(listId),
   );
 
   const defaultListItem: ListItem = {
@@ -54,17 +54,17 @@ const RouteComponent = () => {
 
   const [updated, setUpdated] = useState<ListItem>(() => {
     const item = window.sessionStorage.getItem(
-      listDefinitionQuery.data.id ?? "updated_item",
+      listItemDefinitionQuery.data.id ?? "updated_item",
     );
     return item ? JSON.parse(item) : defaultListItem;
   });
 
   useEffect(() => {
     window.sessionStorage.setItem(
-      listDefinitionQuery.data.id ?? "updated_item",
+      listItemDefinitionQuery.data.id ?? "updated_item",
       JSON.stringify(updated),
     );
-  }, [listDefinitionQuery, updated]);
+  }, [listItemDefinitionQuery, updated]);
 
   const handleUpdate = (key: string, value: any) => {
     const newBag = { ...updated.bag, [key]: value };
@@ -75,7 +75,7 @@ const RouteComponent = () => {
     const command = { text };
 
     const postRequest = new Request(
-      `/api/lists/${listDefinitionQuery.data.id}/items/convert-text-to-list-item`,
+      `/api/lists/${listItemDefinitionQuery.data.id}/items/convert-text-to-list-item`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +99,7 @@ const RouteComponent = () => {
       throw new Error("Item was not created.");
     }
     window.sessionStorage.removeItem(
-      listDefinitionQuery.data.id ?? "updated_item",
+      listItemDefinitionQuery.data.id ?? "updated_item",
     );
     await navigate({
       to: "/$listId/$itemId",
@@ -107,7 +107,7 @@ const RouteComponent = () => {
     });
   };
 
-  if (!listDefinitionQuery.isSuccess) {
+  if (!listItemDefinitionQuery.isSuccess) {
     return null;
   }
 
@@ -126,7 +126,7 @@ const RouteComponent = () => {
       onClick: () => navigate({ to: "/" }),
     },
     {
-      title: listDefinitionQuery.data.name,
+      title: listItemDefinitionQuery.data.name,
       onClick: () => navigate({ to: `/${listId}` }),
     },
   ];
@@ -150,7 +150,7 @@ const RouteComponent = () => {
         blurb="Blurb about columns for an item."
         content={
           <EditListItemColumnContent
-            listItemDefinition={listDefinitionQuery.data}
+            listItemDefinition={listItemDefinitionQuery.data}
             item={updated}
             onItemUpdated={handleUpdate}
           />
@@ -162,7 +162,7 @@ const RouteComponent = () => {
         blurb="Blurb about a status for an item."
         content={
           <EditListItemStatusesContent
-            listItemDefinition={listDefinitionQuery.data}
+            listItemDefinition={listItemDefinitionQuery.data}
             item={updated}
             onItemUpdated={handleUpdate}
           />
