@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Typography } from "@mui/material";
 
 import {
   ColumnType,
@@ -20,54 +20,52 @@ const ItemCard = ({ item, definition }: Props) => {
   const status = getStatusFromName(definition.statuses, rawStatus);
   const statusChip = status && <StatusChip status={status} />;
 
+  const getDisplayValue = (
+    rawValue: any,
+    type: ColumnType,
+  ): React.ReactNode => {
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+      return "-";
+    }
+
+    switch (type) {
+      case ColumnType.Date:
+        return new Date(rawValue).toLocaleDateString();
+      case ColumnType.Boolean:
+        return rawValue ? "True" : "False";
+      case ColumnType.Number:
+      case ColumnType.Text:
+      default:
+        return String(rawValue);
+    }
+  };
+
   return (
     <Card>
       <CardContent>
-        <Box component="dl">
+        <Grid container spacing={1} sx={{ m: 1 }}>
           {definition.columns.map((column) => {
             const key = column.property ?? column.name;
             const rawValue = item.bag[key];
-            let displayValue: React.ReactNode = "-";
-
-            switch (column.type) {
-              case ColumnType.Date:
-                displayValue = rawValue
-                  ? new Date(rawValue).toLocaleDateString()
-                  : "-";
-                break;
-              case ColumnType.Boolean:
-                displayValue = rawValue ? "Yes" : "No";
-                break;
-              case ColumnType.Number:
-                displayValue = rawValue ?? "-";
-                break;
-              case ColumnType.Text:
-                displayValue = rawValue ?? "-";
-                break;
-            }
+            const displayValue = getDisplayValue(rawValue, column.type);
 
             return (
-              <Grid container key={key} spacing={1} sx={{ mb: 1 }}>
+              <React.Fragment key={key}>
                 <Grid size={{ xs: 4 }}>
-                  <Typography component="dt" variant="subtitle2">
-                    {column.name}
-                  </Typography>
+                  <Typography variant="subtitle2">{column.name}</Typography>
                 </Grid>
                 <Grid size={{ xs: 8 }}>
-                  <Typography component="dd" variant="body1">
-                    {displayValue}
-                  </Typography>
+                  <Typography variant="body1">{displayValue}</Typography>
                 </Grid>
-              </Grid>
+              </React.Fragment>
             );
           })}
-        </Box>
-
-        {statusChip && (
-          <Grid container spacing={1} sx={{ mt: 4 }}>
-            <Grid size={{ xs: 12 }}>{statusChip}</Grid>
-          </Grid>
-        )}
+          {statusChip && (
+            <Grid size={{ xs: 12 }} sx={{ mt: 1 }}>
+              {statusChip}
+            </Grid>
+          )}
+        </Grid>
       </CardContent>
     </Card>
   );
