@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,22 +13,17 @@ namespace Lister.Mcp.Server.Services;
 public class ListerApiClient
 {
     private readonly HttpClient _httpClient;
+    private readonly ListerAuthClient _authService;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public ListerApiClient(HttpClient httpClient, IConfiguration configuration)
+    public ListerApiClient(HttpClient httpClient, IConfiguration configuration, ListerAuthClient authService)
     {
         _httpClient = httpClient;
-
+        _authService = authService;
+        
         var baseUrl = configuration["ListerApi:BaseUrl"] ?? "http://localhost:5000";
         _httpClient.BaseAddress = new Uri(baseUrl);
-
-        // Configure authentication if needed
-        var apiKey = configuration["ListerApi:ApiKey"];
-        if (!string.IsNullOrEmpty(apiKey))
-        {
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
-        }
-
+        
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -36,9 +32,24 @@ public class ListerApiClient
         _jsonOptions.Converters.Add(new JsonStringEnumConverter());
     }
 
+    private async Task<HttpRequestMessage> CreateAuthenticatedRequestAsync(
+        HttpMethod method, string requestUri, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(method, requestUri);
+        
+        var token = await _authService.GetValidTokenAsync(cancellationToken);
+        if (!string.IsNullOrEmpty(token))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        
+        return request;
+    }
+
     public async Task<ListName[]> GetListsAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("/api/lists/names", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, "/api/lists/names", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -47,7 +58,8 @@ public class ListerApiClient
 
     public async Task<ListItemDefinition> GetListSchemaAsync(Guid listId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/api/lists/{listId}/itemDefinition", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, $"/api/lists/{listId}/itemDefinition", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -82,7 +94,8 @@ public class ListerApiClient
         }
 
         var queryString = string.Join("&", queryParams);
-        var response = await _httpClient.GetAsync($"/api/lists/{listId}/items?{queryString}", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, $"/api/lists/{listId}/items?{queryString}", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -95,7 +108,8 @@ public class ListerApiClient
         CancellationToken cancellationToken = default
     )
     {
-        var response = await _httpClient.GetAsync($"/api/lists/{listId}/items/{itemId}", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, $"/api/lists/{listId}/items/{itemId}", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -108,11 +122,13 @@ public class ListerApiClient
         CancellationToken cancellationToken = default
     )
     {
-        var request = new CreateListItemRequest { Bag = data };
-        var json = JsonSerializer.Serialize(request, _jsonOptions);
+        var requestData = new CreateListItemRequest { Bag = data };
+        var json = JsonSerializer.Serialize(requestData, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync($"/api/lists/{listId}/items", content, cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Post, $"/api/lists/{listId}/items", cancellationToken);
+        request.Content = content;
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -125,12 +141,13 @@ public class ListerApiClient
         CancellationToken cancellationToken = default
     )
     {
-        var request = new ConvertTextToListItemRequest { Text = text };
-        var json = JsonSerializer.Serialize(request, _jsonOptions);
+        var requestData = new ConvertTextToListItemRequest { Text = text };
+        var json = JsonSerializer.Serialize(requestData, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync($"/api/lists/{listId}/items/convert-text-to-list-item", content,
-            cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Post, $"/api/lists/{listId}/items/convert-text-to-list-item", cancellationToken);
+        request.Content = content;
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -144,17 +161,19 @@ public class ListerApiClient
         CancellationToken cancellationToken = default
     )
     {
-        var request = new CreateListRequest
+        var requestData = new CreateListRequest
         {
             Name = name,
             Columns = columns,
             Statuses = statuses
         };
 
-        var json = JsonSerializer.Serialize(request, _jsonOptions);
+        var json = JsonSerializer.Serialize(requestData, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync("/api/lists", content, cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Post, "/api/lists", cancellationToken);
+        request.Content = content;
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -163,13 +182,15 @@ public class ListerApiClient
 
     public async Task DeleteListItemAsync(Guid listId, int itemId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.DeleteAsync($"/api/lists/{listId}/items/{itemId}", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Delete, $"/api/lists/{listId}/items/{itemId}", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 
     public async Task DeleteListAsync(Guid listId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.DeleteAsync($"/api/lists/{listId}", cancellationToken);
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Delete, $"/api/lists/{listId}", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
     }
 }

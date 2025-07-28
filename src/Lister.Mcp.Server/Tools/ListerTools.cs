@@ -230,7 +230,6 @@ public class ListerTools
                 return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
             }
 
-            // Parse the item data JSON
             var data = JsonSerializer.Deserialize<Dictionary<string, object?>>(itemData, JsonOptions);
             if (data == null)
             {
