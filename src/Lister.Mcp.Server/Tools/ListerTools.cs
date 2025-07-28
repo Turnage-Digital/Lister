@@ -191,7 +191,7 @@ public class ListerTools
                 {
                     id = itemDetails.Id,
                     listId = itemDetails.ListId,
-                    data = itemDetails.Bag,
+                    bag = itemDetails.Bag,
                     // history = itemDetails.History.Select(h => new
                     //     {
                     //         timestamp = h.On,
@@ -255,50 +255,6 @@ public class ListerTools
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to create item with {Request}", new { listId, itemData });
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
-        }
-    }
-
-    [McpServerTool]
-    [Description("Create a new item using AI to parse natural language text into structured data")]
-    public static async Task<string> SmartCreateItem(
-        ListerApiClient apiClient,
-        [Description("The ID of the list to add the item to")]
-        string listId,
-        [Description("Natural language text describing the item to create")]
-        string text,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Log.Information("SmartCreateItem called with {Request}", new { listId, text });
-        try
-        {
-            if (!Guid.TryParse(listId, out var guid))
-            {
-                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
-            }
-
-            var createdItem = await apiClient.SmartCreateItemAsync(guid, text, cancellationToken);
-            Log.Information("Successfully smart-created item with {Result}", 
-                new { listId, itemId = createdItem.Id });
-
-            var result = new
-            {
-                success = true,
-                sourceText = text,
-                item = new
-                {
-                    id = createdItem.Id,
-                    listId = createdItem.ListId,
-                    data = createdItem.Bag
-                }
-            };
-
-            return JsonSerializer.Serialize(result, JsonOptions);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to smart-create item with {Request}", new { listId, text });
             return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
         }
     }
