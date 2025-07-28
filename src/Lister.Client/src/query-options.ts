@@ -21,7 +21,7 @@ export const listNamesQueryOptions = () =>
     },
   });
 
-export const listDefinitionQueryOptions = (listId?: string) =>
+export const listItemDefinitionQueryOptions = (listId?: string) =>
   queryOptions({
     queryKey: ["list-definition", listId],
     queryFn: async () => {

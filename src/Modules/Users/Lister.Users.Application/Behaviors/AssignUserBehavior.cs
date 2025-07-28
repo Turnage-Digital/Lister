@@ -35,7 +35,18 @@ public class AssignUserBehavior<TRequest, TResponse>(IGetCurrentUser getter)
     private string GetUserId()
     {
         var user = getter.CurrentUser;
-        var identity = (ClaimsIdentity)user!.Identity!;
+
+        if (user?.Identity is null)
+            throw new InvalidOperationException("No authenticated user found. User authentication is required.");
+
+        if (!user.Identity.IsAuthenticated)
+            throw new InvalidOperationException(
+                "User is not authenticated. Authentication is required to access this resource.");
+
+        if (user.Identity is not ClaimsIdentity identity)
+            throw new InvalidOperationException(
+                "User identity is not a ClaimsIdentity. Unable to extract user information.");
+        
         var retval = identity.GetUserId();
         return retval;
     }

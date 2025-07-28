@@ -38,7 +38,7 @@ const RouteComponent = () => {
     },
   });
 
-  const defaultListDefinition: ListItemDefinition = {
+  const defaultListItemDefinition: ListItemDefinition = {
     id: null,
     name: "",
     columns: [],
@@ -47,7 +47,7 @@ const RouteComponent = () => {
 
   const [updated, setUpdated] = useState<ListItemDefinition>(() => {
     const item = window.sessionStorage.getItem("updated_list");
-    return item ? JSON.parse(item) : defaultListDefinition;
+    return item ? JSON.parse(item) : defaultListItemDefinition;
   });
 
   useEffect(() => {

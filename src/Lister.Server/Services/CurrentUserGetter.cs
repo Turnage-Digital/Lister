@@ -3,12 +3,7 @@ using Lister.Users.Domain.Services;
 
 namespace Lister.Server.Services;
 
-public class CurrentUserGetter : IGetCurrentUser
+public class CurrentUserGetter(IHttpContextAccessor httpContextAccessor) : IGetCurrentUser
 {
-    public CurrentUserGetter(IHttpContextAccessor httpContextAccessor)
-    {
-        CurrentUser = httpContextAccessor.HttpContext?.User;
-    }
-
-    public ClaimsPrincipal? CurrentUser { get; }
+    public ClaimsPrincipal? CurrentUser { get; } = httpContextAccessor.HttpContext?.User;
 }

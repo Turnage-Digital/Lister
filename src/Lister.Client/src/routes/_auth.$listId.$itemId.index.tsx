@@ -1,23 +1,26 @@
 import * as React from "react";
 
-import { Stack } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ItemCard, Titlebar } from "../components";
-import { itemQueryOptions, listDefinitionQueryOptions } from "../query-options";
+import {
+  itemQueryOptions,
+  listItemDefinitionQueryOptions,
+} from "../query-options";
 
 const RouteComponent = () => {
   const { listId, itemId } = Route.useParams();
   const navigate = Route.useNavigate();
 
-  const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId),
+  const listItemDefinitionQuery = useSuspenseQuery(
+    listItemDefinitionQueryOptions(listId),
   );
 
   const itemQuery = useSuspenseQuery(itemQueryOptions(listId, itemId));
 
-  if (!listDefinitionQuery.isSuccess || !itemQuery.isSuccess) {
+  if (!listItemDefinitionQuery.isSuccess || !itemQuery.isSuccess) {
     return null;
   }
 
@@ -27,7 +30,7 @@ const RouteComponent = () => {
       onClick: () => navigate({ to: "/" }),
     },
     {
-      title: listDefinitionQuery.data.name || "",
+      title: listItemDefinitionQuery.data.name || "",
       onClick: () => navigate({ to: `/${listId}` }),
     },
   ];
@@ -36,7 +39,14 @@ const RouteComponent = () => {
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar title={`ID ${itemQuery.data.id}`} breadcrumbs={breadcrumbs} />
 
-      <ItemCard item={itemQuery.data} />
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <ItemCard
+            item={itemQuery.data}
+            definition={listItemDefinitionQuery.data}
+          />
+        </Grid>
+      </Grid>
     </Stack>
   );
 };

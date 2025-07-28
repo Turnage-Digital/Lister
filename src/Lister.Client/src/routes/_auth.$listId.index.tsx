@@ -9,7 +9,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getGridColDefs, Titlebar } from "../components";
 import { ListItem, ListSearch } from "../models";
 import {
-  listDefinitionQueryOptions,
+  listItemDefinitionQueryOptions,
   pagedItemsQueryOptions,
 } from "../query-options";
 
@@ -19,8 +19,8 @@ const RouteComponent = () => {
   const { queryClient } = Route.useRouteContext();
   const search = Route.useSearch();
 
-  const listDefinitionQuery = useSuspenseQuery(
-    listDefinitionQueryOptions(listId),
+  const listItemDefinitionQuery = useSuspenseQuery(
+    listItemDefinitionQueryOptions(listId),
   );
 
   const pagedItemsQuery = useSuspenseQuery(
@@ -80,12 +80,12 @@ const RouteComponent = () => {
     await deleteItemMutation.mutateAsync({ listId, itemId });
   };
 
-  if (!listDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
+  if (!listItemDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
     return null;
   }
 
   const gridColDefs = getGridColDefs(
-    listDefinitionQuery.data,
+    listItemDefinitionQuery.data,
     handleViewClicked,
     handleDeleteClicked,
   );
@@ -130,12 +130,12 @@ const RouteComponent = () => {
   return (
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar
-        title={listDefinitionQuery.data.name}
+        title={listItemDefinitionQuery.data.name}
         actions={actions}
         breadcrumbs={breadcrumbs}
       />
 
-      <Paper sx={{ my: 4 }}>
+      <Paper>
         <DataGrid
           columns={gridColDefs}
           rows={rows}

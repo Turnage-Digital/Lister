@@ -17,9 +17,6 @@ public class GetListItemDefinitionQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        if (request.UserId is null)
-            throw new ArgumentNullException(nameof(request), "UserId is null");
-
         ListItemDefinition? retval;
 
         var parsedListId = Guid.Parse(request.ListId);
