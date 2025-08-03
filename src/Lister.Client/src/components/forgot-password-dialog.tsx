@@ -54,7 +54,8 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
 
       if (!response.ok) {
         if (response.status === 400) {
-          const errorData = await response.json().catch(() => ({}));
+          const errorData = await response.json();
+
           if (errorData.errors?.Email) {
             setEmailErrorMessage(errorData.errors.Email[0]);
           } else {
@@ -92,6 +93,7 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
           Enter your account&apos;s email address, and we&apos;ll send you a
           link to reset your password.
         </DialogContentText>
+
         <TextField
           margin="normal"
           id="email"
@@ -106,12 +108,14 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
           helperText={emailErrorMessage}
           disabled={loading}
         />
+
         {successMessage && (
           <Alert severity="success" sx={{ mt: 2 }}>
             {successMessage}
           </Alert>
         )}
       </DialogContent>
+
       <DialogActions sx={{ p: 3 }}>
         <Button onClick={onClose} disabled={loading}>
           Cancel

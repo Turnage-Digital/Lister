@@ -65,9 +65,9 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
       const response = await fetch(request);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json();
+
         if (response.status === 400 && errorData.errors) {
-          // Handle validation errors
           const errors = errorData.errors;
           if (errors.NewPassword) {
             setPasswordErrorMessage(errors.NewPassword[0]);
