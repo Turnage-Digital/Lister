@@ -29,7 +29,7 @@ public class ListerTools
         try
         {
             var lists = await apiClient.GetListsAsync(cancellationToken);
-            Log.Information("Successfully retrieved {ListCount} lists", lists.Length);
+            Log.Information("Successfully retrieved lists with {Result}", new { listCount = lists.Length });
 
             var result = new
             {
@@ -375,6 +375,34 @@ public class ListerTools
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to delete list with {Request}", new { listId });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Get the Swagger/OpenAPI specification for the Lister API")]
+    public static async Task<string> GetSwaggerJson(
+        ListerApiClient apiClient,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("GetSwaggerJson called");
+        try
+        {
+            var response = await apiClient.GetSwaggerJsonAsync(cancellationToken);
+            Log.Information("Successfully retrieved swagger.json with {Result}", new { length = response.Length });
+
+            var result = new
+            {
+                success = true,
+                swaggerJson = JsonSerializer.Deserialize<JsonElement>(response)
+            };
+
+            return JsonSerializer.Serialize(result, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to retrieve swagger.json");
             return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
         }
     }

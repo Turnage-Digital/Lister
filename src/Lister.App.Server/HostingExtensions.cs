@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Lister.App.Server.Services;
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
@@ -19,7 +20,6 @@ using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
-using Lister.Server.Services;
 using Lister.Users.Application.Behaviors;
 using Lister.Users.Domain.Entities;
 using Lister.Users.Domain.Services;
@@ -31,7 +31,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
-namespace Lister.Server;
+namespace Lister.App.Server;
 
 internal static class HostingExtensions
 {
