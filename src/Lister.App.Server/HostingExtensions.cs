@@ -76,6 +76,8 @@ internal static class HostingExtensions
             .AddIdentityApiEndpoints<User>()
             .AddEntityFrameworkStores<UsersDbContext>();
 
+        builder.Services.AddScoped<IEmailSender<User>, StubEmailSender>();
+
         builder.Services
             .ConfigureApplicationCookie(options =>
             {
