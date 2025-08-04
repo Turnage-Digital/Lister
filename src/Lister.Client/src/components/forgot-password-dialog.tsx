@@ -19,6 +19,10 @@ interface Props {
 
 const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
   const [loading, setLoading] = React.useState(false);
+
+  const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
+    null,
+  );
   const [emailErrorMessage, setEmailErrorMessage] = React.useState<
     string | null
   >(null);
@@ -29,16 +33,15 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setEmailErrorMessage("Please enter a valid email address.");
+    if (emailErrorMessage) {
       return;
     }
 
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+
     try {
-      setEmailErrorMessage(null);
+      setFormErrorMessage(null);
       setSuccessMessage(null);
       setLoading(true);
 
@@ -62,7 +65,7 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
             setEmailErrorMessage("Please enter a valid email address.");
           }
         } else {
-          setEmailErrorMessage("Failed to send reset email. Please try again.");
+          setFormErrorMessage("Failed to send reset email. Please try again.");
         }
         return;
       }
@@ -70,11 +73,46 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
       setSuccessMessage("Password reset link sent! Check your email.");
       onSubmit(email);
     } catch {
-      setEmailErrorMessage("An unexpected error occurred.");
+      setFormErrorMessage("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
   };
+
+  const validateInputs = () => {
+    const email = document.getElementById("email") as HTMLInputElement;
+
+    let retval = true;
+
+    if (email.value && /\S+@\S+\.\S+/.test(email.value)) {
+      setEmailErrorMessage(null);
+    } else {
+      setEmailErrorMessage("Please enter a valid email address.");
+      retval = false;
+    }
+
+    return retval;
+  };
+
+  const emailErrorColor = emailErrorMessage ? "error" : "primary";
+
+  const dialogActions = successMessage ? (
+    <Button variant="contained" onClick={onClose}>
+      Close
+    </Button>
+  ) : (
+    <>
+      <Button onClick={onClose}>Cancel</Button>
+      <Button
+        variant="contained"
+        type="submit"
+        loading={loading}
+        onClick={validateInputs}
+      >
+        Continue
+      </Button>
+    </>
+  );
 
   return (
     <Dialog
@@ -98,7 +136,7 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
           margin="normal"
           id="email"
           name="email"
-          label="Email address"
+          placeholder="your@email.com"
           autoComplete="email"
           required
           fullWidth
@@ -106,7 +144,7 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
           type="email"
           error={emailErrorMessage !== null}
           helperText={emailErrorMessage}
-          disabled={loading}
+          color={emailErrorColor}
         />
 
         {successMessage && (
@@ -114,16 +152,15 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
             {successMessage}
           </Alert>
         )}
+
+        {formErrorMessage && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {formErrorMessage}
+          </Alert>
+        )}
       </DialogContent>
 
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={onClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button variant="contained" type="submit" loading={loading}>
-          {successMessage ? "Close" : "Continue"}
-        </Button>
-      </DialogActions>
+      <DialogActions sx={{ p: 3 }}>{dialogActions}</DialogActions>
     </Dialog>
   );
 };
