@@ -1,17 +1,18 @@
+using Lister.Users.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
 namespace Lister.App.Server.Services;
 
-public class StubEmailSender : IEmailSender<Users.Domain.Entities.User>
+public class StubEmailSender : IEmailSender<User>
 {
-    public Task SendConfirmationLinkAsync(Users.Domain.Entities.User user, string email, string confirmationLink)
+    public Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
     {
         Log.Information("Email confirmation link for {Email}: {ConfirmationLink}", email, confirmationLink);
         return Task.CompletedTask;
     }
 
-    public Task SendPasswordResetLinkAsync(Users.Domain.Entities.User user, string email, string resetLink)
+    public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)
     {
         // Convert the resetLink to our frontend format
         var uri = new Uri(resetLink);
@@ -24,7 +25,7 @@ public class StubEmailSender : IEmailSender<Users.Domain.Entities.User>
         return Task.CompletedTask;
     }
 
-    public Task SendPasswordResetCodeAsync(Users.Domain.Entities.User user, string email, string resetCode)
+    public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
     {
         Log.Information("Password reset code for {Email}: {ResetCode}", email, resetCode);
         return Task.CompletedTask;

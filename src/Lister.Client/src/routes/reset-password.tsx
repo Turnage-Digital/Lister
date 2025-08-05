@@ -11,12 +11,12 @@ const RouteComponent = () => {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   React.useLayoutEffect(() => {
-    if (!search.email || !search.code) {
+    if (!search.email || !search.resetCode) {
       setErrorMessage(
         "Invalid reset link. Please request a new password reset.",
       );
     }
-  }, [search.email, search.code]);
+  }, [search.email, search.resetCode]);
 
   const handlePasswordReset = async () => {
     await navigate({ to: "/sign-in" });
@@ -28,7 +28,7 @@ const RouteComponent = () => {
 
       <ResetPasswordForm
         email={search.email!}
-        code={search.code!}
+        resetCode={search.resetCode!}
         onPasswordReset={handlePasswordReset}
       />
 
@@ -39,7 +39,7 @@ const RouteComponent = () => {
 
 export interface ResetPasswordSearch {
   email?: string;
-  code?: string;
+  resetCode?: string;
 }
 
 export const Route = createFileRoute("/reset-password")({
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/reset-password")({
   validateSearch: (search): ResetPasswordSearch => {
     return {
       email: search.email as string | undefined,
-      code: search.code as string | undefined,
+      resetCode: search.code as string | undefined,
     };
   },
 });

@@ -42,9 +42,6 @@ const RouteComponent = () => {
       <ForgotPasswordDialog
         open={showForgotPassword}
         onClose={handleForgotPasswordClose}
-        onSubmit={() => {
-          // Reset email sent - dialog handles the success message
-        }}
       />
 
       <Typography variant="body1">

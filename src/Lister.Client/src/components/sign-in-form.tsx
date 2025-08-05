@@ -18,6 +18,9 @@ const SignInForm = ({ onSignedIn }: Props) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
     null,
   );
@@ -34,10 +37,6 @@ const SignInForm = ({ onSignedIn }: Props) => {
     if (emailErrorMessage || passwordErrorMessage) {
       return;
     }
-
-    const data = new FormData(event.currentTarget);
-    const email = data.get("email") as string;
-    const password = data.get("password") as string;
 
     try {
       setFormErrorMessage(null);
@@ -66,19 +65,16 @@ const SignInForm = ({ onSignedIn }: Props) => {
   };
 
   const validateInputs = () => {
-    const email = document.getElementById("email") as HTMLInputElement;
-    const password = document.getElementById("password") as HTMLInputElement;
-
     let retval = true;
 
-    if (email.value && /\S+@\S+\.\S+/.test(email.value)) {
+    if (email && /\S+@\S+\.\S+/.test(email)) {
       setEmailErrorMessage(null);
     } else {
       setEmailErrorMessage("Please enter a valid email address.");
       retval = false;
     }
 
-    if (password.value) {
+    if (password) {
       setPasswordErrorMessage(null);
     } else {
       setPasswordErrorMessage("Please enter a password.");
@@ -112,6 +108,8 @@ const SignInForm = ({ onSignedIn }: Props) => {
         fullWidth
         variant="outlined"
         type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         error={emailErrorMessage !== null}
         helperText={emailErrorMessage}
         color={emailErrorColor}
@@ -127,6 +125,8 @@ const SignInForm = ({ onSignedIn }: Props) => {
         fullWidth
         variant="outlined"
         type={showPasswordType}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         error={passwordErrorMessage !== null}
         helperText={passwordErrorMessage}
         color={passwordErrorColor}

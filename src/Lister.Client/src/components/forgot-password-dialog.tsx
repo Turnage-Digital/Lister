@@ -14,11 +14,11 @@ import {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSubmit: (email: string) => void;
 }
 
-const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
+const ForgotPasswordDialog = ({ open, onClose }: Props) => {
   const [loading, setLoading] = React.useState(false);
+  const [email, setEmail] = React.useState("");
 
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
     null,
@@ -36,9 +36,6 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
     if (emailErrorMessage) {
       return;
     }
-
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
 
     try {
       setFormErrorMessage(null);
@@ -71,7 +68,6 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
       }
 
       setSuccessMessage("Password reset link sent! Check your email.");
-      onSubmit(email);
     } catch {
       setFormErrorMessage("An unexpected error occurred.");
     } finally {
@@ -80,11 +76,9 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
   };
 
   const validateInputs = () => {
-    const email = document.getElementById("email") as HTMLInputElement;
-
     let retval = true;
 
-    if (email.value && /\S+@\S+\.\S+/.test(email.value)) {
+    if (email && /\S+@\S+\.\S+/.test(email)) {
       setEmailErrorMessage(null);
     } else {
       setEmailErrorMessage("Please enter a valid email address.");
@@ -142,6 +136,8 @@ const ForgotPasswordDialog = ({ open, onClose, onSubmit }: Props) => {
           fullWidth
           variant="outlined"
           type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           error={emailErrorMessage !== null}
           helperText={emailErrorMessage}
           color={emailErrorColor}

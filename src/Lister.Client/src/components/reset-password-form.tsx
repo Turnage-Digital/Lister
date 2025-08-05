@@ -12,14 +12,17 @@ import {
 
 export interface Props {
   email: string;
-  code: string;
+  resetCode: string;
   onPasswordReset: () => Promise<void>;
 }
 
-const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
+const ResetPasswordForm = ({ email, resetCode, onPasswordReset }: Props) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
     null,
@@ -37,11 +40,7 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
       return;
     }
 
-    const data = new FormData(event.currentTarget);
-    const newPassword = data.get("password") as string;
-    const confirmPassword = data.get("confirmPassword") as string;
-
-    if (newPassword !== confirmPassword) {
+    if (password !== confirmPassword) {
       setConfirmPasswordErrorMessage("Passwords do not match.");
       return;
     }
@@ -52,8 +51,8 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
 
       const input = {
         email,
-        resetCode: code,
-        newPassword,
+        resetCode,
+        newPassword: password,
       };
       const request = new Request("/identity/resetPassword", {
         headers: {
@@ -91,22 +90,17 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
   };
 
   const validateInputs = () => {
-    const password = document.getElementById("password") as HTMLInputElement;
-    const confirmPassword = document.getElementById(
-      "confirmPassword",
-    ) as HTMLInputElement;
-
     let retval = true;
 
-    if (password.value) {
+    if (password) {
       setPasswordErrorMessage(null);
     } else {
       setPasswordErrorMessage("Please enter a password.");
       retval = false;
     }
 
-    if (confirmPassword.value) {
-      if (password.value === confirmPassword.value) {
+    if (confirmPassword) {
+      if (password === confirmPassword) {
         setConfirmPasswordErrorMessage(null);
       } else {
         setConfirmPasswordErrorMessage("Passwords do not match.");
@@ -152,6 +146,8 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
         fullWidth
         variant="outlined"
         type={showPasswordType}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         error={passwordErrorMessage !== null}
         helperText={passwordErrorMessage}
         color={passwordErrorColor}
@@ -181,6 +177,8 @@ const ResetPasswordForm = ({ email, code, onPasswordReset }: Props) => {
         fullWidth
         variant="outlined"
         type={showConfirmPasswordType}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
         error={confirmPasswordErrorMessage !== null}
         helperText={confirmPasswordErrorMessage}
         color={confirmPasswordErrorColor}
