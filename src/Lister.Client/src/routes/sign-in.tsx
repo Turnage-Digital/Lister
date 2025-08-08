@@ -4,6 +4,7 @@ import { Link, Stack, Typography } from "@mui/material";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 import { ForgotPasswordDialog, SignInForm } from "../components";
+import { useSideDrawer } from "../components/side-drawer";
 
 const RouteComponent = () => {
   const router = useRouter();
@@ -12,7 +13,7 @@ const RouteComponent = () => {
   const { auth, status } = Route.useRouteContext({
     select: ({ auth }) => ({ auth, status: auth.status }),
   });
-  const [showForgotPassword, setShowForgotPassword] = React.useState(false);
+  const { openDrawer } = useSideDrawer();
 
   React.useLayoutEffect(() => {
     if (status === "loggedIn" && search.callbackUrl) {
@@ -21,11 +22,7 @@ const RouteComponent = () => {
   }, [status, search.callbackUrl, router.history]);
 
   const handleForgotPasswordClick = () => {
-    setShowForgotPassword(true);
-  };
-
-  const handleForgotPasswordClose = () => {
-    setShowForgotPassword(false);
+    openDrawer("Reset Password", <ForgotPasswordDialog />);
   };
 
   const handleSignedIn = async (email: string) => {
@@ -38,11 +35,6 @@ const RouteComponent = () => {
       <Typography variant="h5">Sign in</Typography>
 
       <SignInForm onSignedIn={handleSignedIn} />
-
-      <ForgotPasswordDialog
-        open={showForgotPassword}
-        onClose={handleForgotPasswordClose}
-      />
 
       <Typography variant="body1">
         <Link

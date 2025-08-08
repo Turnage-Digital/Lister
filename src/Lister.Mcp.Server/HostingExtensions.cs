@@ -10,7 +10,6 @@ internal static class HostingExtensions
         builder.Host.UseSerilog((_, config) => config
             .WriteTo.Console(outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
-            .WriteTo.Seq(builder.Configuration["SeqUrl"]!)
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
 

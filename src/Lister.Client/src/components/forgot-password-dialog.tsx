@@ -1,22 +1,18 @@
 import * as React from "react";
 
+import { LoadingButton } from "@mui/lab";
+import { Alert, Box, Button, TextField, Typography } from "@mui/material";
+
 import {
-  Alert,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+  SideDrawerContainer,
+  SideDrawerContent,
+  SideDrawerFooter,
+  SideDrawerHeader,
+  useSideDrawer,
+} from "./side-drawer";
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
-
-const ForgotPasswordDialog = ({ open, onClose }: Props) => {
+const ForgotPasswordDialog = () => {
+  const { closeDrawer } = useSideDrawer();
   const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
 
@@ -91,73 +87,66 @@ const ForgotPasswordDialog = ({ open, onClose }: Props) => {
   const emailErrorColor = emailErrorMessage ? "error" : "primary";
 
   const dialogActions = successMessage ? (
-    <Button variant="contained" onClick={onClose}>
+    <Button variant="contained" onClick={closeDrawer}>
       Close
     </Button>
   ) : (
     <>
-      <Button onClick={onClose}>Cancel</Button>
-      <Button
+      <Button onClick={closeDrawer}>Cancel</Button>
+      <Box sx={{ flex: 1 }} />
+      <LoadingButton
         variant="contained"
         type="submit"
         loading={loading}
         onClick={validateInputs}
       >
         Continue
-      </Button>
+      </LoadingButton>
     </>
   );
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      slotProps={{
-        paper: {
-          component: "form",
-          onSubmit: handleSubmit,
-        },
-      }}
-    >
-      <DialogTitle>Reset password</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Enter your account&apos;s email address, and we&apos;ll send you a
-          link to reset your password.
-        </DialogContentText>
+    <SideDrawerContainer>
+      <SideDrawerHeader />
+      <SideDrawerContent>
+        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Enter your account&apos;s email address, and we&apos;ll send you a
+            link to reset your password.
+          </Typography>
 
-        <TextField
-          margin="normal"
-          id="email"
-          name="email"
-          placeholder="your@email.com"
-          autoComplete="email"
-          required
-          fullWidth
-          variant="outlined"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={emailErrorMessage !== null}
-          helperText={emailErrorMessage}
-          color={emailErrorColor}
-        />
+          <TextField
+            margin="normal"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            autoComplete="email"
+            required
+            fullWidth
+            variant="outlined"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={emailErrorMessage !== null}
+            helperText={emailErrorMessage}
+            color={emailErrorColor}
+          />
 
-        {successMessage && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            {successMessage}
-          </Alert>
-        )}
+          {successMessage && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
 
-        {formErrorMessage && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {formErrorMessage}
-          </Alert>
-        )}
-      </DialogContent>
-
-      <DialogActions sx={{ p: 3 }}>{dialogActions}</DialogActions>
-    </Dialog>
+          {formErrorMessage && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {formErrorMessage}
+            </Alert>
+          )}
+        </Box>
+      </SideDrawerContent>
+      <SideDrawerFooter>{dialogActions}</SideDrawerFooter>
+    </SideDrawerContainer>
   );
 };
 
