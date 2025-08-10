@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignUpImport } from './routes/sign-up'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as AuthImport } from './routes/_auth'
@@ -23,6 +24,12 @@ import { Route as AuthListIdItemIdImport } from './routes/_auth.$listId.$itemId'
 import { Route as AuthListIdItemIdIndexImport } from './routes/_auth.$listId.$itemId.index'
 
 // Create/Update Routes
+
+const SignUpRoute = SignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
@@ -106,6 +113,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
     '/_auth/$listId': {
@@ -207,6 +221,7 @@ export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/$listId': typeof AuthListIdRouteWithChildren
   '/create': typeof AuthCreateRoute
   '/': typeof AuthIndexRoute
@@ -219,6 +234,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/create': typeof AuthCreateRoute
   '/': typeof AuthIndexRoute
   '/$listId/create': typeof AuthListIdCreateRoute
@@ -231,6 +247,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/_auth/$listId': typeof AuthListIdRouteWithChildren
   '/_auth/create': typeof AuthCreateRoute
   '/_auth/': typeof AuthIndexRoute
@@ -246,6 +263,7 @@ export interface FileRouteTypes {
     | ''
     | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/$listId'
     | '/create'
     | '/'
@@ -257,6 +275,7 @@ export interface FileRouteTypes {
   to:
     | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/create'
     | '/'
     | '/$listId/create'
@@ -267,6 +286,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/_auth/$listId'
     | '/_auth/create'
     | '/_auth/'
@@ -281,12 +301,14 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
 }
 
 export const routeTree = rootRoute
@@ -301,7 +323,8 @@ export const routeTree = rootRoute
       "children": [
         "/_auth",
         "/reset-password",
-        "/sign-in"
+        "/sign-in",
+        "/sign-up"
       ]
     },
     "/_auth": {
@@ -317,6 +340,9 @@ export const routeTree = rootRoute
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
+    },
+    "/sign-up": {
+      "filePath": "sign-up.tsx"
     },
     "/_auth/$listId": {
       "filePath": "_auth.$listId.tsx",

@@ -10,6 +10,7 @@ export { default as ListCard } from "./list-card";
 export { default as Loading } from "./loading";
 export { default as ResetPasswordForm } from "./reset-password-form";
 export { default as SignInForm } from "./sign-in-form";
+export { default as SignUpForm } from "./sign-up-form";
 export { default as SmartPasteDialog } from "./smart-paste-dialog";
 export { default as Titlebar } from "./titlebar";
 

@@ -3,7 +3,7 @@ import * as React from "react";
 import { Link, Paper, Stack, Typography } from "@mui/material";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
-import { ForgotPasswordDialog, SignInForm, useSideDrawer } from "../components";
+import { SignUpForm } from "../components";
 
 const RouteComponent = () => {
   const router = useRouter();
@@ -12,7 +12,6 @@ const RouteComponent = () => {
   const { auth, status } = Route.useRouteContext({
     select: ({ auth }) => ({ auth, status: auth.status }),
   });
-  const { openDrawer } = useSideDrawer();
 
   React.useLayoutEffect(() => {
     if (status === "loggedIn" && search.callbackUrl) {
@@ -20,11 +19,7 @@ const RouteComponent = () => {
     }
   }, [status, search.callbackUrl, router.history]);
 
-  const handleForgotPasswordClick = () => {
-    openDrawer("Reset Password", <ForgotPasswordDialog />);
-  };
-
-  const handleSignedIn = async (email: string) => {
+  const handleSignedUp = async (email: string) => {
     auth.login(email);
     await navigate({ to: search.callbackUrl });
   };
@@ -44,33 +39,18 @@ const RouteComponent = () => {
       >
         <Stack spacing={4}>
           <Typography variant="h5" align="center" gutterBottom>
-            Sign in
+            Sign up
           </Typography>
 
-          <SignInForm onSignedIn={handleSignedIn} />
+          <SignUpForm onSignedUp={handleSignedUp} />
 
           <Stack spacing={2} alignItems="center">
-            <Link
-              component="button"
-              type="button"
-              onClick={handleForgotPasswordClick}
-              sx={{
-                textDecoration: "none",
-                transition: "color 0.2s ease-in-out",
-                "&:hover": {
-                  textDecoration: "underline",
-                },
-              }}
-            >
-              Forgot your password?
-            </Link>
-
             <Typography variant="body2" color="text.secondary" align="center" component="div">
-              Don&apos;t have an account?{" "}
+              Already have an account?{" "}
               <Link
                 component="button"
                 type="button"
-                onClick={() => navigate({ to: "/sign-up", search })}
+                onClick={() => navigate({ to: "/sign-in", search })}
                 sx={{
                   textDecoration: "none",
                   transition: "color 0.2s ease-in-out",
@@ -80,7 +60,7 @@ const RouteComponent = () => {
                   },
                 }}
               >
-                Sign up
+                Sign in
               </Link>
             </Typography>
           </Stack>
@@ -90,13 +70,13 @@ const RouteComponent = () => {
   );
 };
 
-export interface SignInSearch {
+export interface SignUpSearch {
   callbackUrl?: string;
 }
 
-export const Route = createFileRoute("/sign-in")({
+export const Route = createFileRoute("/sign-up")({
   component: RouteComponent,
-  validateSearch: (search): SignInSearch => {
+  validateSearch: (search): SignUpSearch => {
     return {
       callbackUrl: search.callbackUrl as string | undefined,
     };
