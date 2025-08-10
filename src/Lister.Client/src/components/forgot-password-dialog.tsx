@@ -97,6 +97,7 @@ const ForgotPasswordDialog = () => {
       <LoadingButton
         variant="contained"
         type="submit"
+        form="forgot-password-form"
         loading={loading}
         onClick={validateInputs}
       >
@@ -109,7 +110,12 @@ const ForgotPasswordDialog = () => {
     <SideDrawerContainer>
       <SideDrawerHeader />
       <SideDrawerContent>
-        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+        <Box
+          id="forgot-password-form"
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ p: 3 }}
+        >
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Enter your account&apos;s email address, and we&apos;ll send you a
             link to reset your password.
