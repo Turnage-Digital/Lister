@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Card, CardContent, Grid, Typography } from "@mui/material";
+import { Card, CardContent, Divider, Grid, Typography } from "@mui/material";
 
 import {
   ColumnType,
@@ -56,6 +56,9 @@ const ItemCard = ({ item, definition }: Props) => {
                 </Grid>
                 <Grid size={{ xs: 8 }}>
                   <Typography variant="body1">{displayValue}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12 }} sx={{ my: 1 }}>
+                  <Divider sx={{ mx: -3 }} />
                 </Grid>
               </React.Fragment>
             );
