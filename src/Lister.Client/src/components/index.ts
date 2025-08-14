@@ -16,6 +16,8 @@ export { default as Titlebar } from "./titlebar";
 
 export { getGridColDefs } from "./col-defs";
 
+export { AppLayout } from "./layout";
+
 export type { Action } from "./titlebar";
 
 export {

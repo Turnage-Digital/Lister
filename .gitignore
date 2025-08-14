@@ -2,6 +2,7 @@
 .idea
 .vs
 .fleet
+.claude
 .DS_Store
 
 bin

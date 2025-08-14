@@ -45,7 +45,12 @@ const RouteComponent = () => {
           <SignUpForm onSignedUp={handleSignedUp} />
 
           <Stack spacing={2} alignItems="center">
-            <Typography variant="body2" color="text.secondary" align="center" component="div">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              component="div"
+            >
               Already have an account?{" "}
               <Link
                 component="button"

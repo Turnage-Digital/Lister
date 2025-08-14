@@ -65,7 +65,12 @@ const RouteComponent = () => {
               Forgot your password?
             </Link>
 
-            <Typography variant="body2" color="text.secondary" align="center" component="div">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              component="div"
+            >
               Don&apos;t have an account?{" "}
               <Link
                 component="button"

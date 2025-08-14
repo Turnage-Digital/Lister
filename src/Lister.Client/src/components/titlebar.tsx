@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { ChevronRight } from "@mui/icons-material";
 import {
   Box,
   Breadcrumbs,
@@ -8,6 +9,9 @@ import {
   Link,
   Stack,
   Typography,
+  Paper,
+  alpha,
+  useTheme,
 } from "@mui/material";
 
 export interface Action {
@@ -28,62 +32,106 @@ export interface TitlebarProps {
 }
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
+  const theme = useTheme();
+
   return (
-    <Grid container>
-      <Grid size={{ xs: 12, md: 9 }}>
-        <Typography
-          color="primary"
-          fontWeight="medium"
-          variant="h4"
-          component="h1"
-          gutterBottom
-        >
-          {title}
-        </Typography>
-      </Grid>
-
-      {actions && actions.length > 0 && (
-        <Grid
-          size={{ xs: 12, md: 3 }}
-          sx={{
-            display: { xs: "none", md: "flex" },
-            justifyContent: "flex-end",
-          }}
-        >
-          <Stack direction="row" spacing={2}>
-            {actions.map((action) => (
-              <Box key={action.title}>
-                <Button
-                  variant="contained"
-                  startIcon={action.icon}
-                  onClick={action.onClick}
-                >
-                  {action.title}
-                </Button>
-              </Box>
-            ))}
-          </Stack>
-        </Grid>
-      )}
-
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        mb: 3,
+        backgroundColor: alpha(theme.palette.primary.main, 0.03),
+        borderLeft: `4px solid ${theme.palette.primary.main}`,
+      }}
+    >
+      {/* Breadcrumbs Section */}
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <Grid size={{ xs: 12 }}>
-          <Breadcrumbs separator="›">
+        <Box sx={{ mb: 2 }}>
+          <Breadcrumbs
+            separator={
+              <ChevronRight sx={{ fontSize: 16, color: "text.secondary" }} />
+            }
+          >
             {breadcrumbs.map((breadcrumb) => (
               <Link
                 key={breadcrumb.title}
-                underline="hover"
+                underline="none"
                 onClick={breadcrumb.onClick}
-                sx={{ cursor: "pointer" }}
+                sx={{
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "text.secondary",
+                  transition: "color 0.2s ease-in-out",
+                  "&:hover": {
+                    color: "primary.main",
+                  },
+                }}
               >
                 {breadcrumb.title}
               </Link>
             ))}
-            <Typography color="text.secondary">{title}</Typography>
+            <Typography
+              sx={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: "primary.main",
+              }}
+            >
+              {title}
+            </Typography>
           </Breadcrumbs>
-        </Grid>
+        </Box>
       )}
-    </Grid>
+
+      {/* Title and Actions Section */}
+      <Grid container alignItems="center" spacing={2}>
+        <Grid size={{ xs: 12, md: actions && actions.length > 0 ? 8 : 12 }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "1.75rem", md: "2.125rem" },
+              lineHeight: 1.2,
+              display: "inline-block",
+            }}
+          >
+            {title}
+          </Typography>
+        </Grid>
+
+        {actions && actions.length > 0 && (
+          <Grid
+            size={{ xs: 12, md: 4 }}
+            sx={{
+              display: "flex",
+              justifyContent: { xs: "flex-start", md: "flex-end" },
+            }}
+          >
+            <Stack direction="row" spacing={1.5}>
+              {actions.map((action, index) => (
+                <Button
+                  key={action.title}
+                  variant={index === 0 ? "contained" : "outlined"}
+                  startIcon={action.icon}
+                  onClick={action.onClick}
+                  sx={{
+                    boxShadow: index === 0 ? theme.shadows[2] : "none",
+                    "&:hover": {
+                      boxShadow:
+                        index === 0 ? theme.shadows[4] : theme.shadows[1],
+                    },
+                  }}
+                >
+                  {action.title}
+                </Button>
+              ))}
+            </Stack>
+          </Grid>
+        )}
+      </Grid>
+    </Paper>
   );
 };
 

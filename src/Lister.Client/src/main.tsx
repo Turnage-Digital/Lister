@@ -48,8 +48,8 @@ root.render(
         <SideDrawerProvider>
           <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
-            <TanStackRouterDevtools router={router} />
-            <ReactQueryDevtools />
+            {/* <TanStackRouterDevtools router={router} />*/}
+            {/* <ReactQueryDevtools />*/}
           </QueryClientProvider>
         </SideDrawerProvider>
       </LocalizationProvider>

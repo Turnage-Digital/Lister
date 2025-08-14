@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 
+
 export interface Props {
   onSignedUp: (email: string) => Promise<void>;
 }
