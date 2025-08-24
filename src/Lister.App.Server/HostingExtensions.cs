@@ -27,6 +27,7 @@ using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -73,9 +74,10 @@ internal static class HostingExtensions
 
         builder.Services
             .AddIdentityApiEndpoints<User>()
-            .AddEntityFrameworkStores<UsersDbContext>();
+            .AddEntityFrameworkStores<UsersDbContext>()
+            .AddDefaultTokenProviders();
 
-        builder.Services.AddTransient<IEmailSender<User>, StubEmailSender>();
+        builder.Services.AddTransient<IEmailSender, StubEmailSender>();
 
         builder.Services
             .ConfigureApplicationCookie(options =>

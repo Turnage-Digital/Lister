@@ -18,6 +18,8 @@ export { getGridColDefs } from "./col-defs";
 
 export { AppLayout } from "./layout";
 
+export * from "./items-display";
+
 export type { Action } from "./titlebar";
 
 export {

@@ -30,7 +30,10 @@ const RouteComponent = () => {
   };
 
   return (
-    <Stack sx={{ width: "450px", mx: "auto", px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{ width: "450px", mx: "auto", px: 2, pt: 18, pb: 4 }}
+      spacing={4}
+    >
       <Paper
         elevation={1}
         sx={{

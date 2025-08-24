@@ -33,13 +33,13 @@ import { Auth } from "../../auth";
 
 const DRAWER_WIDTH = 280;
 
-interface AppLayoutProps {
+interface Props {
   children: React.ReactNode;
   auth: Auth;
   status: string;
 }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ children, auth, status }) => {
+const AppLayout = ({ children, auth, status }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
@@ -89,34 +89,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, auth, status }) => {
         </Typography>
       </Box>
 
-      {/* Search Bar */}
-      <Box sx={{ p: 2 }}>
-        <TextField
-          size="small"
-          placeholder="Search lists..."
-          fullWidth
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "text.secondary" }} />
-              </InputAdornment>
-            ),
-            sx: {
-              borderRadius: 1,
-              backgroundColor: theme.palette.grey[50],
-              "&:hover": {
-                backgroundColor: theme.palette.grey[100],
-              },
-              "& fieldset": {
-                border: "none",
-              },
-            },
-          }}
-        />
-      </Box>
-
       {/* Navigation Items */}
-      <Box sx={{ flex: 1, px: 2 }}>
+      <Box sx={{ flex: 1, p: 2 }}>
         <List disablePadding>
           {navigationItems.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
