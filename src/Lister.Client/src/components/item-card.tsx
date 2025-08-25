@@ -25,7 +25,7 @@ import {
 } from "../models";
 import StatusChip from "./status-chip";
 
-export interface Props {
+interface Props {
   item: ListItem;
   definition: ListItemDefinition;
 }

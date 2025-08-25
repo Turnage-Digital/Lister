@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 
-export interface Props {
+interface Props {
   email: string;
   resetCode: string;
   onPasswordReset: () => Promise<void>;

@@ -17,7 +17,7 @@ import {
 import { ListName } from "../models";
 import PreloadIconButton from "./preload-icon-button";
 
-export interface Props {
+interface Props {
   listName: ListName;
   onDeleteClick: (id: string) => void;
 }
