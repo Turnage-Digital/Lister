@@ -38,25 +38,19 @@ const ItemsMobileView = ({
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Pagination
             count={totalPages}
-            page={currentPage + 1} // Convert from 0-indexed to 1-indexed
+            page={currentPage + 1}
             onChange={async (_event, page) => {
-              await onPageChange(page - 1); // Convert back to 0-indexed
-              // Scroll to content
-              const mainContent = document.querySelector('main');
+              await onPageChange(page - 1);
+              const mainContent = document.querySelector("main");
               if (mainContent) {
-                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+                mainContent.scrollTo({ top: 0, behavior: "smooth" });
               }
             }}
             color="primary"
             size="large"
             showFirstButton
             showLastButton
-            sx={{
-              "& .MuiPaginationItem-root": {
-                minWidth: 44,
-                minHeight: 44,
-              },
-            }}
+            siblingCount={0}
           />
         </Box>
       )}

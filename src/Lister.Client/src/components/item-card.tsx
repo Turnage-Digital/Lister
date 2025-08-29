@@ -5,9 +5,13 @@ import {
   CheckCircle,
   Numbers,
   TextFields,
+  Receipt,
+  Visibility,
+  Edit,
 } from "@mui/icons-material";
 import {
   Card,
+  CardActions,
   CardContent,
   Divider,
   Grid,
@@ -15,6 +19,9 @@ import {
   Box,
   alpha,
   useTheme,
+  IconButton,
+  Tooltip,
+  Chip,
 } from "@mui/material";
 
 import {
@@ -79,17 +86,49 @@ const ItemCard = ({ item, definition }: Props) => {
           transform: "translateY(-2px)",
           boxShadow: theme.shadows[4],
           borderColor: alpha(theme.palette.primary.main, 0.5),
+          "& .card-actions": {
+            opacity: 1,
+          },
         },
       }}
     >
-      <CardContent sx={{ p: 3 }}>
-        {/* Status Section */}
-        {statusChip && (
-          <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-            {statusChip}
-          </Box>
-        )}
+      {/* Header with ID and status */}
+      <Box
+        sx={{
+          p: 3,
+          pb: 2,
+          backgroundColor: alpha(theme.palette.primary.main, 0.03),
+          borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Receipt
+            sx={{
+              fontSize: 20,
+              color: "primary.main",
+              p: 0.5,
+              backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              borderRadius: 1,
+            }}
+          />
+          {statusChip && <Box sx={{ ml: "auto" }}>{statusChip}</Box>}
+        </Box>
 
+        <Typography
+          variant="h6"
+          component="div"
+          fontWeight="600"
+          sx={{
+            fontSize: "1.25rem",
+            lineHeight: 1.3,
+            color: "text.primary",
+          }}
+        >
+          ID {item.id}
+        </Typography>
+      </Box>
+
+      <CardContent sx={{ p: 3, pt: 1 }}>
         {/* Fields Grid */}
         <Grid container spacing={2}>
           {definition.columns.map((column, index) => {
@@ -97,6 +136,8 @@ const ItemCard = ({ item, definition }: Props) => {
             const rawValue = item.bag[key];
             const displayValue = getDisplayValue(rawValue, column.type);
             const isLastItem = index === definition.columns.length - 1;
+            const fontWeight =
+              column.type === ColumnType.Number ? "medium" : "normal";
 
             return (
               <React.Fragment key={key}>
@@ -124,9 +165,7 @@ const ItemCard = ({ item, definition }: Props) => {
                   <Typography
                     variant="body1"
                     color="text.primary"
-                    fontWeight={
-                      column.type === ColumnType.Number ? "medium" : "normal"
-                    }
+                    fontWeight={fontWeight}
                     sx={{
                       fontSize: "1rem",
                       lineHeight: 1.5,
@@ -150,6 +189,43 @@ const ItemCard = ({ item, definition }: Props) => {
           })}
         </Grid>
       </CardContent>
+
+      {/* Action buttons */}
+      <CardActions
+        className="card-actions"
+        sx={{
+          justifyContent: "flex-end",
+          p: 2,
+          pt: 0,
+          opacity: 0.7,
+          transition: "opacity 0.2s ease-in-out",
+        }}
+      >
+        <Tooltip title={`View item ${item.id}`}>
+          <IconButton
+            sx={{
+              color: "primary.main",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              },
+            }}
+          >
+            <Visibility />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={`Edit item ${item.id}`}>
+          <IconButton
+            sx={{
+              color: "text.secondary",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.text.secondary, 0.1),
+              },
+            }}
+          >
+            <Edit />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
     </Card>
   );
 };

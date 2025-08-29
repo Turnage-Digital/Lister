@@ -34,7 +34,6 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
         flexDirection: "column",
         position: "relative",
         transition: "all 0.2s ease-in-out",
-        cursor: "pointer",
         "&:hover": {
           transform: "translateY(-4px)",
           boxShadow: theme.shadows[8],
