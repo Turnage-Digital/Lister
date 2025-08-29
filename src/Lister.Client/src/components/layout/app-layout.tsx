@@ -41,7 +41,7 @@ interface Props {
 
 const AppLayout = ({ children, auth, status }: Props) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const navigate = useNavigate();
   const router = useRouter();
 
@@ -211,7 +211,7 @@ const AppLayout = ({ children, auth, status }: Props) => {
       {/* Sidebar Navigation */}
       <Box
         component="nav"
-        sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}
+        sx={{ width: { lg: DRAWER_WIDTH }, flexShrink: { lg: 0 } }}
       >
         {/* Mobile drawer */}
         <Drawer
@@ -222,7 +222,7 @@ const AppLayout = ({ children, auth, status }: Props) => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", md: "none" },
+            display: { xs: "block", lg: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: DRAWER_WIDTH,
@@ -237,7 +237,7 @@ const AppLayout = ({ children, auth, status }: Props) => {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: "none", md: "block" },
+            display: { xs: "none", lg: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: DRAWER_WIDTH,
@@ -255,13 +255,13 @@ const AppLayout = ({ children, auth, status }: Props) => {
         component="main"
         sx={{
           flexGrow: 1,
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          width: { lg: `calc(100% - ${DRAWER_WIDTH}px)` },
           minHeight: "100vh",
           backgroundColor: theme.palette.background.default,
-          pl: { xs: 0, md: 0 },
+          pl: { xs: 0, lg: 0 },
         }}
       >
-        <Box sx={{ p: { xs: 2, md: 3 }, pt: { xs: 8, md: 3 } }}>{children}</Box>
+        <Box sx={{ p: { xs: 2, lg: 3 }, pt: { xs: 8, lg: 3 } }}>{children}</Box>
       </Box>
     </Box>
   );

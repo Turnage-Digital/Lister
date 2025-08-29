@@ -1,7 +1,6 @@
 import * as React from "react";
 
-import { AddCircle } from "@mui/icons-material";
-import { Box, Button, CircularProgress, Grid, Stack } from "@mui/material";
+import { Box, Grid, Stack, Pagination } from "@mui/material";
 
 import { ListItem, ListItemDefinition } from "../../models";
 import ItemCard from "../item-card";
@@ -10,30 +9,21 @@ interface Props {
   items: ListItem[];
   definition: ListItemDefinition;
   totalCount: number;
-  hasMoreItems: boolean;
-  isLoadingMore: boolean;
-  onLoadMore: () => Promise<void>;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => Promise<void>;
 }
 
 const ItemsMobileView = ({
   items,
   definition,
   totalCount,
-  hasMoreItems,
-  isLoadingMore,
-  onLoadMore,
+  currentPage,
+  pageSize,
+  onPageChange,
 }: Props) => {
-  const displayedCount = items.length;
-  const remainingCount = totalCount - displayedCount;
-
-  const loadingMoreButtonText = isLoadingMore
-    ? "Loading..."
-    : `Load More (${remainingCount} remaining)`;
-  const loadingMoreButtonStartIcon = isLoadingMore ? (
-    <CircularProgress size={20} />
-  ) : (
-    <AddCircle />
-  );
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const showPagination = totalPages > 1;
   return (
     <Stack spacing={4}>
       <Grid container spacing={3}>
@@ -44,24 +34,30 @@ const ItemsMobileView = ({
         ))}
       </Grid>
 
-      {hasMoreItems && (
+      {showPagination && (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={onLoadMore}
-            disabled={isLoadingMore}
-            startIcon={loadingMoreButtonStartIcon}
-            fullWidth
-            sx={{
-              minHeight: 48,
-              px: 4,
-              borderRadius: 3,
-              textTransform: "none",
+          <Pagination
+            count={totalPages}
+            page={currentPage + 1} // Convert from 0-indexed to 1-indexed
+            onChange={async (_event, page) => {
+              await onPageChange(page - 1); // Convert back to 0-indexed
+              // Scroll to content
+              const mainContent = document.querySelector('main');
+              if (mainContent) {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+              }
             }}
-          >
-            {loadingMoreButtonText}
-          </Button>
+            color="primary"
+            size="large"
+            showFirstButton
+            showLastButton
+            sx={{
+              "& .MuiPaginationItem-root": {
+                minWidth: 44,
+                minHeight: 44,
+              },
+            }}
+          />
         </Box>
       )}
     </Stack>
