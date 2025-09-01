@@ -147,6 +147,8 @@ const RouteComponent = () => {
       currentPage={search.page}
       pageSize={search.pageSize}
       onPageChange={handleMobilePageChange}
+      onViewItem={handleViewItem}
+      onDeleteItem={handleDeleteItem}
     />
   ) : (
     <ItemsDesktopView

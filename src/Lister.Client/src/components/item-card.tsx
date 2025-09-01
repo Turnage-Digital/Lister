@@ -35,10 +35,11 @@ import StatusChip from "./status-chip";
 interface Props {
   item: ListItem;
   definition: ListItemDefinition;
+  onViewItem?: (listId: string, itemId: number) => void;
   onDeleteItem?: (listId: string, itemId: number) => void;
 }
 
-const ItemCard = ({ item, definition, onDeleteItem }: Props) => {
+const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
@@ -215,6 +216,7 @@ const ItemCard = ({ item, definition, onDeleteItem }: Props) => {
       >
         <Tooltip title={`View item ${item.id}`}>
           <IconButton
+            onClick={() => onViewItem?.(definition.id!, item.id!)}
             sx={{
               color: "primary.main",
               "&:hover": {
