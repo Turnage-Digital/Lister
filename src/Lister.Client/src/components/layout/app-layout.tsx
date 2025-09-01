@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useState } from "react";
 
 import {
   List as ListIcon,
   Add as AddIcon,
-  Search as SearchIcon,
   Menu as MenuIcon,
-  AccountCircle,
+  AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -18,14 +16,22 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  InputAdornment,
-  TextField,
   Typography,
   useMediaQuery,
   useTheme,
   Chip,
   Divider,
   alpha,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 
@@ -45,13 +51,29 @@ const AppLayout = ({ children, auth, status }: Props) => {
   const navigate = useNavigate();
   const router = useRouter();
 
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] =
+    React.useState<null | HTMLElement>(null);
+  const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleLogoutClick = async () => {
+  const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
+  };
+
+  const handleLogoutClick = () => {
+    setUserMenuAnchor(null);
+    setLogoutDialogOpen(true);
+  };
+
+  const handleLogoutConfirm = async () => {
     const request = new Request("/identity/logout", {
       method: "POST",
     });
@@ -60,6 +82,11 @@ const AppLayout = ({ children, auth, status }: Props) => {
       auth.logout();
       router.invalidate();
     }
+    setLogoutDialogOpen(false);
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
   };
 
   const navigationItems = [
@@ -80,12 +107,17 @@ const AppLayout = ({ children, auth, status }: Props) => {
   const drawer = (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Logo/Brand Section */}
-      <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
+      <Box
+        sx={{
+          p: 3,
+          borderBottom: {
+            xs: "none",
+            lg: `1px solid ${theme.palette.divider}`,
+          },
+        }}
+      >
         <Typography variant="h5" fontWeight="bold" color="primary">
           Lister
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Blurb goes here
         </Typography>
       </Box>
 
@@ -101,7 +133,14 @@ const AppLayout = ({ children, auth, status }: Props) => {
                   minHeight: 44,
                   "&:hover": {
                     backgroundColor: `${theme.palette.primary.main}08`,
+                    transform: "translateX(4px)",
                   },
+                  transition: theme.transitions.create(
+                    ["background-color", "transform"],
+                    {
+                      duration: theme.transitions.duration.short,
+                    },
+                  ),
                   "&.Mui-selected": {
                     backgroundColor: `${theme.palette.primary.main}12`,
                     color: theme.palette.primary.main,
@@ -141,43 +180,36 @@ const AppLayout = ({ children, auth, status }: Props) => {
 
       {/* User Profile Section */}
       <Box sx={{ p: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-          <Avatar sx={{ width: 36, height: 36 }}>
-            <AccountCircle />
+        <ListItemButton
+          onClick={handleUserMenuClick}
+          sx={{
+            borderRadius: 1,
+            p: 2,
+            "&:hover": {
+              backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              transform: "translateY(-1px)",
+              boxShadow: theme.shadows[2],
+            },
+            transition: theme.transitions.create(
+              ["background-color", "transform", "box-shadow"],
+              {
+                duration: theme.transitions.duration.short,
+              },
+            ),
+          }}
+        >
+          <Avatar sx={{ width: 36, height: 36, mr: 2 }}>
+            <AccountCircleIcon />
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="subtitle2" noWrap>
-              User Account
+              {auth.username || "User Account"}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Logged in
             </Typography>
           </Box>
-        </Box>
-
-        <List disablePadding>
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={handleLogoutClick}
-              sx={{
-                borderRadius: 1,
-                minHeight: 44,
-                "&:hover": {
-                  backgroundColor: alpha(theme.palette.error.main, 0.1),
-                },
-              }}
-            >
-              <ListItemText
-                primary="Log Out"
-                primaryTypographyProps={{
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "error.main",
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        </List>
+        </ListItemButton>
       </Box>
     </Box>
   );
@@ -188,24 +220,31 @@ const AppLayout = ({ children, auth, status }: Props) => {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      {/* Mobile Menu Button */}
+      {/* Mobile Header */}
       {isMobile && (
-        <IconButton
-          onClick={handleDrawerToggle}
+        <AppBar
+          position="fixed"
           sx={{
-            position: "fixed",
-            top: 16,
-            left: 16,
             zIndex: theme.zIndex.drawer + 1,
             backgroundColor: theme.palette.background.paper,
-            boxShadow: theme.shadows[2],
-            "&:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
+            color: theme.palette.text.primary,
+            boxShadow: theme.shadows[1],
+            borderBottom: `1px solid ${theme.palette.divider}`,
           }}
         >
-          <MenuIcon />
-        </IconButton>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ ml: 1, mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" fontWeight="bold" color="primary">
+              Lister
+            </Typography>
+          </Toolbar>
+        </AppBar>
       )}
 
       {/* Sidebar Navigation */}
@@ -258,11 +297,56 @@ const AppLayout = ({ children, auth, status }: Props) => {
           width: { lg: `calc(100% - ${DRAWER_WIDTH}px)` },
           minHeight: "100vh",
           backgroundColor: theme.palette.background.default,
-          pl: { xs: 0, lg: 0 },
         }}
       >
-        <Box sx={{ p: { xs: 2, lg: 3 }, pt: { xs: 8, lg: 3 } }}>{children}</Box>
+        <Box
+          sx={{
+            p: { xs: 2, lg: 3 },
+            mt: { xs: 13, sm: 15, lg: 0 },
+          }}
+        >
+          {children}
+        </Box>
       </Box>
+
+      {/* User Menu */}
+      <Menu
+        anchorEl={userMenuAnchor}
+        open={Boolean(userMenuAnchor)}
+        onClose={handleUserMenuClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+      >
+        <MenuItem onClick={handleLogoutClick}>
+          <Typography color="error.main">Log Out</Typography>
+        </MenuItem>
+      </Menu>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={logoutDialogOpen} onClose={handleLogoutCancel}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to log out?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel}>Cancel</Button>
+          <Button
+            onClick={handleLogoutConfirm}
+            color="error"
+            variant="contained"
+          >
+            Log Out
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
