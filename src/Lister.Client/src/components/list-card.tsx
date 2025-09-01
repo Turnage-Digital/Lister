@@ -29,14 +29,10 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
     <Card
       variant="outlined"
       sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
         transition: "all 0.2s ease-in-out",
         "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: theme.shadows[8],
+          transform: "translateY(-2px)",
+          boxShadow: theme.shadows[4],
           borderColor: alpha(theme.palette.primary.main, 0.5),
           "& .card-actions": {
             opacity: 1,
@@ -90,7 +86,7 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
       </Box>
 
       {/* Content area - could be expanded later */}
-      <CardContent sx={{ flex: 1, pt: 1 }}>
+      <CardContent sx={{ flex: 1, pt: 3 }}>
         <Typography variant="body2" color="text.secondary">
           Manage and organize your {listName.name.toLowerCase()} items
         </Typography>

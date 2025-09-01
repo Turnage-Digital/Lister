@@ -8,6 +8,7 @@ import {
   Receipt,
   Visibility,
   Edit,
+  Delete,
 } from "@mui/icons-material";
 import {
   Card,
@@ -21,7 +22,6 @@ import {
   useTheme,
   IconButton,
   Tooltip,
-  Chip,
 } from "@mui/material";
 
 import {
@@ -35,9 +35,10 @@ import StatusChip from "./status-chip";
 interface Props {
   item: ListItem;
   definition: ListItemDefinition;
+  onDeleteItem?: (listId: string, itemId: number) => void;
 }
 
-const ItemCard = ({ item, definition }: Props) => {
+const ItemCard = ({ item, definition, onDeleteItem }: Props) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
@@ -128,7 +129,7 @@ const ItemCard = ({ item, definition }: Props) => {
         </Typography>
       </Box>
 
-      <CardContent sx={{ p: 3, pt: 1 }}>
+      <CardContent sx={{ p: 3, pt: 3 }}>
         {/* Fields Grid */}
         <Grid container spacing={2}>
           {definition.columns.map((column, index) => {
@@ -141,13 +142,14 @@ const ItemCard = ({ item, definition }: Props) => {
 
             return (
               <React.Fragment key={key}>
-                <Grid size={{ xs: 4 }}>
+                <Grid size={{ xs: 5 }}>
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      mb: 0.5,
+                      height: "100%",
+                      minHeight: 40,
                     }}
                   >
                     {getFieldIcon(column.type)}
@@ -161,18 +163,28 @@ const ItemCard = ({ item, definition }: Props) => {
                     </Typography>
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 8 }}>
-                  <Typography
-                    variant="body1"
-                    color="text.primary"
-                    fontWeight={fontWeight}
+                <Grid size={{ xs: 7 }}>
+                  <Box
                     sx={{
-                      fontSize: "1rem",
-                      lineHeight: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      height: "100%",
+                      minHeight: 40,
+                      pl: 2,
                     }}
                   >
-                    {displayValue}
-                  </Typography>
+                    <Typography
+                      variant="body1"
+                      color="text.primary"
+                      fontWeight={fontWeight}
+                      sx={{
+                        fontSize: "1rem",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {displayValue}
+                    </Typography>
+                  </Box>
                 </Grid>
                 {!isLastItem && (
                   <Grid size={{ xs: 12 }} sx={{ my: 1.5 }}>
@@ -223,6 +235,19 @@ const ItemCard = ({ item, definition }: Props) => {
             }}
           >
             <Edit />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={`Delete item ${item.id}`}>
+          <IconButton
+            onClick={() => onDeleteItem?.(definition.id!, item.id!)}
+            sx={{
+              color: "error.main",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.error.main, 0.1),
+              },
+            }}
+          >
+            <Delete />
           </IconButton>
         </Tooltip>
       </CardActions>
