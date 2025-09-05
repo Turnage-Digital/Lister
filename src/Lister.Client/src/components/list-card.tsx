@@ -10,6 +10,7 @@ import {
   Typography,
   Box,
   Chip,
+  Divider,
   alpha,
   useTheme,
 } from "@mui/material";
@@ -92,13 +93,14 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
         </Typography>
       </CardContent>
 
+      <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.6) }} />
+
       {/* Action buttons */}
       <CardActions
         className="card-actions"
         sx={{
           justifyContent: "flex-end",
           p: 2,
-          pt: 0,
           opacity: 0.7,
           transition: "opacity 0.2s ease-in-out",
         }}
