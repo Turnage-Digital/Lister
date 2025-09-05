@@ -9,11 +9,11 @@
     <File Path="ef-reset.ps1" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src\Lister.App.Server\Lister.App.Server.csproj" Type="Classic C#" />
     <Project Path="src\Lister.Client\Lister.Client.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
       <Configuration Solution="Release|Any CPU" Project="Debug|Any CPU" />
     </Project>
     <Project Path="src\Lister.Mcp.Server\Lister.Mcp.Server.csproj" Type="Classic C#" />
-    <Project Path="src\Lister.Server\Lister.Server.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Core/">

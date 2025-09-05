@@ -11,7 +11,9 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignUpImport } from './routes/sign-up'
 import { Route as SignInImport } from './routes/sign-in'
+import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthIndexImport } from './routes/_auth.index'
 import { Route as AuthCreateImport } from './routes/_auth.create'
@@ -23,9 +25,21 @@ import { Route as AuthListIdItemIdIndexImport } from './routes/_auth.$listId.$it
 
 // Create/Update Routes
 
+const SignUpRoute = SignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ResetPasswordRoute = ResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -87,11 +101,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordImport
+      parentRoute: typeof rootRoute
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
     '/_auth/$listId': {
@@ -191,7 +219,9 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/$listId': typeof AuthListIdRouteWithChildren
   '/create': typeof AuthCreateRoute
   '/': typeof AuthIndexRoute
@@ -202,7 +232,9 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/create': typeof AuthCreateRoute
   '/': typeof AuthIndexRoute
   '/$listId/create': typeof AuthListIdCreateRoute
@@ -213,7 +245,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
   '/_auth/$listId': typeof AuthListIdRouteWithChildren
   '/_auth/create': typeof AuthCreateRoute
   '/_auth/': typeof AuthIndexRoute
@@ -227,7 +261,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/$listId'
     | '/create'
     | '/'
@@ -237,7 +273,9 @@ export interface FileRouteTypes {
     | '/$listId/$itemId/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/create'
     | '/'
     | '/$listId/create'
@@ -246,7 +284,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_auth'
+    | '/reset-password'
     | '/sign-in'
+    | '/sign-up'
     | '/_auth/$listId'
     | '/_auth/create'
     | '/_auth/'
@@ -259,12 +299,16 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
 }
 
 export const routeTree = rootRoute
@@ -278,7 +322,9 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_auth",
-        "/sign-in"
+        "/reset-password",
+        "/sign-in",
+        "/sign-up"
       ]
     },
     "/_auth": {
@@ -289,8 +335,14 @@ export const routeTree = rootRoute
         "/_auth/"
       ]
     },
+    "/reset-password": {
+      "filePath": "reset-password.tsx"
+    },
     "/sign-in": {
       "filePath": "sign-in.tsx"
+    },
+    "/sign-up": {
+      "filePath": "sign-up.tsx"
     },
     "/_auth/$listId": {
       "filePath": "_auth.$listId.tsx",

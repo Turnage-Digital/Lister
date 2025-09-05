@@ -8,7 +8,7 @@ using Lister.Users.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
-namespace Lister.Server;
+namespace Lister.App.Server;
 
 #if DEBUG
 public static class SeedData

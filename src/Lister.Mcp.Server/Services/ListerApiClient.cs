@@ -135,25 +135,6 @@ public class ListerApiClient
         return JsonSerializer.Deserialize<ListItem>(responseJson, _jsonOptions) ?? new ListItem();
     }
 
-    public async Task<ListItem> SmartCreateItemAsync(
-        Guid listId,
-        string text,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var requestData = new ConvertTextToListItemRequest { Text = text };
-        var json = JsonSerializer.Serialize(requestData, _jsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Post, $"/api/lists/{listId}/items/convert-text-to-list-item", cancellationToken);
-        request.Content = content;
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ListItem>(responseJson, _jsonOptions) ?? new ListItem();
-    }
-
     public async Task<ListName> CreateListAsync(
         string name,
         Column[] columns,
@@ -192,5 +173,14 @@ public class ListerApiClient
         using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Delete, $"/api/lists/{listId}", cancellationToken);
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<string> GetSwaggerJsonAsync(CancellationToken cancellationToken = default)
+    {
+        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, "/swagger/v1/swagger.json", cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
-using Lister.Server;
+using Lister.App.Server;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()

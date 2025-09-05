@@ -57,12 +57,23 @@ export const getGridColDefs = (
     headerName: "",
     width: 75,
     cellClassName: "actions",
+    headerAlign: "center",
+    align: "center",
     getActions: ({ id }) => {
       return [
         <GridActionsCellItem
           key={`${id}-view`}
           showInMenu
-          icon={<Visibility />}
+          icon={
+            <Visibility
+              sx={{
+                color: "primary.main",
+                opacity: 0.7,
+                transition: "opacity 0.2s ease-in-out",
+                "&:hover": { opacity: 1 },
+              }}
+            />
+          }
           label="View"
           onClick={() =>
             handleViewClicked(listItemDefinition.id!, id as number)
@@ -71,13 +82,31 @@ export const getGridColDefs = (
         <GridActionsCellItem
           key={`${id}-edit`}
           showInMenu
-          icon={<Edit />}
+          icon={
+            <Edit
+              sx={{
+                color: "text.secondary",
+                opacity: 0.7,
+                transition: "opacity 0.2s ease-in-out",
+                "&:hover": { opacity: 1 },
+              }}
+            />
+          }
           label="Edit"
         />,
         <GridActionsCellItem
           key={`${id}-delete`}
           showInMenu
-          icon={<Delete />}
+          icon={
+            <Delete
+              sx={{
+                color: "error.main",
+                opacity: 0.7,
+                transition: "opacity 0.2s ease-in-out",
+                "&:hover": { opacity: 1 },
+              }}
+            />
+          }
           label="Delete"
           onClick={() =>
             handleDeleteClicked(listItemDefinition.id!, id as number)

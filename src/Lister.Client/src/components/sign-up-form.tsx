@@ -11,15 +11,17 @@ import {
 } from "@mui/material";
 
 interface Props {
-  onSignedIn: (email: string) => Promise<void>;
+  onSignedUp: (email: string) => Promise<void>;
 }
 
-const SignInForm = ({ onSignedIn }: Props) => {
+const SignUpForm = ({ onSignedUp }: Props) => {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
     null,
@@ -30,11 +32,17 @@ const SignInForm = ({ onSignedIn }: Props) => {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState<
     string | null
   >(null);
+  const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
+    React.useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (emailErrorMessage || passwordErrorMessage) {
+    if (
+      emailErrorMessage ||
+      passwordErrorMessage ||
+      confirmPasswordErrorMessage
+    ) {
       return;
     }
 
@@ -43,7 +51,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
       setLoading(true);
 
       const input = { email, password };
-      const request = new Request("/identity/login?useCookies=true", {
+      const request = new Request("/identity/register", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -52,11 +60,17 @@ const SignInForm = ({ onSignedIn }: Props) => {
       });
       const response = await fetch(request);
       if (!response.ok) {
-        setFormErrorMessage("Invalid email or password.");
+        const errorData = await response.json();
+        if (errorData.errors && Object.keys(errorData.errors).length > 0) {
+          const firstError = Object.values(errorData.errors)[0] as string[];
+          setFormErrorMessage(firstError[0]);
+        } else {
+          setFormErrorMessage("Registration failed. Please try again.");
+        }
         return;
       }
 
-      await onSignedIn(email);
+      await onSignedUp(email);
     } catch {
       setFormErrorMessage("An unexpected error occurred.");
     } finally {
@@ -74,10 +88,17 @@ const SignInForm = ({ onSignedIn }: Props) => {
       retval = false;
     }
 
-    if (password) {
+    if (password && password.length >= 6) {
       setPasswordErrorMessage(null);
     } else {
-      setPasswordErrorMessage("Please enter a password.");
+      setPasswordErrorMessage("Password must be at least 6 characters long.");
+      retval = false;
+    }
+
+    if (confirmPassword && confirmPassword === password) {
+      setConfirmPasswordErrorMessage(null);
+    } else {
+      setConfirmPasswordErrorMessage("Passwords do not match.");
       retval = false;
     }
 
@@ -86,9 +107,18 @@ const SignInForm = ({ onSignedIn }: Props) => {
 
   const emailErrorColor = emailErrorMessage ? "error" : "primary";
   const passwordErrorColor = passwordErrorMessage ? "error" : "primary";
+  const confirmPasswordErrorColor = confirmPasswordErrorMessage
+    ? "error"
+    : "primary";
 
   const showPasswordType = showPassword ? "text" : "password";
   const showPasswordIcon = showPassword ? <VisibilityOff /> : <Visibility />;
+  const showConfirmPasswordType = showConfirmPassword ? "text" : "password";
+  const showConfirmPasswordIcon = showConfirmPassword ? (
+    <VisibilityOff />
+  ) : (
+    <Visibility />
+  );
 
   return (
     <Stack
@@ -120,7 +150,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
         id="password"
         name="password"
         placeholder="••••••"
-        autoComplete="current-password"
+        autoComplete="new-password"
         required
         fullWidth
         variant="outlined"
@@ -146,6 +176,37 @@ const SignInForm = ({ onSignedIn }: Props) => {
         }}
       />
 
+      <TextField
+        margin="normal"
+        id="confirmPassword"
+        name="confirmPassword"
+        placeholder="••••••"
+        autoComplete="new-password"
+        required
+        fullWidth
+        variant="outlined"
+        type={showConfirmPasswordType}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        error={confirmPasswordErrorMessage !== null}
+        helperText={confirmPasswordErrorMessage}
+        color={confirmPasswordErrorColor}
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle confirm password visibility"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                >
+                  {showConfirmPasswordIcon}
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
+      />
+
       <Button
         type="submit"
         variant="contained"
@@ -154,7 +215,7 @@ const SignInForm = ({ onSignedIn }: Props) => {
         loading={loading}
         onClick={validateInputs}
       >
-        Sign in
+        Sign up
       </Button>
 
       {formErrorMessage && (
@@ -166,4 +227,4 @@ const SignInForm = ({ onSignedIn }: Props) => {
   );
 };
 
-export default SignInForm;
+export default SignUpForm;

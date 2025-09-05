@@ -147,7 +147,6 @@ const RouteComponent = () => {
 
       <FormBlock
         title="Columns"
-        blurb="Blurb about columns for an item."
         content={
           <EditListItemColumnContent
             listItemDefinition={listItemDefinitionQuery.data}
@@ -159,7 +158,6 @@ const RouteComponent = () => {
 
       <FormBlock
         title="Status"
-        blurb="Blurb about a status for an item."
         content={
           <EditListItemStatusesContent
             listItemDefinition={listItemDefinitionQuery.data}

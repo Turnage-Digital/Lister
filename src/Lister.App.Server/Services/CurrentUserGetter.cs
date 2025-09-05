@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Lister.Users.Domain.Services;
 
-namespace Lister.Server.Services;
+namespace Lister.App.Server.Services;
 
 public class CurrentUserGetter(IHttpContextAccessor httpContextAccessor) : IGetCurrentUser
 {

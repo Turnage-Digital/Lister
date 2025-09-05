@@ -1,91 +1,70 @@
 import * as React from "react";
-import { MouseEvent, useState } from "react";
 
-import { AccountCircle } from "@mui/icons-material";
-import {
-  AppBar,
-  Box,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Toolbar,
-} from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import {
-  createRootRouteWithContext,
-  Outlet,
-  useRouter,
-} from "@tanstack/react-router";
+  Box,
+  Typography,
+  useTheme,
+  AppBar,
+  Toolbar,
+  Container,
+} from "@mui/material";
 
 import { Auth } from "../auth";
-import { SideDrawer } from "../components";
+import { SideDrawer, UserMenu } from "../components";
 
 const RootComponent = () => {
-  const router = useRouter();
-  const { auth, status } = Route.useRouteContext({
-    select: ({ auth }) => ({ auth, status: auth.status }),
+  const { auth } = Route.useRouteContext({
+    select: ({ auth }) => ({ auth }),
   });
+  const theme = useTheme();
 
-  const [userMenuAnchorElement, setUserMenuAnchorElement] =
-    useState<HTMLButtonElement | null>(null);
-
-  const handleOpenUserMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    setUserMenuAnchorElement(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setUserMenuAnchorElement(null);
-  };
-
-  const handleLogoutClick = async () => {
-    const request = new Request("/identity/logout", {
-      method: "POST",
-    });
-    const response = await fetch(request);
-    if (response.ok) {
-      auth.logout();
-      router.invalidate();
-    } else {
-      // console.error("Failed to log out");
-    }
-  };
+  if (auth.status !== "loggedIn") {
+    return <Outlet />;
+  }
 
   return (
     <>
-      <Stack
-        sx={{
-          minWidth: "100%",
-          height: "100vh",
-        }}
-      >
-        <AppBar>
+      <Box sx={{ minHeight: "100vh" }}>
+        {/* AppBar */}
+        <AppBar
+          position="fixed"
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+            boxShadow: theme.shadows[1],
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          }}
+        >
           <Toolbar>
-            <Box sx={{ flexGrow: 1 }} />
+            <Typography
+              component="h1"
+              variant="h4"
+              fontWeight="bold"
+              color="primary"
+              sx={{ flexGrow: 1 }}
+            >
+              Lister
+            </Typography>
 
-            {status === "loggedIn" && (
-              <Box sx={{ flexGrow: 0 }}>
-                <IconButton color="inherit" onClick={handleOpenUserMenu}>
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  anchorEl={userMenuAnchorElement}
-                  open={Boolean(userMenuAnchorElement)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem onClick={handleLogoutClick}>Log Out</MenuItem>
-                </Menu>
-              </Box>
-            )}
+            <UserMenu auth={auth} />
           </Toolbar>
         </AppBar>
 
-        <Container component="main" maxWidth="xl">
+        {/* Main content */}
+        <Container
+          component="main"
+          maxWidth="xl"
+          sx={{
+            minHeight: "100vh",
+            backgroundColor: theme.palette.background.default,
+          }}
+        >
           <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
           <Outlet />
         </Container>
-      </Stack>
+      </Box>
 
       <SideDrawer />
     </>

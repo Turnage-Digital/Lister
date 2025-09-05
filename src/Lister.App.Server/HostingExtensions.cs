@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Lister.App.Server.Services;
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
@@ -19,7 +20,6 @@ using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
-using Lister.Server.Services;
 using Lister.Users.Application.Behaviors;
 using Lister.Users.Domain.Entities;
 using Lister.Users.Domain.Services;
@@ -27,11 +27,12 @@ using Lister.Users.Infrastructure.Sql;
 using MediatR;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
-namespace Lister.Server;
+namespace Lister.App.Server;
 
 internal static class HostingExtensions
 {
@@ -40,7 +41,6 @@ internal static class HostingExtensions
         builder.Host.UseSerilog((_, config) => config
             .WriteTo.Console(outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
-            .WriteTo.Seq(builder.Configuration["SeqUrl"]!)
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
             .Enrich.FromLogContext());
 
@@ -74,7 +74,10 @@ internal static class HostingExtensions
 
         builder.Services
             .AddIdentityApiEndpoints<User>()
-            .AddEntityFrameworkStores<UsersDbContext>();
+            .AddEntityFrameworkStores<UsersDbContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.AddTransient<IEmailSender, StubEmailSender>();
 
         builder.Services
             .ConfigureApplicationCookie(options =>

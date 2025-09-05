@@ -45,11 +45,10 @@ const RouteComponent = () => {
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
       <Titlebar title="Lists" actions={actions} />
 
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         {listNamesQuery.data.map((listName) => (
           <Grid key={listName.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <ListCard
-              key={listName.id}
               listName={listName}
               onDeleteClick={() => handleDeleteClicked(listName.id)}
             />

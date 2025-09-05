@@ -93,7 +93,6 @@ const RouteComponent = () => {
 
       <FormBlock
         title="Name"
-        blurb="Blurb about naming a list."
         content={
           <EditListNameContent
             name={updated.name}
@@ -104,7 +103,6 @@ const RouteComponent = () => {
 
       <FormBlock
         title="Columns"
-        blurb="Blurb about columns for a list."
         content={
           <EditListColumnsContent
             columns={updated.columns}
@@ -115,7 +113,6 @@ const RouteComponent = () => {
 
       <FormBlock
         title="Statuses"
-        blurb="Blurb about statuses for an item."
         content={
           <EditListStatusesContent
             statuses={updated.statuses}
