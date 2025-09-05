@@ -87,11 +87,11 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
       </Box>
 
       {/* Content area - could be expanded later */}
-      <CardContent sx={{ flex: 1, pt: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          Manage and organize your {listName.name.toLowerCase()} items
-        </Typography>
-      </CardContent>
+      {/* <CardContent sx={{ flex: 1, pt: 3 }}>*/}
+      {/*  <Typography variant="body2" color="text.secondary">*/}
+      {/*    Manage and organize your {listName.name.toLowerCase()} items*/}
+      {/*  </Typography>*/}
+      {/* </CardContent>*/}
 
       <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.6) }} />
 

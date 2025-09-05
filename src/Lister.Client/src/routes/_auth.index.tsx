@@ -43,7 +43,7 @@ const RouteComponent = () => {
 
   return (
     <Stack sx={{ px: 2, py: 4 }} spacing={4}>
-      <Titlebar title="My Lists" actions={actions} />
+      <Titlebar title="Lists" actions={actions} />
 
       <Grid container spacing={3}>
         {listNamesQuery.data.map((listName) => (

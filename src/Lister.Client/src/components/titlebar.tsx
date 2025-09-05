@@ -9,8 +9,6 @@ import {
   Link,
   Stack,
   Typography,
-  Paper,
-  alpha,
   useTheme,
 } from "@mui/material";
 
@@ -35,57 +33,9 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   const theme = useTheme();
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        mb: 3,
-        backgroundColor: alpha(theme.palette.primary.main, 0.03),
-        borderLeft: `4px solid ${theme.palette.primary.main}`,
-      }}
-    >
-      {/* Breadcrumbs Section */}
-      {breadcrumbs && breadcrumbs.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <Breadcrumbs
-            separator={
-              <ChevronRight sx={{ fontSize: 16, color: "text.secondary" }} />
-            }
-          >
-            {breadcrumbs.map((breadcrumb) => (
-              <Link
-                key={breadcrumb.title}
-                underline="none"
-                onClick={breadcrumb.onClick}
-                sx={{
-                  cursor: "pointer",
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: "text.secondary",
-                  transition: "color 0.2s ease-in-out",
-                  "&:hover": {
-                    color: "primary.main",
-                  },
-                }}
-              >
-                {breadcrumb.title}
-              </Link>
-            ))}
-            <Typography
-              sx={{
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "primary.main",
-              }}
-            >
-              {title}
-            </Typography>
-          </Breadcrumbs>
-        </Box>
-      )}
-
+    <Box sx={{ mb: 4 }}>
       {/* Title and Actions Section */}
-      <Grid container alignItems="center" spacing={2}>
+      <Grid container alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12, md: actions && actions.length > 0 ? 8 : 12 }}>
           <Typography
             variant="h4"
@@ -94,7 +44,6 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
               fontWeight: 700,
               fontSize: { xs: "1.75rem", md: "2.125rem" },
               lineHeight: 1.2,
-              display: "inline-block",
             }}
           >
             {title}
@@ -131,7 +80,47 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
           </Grid>
         )}
       </Grid>
-    </Paper>
+
+      {/* Breadcrumbs Section */}
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <Box>
+          <Breadcrumbs
+            separator={
+              <ChevronRight sx={{ fontSize: 16, color: "text.secondary" }} />
+            }
+          >
+            {breadcrumbs.map((breadcrumb) => (
+              <Link
+                key={breadcrumb.title}
+                underline="none"
+                onClick={breadcrumb.onClick}
+                sx={{
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "text.secondary",
+                  transition: "color 0.2s ease-in-out",
+                  "&:hover": {
+                    color: "primary.main",
+                  },
+                }}
+              >
+                {breadcrumb.title}
+              </Link>
+            ))}
+            <Typography
+              sx={{
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: "primary.main",
+              }}
+            >
+              {title}
+            </Typography>
+          </Breadcrumbs>
+        </Box>
+      )}
+    </Box>
   );
 };
 

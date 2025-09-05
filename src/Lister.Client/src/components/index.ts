@@ -13,10 +13,9 @@ export { default as SignInForm } from "./sign-in-form";
 export { default as SignUpForm } from "./sign-up-form";
 export { default as SmartPasteDialog } from "./smart-paste-dialog";
 export { default as Titlebar } from "./titlebar";
+export { default as UserMenu } from "./user-menu";
 
 export { getGridColDefs } from "./col-defs";
-
-export { AppLayout } from "./layout";
 
 export * from "./items-display";
 
