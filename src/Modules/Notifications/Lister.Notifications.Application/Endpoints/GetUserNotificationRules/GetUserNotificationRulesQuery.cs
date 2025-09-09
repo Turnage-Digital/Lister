@@ -5,6 +5,12 @@ namespace Lister.Notifications.Application.Endpoints.
 
 public class GetUserNotificationRulesQuery : IRequest<GetUserNotificationRulesResponse>
 {
-    public string UserId { get; set; } = null!;
-    public Guid? ListId { get; set; }
+    public GetUserNotificationRulesQuery(string userId, Guid? listId = null)
+    {
+        UserId = userId;
+        ListId = listId;
+    }
+
+    public string UserId { get; }
+    public Guid? ListId { get; }
 }

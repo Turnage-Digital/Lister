@@ -9,7 +9,8 @@ namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 public class GetListItemDefinitionQueryHandler(
     IGetListItemDefinition query,
     IDistributedCache cache,
-    ILogger<GetListItemDefinitionQueryHandler> logger)
+    ILogger<GetListItemDefinitionQueryHandler> logger
+)
     : IRequestHandler<GetListItemDefinitionQuery, ListItemDefinition?>
 {
     public async Task<ListItemDefinition?> Handle(
@@ -41,10 +42,13 @@ public class GetListItemDefinitionQueryHandler(
     private async Task CacheDatabaseResultAsync(
         string key,
         ListItemDefinition? value,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (value == null)
+        {
             return;
+        }
 
         var serialized = JsonSerializer.Serialize(value);
         var options = new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) };

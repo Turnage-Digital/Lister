@@ -55,8 +55,8 @@ public class DeleteListItemCommandHandlerTests
             .ReturnsAsync((ListDb?)null);
 
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await _handler.Handle(command, CancellationToken.None));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await _handler.Handle(command, CancellationToken.None));
     }
 
     [Test]
@@ -75,8 +75,8 @@ public class DeleteListItemCommandHandlerTests
             .ReturnsAsync((ItemDb?)null);
 
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await _handler.Handle(command, CancellationToken.None));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await _handler.Handle(command, CancellationToken.None));
     }
 
     [Test]

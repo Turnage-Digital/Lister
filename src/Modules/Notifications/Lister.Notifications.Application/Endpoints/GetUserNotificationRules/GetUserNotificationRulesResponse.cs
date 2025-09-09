@@ -1,7 +1,8 @@
-namespace Lister.Notifications.Application.Endpoints.
-    GetUserNotificationRules;
+using Lister.Notifications.Domain.Views;
+
+namespace Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
 
 public class GetUserNotificationRulesResponse
 {
-    public List<NotificationRuleDto> Rules { get; set; } = new();
+    public List<NotificationRule> Rules { get; set; } = new();
 }

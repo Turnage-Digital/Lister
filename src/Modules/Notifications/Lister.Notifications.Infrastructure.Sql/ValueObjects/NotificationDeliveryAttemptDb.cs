@@ -7,7 +7,7 @@ public record NotificationDeliveryAttemptDb
     public int? Id { get; set; }
     public Guid? NotificationId { get; set; }
     public NotificationDb? Notification { get; set; }
-    
+
     public DateTime AttemptedOn { get; set; }
     public string ChannelJson { get; set; } = null!;
     public int Status { get; set; }

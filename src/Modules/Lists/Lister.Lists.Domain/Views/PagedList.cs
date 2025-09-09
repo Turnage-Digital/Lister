@@ -12,4 +12,7 @@ public record PagedList : IReadOnlyList
 
     [JsonPropertyName("id")]
     public Guid? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
 }

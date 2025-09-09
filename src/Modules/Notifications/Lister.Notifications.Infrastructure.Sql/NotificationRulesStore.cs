@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql;
 
-public class NotificationRulesStore(NotificationsDbContext context) 
+public class NotificationRulesStore(NotificationsDbContext context)
     : INotificationRulesStore<NotificationRuleDb>
 {
     public Task<NotificationRuleDb> InitAsync(string userId, Guid listId, CancellationToken cancellationToken)
@@ -25,45 +25,16 @@ public class NotificationRulesStore(NotificationsDbContext context)
         });
     }
 
-    public async Task<NotificationRuleDb?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<NotificationRuleDb?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     {
         return await context.NotificationRules
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, cancellationToken);
     }
 
-    public async Task<IEnumerable<NotificationRuleDb>> GetByUserAsync(string userId, Guid? listId, CancellationToken cancellationToken)
-    {
-        var query = context.NotificationRules
-            .Where(x => x.UserId == userId && !x.IsDeleted);
-        
-        if (listId.HasValue)
-            query = query.Where(x => x.ListId == listId.Value);
-        
-        return await query.ToListAsync(cancellationToken);
-    }
-
-    public async Task<IEnumerable<NotificationRuleDb>> GetActiveRulesAsync(Guid listId, TriggerType? triggerType, CancellationToken cancellationToken)
-    {
-        var query = context.NotificationRules
-            .Where(x => x.ListId == listId && x.IsActive && !x.IsDeleted);
-        
-        if (triggerType.HasValue)
-        {
-            var rules = await query.ToListAsync(cancellationToken);
-            return rules.Where(r =>
-            {
-                var trigger = JsonSerializer.Deserialize<NotificationTrigger>(r.TriggerJson);
-                return trigger?.Type == triggerType.Value;
-            });
-        }
-        
-        return await query.ToListAsync(cancellationToken);
-    }
-
     public Task CreateAsync(NotificationRuleDb rule, CancellationToken cancellationToken)
     {
         context.NotificationRules.Add(rule);
-        
+
         var historyEntry = new NotificationRuleHistoryEntryDb
         {
             NotificationRuleId = rule.Id,
@@ -71,7 +42,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
             On = DateTime.UtcNow,
             By = rule.CreatedBy
         };
-        
+
         rule.History.Add(historyEntry);
         return Task.CompletedTask;
     }
@@ -80,7 +51,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
     {
         rule.UpdatedOn = DateTime.UtcNow;
         rule.UpdatedBy = updatedBy;
-        
+
         var historyEntry = new NotificationRuleHistoryEntryDb
         {
             NotificationRuleId = rule.Id,
@@ -88,7 +59,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
             On = DateTime.UtcNow,
             By = updatedBy
         };
-        
+
         rule.History.Add(historyEntry);
         return Task.CompletedTask;
     }
@@ -98,7 +69,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
         rule.IsDeleted = true;
         rule.UpdatedOn = DateTime.UtcNow;
         rule.UpdatedBy = deletedBy;
-        
+
         var historyEntry = new NotificationRuleHistoryEntryDb
         {
             NotificationRuleId = rule.Id,
@@ -106,12 +77,16 @@ public class NotificationRulesStore(NotificationsDbContext context)
             On = DateTime.UtcNow,
             By = deletedBy
         };
-        
+
         rule.History.Add(historyEntry);
         return Task.CompletedTask;
     }
 
-    public Task SetTriggerAsync(NotificationRuleDb rule, NotificationTrigger trigger, CancellationToken cancellationToken)
+    public Task SetTriggerAsync(
+        NotificationRuleDb rule,
+        NotificationTrigger trigger,
+        CancellationToken cancellationToken
+    )
     {
         rule.TriggerJson = JsonSerializer.Serialize(trigger);
         return Task.CompletedTask;
@@ -119,11 +94,15 @@ public class NotificationRulesStore(NotificationsDbContext context)
 
     public Task<NotificationTrigger> GetTriggerAsync(NotificationRuleDb rule, CancellationToken cancellationToken)
     {
-        return Task.FromResult(JsonSerializer.Deserialize<NotificationTrigger>(rule.TriggerJson) 
+        return Task.FromResult(JsonSerializer.Deserialize<NotificationTrigger>(rule.TriggerJson)
                                ?? throw new InvalidOperationException("Invalid trigger JSON"));
     }
 
-    public Task SetChannelsAsync(NotificationRuleDb rule, NotificationChannel[] channels, CancellationToken cancellationToken)
+    public Task SetChannelsAsync(
+        NotificationRuleDb rule,
+        NotificationChannel[] channels,
+        CancellationToken cancellationToken
+    )
     {
         rule.ChannelsJson = JsonSerializer.Serialize(channels);
         return Task.CompletedTask;
@@ -134,7 +113,11 @@ public class NotificationRulesStore(NotificationsDbContext context)
         return Task.FromResult(JsonSerializer.Deserialize<NotificationChannel[]>(rule.ChannelsJson) ?? []);
     }
 
-    public Task SetScheduleAsync(NotificationRuleDb rule, NotificationSchedule schedule, CancellationToken cancellationToken)
+    public Task SetScheduleAsync(
+        NotificationRuleDb rule,
+        NotificationSchedule schedule,
+        CancellationToken cancellationToken
+    )
     {
         rule.ScheduleJson = JsonSerializer.Serialize(schedule);
         return Task.CompletedTask;
@@ -142,7 +125,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
 
     public Task<NotificationSchedule> GetScheduleAsync(NotificationRuleDb rule, CancellationToken cancellationToken)
     {
-        return Task.FromResult(JsonSerializer.Deserialize<NotificationSchedule>(rule.ScheduleJson) 
+        return Task.FromResult(JsonSerializer.Deserialize<NotificationSchedule>(rule.ScheduleJson)
                                ?? throw new InvalidOperationException("Invalid schedule JSON"));
     }
 

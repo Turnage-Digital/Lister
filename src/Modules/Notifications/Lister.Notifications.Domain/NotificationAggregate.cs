@@ -177,61 +177,6 @@ public class NotificationAggregate<TRule, TNotification>(
             cancellationToken);
     }
 
-    public async Task<TRule?> GetNotificationRuleByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.RulesStore.GetByIdAsync(id, cancellationToken);
-    }
-
-    public async Task<IEnumerable<TRule>> GetUserNotificationRulesAsync(
-        string userId,
-        Guid? listId = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.RulesStore.GetByUserAsync(
-            userId, listId, cancellationToken);
-    }
-
-    public async Task<IEnumerable<TRule>> GetActiveRulesForListAsync(
-        Guid listId,
-        TriggerType? triggerType = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.RulesStore.GetActiveRulesAsync(
-            listId, triggerType, cancellationToken);
-    }
-
-    public async Task<TNotification?> GetNotificationByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetByIdAsync(id, cancellationToken);
-    }
-
-    public async Task<IEnumerable<TNotification>> GetPendingNotificationsAsync(
-        int batchSize = 100,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetPendingAsync(
-            batchSize, cancellationToken);
-    }
-
-    public async Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
-        string userId,
-        DateTime? since = null,
-        DeliveryStatus? status = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetByUserAsync(
-            userId, since, status, cancellationToken);
-    }
 
     // Rule Evaluation
     public async Task<bool> ShouldTriggerNotificationAsync(

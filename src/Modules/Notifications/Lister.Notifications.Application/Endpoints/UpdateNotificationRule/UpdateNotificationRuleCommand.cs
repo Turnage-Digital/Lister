@@ -5,10 +5,24 @@ namespace Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
 
 public class UpdateNotificationRuleCommand : IRequest
 {
-    public Guid RuleId { get; set; }
-    public string UpdatedBy { get; set; } = null!;
-    public NotificationTrigger? Trigger { get; set; }
-    public NotificationChannel[]? Channels { get; set; }
-    public NotificationSchedule? Schedule { get; set; }
-    public bool? IsActive { get; set; }
+    public UpdateNotificationRuleCommand(
+        Guid ruleId,
+        NotificationTrigger trigger,
+        NotificationChannel[] channels,
+        NotificationSchedule schedule,
+        string? templateId
+    )
+    {
+        RuleId = ruleId;
+        Trigger = trigger;
+        Channels = channels;
+        Schedule = schedule;
+        TemplateId = templateId;
+    }
+
+    public Guid RuleId { get; }
+    public NotificationTrigger Trigger { get; }
+    public NotificationChannel[] Channels { get; }
+    public NotificationSchedule Schedule { get; }
+    public string? TemplateId { get; }
 }

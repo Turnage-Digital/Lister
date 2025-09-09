@@ -71,7 +71,7 @@ public class ListerTools
             }
 
             var schema = await apiClient.GetListSchemaAsync(guid, cancellationToken);
-            Log.Information("Successfully retrieved schema with {Result}", 
+            Log.Information("Successfully retrieved schema with {Result}",
                 new { listId, columnCount = schema.Columns.Length, statusCount = schema.Statuses.Length });
 
             var result = new
@@ -120,7 +120,7 @@ public class ListerTools
         CancellationToken cancellationToken = default
     )
     {
-        Log.Information("GetListItems called with {Request}", 
+        Log.Information("GetListItems called with {Request}",
             new { listId, page, pageSize, searchTerm });
         try
         {
@@ -134,7 +134,7 @@ public class ListerTools
 
             var pagedItems = await apiClient.GetListItemsAsync(guid, page, pageSize, searchTerm, sortBy, ascending,
                 cancellationToken);
-            Log.Information("Successfully retrieved items with {Result}", 
+            Log.Information("Successfully retrieved items with {Result}",
                 new { listId, page, itemCount = pagedItems.Items.Length, totalCount = pagedItems.Count });
 
             var result = new
@@ -191,7 +191,7 @@ public class ListerTools
                 {
                     id = itemDetails.Id,
                     listId = itemDetails.ListId,
-                    bag = itemDetails.Bag,
+                    bag = itemDetails.Bag
                     // history = itemDetails.History.Select(h => new
                     //     {
                     //         timestamp = h.On,
@@ -284,7 +284,7 @@ public class ListerTools
             }
 
             var createdList = await apiClient.CreateListAsync(name, columns, statuses, cancellationToken);
-            Log.Information("Successfully created list with {Result}", 
+            Log.Information("Successfully created list with {Result}",
                 new { listId = createdList.Id, name = createdList.Name });
 
             var result = new

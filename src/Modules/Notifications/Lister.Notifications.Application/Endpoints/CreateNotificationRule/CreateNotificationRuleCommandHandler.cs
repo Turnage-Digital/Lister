@@ -1,26 +1,22 @@
 using Lister.Notifications.Domain;
+using Lister.Notifications.Domain.Entities;
 using MediatR;
 
-namespace Lister.Notifications.Application.Endpoints.
-    CreateNotificationRule;
+namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
-public class
-    CreateNotificationRuleCommandHandler : IRequestHandler<CreateNotificationRuleCommand,
-    CreateNotificationRuleResponse>
+public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotification>(
+    NotificationAggregate<TNotificationRule, TNotification> aggregate
+)
+    : IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>
+    where TNotificationRule : IWritableNotificationRule
+    where TNotification : IWritableNotification
 {
-    private readonly NotificationAggregate<NotificationRuleDb, NotificationDb> _aggregate;
-
-    public CreateNotificationRuleCommandHandler(NotificationAggregate<NotificationRuleDb, NotificationDb> aggregate)
-    {
-        _aggregate = aggregate;
-    }
-
     public async Task<CreateNotificationRuleResponse> Handle(
         CreateNotificationRuleCommand request,
         CancellationToken cancellationToken
     )
     {
-        var rule = await _aggregate.CreateNotificationRuleAsync(
+        var rule = await aggregate.CreateNotificationRuleAsync(
             request.UserId,
             request.ListId,
             request.Trigger,

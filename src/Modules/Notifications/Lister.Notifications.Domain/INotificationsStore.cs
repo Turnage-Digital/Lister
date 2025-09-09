@@ -8,16 +8,7 @@ public interface INotificationsStore<TNotification>
     where TNotification : IWritableNotification
 {
     Task<TNotification> InitAsync(string userId, Guid listId, CancellationToken cancellationToken);
-    Task<TNotification?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<IEnumerable<TNotification>> GetPendingAsync(int batchSize, CancellationToken cancellationToken);
-
-    Task<IEnumerable<TNotification>> GetByUserAsync(
-        string userId,
-        DateTime? since,
-        DeliveryStatus? status,
-        CancellationToken cancellationToken
-    );
-
+    Task<TNotification?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken);
     Task CreateAsync(TNotification notification, CancellationToken cancellationToken);
 
     Task SetContentAsync(TNotification notification, NotificationContent content, CancellationToken cancellationToken);

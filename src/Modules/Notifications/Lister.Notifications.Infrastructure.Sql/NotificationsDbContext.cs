@@ -14,7 +14,7 @@ public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> opt
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(NotificationsDbContext).Assembly);
     }
 }

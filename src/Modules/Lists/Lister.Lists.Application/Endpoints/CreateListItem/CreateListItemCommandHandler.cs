@@ -16,7 +16,9 @@ public class CreateListItemCommandHandler<TList, TItem>(ListsAggregate<TList, TI
         var parsed = Guid.Parse(request.ListId);
         var list = await listsAggregate.GetListByIdAsync(parsed, cancellationToken);
         if (list is null)
+        {
             throw new InvalidOperationException($"List with id {request.ListId} does not exist");
+        }
 
         var entity = await listsAggregate.CreateItemAsync(list, request.Bag, request.UserId!, cancellationToken);
         var retval = mapper.Map<ListItem>(entity);

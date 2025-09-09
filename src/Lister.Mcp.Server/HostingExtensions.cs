@@ -15,7 +15,7 @@ internal static class HostingExtensions
 
         builder.Services.AddHttpClient<ListerApiClient>();
         builder.Services.AddHttpClient<ListerAuthClient>();
-        
+
         builder.Services
             .AddMcpServer()
             .WithHttpTransport()
