@@ -24,4 +24,5 @@ public class NotificationDb : IWritableNotification
     public DateTime CreatedOn { get; set; }
     public DateTime? ProcessedOn { get; set; }
     public DateTime? DeliveredOn { get; set; }
+    public DateTime? ReadOn { get; set; }
 }

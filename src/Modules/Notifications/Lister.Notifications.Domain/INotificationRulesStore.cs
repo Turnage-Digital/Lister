@@ -7,7 +7,7 @@ public interface INotificationRulesStore<TRule>
     where TRule : IWritableNotificationRule
 {
     Task<TRule> InitAsync(string userId, Guid listId, CancellationToken cancellationToken);
-    Task<TRule?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken);
+    Task<TRule?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task CreateAsync(TRule rule, CancellationToken cancellationToken);
     Task UpdateAsync(TRule rule, string updatedBy, CancellationToken cancellationToken);
     Task DeleteAsync(TRule rule, string deletedBy, CancellationToken cancellationToken);

@@ -1,4 +1,4 @@
-namespace Lister.Notifications.Domain.Entities;
+namespace Lister.Notifications.Domain;
 
 public interface INotification
 {
@@ -10,4 +10,5 @@ public interface INotification
     DateTime CreatedOn { get; }
     DateTime? ProcessedOn { get; }
     DateTime? DeliveredOn { get; }
+    DateTime? ReadOn { get; }
 }

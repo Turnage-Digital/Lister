@@ -17,7 +17,7 @@ public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotificati
     )
     {
         var rule = await aggregate.CreateNotificationRuleAsync(
-            request.UserId,
+            request.UserId!,
             request.ListId,
             request.Trigger,
             request.Channels,

@@ -1,10 +1,7 @@
-using Lister.Notifications.Domain.Entities;
-using INotification = MediatR.INotification;
-
 namespace Lister.Notifications.Domain.Events;
 
 public class NotificationRuleCreatedEvent
-    : INotification
+    : MediatR.INotification
 {
     public NotificationRuleCreatedEvent(INotificationRule rule, string createdBy)
     {

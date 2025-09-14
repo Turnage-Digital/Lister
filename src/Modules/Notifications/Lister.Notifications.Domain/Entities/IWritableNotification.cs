@@ -10,4 +10,5 @@ public interface IWritableNotification : INotification
     new DateTime CreatedOn { get; set; }
     new DateTime? ProcessedOn { get; set; }
     new DateTime? DeliveredOn { get; set; }
+    new DateTime? ReadOn { get; set; }
 }

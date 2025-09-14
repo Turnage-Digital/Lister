@@ -36,4 +36,37 @@ public interface INotificationsStore<TNotification>
         NotificationChannel channel,
         CancellationToken cancellationToken
     );
+
+    Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
+        string userId,
+        DateTime? since = null,
+        int pageSize = 20,
+        int page = 0,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<TNotification?> GetNotificationByIdAsync(
+        Guid id,
+        string userId,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<int> GetUnreadCountAsync(
+        string userId,
+        Guid? listId = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task MarkAsReadAsync(
+        TNotification notification,
+        DateTime readOn,
+        CancellationToken cancellationToken = default
+    );
+
+    Task MarkAllAsReadAsync(
+        string userId,
+        DateTime readOn,
+        DateTime? before = null,
+        CancellationToken cancellationToken = default
+    );
 }

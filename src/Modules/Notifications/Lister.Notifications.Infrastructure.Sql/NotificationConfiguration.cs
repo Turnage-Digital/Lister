@@ -30,6 +30,7 @@ public class NotificationConfiguration : IEntityTypeConfiguration<NotificationDb
         builder.HasIndex(x => x.ListId);
         builder.HasIndex(x => new { x.ProcessedOn, x.DeliveredOn });
         builder.HasIndex(x => x.CreatedOn);
+        builder.HasIndex(x => new { x.UserId, x.ReadOn }); // For unread queries
 
         builder.HasMany(x => x.DeliveryAttempts)
             .WithOne(x => x.Notification)

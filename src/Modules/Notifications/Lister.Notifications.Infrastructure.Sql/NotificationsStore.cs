@@ -149,4 +149,104 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
             .Where(x => x.NotificationId == notification.Id && x.ChannelJson == channelJson)
             .CountAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<NotificationDb>> GetUserNotificationsAsync(
+        string userId,
+        DateTime? since = null,
+        int pageSize = 20,
+        int page = 0,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Notifications
+            .Where(x => x.UserId == userId);
+
+        if (since.HasValue)
+        {
+            query = query.Where(x => x.CreatedOn >= since.Value);
+        }
+
+        return await query
+            .OrderByDescending(x => x.CreatedOn)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Include(x => x.DeliveryAttempts)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<NotificationDb?> GetNotificationByIdAsync(
+        Guid id,
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Notifications
+            .Include(x => x.DeliveryAttempts)
+            .Include(x => x.History)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
+    }
+
+    public async Task<int> GetUnreadCountAsync(
+        string userId,
+        Guid? listId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Notifications
+            .Where(x => x.UserId == userId && x.ReadOn == null);
+
+        if (listId.HasValue)
+        {
+            query = query.Where(x => x.ListId == listId.Value);
+        }
+
+        return await query.CountAsync(cancellationToken);
+    }
+
+    public async Task MarkAsReadAsync(
+        NotificationDb notification,
+        DateTime readOn,
+        CancellationToken cancellationToken = default)
+    {
+        notification.ReadOn = readOn;
+
+        var historyEntry = new NotificationHistoryEntryDb
+        {
+            NotificationId = notification.Id,
+            Type = NotificationHistoryType.Read,
+            On = readOn,
+            By = notification.UserId
+        };
+
+        notification.History.Add(historyEntry);
+    }
+
+    public async Task MarkAllAsReadAsync(
+        string userId,
+        DateTime readOn,
+        DateTime? before = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Notifications
+            .Where(x => x.UserId == userId && x.ReadOn == null);
+
+        if (before.HasValue)
+        {
+            query = query.Where(x => x.CreatedOn <= before.Value);
+        }
+
+        var notifications = await query.ToListAsync(cancellationToken);
+
+        foreach (var notification in notifications)
+        {
+            notification.ReadOn = readOn;
+
+            var historyEntry = new NotificationHistoryEntryDb
+            {
+                NotificationId = notification.Id,
+                Type = NotificationHistoryType.Read,
+                On = readOn,
+                By = userId
+            };
+
+            notification.History.Add(historyEntry);
+        }
+    }
 }

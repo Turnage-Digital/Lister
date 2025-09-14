@@ -1,14 +1,13 @@
 using Lister.Notifications.Domain.Enums;
 using Lister.Notifications.Domain.ValueObjects;
-using MediatR;
 
 namespace Lister.Notifications.Domain.Events;
 
 public class NotificationDeliveryAttemptedEvent
-    : INotification
+    : MediatR.INotification
 {
     public NotificationDeliveryAttemptedEvent(
-        Entities.INotification notification,
+        INotification notification,
         NotificationChannel channel,
         DeliveryStatus status
     )
@@ -18,7 +17,7 @@ public class NotificationDeliveryAttemptedEvent
         Status = status;
     }
 
-    public Entities.INotification Notification { get; }
+    public INotification Notification { get; }
     public NotificationChannel Channel { get; }
     public DeliveryStatus Status { get; }
 }

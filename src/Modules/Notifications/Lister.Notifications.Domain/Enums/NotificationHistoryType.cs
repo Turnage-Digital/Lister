@@ -8,5 +8,6 @@ public enum NotificationHistoryType
     Delivered,
     Failed,
     Retried,
-    Cancelled
+    Cancelled,
+    Read
 }

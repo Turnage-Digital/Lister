@@ -1,16 +1,14 @@
-using MediatR;
-
 namespace Lister.Notifications.Domain.Events;
 
 public class NotificationCreatedEvent
-    : INotification
+    : MediatR.INotification
 {
-    public NotificationCreatedEvent(Entities.INotification notification, string createdBy)
+    public NotificationCreatedEvent(INotification notification, string createdBy)
     {
         Notification = notification;
         CreatedBy = createdBy;
     }
 
-    public Entities.INotification Notification { get; }
+    public INotification Notification { get; }
     public string CreatedBy { get; }
 }

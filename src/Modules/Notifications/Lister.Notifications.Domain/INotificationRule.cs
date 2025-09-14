@@ -1,4 +1,4 @@
-﻿namespace Lister.Notifications.Domain.Entities;
+﻿namespace Lister.Notifications.Domain;
 
 public interface INotificationRule
 {

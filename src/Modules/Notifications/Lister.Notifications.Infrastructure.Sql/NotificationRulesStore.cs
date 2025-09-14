@@ -25,7 +25,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
         });
     }
 
-    public async Task<NotificationRuleDb?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<NotificationRuleDb?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await context.NotificationRules
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, cancellationToken);
