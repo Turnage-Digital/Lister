@@ -13,12 +13,6 @@ public class NotificationAggregate<TRule, TNotification>(
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    // public async Task<TList?> GetListByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    // {
-    //     var retval = await unitOfWork.ListsStore.GetByIdAsync(id, cancellationToken);
-    //     return retval;
-    // }
-    
     public async Task<TRule?> GetNotificationRuleByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -27,7 +21,7 @@ public class NotificationAggregate<TRule, TNotification>(
         var retval = await unitOfWork.RulesStore.GetByIdAsync(id, cancellationToken);
         return retval;
     }
-    
+
     public async Task<TRule> CreateNotificationRuleAsync(
         string userId,
         string listId,
@@ -103,6 +97,16 @@ public class NotificationAggregate<TRule, TNotification>(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await mediator.Publish(new NotificationRuleDeletedEvent(rule, deletedBy), cancellationToken);
+    }
+
+    public async Task<TNotification?> GetNotificationByIdAsync(
+        Guid id,
+        string userId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var retval = await unitOfWork.NotificationsStore.GetNotificationByIdAsync(id, userId, cancellationToken);
+        return retval;
     }
 
     public async Task<TNotification> CreateNotificationAsync(
@@ -253,38 +257,6 @@ public class NotificationAggregate<TRule, TNotification>(
         return true;
     }
 
-    public async Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
-        string userId,
-        DateTime? since = null,
-        int pageSize = 20,
-        int page = 0,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetUserNotificationsAsync(
-            userId, since, pageSize, page, cancellationToken);
-    }
-
-    public async Task<TNotification?> GetNotificationByIdAsync(
-        Guid id,
-        string userId,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetNotificationByIdAsync(
-            id, userId, cancellationToken);
-    }
-
-    public async Task<int> GetUnreadCountAsync(
-        string userId,
-        Guid? listId = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetUnreadCountAsync(
-            userId, listId, cancellationToken);
-    }
-
     public async Task MarkNotificationAsReadAsync(
         TNotification notification,
         DateTime readOn,
@@ -314,5 +286,27 @@ public class NotificationAggregate<TRule, TNotification>(
         await mediator.Publish(
             new AllNotificationsReadEvent(userId, readOn, before),
             cancellationToken);
+    }
+    
+    public async Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
+        string userId,
+        DateTime? since = null,
+        int pageSize = 20,
+        int page = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await unitOfWork.NotificationsStore.GetUserNotificationsAsync(
+            userId, since, pageSize, page, cancellationToken);
+    }
+    
+    public async Task<int> GetUnreadCountAsync(
+        string userId,
+        Guid? listId = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await unitOfWork.NotificationsStore.GetUnreadCountAsync(
+            userId, listId, cancellationToken);
     }
 }

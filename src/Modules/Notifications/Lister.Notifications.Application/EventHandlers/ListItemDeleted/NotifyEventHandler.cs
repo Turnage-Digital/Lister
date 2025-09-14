@@ -2,8 +2,8 @@ using Lister.Core.Domain.IntegrationEvents;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
+using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Infrastructure.Sql.Services;
 using MediatR;
 
 namespace Lister.Notifications.Application.EventHandlers.ListItemDeleted;
@@ -32,8 +32,8 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
                 ["DeletedBy"] = notification.DeletedBy
             };
 
-            if (await aggregate.ShouldTriggerNotificationAsync(rule as TNotificationRule, trigger, context,
-                    cancellationToken))
+            if (rule is TNotificationRule r &&
+                await aggregate.ShouldTriggerNotificationAsync(r, trigger, context, cancellationToken))
             {
                 var content = new NotificationContent
                 {

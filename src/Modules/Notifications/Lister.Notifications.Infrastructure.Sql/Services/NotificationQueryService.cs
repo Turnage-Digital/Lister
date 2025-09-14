@@ -1,5 +1,6 @@
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
+using Lister.Notifications.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;

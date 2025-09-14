@@ -1,4 +1,4 @@
-using Lister.Notifications.Infrastructure.Sql.Services;
+using Lister.Notifications.Domain.Services;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
