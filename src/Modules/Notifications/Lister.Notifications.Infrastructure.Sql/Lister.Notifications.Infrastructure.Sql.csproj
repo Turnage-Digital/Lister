@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="14.0.0"/>
+        <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Core\Lister.Core.Infrastructure.Sql\Lister.Core.Infrastructure.Sql.csproj"/>
+        <ProjectReference Include="..\Lister.Notifications.Domain\Lister.Notifications.Domain.csproj"/>
+    </ItemGroup>
+
+</Project>

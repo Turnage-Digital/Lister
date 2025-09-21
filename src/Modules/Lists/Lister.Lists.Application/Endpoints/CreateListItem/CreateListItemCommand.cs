@@ -3,5 +3,5 @@ using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Application.Endpoints.CreateListItem;
 
-public record CreateListItemCommand(string ListId, object Bag) 
+public record CreateListItemCommand(Guid ListId, object Bag)
     : RequestBase<ListItem>;

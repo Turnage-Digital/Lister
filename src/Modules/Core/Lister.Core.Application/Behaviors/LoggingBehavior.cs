@@ -19,14 +19,14 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
             logger.LogInformation("Handling {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
 
-            retval = await next();
+            retval = await next(cancellationToken);
 
             logger.LogInformation("Handled {request}",
                 new { requestBase.GetType().Name, requestBase.UserId });
         }
         else
         {
-            retval = await next();
+            retval = await next(cancellationToken);
         }
 
         return retval;

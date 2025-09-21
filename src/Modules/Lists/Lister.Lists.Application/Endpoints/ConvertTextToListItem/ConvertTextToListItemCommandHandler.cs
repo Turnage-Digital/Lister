@@ -11,15 +11,13 @@ public class ConvertTextToListItemCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
     IGetCompletedJson completedJsonGetter,
     ILogger<ConvertTextToListItemCommandHandler<TList, TItem>> logger
-)
-    : IRequestHandler<ConvertTextToListItemCommand, ListItem>
+) : IRequestHandler<ConvertTextToListItemCommand, ListItem>
     where TList : IWritableList
     where TItem : IWritableItem
 {
     public async Task<ListItem> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
     {
-        var parsed = Guid.Parse(request.ListId);
-        var list = await listsAggregate.GetListByIdAsync(parsed, cancellationToken);
+        var list = await listsAggregate.GetListByIdAsync(request.ListId, cancellationToken);
         if (list is null)
         {
             throw new InvalidOperationException($"List with id {request.ListId} does not exist");

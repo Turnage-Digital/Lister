@@ -6,8 +6,8 @@ namespace Lister.Mcp.Server.Services;
 
 public class ListerAuthClient
 {
-    private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonOptions;
 
     public ListerAuthClient(HttpClient httpClient, IConfiguration configuration)
@@ -34,11 +34,11 @@ public class ListerAuthClient
             Log.Error("Username or password not configured for authentication");
             return null;
         }
-        
+
         Log.Information("Authenticating with Lister API for fresh token");
 
         string? retval = null;
-        
+
         var loginRequest = new { email, password };
         var json = JsonSerializer.Serialize(loginRequest, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");

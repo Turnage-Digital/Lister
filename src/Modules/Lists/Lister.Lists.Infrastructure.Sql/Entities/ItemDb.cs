@@ -12,7 +12,7 @@ public class ItemDb : IWritableItem
     public ListDb List { get; init; } = null!;
 
     public ICollection<ItemHistoryEntryDb> History { get; init; } = new HashSet<ItemHistoryEntryDb>();
-    
+
     public int? Id { get; set; }
 
     public Guid? ListId { get; set; }

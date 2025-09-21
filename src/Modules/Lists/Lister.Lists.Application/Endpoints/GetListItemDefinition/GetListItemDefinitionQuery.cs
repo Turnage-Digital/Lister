@@ -3,4 +3,4 @@ using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 
-public record GetListItemDefinitionQuery(string ListId) : RequestBase<ListItemDefinition?>;
+public record GetListItemDefinitionQuery(Guid ListId) : RequestBase<ListItemDefinition?>;

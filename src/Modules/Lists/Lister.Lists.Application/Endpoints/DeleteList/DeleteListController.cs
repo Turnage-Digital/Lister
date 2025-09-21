@@ -11,12 +11,12 @@ namespace Lister.Lists.Application.Endpoints.DeleteList;
 [Route("api/lists/")]
 public class DeleteListController(IMediator mediator) : ControllerBase
 {
-    [HttpDelete("{listId}")]
+    [HttpDelete("{listId:guid}")]
     [ProducesResponseType(Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> DeleteAsync(
-        string listId,
+        Guid listId,
         CancellationToken cancellationToken
     )
     {

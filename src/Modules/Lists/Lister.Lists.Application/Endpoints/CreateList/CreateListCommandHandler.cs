@@ -19,8 +19,13 @@ public class CreateListCommandHandler<TList, TItem>(
         CancellationToken cancellationToken
     )
     {
+        if (request.UserId is null)
+        {
+            throw new ArgumentNullException(nameof(request), "request.UserId cannot be null");
+        }
+        
         var created = await listsAggregate.CreateListAsync(
-            request.UserId!,
+            request.UserId,
             request.Name,
             request.Statuses,
             request.Columns,

@@ -21,7 +21,7 @@ public class CreateListController(IMediator mediator) : Controller
         CancellationToken cancellationToken
     )
     {
-        if (ModelState.IsValid is false)
+        if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }

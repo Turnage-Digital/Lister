@@ -9,8 +9,7 @@ public class GetItemDetailsQueryHandler(IGetItemDetails itemDetailsGetter)
 {
     public async Task<ItemDetails?> Handle(GetItemDetailsQuery request, CancellationToken cancellationToken)
     {
-        var parsedListId = Guid.Parse(request.ListId);
-        var retval = await itemDetailsGetter.GetAsync(parsedListId, request.ItemId, cancellationToken);
+        var retval = await itemDetailsGetter.GetAsync(request.ListId, request.ItemId, cancellationToken);
         return retval;
     }
 }

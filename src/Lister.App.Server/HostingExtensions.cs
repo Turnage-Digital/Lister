@@ -46,7 +46,7 @@ internal static class HostingExtensions
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
-        
+
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -85,16 +85,16 @@ internal static class HostingExtensions
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
             });
-        
+
         builder.Services.AddAuthorization();
 
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
             .PersistKeysToDbContext<DataProtectionKeyDbContext>();
-        
+
         builder.Services.Configure<OpenAiOptions>(
             builder.Configuration.GetSection("OpenAi"));
-        
+
         if (builder.Environment.IsDevelopment())
         {
             builder.Services
@@ -135,9 +135,9 @@ internal static class HostingExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.MapControllers();
-        
+
         var identityGroup = app
             .MapGroup("/identity")
             .WithTags("Identity");
@@ -151,7 +151,7 @@ internal static class HostingExtensions
                 return Results.Ok();
             }
         );
-        
+
 #if DEBUG
         SeedData.EnsureSeedData(app);
 #endif
