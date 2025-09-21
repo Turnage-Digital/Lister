@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Lister.Notifications.Infrastructure.Sql;
 
-public class NotificationRuleConfiguration : IEntityTypeConfiguration<NotificationRuleDb>
+public class NotificationRuleDbConfiguration : IEntityTypeConfiguration<NotificationRuleDb>
 {
     public void Configure(EntityTypeBuilder<NotificationRuleDb> builder)
     {

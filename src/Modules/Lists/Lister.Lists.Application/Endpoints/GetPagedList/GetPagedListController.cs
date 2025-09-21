@@ -12,13 +12,13 @@ namespace Lister.Lists.Application.Endpoints.GetPagedList;
 [Route("api/lists/")]
 public class GetPagedListController(IMediator mediator) : Controller
 {
-    [HttpGet("{listId}/items")]
+    [HttpGet("{listId:guid}/items")]
     [ProducesResponseType(typeof(PagedList), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(
-        string listId,
+        Guid listId,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         [FromQuery] string? field,

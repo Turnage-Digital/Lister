@@ -12,13 +12,13 @@ namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 [Route("api/lists/")]
 public class GetListItemDefinitionController(IMediator mediator) : Controller
 {
-    [HttpGet("{listId}/itemDefinition")]
+    [HttpGet("{listId:guid}/itemDefinition")]
     [ProducesResponseType(typeof(ListItemDefinition), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(
-        string listId,
+        Guid listId,
         CancellationToken cancellationToken
     )
     {

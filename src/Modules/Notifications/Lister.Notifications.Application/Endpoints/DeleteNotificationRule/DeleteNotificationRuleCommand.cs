@@ -2,7 +2,7 @@ using Lister.Core.Application;
 
 namespace Lister.Notifications.Application.Endpoints.DeleteNotificationRule;
 
-public record DeleteNotificationRuleCommand 
+public record DeleteNotificationRuleCommand
     : RequestBase
 {
     public DeleteNotificationRuleCommand(Guid ruleId)

@@ -1,7 +1,6 @@
 using Lister.Core.Infrastructure.Sql;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Infrastructure.Sql.Entities;
-using Lister.Notifications.Infrastructure.Sql.Lister.Notifications.Infrastructure.Sql;
 
 namespace Lister.Notifications.Infrastructure.Sql;
 

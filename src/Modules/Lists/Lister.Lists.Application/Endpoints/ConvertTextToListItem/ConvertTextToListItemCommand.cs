@@ -3,4 +3,5 @@ using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 
-public record ConvertTextToListItemCommand(string ListId, string Text) : RequestBase<ListItem>;
+public record ConvertTextToListItemCommand(Guid ListId, string Text) 
+    : RequestBase<ListItem>;

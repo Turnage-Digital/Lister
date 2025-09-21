@@ -4,7 +4,8 @@ using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
 
-public class MarkAllNotificationsAsReadCommandHandler<TRule, TNotification> : IRequestHandler<MarkAllNotificationsAsReadCommand>
+public class
+    MarkAllNotificationsAsReadCommandHandler<TRule, TNotification> : IRequestHandler<MarkAllNotificationsAsReadCommand>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {

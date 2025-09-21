@@ -4,26 +4,27 @@ using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 
-public class GetNotificationDetailsQueryHandler<TRule, TNotification> : IRequestHandler<GetNotificationDetailsQuery, NotificationDetailsDto?>
+public class GetNotificationDetailsQueryHandler<TRule, TNotification>(
+    NotificationAggregate<TRule, TNotification> aggregate
+)
+    : IRequestHandler<GetNotificationDetailsQuery, NotificationDetailsDto?>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    private readonly NotificationAggregate<TRule, TNotification> _aggregate;
-
-    public GetNotificationDetailsQueryHandler(NotificationAggregate<TRule, TNotification> aggregate)
+    public async Task<NotificationDetailsDto?> Handle(
+        GetNotificationDetailsQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        _aggregate = aggregate;
-    }
-
-    public async Task<NotificationDetailsDto?> Handle(GetNotificationDetailsQuery request, CancellationToken cancellationToken)
-    {
-        var notification = await _aggregate.GetNotificationByIdAsync(
+        var notification = await aggregate.GetNotificationByIdAsync(
             request.NotificationId,
             request.UserId,
             cancellationToken);
 
         if (notification == null)
+        {
             return null;
+        }
 
         return new NotificationDetailsDto
         {
@@ -39,7 +40,7 @@ public class GetNotificationDetailsQueryHandler<TRule, TNotification> : IRequest
             DeliveredOn = notification.DeliveredOn,
             ReadOn = notification.ReadOn,
             Metadata = null, // TODO: Add metadata from content
-            DeliveryAttempts = new() // TODO: Load delivery attempts
+            DeliveryAttempts = [] // TODO: Load delivery attempts
         };
     }
 }

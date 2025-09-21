@@ -18,7 +18,7 @@ public class ListsStore(ListsDbContext dbContext)
         var retval = await dbContext.Lists
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
-            .Where(list => list.Id == id)
+            .Where(l => l.Id == id)
             .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
         return retval;
@@ -29,7 +29,7 @@ public class ListsStore(ListsDbContext dbContext)
         var retval = await dbContext.Lists
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
-            .Where(list => list.Name == name)
+            .Where(l => l.Name == name)
             .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
         return retval;

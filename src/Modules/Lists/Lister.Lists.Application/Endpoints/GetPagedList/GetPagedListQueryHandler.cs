@@ -12,9 +12,8 @@ public class GetPagedListQueryHandler(IGetPagedList pagedListGetter)
         CancellationToken cancellationToken
     )
     {
-        var parsedListId = Guid.Parse(request.ListId);
         var retval = await pagedListGetter.GetAsync(
-            parsedListId,
+            request.ListId,
             request.Page,
             request.PageSize,
             request.Field,

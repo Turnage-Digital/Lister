@@ -11,8 +11,12 @@ public class DeleteListItemCommandHandler<TList, TItem>(ListsAggregate<TList, TI
 {
     public async Task Handle(DeleteListItemCommand request, CancellationToken cancellationToken)
     {
-        var parsed = Guid.Parse(request.ListId);
-        var list = await listsAggregate.GetListByIdAsync(parsed, cancellationToken);
+        if (request.UserId is null)
+        {
+            throw new ArgumentNullException(nameof(request), "request.UserId cannot be null");
+        }
+        
+        var list = await listsAggregate.GetListByIdAsync(request.ListId, cancellationToken);
         if (list is null)
         {
             throw new InvalidOperationException($"List with id {request.ListId} does not exist");
@@ -24,6 +28,6 @@ public class DeleteListItemCommandHandler<TList, TItem>(ListsAggregate<TList, TI
             throw new InvalidOperationException($"Item with id {request.ItemId} does not exist");
         }
 
-        await listsAggregate.DeleteItemAsync(item, request.UserId!, cancellationToken);
+        await listsAggregate.DeleteItemAsync(item, request.UserId, cancellationToken);
     }
 }

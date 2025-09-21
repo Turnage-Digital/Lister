@@ -24,7 +24,7 @@ public class NotificationAggregate<TRule, TNotification>(
 
     public async Task<TRule> CreateNotificationRuleAsync(
         string userId,
-        string listId,
+        Guid listId,
         NotificationTrigger trigger,
         NotificationChannel[] channels,
         NotificationSchedule schedule,
@@ -32,8 +32,7 @@ public class NotificationAggregate<TRule, TNotification>(
         CancellationToken cancellationToken = default
     )
     {
-        var parsedListId = Guid.Parse(listId);
-        var retval = await unitOfWork.RulesStore.InitAsync(userId, parsedListId, cancellationToken);
+        var retval = await unitOfWork.RulesStore.InitAsync(userId, listId, cancellationToken);
         await unitOfWork.RulesStore.SetTriggerAsync(retval, trigger, cancellationToken);
         await unitOfWork.RulesStore.SetChannelsAsync(retval, channels, cancellationToken);
         await unitOfWork.RulesStore.SetScheduleAsync(retval, schedule, cancellationToken);
@@ -105,7 +104,7 @@ public class NotificationAggregate<TRule, TNotification>(
         CancellationToken cancellationToken = default
     )
     {
-        var retval = await unitOfWork.NotificationsStore.GetNotificationByIdAsync(id, userId, cancellationToken);
+        var retval = await unitOfWork.NotificationsStore.GetByIdAsync(id, userId, cancellationToken);
         return retval;
     }
 
@@ -286,27 +285,5 @@ public class NotificationAggregate<TRule, TNotification>(
         await mediator.Publish(
             new AllNotificationsReadEvent(userId, readOn, before),
             cancellationToken);
-    }
-    
-    public async Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
-        string userId,
-        DateTime? since = null,
-        int pageSize = 20,
-        int page = 0,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetUserNotificationsAsync(
-            userId, since, pageSize, page, cancellationToken);
-    }
-    
-    public async Task<int> GetUnreadCountAsync(
-        string userId,
-        Guid? listId = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await unitOfWork.NotificationsStore.GetUnreadCountAsync(
-            userId, listId, cancellationToken);
     }
 }

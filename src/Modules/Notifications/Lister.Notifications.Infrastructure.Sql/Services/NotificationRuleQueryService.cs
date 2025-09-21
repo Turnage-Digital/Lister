@@ -9,15 +9,6 @@ namespace Lister.Notifications.Infrastructure.Sql.Services;
 
 public class NotificationRuleQueryService(NotificationsDbContext context) : INotificationRuleQueryService
 {
-    public async Task<IWritableNotificationRule?> GetByIdForUpdateAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await context.NotificationRules
-            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
-    }
-
     public async Task<IEnumerable<NotificationRule>> GetByUserAsync(
         string userId,
         Guid? listId = null,
@@ -41,13 +32,13 @@ public class NotificationRuleQueryService(NotificationsDbContext context) : INot
             ListId = rule.ListId,
             IsActive = rule.IsActive,
             TemplateId = rule.TemplateId,
-            CreatedOn = rule.CreatedOn,
-            CreatedBy = rule.CreatedBy,
-            UpdatedOn = rule.UpdatedOn,
-            UpdatedBy = rule.UpdatedBy,
-            TriggerJson = rule.TriggerJson,
-            ChannelsJson = rule.ChannelsJson,
-            ScheduleJson = rule.ScheduleJson,
+            // CreatedOn = rule.CreatedOn,
+            // CreatedBy = rule.CreatedBy,
+            // UpdatedOn = rule.UpdatedOn,
+            // UpdatedBy = rule.UpdatedBy,
+            // TriggerJson = rule.TriggerJson,
+            // ChannelsJson = rule.ChannelsJson,
+            // ScheduleJson = rule.ScheduleJson,
             Trigger = JsonSerializer.Deserialize<object>(rule.TriggerJson)!,
             Channels = JsonSerializer.Deserialize<object[]>(rule.ChannelsJson)!,
             Schedule = JsonSerializer.Deserialize<object>(rule.ScheduleJson)!
@@ -71,5 +62,14 @@ public class NotificationRuleQueryService(NotificationsDbContext context) : INot
         }
 
         return await query.Cast<IWritableNotificationRule>().ToListAsync(cancellationToken);
+    }
+
+    public async Task<IWritableNotificationRule?> GetByIdForUpdateAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await context.NotificationRules
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
     }
 }

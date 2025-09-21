@@ -40,7 +40,7 @@ public class CreateListItemCommandHandlerTests
     public void Handle_ThrowsArgumentNullException_WhenUserIdIsNull()
     {
         // Arrange
-        var command = new CreateListItemCommand(Guid.NewGuid().ToString(), new { });
+        var command = new CreateListItemCommand(Guid.NewGuid(), new { });
 
         // Act & Assert
         Assert.ThrowsAsync<ArgumentNullException>(async () => await _handler.Handle(command, CancellationToken.None));
@@ -50,7 +50,7 @@ public class CreateListItemCommandHandlerTests
     public void Handle_ThrowsInvalidOperationException_WhenListDoesNotExist()
     {
         // Arrange
-        var command = new CreateListItemCommand(Guid.NewGuid().ToString(), new { })
+        var command = new CreateListItemCommand(Guid.NewGuid(), new { })
         {
             UserId = "user"
         };
@@ -67,7 +67,7 @@ public class CreateListItemCommandHandlerTests
     public async Task Handle_CreatesListItemSuccessfully_WhenValidRequest()
     {
         // Arrange
-        var command = new CreateListItemCommand(Guid.NewGuid().ToString(), new { })
+        var command = new CreateListItemCommand(Guid.NewGuid(), new { })
         {
             UserId = "user"
         };

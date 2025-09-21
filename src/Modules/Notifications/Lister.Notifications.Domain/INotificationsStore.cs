@@ -8,14 +8,14 @@ public interface INotificationsStore<TNotification>
     where TNotification : IWritableNotification
 {
     Task<TNotification> InitAsync(string userId, Guid listId, CancellationToken cancellationToken);
-    Task<TNotification?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken);
+    Task<TNotification?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken);
     Task CreateAsync(TNotification notification, CancellationToken cancellationToken);
 
-    Task SetContentAsync(TNotification notification, NotificationContent content, CancellationToken cancellationToken);
+    Task SetContentAsync(TNotification notification, NotificationContent notificationContent, CancellationToken cancellationToken);
 
     Task SetPriorityAsync(
         TNotification notification,
-        NotificationPriority priority,
+        NotificationPriority notificationPriority,
         CancellationToken cancellationToken
     );
 
@@ -27,35 +27,29 @@ public interface INotificationsStore<TNotification>
 
     Task AddDeliveryAttemptAsync(
         TNotification notification,
-        NotificationDeliveryAttempt attempt,
+        NotificationDeliveryAttempt notificationDeliveryAttempt,
         CancellationToken cancellationToken
     );
 
     Task<int> GetDeliveryAttemptCountAsync(
         TNotification notification,
-        NotificationChannel channel,
+        NotificationChannel notificationChannel,
         CancellationToken cancellationToken
     );
 
-    Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
-        string userId,
-        DateTime? since = null,
-        int pageSize = 20,
-        int page = 0,
-        CancellationToken cancellationToken = default
-    );
+    // Task<IEnumerable<TNotification>> GetUserNotificationsAsync(
+    //     string userId,
+    //     DateTime? since = null,
+    //     int pageSize = 20,
+    //     int page = 0,
+    //     CancellationToken cancellationToken = default
+    // );
 
-    Task<TNotification?> GetNotificationByIdAsync(
-        Guid id,
-        string userId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<int> GetUnreadCountAsync(
-        string userId,
-        Guid? listId = null,
-        CancellationToken cancellationToken = default
-    );
+    // Task<int> GetUnreadCountAsync(
+    //     string userId,
+    //     Guid? listId = null,
+    //     CancellationToken cancellationToken = default
+    // );
 
     Task MarkAsReadAsync(
         TNotification notification,

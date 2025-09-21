@@ -6,20 +6,14 @@ using Lister.Notifications.Infrastructure.Sql.Entities;
 using Lister.Notifications.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Notifications.Infrastructure.Sql.Lister.Notifications.Infrastructure.Sql;
+namespace Lister.Notifications.Infrastructure.Sql;
 
-public class NotificationsStore : INotificationsStore<NotificationDb>
+public class NotificationsStore(NotificationsDbContext dbContext) 
+    : INotificationsStore<NotificationDb>
 {
-    private readonly NotificationsDbContext _context;
-
-    public NotificationsStore(NotificationsDbContext context)
+    public Task<NotificationDb> InitAsync(string userId, Guid listId, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public async Task<NotificationDb> InitAsync(string userId, Guid listId, CancellationToken cancellationToken)
-    {
-        return new NotificationDb
+        var retval = new NotificationDb
         {
             Id = Guid.NewGuid(),
             UserId = userId,
@@ -27,18 +21,21 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
             CreatedOn = DateTime.UtcNow,
             Priority = (int)NotificationPriority.Normal
         };
+        return Task.FromResult(retval);
     }
 
-    public async Task<NotificationDb?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<NotificationDb?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken)
     {
-        return await _context.Notifications
+        var retval = await dbContext.Notifications
             .Include(x => x.DeliveryAttempts)
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            .Include(x => x.History)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
+        return retval;
     }
 
-    public async Task CreateAsync(NotificationDb notification, CancellationToken cancellationToken)
+    public Task CreateAsync(NotificationDb notification, CancellationToken cancellationToken)
     {
-        _context.Notifications.Add(notification);
+        dbContext.Notifications.Add(notification);
 
         var historyEntry = new NotificationHistoryEntryDb
         {
@@ -49,37 +46,42 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
         };
 
         notification.History.Add(historyEntry);
+        return Task.CompletedTask;
     }
 
-    public async Task SetContentAsync(
+    public Task SetContentAsync(
         NotificationDb notification,
-        NotificationContent content,
+        NotificationContent notificationContent,
         CancellationToken cancellationToken
     )
     {
-        notification.ContentJson = JsonSerializer.Serialize(content);
+        notification.ContentJson = JsonSerializer.Serialize(notificationContent);
+        return Task.CompletedTask;
     }
 
-    public async Task SetPriorityAsync(
+    public Task SetPriorityAsync(
         NotificationDb notification,
-        NotificationPriority priority,
+        NotificationPriority notificationPriority,
         CancellationToken cancellationToken
     )
     {
-        notification.Priority = (int)priority;
+        notification.Priority = (int)notificationPriority;
+        return Task.CompletedTask;
     }
 
-    public async Task SetItemAsync(NotificationDb notification, int itemId, CancellationToken cancellationToken)
+    public Task SetItemAsync(NotificationDb notification, int itemId, CancellationToken cancellationToken)
     {
         notification.ItemId = itemId;
+        return Task.CompletedTask;
     }
 
-    public async Task SetRuleAsync(NotificationDb notification, Guid ruleId, CancellationToken cancellationToken)
+    public Task SetRuleAsync(NotificationDb notification, Guid ruleId, CancellationToken cancellationToken)
     {
         notification.NotificationRuleId = ruleId;
+        return Task.CompletedTask;
     }
 
-    public async Task MarkAsProcessedAsync(
+    public Task MarkAsProcessedAsync(
         NotificationDb notification,
         DateTime processedOn,
         CancellationToken cancellationToken
@@ -96,9 +98,10 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
         };
 
         notification.History.Add(historyEntry);
+        return Task.CompletedTask;
     }
 
-    public async Task MarkAsDeliveredAsync(
+    public Task MarkAsDeliveredAsync(
         NotificationDb notification,
         DateTime deliveredOn,
         CancellationToken cancellationToken
@@ -115,39 +118,41 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
         };
 
         notification.History.Add(historyEntry);
+        return Task.CompletedTask;
     }
 
-    public async Task AddDeliveryAttemptAsync(
+    public Task AddDeliveryAttemptAsync(
         NotificationDb notification,
-        NotificationDeliveryAttempt attempt,
+        NotificationDeliveryAttempt notificationDeliveryAttempt,
         CancellationToken cancellationToken
     )
     {
-        var attemptDb = new NotificationDeliveryAttemptDb
+        var entity = new NotificationDeliveryAttemptDb
         {
             NotificationId = notification.Id,
-            AttemptedOn = attempt.On,
-            ChannelJson = JsonSerializer.Serialize(attempt.Channel),
-            Status = (int)attempt.Type,
-            FailureReason = attempt.FailureReason,
-            AttemptNumber = attempt.AttemptNumber,
-            NextRetryAfter = attempt.NextRetryAfter
+            AttemptedOn = notificationDeliveryAttempt.On,
+            ChannelJson = JsonSerializer.Serialize(notificationDeliveryAttempt.Channel),
+            Status = (int)notificationDeliveryAttempt.Type,
+            FailureReason = notificationDeliveryAttempt.FailureReason,
+            AttemptNumber = notificationDeliveryAttempt.AttemptNumber,
+            NextRetryAfter = notificationDeliveryAttempt.NextRetryAfter
         };
 
-        notification.DeliveryAttempts.Add(attemptDb);
+        notification.DeliveryAttempts.Add(entity);
+        return Task.CompletedTask;
     }
 
     public async Task<int> GetDeliveryAttemptCountAsync(
         NotificationDb notification,
-        NotificationChannel channel,
+        NotificationChannel notificationChannel,
         CancellationToken cancellationToken
     )
     {
-        var channelJson = JsonSerializer.Serialize(channel);
-
-        return await _context.DeliveryAttempts
+        var channelJson = JsonSerializer.Serialize(notificationChannel);
+        var retval = await dbContext.DeliveryAttempts
             .Where(x => x.NotificationId == notification.Id && x.ChannelJson == channelJson)
             .CountAsync(cancellationToken);
+        return retval;
     }
 
     public async Task<IEnumerable<NotificationDb>> GetUserNotificationsAsync(
@@ -155,9 +160,10 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
         DateTime? since = null,
         int pageSize = 20,
         int page = 0,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var query = _context.Notifications
+        var query = dbContext.Notifications
             .Where(x => x.UserId == userId);
 
         if (since.HasValue)
@@ -173,37 +179,28 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<NotificationDb?> GetNotificationByIdAsync(
-        Guid id,
-        string userId,
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Notifications
-            .Include(x => x.DeliveryAttempts)
-            .Include(x => x.History)
-            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, cancellationToken);
-    }
+    // public async Task<int> GetUnreadCountAsync(
+    //     string userId,
+    //     Guid? listId = null,
+    //     CancellationToken cancellationToken = default
+    // )
+    // {
+    //     var query = dbContext.Notifications
+    //         .Where(x => x.UserId == userId && x.ReadOn == null);
+    //
+    //     if (listId.HasValue)
+    //     {
+    //         query = query.Where(x => x.ListId == listId.Value);
+    //     }
+    //
+    //     return await query.CountAsync(cancellationToken);
+    // }
 
-    public async Task<int> GetUnreadCountAsync(
-        string userId,
-        Guid? listId = null,
-        CancellationToken cancellationToken = default)
-    {
-        var query = _context.Notifications
-            .Where(x => x.UserId == userId && x.ReadOn == null);
-
-        if (listId.HasValue)
-        {
-            query = query.Where(x => x.ListId == listId.Value);
-        }
-
-        return await query.CountAsync(cancellationToken);
-    }
-
-    public async Task MarkAsReadAsync(
+    public Task MarkAsReadAsync(
         NotificationDb notification,
         DateTime readOn,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         notification.ReadOn = readOn;
 
@@ -216,15 +213,17 @@ public class NotificationsStore : INotificationsStore<NotificationDb>
         };
 
         notification.History.Add(historyEntry);
+        return Task.CompletedTask;
     }
 
     public async Task MarkAllAsReadAsync(
         string userId,
         DateTime readOn,
         DateTime? before = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var query = _context.Notifications
+        var query = dbContext.Notifications
             .Where(x => x.UserId == userId && x.ReadOn == null);
 
         if (before.HasValue)

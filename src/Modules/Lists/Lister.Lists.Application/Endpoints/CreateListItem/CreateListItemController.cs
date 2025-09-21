@@ -12,12 +12,12 @@ namespace Lister.Lists.Application.Endpoints.CreateListItem;
 [Route("api/lists/")]
 public class CreateListItemController(IMediator mediator) : Controller
 {
-    [HttpPost("{listId}/items")]
+    [HttpPost("{listId:guid}/items")]
     [ProducesResponseType(typeof(ItemDetails), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(
-        string listId,
+        Guid listId,
         [FromBody] CreateListItemRequest request,
         CancellationToken cancellationToken
     )

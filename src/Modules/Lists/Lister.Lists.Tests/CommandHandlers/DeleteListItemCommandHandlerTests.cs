@@ -36,7 +36,7 @@ public class DeleteListItemCommandHandlerTests
     public void Handle_ThrowsArgumentNullException_WhenUserIdIsNull()
     {
         // Arrange
-        var command = new DeleteListItemCommand(Guid.NewGuid().ToString(), 0);
+        var command = new DeleteListItemCommand(Guid.NewGuid(), 0);
 
         // Act & Assert
         Assert.ThrowsAsync<ArgumentNullException>(async () => await _handler.Handle(command, CancellationToken.None));
@@ -46,7 +46,7 @@ public class DeleteListItemCommandHandlerTests
     public void Handle_ThrowsInvalidOperationException_WhenListDoesNotExist()
     {
         // Arrange
-        var command = new DeleteListItemCommand(Guid.NewGuid().ToString(), 0)
+        var command = new DeleteListItemCommand(Guid.NewGuid(), 0)
         {
             UserId = "user"
         };
@@ -63,7 +63,7 @@ public class DeleteListItemCommandHandlerTests
     public void Handle_ThrowsInvalidOperationException_WhenItemDoesNotExist()
     {
         // Arrange
-        var command = new DeleteListItemCommand(Guid.NewGuid().ToString(), 0)
+        var command = new DeleteListItemCommand(Guid.NewGuid(), 0)
         {
             UserId = "user"
         };
@@ -83,7 +83,7 @@ public class DeleteListItemCommandHandlerTests
     public async Task Handle_DeletesItemSuccessfully_WhenValidRequest()
     {
         // Arrange
-        var command = new DeleteListItemCommand(Guid.NewGuid().ToString(), 0)
+        var command = new DeleteListItemCommand(Guid.NewGuid(), 0)
         {
             UserId = "user"
         };

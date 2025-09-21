@@ -12,17 +12,17 @@ namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 [Route("api/lists/")]
 public class ConvertTextToListItemController(IMediator mediator) : Controller
 {
-    [HttpPost("{listId}/items/convert-text-to-list-item")]
+    [HttpPost("{listId:guid}/items/convert-text-to-list-item")]
     [ProducesResponseType(typeof(ListItem), 200)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(
-        string listId,
+        Guid listId,
         [FromBody] ConvertTextToListItemRequest request,
         CancellationToken cancellationToken
     )
     {
-        if (ModelState.IsValid is false)
+        if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }

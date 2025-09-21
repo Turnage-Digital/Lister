@@ -6,8 +6,7 @@ namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
 public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate
-)
-    : IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>
+) : IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>
     where TNotificationRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {

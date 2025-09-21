@@ -26,7 +26,6 @@ public class CreateNotificationRuleController(IMediator mediator) : Controller
         }
 
         CreateNotificationRuleCommand command = new(
-            request.UserId,
             request.ListId,
             request.Trigger,
             request.Channels,

@@ -1,25 +1,22 @@
-using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
+using Lister.Notifications.Domain.Services;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
 
-public class GetUnreadNotificationCountQueryHandler<TRule, TNotification> : IRequestHandler<GetUnreadNotificationCountQuery, int>
+public class GetUnreadNotificationCountQueryHandler<TRule, TNotification>(
+    INotificationQueryService service
+) : IRequestHandler<GetUnreadNotificationCountQuery, int>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    private readonly NotificationAggregate<TRule, TNotification> _aggregate;
-
-    public GetUnreadNotificationCountQueryHandler(NotificationAggregate<TRule, TNotification> aggregate)
-    {
-        _aggregate = aggregate;
-    }
-
     public async Task<int> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
     {
-        return await _aggregate.GetUnreadCountAsync(
+        var retval = await service.GetUnreadCountAsync(
             request.UserId,
             request.ListId,
             cancellationToken);
+
+        return retval;
     }
 }
