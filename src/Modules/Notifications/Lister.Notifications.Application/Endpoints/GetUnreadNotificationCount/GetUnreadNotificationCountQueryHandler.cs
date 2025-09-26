@@ -5,15 +5,15 @@ using MediatR;
 namespace Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
 
 public class GetUnreadNotificationCountQueryHandler<TRule, TNotification>(
-    INotificationQueryService service
+    IGetUnreadNotificationCount getter
 ) : IRequestHandler<GetUnreadNotificationCountQuery, int>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
     public async Task<int> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
     {
-        var retval = await service.GetUnreadCountAsync(
-            request.UserId,
+        var retval = await getter.GetAsync(
+            request.UserId!,
             request.ListId,
             cancellationToken);
 

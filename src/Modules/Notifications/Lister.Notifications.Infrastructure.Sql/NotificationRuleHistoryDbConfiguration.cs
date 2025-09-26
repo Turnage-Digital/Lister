@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lister.Notifications.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,8 +20,15 @@ public class NotificationRuleHistoryDbConfiguration : IEntityTypeConfiguration<N
             .HasMaxLength(450)
             .IsRequired();
 
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         builder.Property(e => e.Bag)
-            .HasColumnType("JSON");
+            .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!);
 
         builder.HasOne(e => e.NotificationRule)
             .WithMany(e => e.History)

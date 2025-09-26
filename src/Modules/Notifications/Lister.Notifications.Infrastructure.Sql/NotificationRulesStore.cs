@@ -89,6 +89,7 @@ public class NotificationRulesStore(NotificationsDbContext context)
     )
     {
         rule.TriggerJson = JsonSerializer.Serialize(trigger);
+        rule.TriggerType = (int)trigger.Type;
         return Task.CompletedTask;
     }
 

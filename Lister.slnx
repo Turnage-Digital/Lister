@@ -7,6 +7,7 @@
     <File Path="README.md" />
     <File Path="nuget.config" />
     <File Path="ef-reset.ps1" />
+    <File Path="ARCHITECTURE.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\Lister.App.Server\Lister.App.Server.csproj" Type="Classic C#" />

@@ -1,19 +1,18 @@
-using Lister.Notifications.Domain.Views;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
+namespace Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
 
 [ApiController]
 [Authorize]
 [Tags("Notifications")]
-[Route("api/notifications/rules")]
-public class GetUserNotificationRulesController(IMediator mediator) : Controller
+[Route("api/notifications/unreadCount")]
+public class GetUnreadNotificationCountController(IMediator mediator) : Controller
 {
     [HttpGet]
-    [ProducesResponseType(typeof(NotificationRule[]), Status200OK)]
+    [ProducesResponseType(typeof(int), Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(
@@ -26,7 +25,7 @@ public class GetUserNotificationRulesController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        GetUserNotificationRulesQuery query = new() { ListId = listId };
+        var query = new GetUnreadNotificationCountQuery { ListId = listId };
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }

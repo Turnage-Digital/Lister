@@ -1,9 +1,8 @@
-using MediatR;
+using Lister.Core.Application;
 
 namespace Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
 
-public class MarkNotificationAsReadCommand : IRequest
+public record MarkNotificationAsReadCommand : RequestBase
 {
     public Guid NotificationId { get; set; }
-    public string UserId { get; set; } = string.Empty;
 }

@@ -23,6 +23,7 @@ public class NotificationRuleDb : IWritableNotificationRule
     public string TriggerJson { get; set; } = null!;
     public string ChannelsJson { get; set; } = null!;
     public string ScheduleJson { get; set; } = null!;
+    public int TriggerType { get; set; }
     public bool IsActive { get; set; } = true;
 
     public Guid? Id { get; set; }

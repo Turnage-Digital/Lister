@@ -4,21 +4,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
+namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 
 [ApiController]
 [Authorize]
 [Tags("Notifications")]
-[Route("api/notifications/rules")]
-public class GetUserNotificationRulesController(IMediator mediator) : Controller
+[Route("api/notifications/{notificationId}")]
+public class GetNotificationDetailsController(IMediator mediator) : Controller
 {
     [HttpGet]
-    [ProducesResponseType(typeof(NotificationRule[]), Status200OK)]
+    [ProducesResponseType(typeof(NotificationDetails), Status200OK)]
+    [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(
-        [FromQuery] Guid? listId = null,
-        CancellationToken cancellationToken = default
+        [FromRoute] Guid notificationId,
+        CancellationToken cancellationToken
     )
     {
         if (!ModelState.IsValid)
@@ -26,8 +27,13 @@ public class GetUserNotificationRulesController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        GetUserNotificationRulesQuery query = new() { ListId = listId };
+        var query = new GetNotificationDetailsQuery { NotificationId = notificationId };
         var result = await mediator.Send(query, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
         return Ok(result);
     }
 }

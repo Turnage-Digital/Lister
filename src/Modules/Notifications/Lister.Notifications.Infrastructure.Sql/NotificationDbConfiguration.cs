@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lister.Notifications.Infrastructure.Sql.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,8 +23,15 @@ public class NotificationDbConfiguration : IEntityTypeConfiguration<Notification
         builder.Property(e => e.ListId)
             .IsRequired();
 
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
         builder.Property(e => e.ContentJson)
             .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!)
             .IsRequired();
 
         builder.HasIndex(e => e.UserId);

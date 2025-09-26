@@ -10,7 +10,7 @@ namespace Lister.Notifications.Application.EventHandlers.ListItemDeleted;
 
 public class NotifyEventHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate,
-    INotificationRuleQueryService queryService
+    IGetActiveNotificationRules queryService
 )
     : INotificationHandler<ListItemDeletedIntegrationEvent>
     where TNotificationRule : class, IWritableNotificationRule
@@ -18,7 +18,7 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
 {
     public async Task Handle(ListItemDeletedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var rules = await queryService.GetActiveRulesForListAsync(
+        var rules = await queryService.GetAsync(
             notification.ListId,
             TriggerType.ItemDeleted,
             cancellationToken);

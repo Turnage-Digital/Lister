@@ -1,13 +1,23 @@
 using System.Text.Json.Serialization;
+using Lister.Notifications.Domain.ValueObjects;
 
 namespace Lister.Notifications.Domain.Views;
 
 public class NotificationRule : IReadOnlyNotificationRule
 {
-    public object Trigger { get; set; } = null!;
-    public object[] Channels { get; set; } = null!;
-    public object Schedule { get; set; } = null!;
+    [JsonPropertyName("trigger")]
+    public NotificationTrigger Trigger { get; set; } = null!;
+
+    [JsonPropertyName("channels")]
+    public NotificationChannel[] Channels { get; set; } = null!;
+
+    [JsonPropertyName("schedule")]
+    public NotificationSchedule Schedule { get; set; } = null!;
+
+    [JsonPropertyName("isActive")]
     public bool IsActive { get; set; }
+
+    [JsonPropertyName("templateId")]
     public string? TemplateId { get; set; }
 
     [JsonPropertyName("id")]
