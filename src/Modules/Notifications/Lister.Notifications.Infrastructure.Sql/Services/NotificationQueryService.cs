@@ -59,13 +59,4 @@ public class NotificationQueryService(NotificationsDbContext context) : INotific
 
         return await query.CountAsync(cancellationToken);
     }
-
-    public async Task<IWritableNotification?> GetByIdForUpdateAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await context.Notifications
-            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
-    }
 }

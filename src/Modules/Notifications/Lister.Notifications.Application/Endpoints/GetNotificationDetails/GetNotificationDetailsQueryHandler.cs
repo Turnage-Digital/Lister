@@ -35,10 +35,10 @@ public class GetNotificationDetailsQueryHandler<TRule, TNotification>(
             ItemId = notification.ItemId,
             Title = "Notification", // TODO: Extract from content
             Body = "Notification body", // TODO: Extract from content
-            CreatedOn = notification.CreatedOn,
-            ProcessedOn = notification.ProcessedOn,
-            DeliveredOn = notification.DeliveredOn,
-            ReadOn = notification.ReadOn,
+            // CreatedOn = notification.CreatedOn,
+            // ProcessedOn = notification.ProcessedOn,
+            // DeliveredOn = notification.DeliveredOn,
+            // ReadOn = notification.ReadOn,
             Metadata = null, // TODO: Add metadata from content
             DeliveryAttempts = [] // TODO: Load delivery attempts
         };

@@ -16,13 +16,13 @@ public class NotificationDb : IWritableNotification
         new HashSet<NotificationDeliveryAttemptDb>();
 
     public ICollection<NotificationHistoryEntryDb> History { get; set; } = new HashSet<NotificationHistoryEntryDb>();
+    public DateTime CreatedOn { get; set; }
+    public DateTime? ProcessedOn { get; set; }
+    public DateTime? DeliveredOn { get; set; }
+    public DateTime? ReadOn { get; set; }
     public Guid? Id { get; set; }
     public Guid? NotificationRuleId { get; set; }
     public string UserId { get; set; } = null!;
     public Guid ListId { get; set; }
     public int? ItemId { get; set; }
-    public DateTime CreatedOn { get; set; }
-    public DateTime? ProcessedOn { get; set; }
-    public DateTime? DeliveredOn { get; set; }
-    public DateTime? ReadOn { get; set; }
 }

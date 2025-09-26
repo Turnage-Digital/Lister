@@ -7,8 +7,4 @@ public interface INotification
     string UserId { get; }
     Guid ListId { get; }
     int? ItemId { get; }
-    DateTime CreatedOn { get; }
-    DateTime? ProcessedOn { get; }
-    DateTime? DeliveredOn { get; }
-    DateTime? ReadOn { get; }
 }

@@ -23,7 +23,7 @@ public class CreateListCommandHandler<TList, TItem>(
         {
             throw new ArgumentNullException(nameof(request), "request.UserId cannot be null");
         }
-        
+
         var created = await listsAggregate.CreateListAsync(
             request.UserId,
             request.Name,

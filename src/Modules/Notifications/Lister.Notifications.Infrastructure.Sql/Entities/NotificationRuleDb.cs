@@ -13,11 +13,6 @@ public class NotificationRuleDb : IWritableNotificationRule
     public ICollection<NotificationRuleHistoryEntryDb> History { get; set; } =
         new HashSet<NotificationRuleHistoryEntryDb>();
 
-    public Guid? Id { get; set; }
-    public string UserId { get; set; } = null!;
-    public Guid ListId { get; set; }
-    public bool IsActive { get; set; } = true;
-
     public string? TemplateId { get; set; }
     public DateTime CreatedOn { get; set; }
     public string CreatedBy { get; set; } = null!;
@@ -28,4 +23,9 @@ public class NotificationRuleDb : IWritableNotificationRule
     public string TriggerJson { get; set; } = null!;
     public string ChannelsJson { get; set; } = null!;
     public string ScheduleJson { get; set; } = null!;
+    public bool IsActive { get; set; } = true;
+
+    public Guid? Id { get; set; }
+    public string UserId { get; set; } = null!;
+    public Guid ListId { get; set; }
 }

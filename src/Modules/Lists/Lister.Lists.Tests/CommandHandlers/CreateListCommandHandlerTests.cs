@@ -44,7 +44,7 @@ public class CreateListCommandHandlerTests
         // Act & Assert
         Assert.ThrowsAsync<ArgumentNullException>(async () => await _handler.Handle(command, CancellationToken.None));
     }
- 
+
     [Test]
     public async Task Handle_CreatesListSuccessfully_WhenValidRequest()
     {

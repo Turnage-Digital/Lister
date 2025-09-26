@@ -27,14 +27,14 @@ public class GetUserNotificationsQueryHandler<TRule, TNotification>(
 
         if (request.Unread.HasValue)
         {
-            if (request.Unread.Value)
-            {
-                filteredNotifications = filteredNotifications.Where(n => !n.ReadOn.HasValue);
-            }
-            else
-            {
-                filteredNotifications = filteredNotifications.Where(n => n.ReadOn.HasValue);
-            }
+            // if (request.Unread.Value)
+            // {
+            //     filteredNotifications = filteredNotifications.Where(n => !n.ReadOn.HasValue);
+            // }
+            // else
+            // {
+            //     filteredNotifications = filteredNotifications.Where(n => n.ReadOn.HasValue);
+            // }
         }
 
         if (request.ListId.HasValue)
@@ -60,10 +60,10 @@ public class GetUserNotificationsQueryHandler<TRule, TNotification>(
                     ItemId = n.ItemId,
                     Title = "Notification", // TODO: Extract from content
                     Body = "Notification body", // TODO: Extract from content  
-                    CreatedOn = n.CreatedOn,
-                    ProcessedOn = n.ProcessedOn,
-                    DeliveredOn = n.DeliveredOn,
-                    ReadOn = n.ReadOn,
+                    // CreatedOn = n.CreatedOn,
+                    // ProcessedOn = n.ProcessedOn,
+                    // DeliveredOn = n.DeliveredOn,
+                    // ReadOn = n.ReadOn,
                     Metadata = null // TODO: Add metadata from content
                 })
                 .ToList(),

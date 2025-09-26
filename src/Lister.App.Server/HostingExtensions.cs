@@ -13,13 +13,15 @@ using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
+using Lister.Notifications.Domain;
+using Lister.Notifications.Infrastructure.Sql;
+using Lister.Notifications.Infrastructure.Sql.Entities;
 using Lister.Users.Application.Behaviors;
 using Lister.Users.Domain.Entities;
 using Lister.Users.Domain.Services;
@@ -202,6 +204,13 @@ internal static class HostingExtensions
         services.AddScoped<IGetPagedList, PagedListGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();
 
+        /* Notifications */
+        var notificationsDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.NotificationsDbContextMigrationAssemblyName;
+        services.AddDbContext<NotificationsDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(notificationsDbContextMigrationAssemblyName)));
+        services.AddScoped<INotificationsUnitOfWork<NotificationRuleDb, NotificationDb>, NotificationsUnitOfWork>();
+
         /* Automapper */
         services.AddAutoMapper(config =>
             config.AddProfile<ListsMappingProfile>());
@@ -212,7 +221,6 @@ internal static class HostingExtensions
     private static IServiceCollection AddDomain(this IServiceCollection services)
     {
         services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
-        services.AddMediatR(config => { config.RegisterServicesFromAssemblyContaining<ListCreatedEvent>(); });
         return services;
     }
 

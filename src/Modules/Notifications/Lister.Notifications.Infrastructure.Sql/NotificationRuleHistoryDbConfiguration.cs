@@ -10,21 +10,21 @@ public class NotificationRuleHistoryDbConfiguration : IEntityTypeConfiguration<N
     {
         builder.ToTable("NotificationRuleHistory");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.By)
+        builder.Property(e => e.By)
             .HasMaxLength(450)
             .IsRequired();
 
-        builder.Property(x => x.Bag)
+        builder.Property(e => e.Bag)
             .HasColumnType("JSON");
 
-        builder.HasOne(x => x.NotificationRule)
-            .WithMany(x => x.History)
-            .HasForeignKey(x => x.NotificationRuleId)
+        builder.HasOne(e => e.NotificationRule)
+            .WithMany(e => e.History)
+            .HasForeignKey(e => e.NotificationRuleId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

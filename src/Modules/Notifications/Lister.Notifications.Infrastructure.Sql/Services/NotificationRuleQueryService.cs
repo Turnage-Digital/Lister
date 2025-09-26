@@ -32,10 +32,6 @@ public class NotificationRuleQueryService(NotificationsDbContext context) : INot
             ListId = rule.ListId,
             IsActive = rule.IsActive,
             TemplateId = rule.TemplateId,
-            // CreatedOn = rule.CreatedOn,
-            // CreatedBy = rule.CreatedBy,
-            // UpdatedOn = rule.UpdatedOn,
-            // UpdatedBy = rule.UpdatedBy,
             // TriggerJson = rule.TriggerJson,
             // ChannelsJson = rule.ChannelsJson,
             // ScheduleJson = rule.ScheduleJson,
@@ -62,14 +58,5 @@ public class NotificationRuleQueryService(NotificationsDbContext context) : INot
         }
 
         return await query.Cast<IWritableNotificationRule>().ToListAsync(cancellationToken);
-    }
-
-    public async Task<IWritableNotificationRule?> GetByIdForUpdateAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await context.NotificationRules
-            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
     }
 }

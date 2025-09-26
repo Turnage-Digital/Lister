@@ -10,19 +10,19 @@ public class NotificationDeliveryAttemptDbConfiguration : IEntityTypeConfigurati
     {
         builder.ToTable("NotificationDeliveryAttempts");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.ChannelJson)
+        builder.Property(e => e.ChannelJson)
             .HasColumnType("JSON")
             .IsRequired();
 
-        builder.Property(x => x.FailureReason)
+        builder.Property(e => e.FailureReason)
             .HasMaxLength(1000);
 
-        builder.HasIndex(x => x.NotificationId);
-        builder.HasIndex(x => x.AttemptedOn);
+        builder.HasIndex(e => e.NotificationId);
+        builder.HasIndex(e => e.AttemptedOn);
     }
 }

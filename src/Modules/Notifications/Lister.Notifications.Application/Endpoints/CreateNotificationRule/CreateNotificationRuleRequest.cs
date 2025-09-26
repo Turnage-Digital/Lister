@@ -4,7 +4,7 @@ namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
 public class CreateNotificationRuleRequest
 {
-    public Guid ListId { get; set; } 
+    public Guid ListId { get; set; }
     public NotificationTrigger Trigger { get; set; } = null!;
     public NotificationChannel[] Channels { get; set; } = null!;
     public NotificationSchedule Schedule { get; set; } = null!;
