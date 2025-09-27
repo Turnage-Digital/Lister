@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Mcp.Server.Services;
+using Lister.Notifications.Domain.ValueObjects;
 using ModelContextProtocol.Server;
 using Serilog;
 
@@ -98,6 +99,372 @@ public class ListerTools
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to get schema with {Request}", new { listId });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Read the change feed SSE stream and return recent events")]
+    public static async Task<string> ReadChangeFeed(
+        ListerApiClient apiClient,
+        [Description("Maximum events to read (default 10)")] int maxEvents = 10,
+        [Description("Timeout in seconds (default 5)")] int timeoutSeconds = 5,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("ReadChangeFeed called with {Request}", new { maxEvents, timeoutSeconds });
+        try
+        {
+            var evts = await apiClient.ReadChangeFeedAsync(maxEvents, TimeSpan.FromSeconds(timeoutSeconds), cancellationToken);
+            return JsonSerializer.Serialize(new { success = true, events = evts }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to read change feed");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Update a notification rule")]
+    public static async Task<string> UpdateNotificationRule(
+        ListerApiClient apiClient,
+        [Description("Rule ID")] string ruleId,
+        [Description("Trigger JSON")] string triggerJson,
+        [Description("Channels JSON array")] string channelsJson,
+        [Description("Schedule JSON")] string scheduleJson,
+        [Description("Optional template ID")] string? templateId = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("UpdateNotificationRule called with {Request}", new { ruleId });
+        try
+        {
+            if (!Guid.TryParse(ruleId, out var rid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid rule ID" }, JsonOptions);
+            }
+
+            var trigger = JsonSerializer.Deserialize<NotificationTrigger>(triggerJson, JsonOptions)
+                          ?? NotificationTrigger.ItemCreated();
+            var channels = JsonSerializer.Deserialize<NotificationChannel[]>(channelsJson, JsonOptions)
+                           ?? new[] { NotificationChannel.InApp() };
+            var schedule = JsonSerializer.Deserialize<NotificationSchedule>(scheduleJson, JsonOptions)
+                           ?? NotificationSchedule.Immediate();
+
+            await apiClient.UpdateNotificationRuleAsync(rid, trigger, channels, schedule, templateId,
+                cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to update notification rule");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Delete a notification rule")]
+    public static async Task<string> DeleteNotificationRule(
+        ListerApiClient apiClient,
+        [Description("Rule ID")] string ruleId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("DeleteNotificationRule called with {Request}", new { ruleId });
+        try
+        {
+            if (!Guid.TryParse(ruleId, out var rid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid rule ID" }, JsonOptions);
+            }
+
+            await apiClient.DeleteNotificationRuleAsync(rid, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to delete notification rule");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Create a notification rule (trigger, channels, schedule)")]
+    public static async Task<string> CreateNotificationRule(
+        ListerApiClient apiClient,
+        [Description("The list ID the rule applies to")]
+        string listId,
+        [Description("Trigger JSON (e.g., {\"type\":\"ItemCreated\"})")]
+        string triggerJson,
+        [Description("Channels JSON array (e.g., [{\"type\":\"InApp\"},{\"type\":\"Email\",\"address\":\"a@b.com\"}])")]
+        string channelsJson,
+        [Description("Schedule JSON (e.g., {\"type\":\"Immediate\"})")]
+        string scheduleJson,
+        [Description("Optional template ID")] string? templateId = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("CreateNotificationRule called with {Request}", new { listId });
+        try
+        {
+            if (!Guid.TryParse(listId, out var lid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID" }, JsonOptions);
+            }
+
+            var trigger = JsonSerializer.Deserialize<NotificationTrigger>(triggerJson, JsonOptions)
+                          ?? NotificationTrigger.ItemCreated();
+            var channels = JsonSerializer.Deserialize<NotificationChannel[]>(channelsJson, JsonOptions)
+                           ?? new[] { NotificationChannel.InApp() };
+            var schedule = JsonSerializer.Deserialize<NotificationSchedule>(scheduleJson, JsonOptions)
+                           ?? NotificationSchedule.Immediate();
+
+            var rule = await apiClient.CreateNotificationRuleAsync(lid, trigger, channels, schedule, templateId,
+                cancellationToken);
+            return JsonSerializer.Serialize(new { success = true, rule }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to create notification rule");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Get configured status transitions for a list")]
+    public static async Task<string> GetStatusTransitions(
+        ListerApiClient apiClient,
+        [Description("The ID of the list")] string listId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("GetStatusTransitions called with {Request}", new { listId });
+        try
+        {
+            if (!Guid.TryParse(listId, out var guid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
+            }
+
+            var transitions = await apiClient.GetStatusTransitionsAsync(guid, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true, transitions }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to get status transitions");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Set status transitions for a list")]
+    public static async Task<string> SetStatusTransitions(
+        ListerApiClient apiClient,
+        [Description("The ID of the list")] string listId,
+        [Description("JSON array of transitions: [{from, allowedNext: [..]}]")]
+        string transitionsJson,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("SetStatusTransitions called with {Request}", new { listId });
+        try
+        {
+            if (!Guid.TryParse(listId, out var guid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
+            }
+
+            var transitions = JsonSerializer.Deserialize<StatusTransition[]>(transitionsJson, JsonOptions) ?? [];
+            await apiClient.SetStatusTransitionsAsync(guid, transitions, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to set status transitions");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Update a list item's bag (validates schema + transitions)")]
+    public static async Task<string> UpdateListItem(
+        ListerApiClient apiClient,
+        [Description("The ID of the list")] string listId,
+        [Description("The ID of the item")] int itemId,
+        [Description("JSON object with updated bag")]
+        string bagJson,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("UpdateListItem called with {Request}", new { listId, itemId });
+        try
+        {
+            if (!Guid.TryParse(listId, out var guid))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
+            }
+
+            var bag = JsonSerializer.Deserialize<Dictionary<string, object?>>(bagJson, JsonOptions) ??
+                      new Dictionary<string, object?>();
+            await apiClient.UpdateListItemAsync(guid, itemId, bag, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to update list item");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    // Notifications
+    [McpServerTool]
+    [Description("Get notifications for current user (filterable)")]
+    public static async Task<string> GetNotifications(
+        ListerApiClient apiClient,
+        [Description("ISO-8601 date to filter since")]
+        string? since = null,
+        [Description("Only unread if true")] bool? unread = null,
+        [Description("Filter by list ID")] string? listId = null,
+        [Description("Page size")] int pageSize = 20,
+        [Description("Page index (0-based)")] int page = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("GetNotifications called");
+        try
+        {
+            DateTime? sinceDt = null;
+            if (!string.IsNullOrEmpty(since) && DateTime.TryParse(since, out var d))
+            {
+                sinceDt = d;
+            }
+
+            Guid? listGuid = null;
+            if (!string.IsNullOrEmpty(listId) && Guid.TryParse(listId, out var lg))
+            {
+                listGuid = lg;
+            }
+
+            var pageData = await apiClient.GetUserNotificationsAsync(sinceDt, unread, listGuid, pageSize, page,
+                cancellationToken);
+            return JsonSerializer.Serialize(new { success = true, page = pageData }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to get notifications");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Get notification details by ID")]
+    public static async Task<string> GetNotificationDetails(
+        ListerApiClient apiClient,
+        [Description("Notification ID")] string notificationId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("GetNotificationDetails called with {Request}", new { notificationId });
+        try
+        {
+            if (!Guid.TryParse(notificationId, out var id))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid ID" }, JsonOptions);
+            }
+
+            var details = await apiClient.GetNotificationDetailsAsync(id, cancellationToken);
+            if (details is null)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Not found" }, JsonOptions);
+            }
+
+            return JsonSerializer.Serialize(new { success = true, details }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to get notification details");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Get unread notification count (optionally by list)")]
+    public static async Task<string> GetUnreadCount(
+        ListerApiClient apiClient,
+        [Description("Optional list ID")] string? listId = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("GetUnreadCount called");
+        try
+        {
+            Guid? lg = null;
+            if (!string.IsNullOrEmpty(listId) && Guid.TryParse(listId, out var g))
+            {
+                lg = g;
+            }
+
+            var count = await apiClient.GetUnreadNotificationCountAsync(lg, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true, count }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to get unread count");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Mark a notification as read")]
+    public static async Task<string> MarkNotificationAsRead(
+        ListerApiClient apiClient,
+        [Description("Notification ID")] string notificationId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("MarkNotificationAsRead called with {Request}", new { notificationId });
+        try
+        {
+            if (!Guid.TryParse(notificationId, out var id))
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Invalid ID" }, JsonOptions);
+            }
+
+            await apiClient.MarkNotificationAsReadAsync(id, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to mark notification as read");
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
+        }
+    }
+
+    [McpServerTool]
+    [Description("Mark all notifications as read (optional before date)")]
+    public static async Task<string> MarkAllNotificationsAsRead(
+        ListerApiClient apiClient,
+        [Description("Optional ISO-8601 cutoff")]
+        string? before = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        Log.Information("MarkAllNotificationsAsRead called");
+        try
+        {
+            DateTime? cutoff = null;
+            if (!string.IsNullOrEmpty(before) && DateTime.TryParse(before, out var d))
+            {
+                cutoff = d;
+            }
+
+            await apiClient.MarkAllNotificationsAsReadAsync(cutoff, cancellationToken);
+            return JsonSerializer.Serialize(new { success = true }, JsonOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to mark all notifications as read");
             return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
         }
     }

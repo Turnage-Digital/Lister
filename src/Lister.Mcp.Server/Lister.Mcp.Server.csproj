@@ -20,6 +20,7 @@
         <ProjectReference Include="../Modules/Core/Lister.Core.Domain/Lister.Core.Domain.csproj"/>
         <ProjectReference Include="../Modules/Lists/Lister.Lists.Domain/Lister.Lists.Domain.csproj"/>
         <ProjectReference Include="../Modules/Lists/Lister.Lists.Application/Lister.Lists.Application.csproj"/>
+        <ProjectReference Include="../Modules/Notifications/Lister.Notifications.Domain/Lister.Notifications.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

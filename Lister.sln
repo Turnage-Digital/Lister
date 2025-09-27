@@ -56,6 +56,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.App.Server.Tests", "src\Lister.App.Server.Tests\Lister.App.Server.Tests.csproj", "{28A3E6A2-B34E-4CF0-AB75-C5732984F921}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{9B9CDC44-D7F4-4936-971E-49EF89459CB2}"
+	ProjectSection(SolutionItems) = preProject
+		ARCHITECTURE.md = ARCHITECTURE.md
+		docker-compose.yml = docker-compose.yml
+		ef-reset.ps1 = ef-reset.ps1
+		global.json = global.json
+		LICENSE = LICENSE
+		nuget.config = nuget.config
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
