@@ -1,12 +1,15 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Lister.App.Server.Integration;
 using Lister.App.Server.Services;
 using Lister.Core.Application.Behaviors;
+using Lister.Core.Domain;
 using Lister.Core.Domain.IntegrationEvents;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
+using Lister.Core.Infrastructure.Sql.Outbox;
 using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
@@ -30,6 +33,7 @@ using Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
 using Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
 using Lister.Notifications.Application.EventHandlers.ListItemCreated;
 using Lister.Notifications.Domain;
+using Lister.Notifications.Domain.Events;
 using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Domain.Views;
 using Lister.Notifications.Infrastructure.Sql;
@@ -61,6 +65,7 @@ internal static class HostingExtensions
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSingleton<ChangeFeed>();
 
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
@@ -200,6 +205,9 @@ internal static class HostingExtensions
             configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
         services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
+        services.AddScoped<IDomainEventQueue, DomainEventQueue>();
+        services.AddDbContext<OutboxDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(OutboxDbContext).Assembly.FullName)));
 
         /* Users */
         var usersDbContextMigrationAssemblyName =
@@ -233,8 +241,6 @@ internal static class HostingExtensions
         services.AddScoped<IGetUnreadNotificationCount, UnreadNotificationCountGetter>();
         services.AddScoped<IGetActiveNotificationRules, ActiveNotificationRulesGetter>();
         services.AddScoped<IGetPendingNotifications, PendingNotificationsGetter>();
-        services.AddScoped<IGetNotificationDetails, NotificationDetailsGetter>();
-        services.AddScoped<IGetUserNotifications, UserNotificationsGetter>();
 
         /* Automapper */
         services.AddAutoMapper(config =>
@@ -274,6 +280,14 @@ internal static class HostingExtensions
             typeof(DeleteListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommand>),
+            typeof(Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.GetStatusTransitions.GetStatusTransitionsQuery, Lister.Lists.Domain.ValueObjects.StatusTransition[]>),
+            typeof(Lister.Lists.Application.Endpoints.GetStatusTransitions.GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.SetStatusTransitions.SetStatusTransitionsCommand>),
+            typeof(Lister.Lists.Application.Endpoints.SetStatusTransitions.SetStatusTransitionsCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommand>),
+            typeof(Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommandHandler<ListDb, ItemDb>));
 
         // Notifications - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),
@@ -295,19 +309,36 @@ internal static class HostingExtensions
 
         // Notifications integration event handlers (use namespace qualifier as requested)
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
-            NotifyEventHandler<NotificationRuleDb,
-                NotificationDb>>();
+            NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
         services
             .AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, Notifications.Application.EventHandlers.
-                ListItemDeleted.NotifyEventHandler<NotificationRuleDb,
-                    NotificationDb>>();
+                ListItemDeleted.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
         services
             .AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, Notifications.Application.EventHandlers.
-                ListDeleted.NotifyEventHandler<NotificationRuleDb,
-                    NotificationDb>>();
+                ListDeleted.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
 
-        // Background delivery worker
+        // Change feed event stream handlers
+        services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedStreamHandler>();
+        services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedStreamHandler>();
+        services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedStreamHandler>();
+
+        // Outbox handlers (persist events for durability)
+        services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationCreatedEvent>, NotificationCreatedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationProcessedEvent>, NotificationProcessedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationReadEvent>, NotificationReadOutboxHandler>();
+        services.AddScoped<INotificationHandler<AllNotificationsReadEvent>, AllNotificationsReadOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationDeliveryAttemptedEvent>,
+            NotificationDeliveryAttemptedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationRuleCreatedEvent>, NotificationRuleCreatedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationRuleUpdatedEvent>, NotificationRuleUpdatedOutboxHandler>();
+        services.AddScoped<INotificationHandler<NotificationRuleDeletedEvent>, NotificationRuleDeletedOutboxHandler>();
+
+        // Background workers
         services.AddHostedService<NotificationDeliveryService>();
+        services.AddHostedService<OutboxDispatcher>();
         return services;
     }
 

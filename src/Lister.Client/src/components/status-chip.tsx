@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import {
-  CheckCircle,
-  Schedule,
   Cancel,
-  RadioButtonUnchecked,
+  CheckCircle,
   Flag,
+  RadioButtonUnchecked,
+  Schedule,
 } from "@mui/icons-material";
-import { Chip, darken, lighten, alpha, useTheme } from "@mui/material";
+import { alpha, Chip, darken, useTheme } from "@mui/material";
 
 import { Status } from "../models";
 

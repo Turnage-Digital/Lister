@@ -1,15 +1,15 @@
 using System.Text.RegularExpressions;
+using Lister.Core.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
 using Lister.Notifications.Domain.Events;
 using Lister.Notifications.Domain.ValueObjects;
-using MediatR;
 
 namespace Lister.Notifications.Domain;
 
 public class NotificationAggregate<TRule, TNotification>(
     INotificationsUnitOfWork<TRule, TNotification> unitOfWork,
-    IMediator mediator
+    IDomainEventQueue events
 )
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
@@ -44,9 +44,8 @@ public class NotificationAggregate<TRule, TNotification>(
         }
 
         await unitOfWork.RulesStore.CreateAsync(retval, cancellationToken);
+        events.Enqueue(new NotificationRuleCreatedEvent(retval, userId), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(new NotificationRuleCreatedEvent(retval, userId), cancellationToken);
 
         return retval;
     }
@@ -82,9 +81,8 @@ public class NotificationAggregate<TRule, TNotification>(
         }
 
         await unitOfWork.RulesStore.UpdateAsync(rule, updatedBy, cancellationToken);
+        events.Enqueue(new NotificationRuleUpdatedEvent(rule, updatedBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(new NotificationRuleUpdatedEvent(rule, updatedBy), cancellationToken);
     }
 
     public async Task DeleteNotificationRuleAsync(
@@ -94,9 +92,8 @@ public class NotificationAggregate<TRule, TNotification>(
     )
     {
         await unitOfWork.RulesStore.DeleteAsync(rule, deletedBy, cancellationToken);
+        events.Enqueue(new NotificationRuleDeletedEvent(rule, deletedBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(new NotificationRuleDeletedEvent(rule, deletedBy), cancellationToken);
     }
 
     public async Task<TNotification?> GetNotificationByIdAsync(
@@ -141,9 +138,8 @@ public class NotificationAggregate<TRule, TNotification>(
         }
 
         await unitOfWork.NotificationsStore.CreateAsync(retval, cancellationToken);
+        events.Enqueue(new NotificationCreatedEvent(retval, userId), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(new NotificationCreatedEvent(retval, userId), cancellationToken);
 
         return retval;
     }
@@ -155,12 +151,8 @@ public class NotificationAggregate<TRule, TNotification>(
     {
         await unitOfWork.NotificationsStore.MarkAsProcessedAsync(
             notification, DateTime.UtcNow, cancellationToken);
-
+        events.Enqueue(new NotificationProcessedEvent(notification), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(
-            new NotificationProcessedEvent(notification),
-            cancellationToken);
     }
 
     public async Task RecordDeliveryAttemptAsync(
@@ -191,10 +183,8 @@ public class NotificationAggregate<TRule, TNotification>(
                 notification, DateTime.UtcNow, cancellationToken);
         }
 
+        events.Enqueue(new NotificationDeliveryAttemptedEvent(notification, channel, status), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(new NotificationDeliveryAttemptedEvent(notification, channel, status),
-            cancellationToken);
     }
 
     public async Task MarkNotificationAsReadAsync(
@@ -205,11 +195,8 @@ public class NotificationAggregate<TRule, TNotification>(
     {
         await unitOfWork.NotificationsStore.MarkAsReadAsync(
             notification, readOn, cancellationToken);
+        events.Enqueue(new NotificationReadEvent(notification), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(
-            new NotificationReadEvent(notification),
-            cancellationToken);
     }
 
     public async Task MarkAllNotificationsAsReadAsync(
@@ -221,11 +208,8 @@ public class NotificationAggregate<TRule, TNotification>(
     {
         await unitOfWork.NotificationsStore.MarkAllAsReadAsync(
             userId, readOn, before, cancellationToken);
+        events.Enqueue(new AllNotificationsReadEvent(userId, readOn, before), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await mediator.Publish(
-            new AllNotificationsReadEvent(userId, readOn, before),
-            cancellationToken);
     }
 
     // Rule Evaluation

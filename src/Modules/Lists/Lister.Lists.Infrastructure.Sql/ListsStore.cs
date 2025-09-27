@@ -18,6 +18,7 @@ public class ListsStore(ListsDbContext dbContext)
         var retval = await dbContext.Lists
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
+            .Include(l => l.StatusTransitions)
             .Where(l => l.Id == id)
             .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
@@ -29,6 +30,7 @@ public class ListsStore(ListsDbContext dbContext)
         var retval = await dbContext.Lists
             .Include(l => l.Columns)
             .Include(l => l.Statuses)
+            .Include(l => l.StatusTransitions)
             .Where(l => l.Name == name)
             .AsSplitQuery()
             .SingleOrDefaultAsync(cancellationToken);
@@ -76,7 +78,17 @@ public class ListsStore(ListsDbContext dbContext)
     )
     {
         listDb.Columns = columns
-            .Select(pd => new ColumnDb { Name = pd.Name, Type = pd.Type, ListDb = listDb })
+            .Select(pd => new ColumnDb
+            {
+                Name = pd.Name,
+                Type = pd.Type,
+                Required = pd.Required,
+                AllowedValues = pd.AllowedValues,
+                MinNumber = pd.MinNumber,
+                MaxNumber = pd.MaxNumber,
+                Regex = pd.Regex,
+                ListDb = listDb
+            })
             .ToList();
         return Task.CompletedTask;
     }
@@ -84,10 +96,15 @@ public class ListsStore(ListsDbContext dbContext)
     public Task<Column[]> GetColumnsAsync(ListDb listDb, CancellationToken cancellationToken)
     {
         var retval = listDb.Columns
-            .Select(pd => new Column { Name = pd.Name, Type = pd.Type })
+            .Select(pd => new Column
+            {
+                Name = pd.Name, Type = pd.Type, Required = pd.Required, AllowedValues = pd.AllowedValues,
+                MinNumber = pd.MinNumber, MaxNumber = pd.MaxNumber, Regex = pd.Regex
+            })
             .ToArray();
         return Task.FromResult(retval);
     }
+
 
     public Task SetStatusesAsync(
         ListDb listDb,
@@ -105,6 +122,40 @@ public class ListsStore(ListsDbContext dbContext)
     {
         var retval = listDb.Statuses
             .Select(sd => new Status { Name = sd.Name, Color = sd.Color })
+            .ToArray();
+        return Task.FromResult(retval);
+    }
+
+    public Task SetStatusTransitionsAsync(
+        ListDb listDb,
+        IEnumerable<StatusTransition> transitions,
+        CancellationToken cancellationToken
+    )
+    {
+        listDb.StatusTransitions.Clear();
+        foreach (var t in transitions)
+        {
+            foreach (var next in t.AllowedNext)
+            {
+                listDb.StatusTransitions.Add(new StatusTransitionDb
+                {
+                    From = t.From,
+                    To = next,
+                    ListDb = listDb
+                });
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task<StatusTransition[]> GetStatusTransitionsAsync(ListDb listDb, CancellationToken cancellationToken)
+    {
+        var rows = listDb.StatusTransitions
+            .Where(x => x.ListId == listDb.Id)
+            .ToList();
+        var groups = rows.GroupBy(r => r.From);
+        var retval = groups.Select(g => new StatusTransition
+                { From = g.Key, AllowedNext = g.Select(r => r.To).ToArray() })
             .ToArray();
         return Task.FromResult(retval);
     }

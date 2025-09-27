@@ -33,5 +33,9 @@ public class ListDbConfiguration : IEntityTypeConfiguration<ListDb>
         builder.HasMany(e => e.Items)
             .WithOne(e => e.List)
             .HasForeignKey(e => e.ListId);
+
+        builder.HasMany(typeof(Lister.Lists.Infrastructure.Sql.ValueObjects.StatusTransitionDb), nameof(ListDb.StatusTransitions))
+            .WithOne("ListDb")
+            .HasForeignKey("ListId");
     }
 }

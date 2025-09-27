@@ -1,4 +1,4 @@
-import { createTheme, alpha } from "@mui/material";
+import { alpha, createTheme } from "@mui/material";
 
 const colors = {
   // Primary Brand Colors

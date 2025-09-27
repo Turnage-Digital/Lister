@@ -6,7 +6,7 @@ import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Titlebar, ItemsDesktopView, ItemsMobileView } from "../components";
+import { ItemsDesktopView, ItemsMobileView, Titlebar } from "../components";
 import { ListSearch } from "../models";
 import {
   listItemDefinitionQueryOptions,

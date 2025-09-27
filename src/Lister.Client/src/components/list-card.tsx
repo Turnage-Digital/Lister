@@ -1,17 +1,16 @@
 import * as React from "react";
 
-import { Delete, Visibility, List as ListIcon } from "@mui/icons-material";
+import { Delete, List as ListIcon, Visibility } from "@mui/icons-material";
 import {
+  alpha,
+  Box,
   Card,
   CardActions,
-  CardContent,
+  Chip,
+  Divider,
   IconButton,
   Tooltip,
   Typography,
-  Box,
-  Chip,
-  Divider,
-  alpha,
   useTheme,
 } from "@mui/material";
 

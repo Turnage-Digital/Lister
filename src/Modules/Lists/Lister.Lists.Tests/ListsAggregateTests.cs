@@ -1,8 +1,8 @@
+using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
-using MediatR;
 using Moq;
 
 namespace Lister.Lists.Tests;
@@ -14,7 +14,7 @@ public class ListsAggregateTests
     public void SetUp()
     {
         _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
-        _mediator = new Mock<IMediator>();
+        _mediator = new Mock<IDomainEventQueue>();
 
         var listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
@@ -26,7 +26,7 @@ public class ListsAggregateTests
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
-    private Mock<IMediator> _mediator;
+    private Mock<IDomainEventQueue> _mediator;
     private ListsAggregate<ListDb, ItemDb> _listsAggregate;
 
     private const string BY = "heath";
@@ -137,6 +137,86 @@ public class ListsAggregateTests
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.EqualTo(item.Object));
         });
+    }
+
+    [Test]
+    public void CreateItemAsync_Throws_WhenStatusNotInList()
+    {
+        // Arrange
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var bag = new Dictionary<string, object?> { { "status", "Unknown" } };
+        var columns = Array.Empty<Column>();
+        var statuses = new[] { new Status { Name = "Active" } };
+
+        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns);
+        _unitOfWork.Setup(x => x.ListsStore.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(statuses);
+
+        // Act + Assert
+        Assert.That(async () => await _listsAggregate.CreateItemAsync(list, bag, BY), Throws.Exception);
+    }
+
+    [Test]
+    public void CreateItemAsync_Throws_WhenAllowedValuesViolated()
+    {
+        // Arrange
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var bag = new Dictionary<string, object?> { { "priority", "Low" } };
+        var columns = new[]
+            { new Column { Name = "Priority", Type = ColumnType.Text, AllowedValues = new[] { "High", "Medium" } } };
+
+        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns);
+
+        // Act + Assert
+        Assert.That(async () => await _listsAggregate.CreateItemAsync(list, bag, BY), Throws.Exception);
+    }
+
+    [Test]
+    public void CreateItemAsync_Throws_WhenRequiredTextEmpty()
+    {
+        // Arrange
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var bag = new Dictionary<string, object?> { { "title", "" } };
+        var columns = new[] { new Column { Name = "Title", Type = ColumnType.Text, Required = true } };
+
+        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns);
+
+        // Act + Assert
+        Assert.That(async () => await _listsAggregate.CreateItemAsync(list, bag, BY), Throws.Exception);
+    }
+
+    [Test]
+    public void CreateItemAsync_Throws_WhenNumberOutOfRange()
+    {
+        // Arrange
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var bag = new Dictionary<string, object?> { { "score", 200 } };
+        var columns = new[] { new Column { Name = "Score", Type = ColumnType.Number, MinNumber = 0, MaxNumber = 100 } };
+
+        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns);
+
+        // Act + Assert
+        Assert.That(async () => await _listsAggregate.CreateItemAsync(list, bag, BY), Throws.Exception);
+    }
+
+    [Test]
+    public void CreateItemAsync_Throws_WhenRegexNotMatched()
+    {
+        // Arrange
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var bag = new Dictionary<string, object?> { { "email", "not-an-email" } };
+        var columns = new[]
+            { new Column { Name = "Email", Type = ColumnType.Text, Regex = @"^[^@\n]+@[^@\n]+\.[^@\n]+$" } };
+
+        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns);
+
+        // Act + Assert
+        Assert.That(async () => await _listsAggregate.CreateItemAsync(list, bag, BY), Throws.Exception);
     }
 
     [Test]

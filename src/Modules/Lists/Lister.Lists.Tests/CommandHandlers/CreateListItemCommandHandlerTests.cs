@@ -1,10 +1,10 @@
 using AutoMapper;
+using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql.Entities;
-using MediatR;
 using Moq;
 
 namespace Lister.Lists.Tests.CommandHandlers;
@@ -16,7 +16,7 @@ public class CreateListItemCommandHandlerTests
     public void SetUp()
     {
         _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
-        _mediator = new Mock<IMediator>();
+        _mediator = new Mock<IDomainEventQueue>();
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
@@ -30,7 +30,7 @@ public class CreateListItemCommandHandlerTests
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
-    private Mock<IMediator> _mediator;
+    private Mock<IDomainEventQueue> _mediator;
     private ListsAggregate<ListDb, ItemDb> _listsAggregate;
     private Mock<IMapper> _mapper;
     private CreateListItemCommandHandler<ListDb, ItemDb> _handler;

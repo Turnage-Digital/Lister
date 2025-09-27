@@ -1,15 +1,15 @@
 import * as React from "react";
 
-import { QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import {
+  AppBar,
   Box,
+  Container,
+  Toolbar,
   Typography,
   useTheme,
-  AppBar,
-  Toolbar,
-  Container,
 } from "@mui/material";
+import { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 
 import { Auth } from "../auth";
 import { SideDrawer, UserMenu } from "../components";
