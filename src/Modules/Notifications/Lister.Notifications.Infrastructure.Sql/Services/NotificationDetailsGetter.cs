@@ -17,6 +17,8 @@ public class NotificationDetailsGetter(NotificationsDbContext context) : IGetNot
     )
     {
         var n = await context.Notifications
+            .AsNoTracking()
+            .AsSplitQuery()
             .Include(x => x.History)
             .Include(x => x.DeliveryAttempts)
             .FirstOrDefaultAsync(x => x.Id == notificationId && x.UserId == userId, cancellationToken);

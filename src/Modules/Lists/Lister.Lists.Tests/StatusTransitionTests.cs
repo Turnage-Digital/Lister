@@ -2,6 +2,7 @@ using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
+using MediatR;
 using Moq;
 
 namespace Lister.Lists.Tests;
@@ -9,11 +10,6 @@ namespace Lister.Lists.Tests;
 [TestFixture]
 public class StatusTransitionTests
 {
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;
-    private Mock<IListsStore<ListDb>> _lists = null!;
-    private Mock<IItemsStore<ItemDb>> _items = null!;
-    private ListsAggregate<ListDb, ItemDb> _agg = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -26,14 +22,25 @@ public class StatusTransitionTests
         _agg = new ListsAggregate<ListDb, ItemDb>(_uow.Object, new NoopQueue());
     }
 
+    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;
+    private Mock<IListsStore<ListDb>> _lists = null!;
+    private Mock<IItemsStore<ItemDb>> _items = null!;
+    private ListsAggregate<ListDb, ItemDb> _agg = null!;
+
     private class NoopQueue : IDomainEventQueue
     {
-        public void Enqueue(MediatR.INotification @event, EventPhase phase) {}
-        public IReadOnlyCollection<MediatR.INotification> Dequeue(EventPhase phase) => [];
+        public void Enqueue(INotification @event, EventPhase phase)
+        {
+        }
+
+        public IReadOnlyCollection<INotification> Dequeue(EventPhase phase)
+        {
+            return [];
+        }
     }
 
     [Test]
-    public async Task UpdateItem_Allows_Configured_Transition()
+    public void UpdateItem_Allows_Configured_Transition()
     {
         var list = new ListDb { Id = Guid.NewGuid() };
         var item = new ItemDb();
@@ -42,13 +49,12 @@ public class StatusTransitionTests
 
         _items.Setup(s => s.GetBagAsync(item, It.IsAny<CancellationToken>())).ReturnsAsync(oldBag);
         _lists.Setup(s => s.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[]
-            {
-                new Lister.Lists.Domain.ValueObjects.Status { Name = "Active" },
-                new Lister.Lists.Domain.ValueObjects.Status { Name = "Done" }
-            });
+            .ReturnsAsync([
+                new Status { Name = "Active" },
+                new Status { Name = "Done" }
+            ]);
         _lists.Setup(s => s.GetStatusTransitionsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[] { new StatusTransition { From = "Active", AllowedNext = ["Done"] } });
+            .ReturnsAsync([new StatusTransition { From = "Active", AllowedNext = ["Done"] }]);
 
         Assert.DoesNotThrowAsync(async () => await _agg.UpdateItemAsync(list, item, newBag, "tester"));
     }
@@ -63,14 +69,13 @@ public class StatusTransitionTests
 
         _items.Setup(s => s.GetBagAsync(item, It.IsAny<CancellationToken>())).ReturnsAsync(oldBag);
         _lists.Setup(s => s.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[]
-            {
-                new Lister.Lists.Domain.ValueObjects.Status { Name = "Active" },
-                new Lister.Lists.Domain.ValueObjects.Status { Name = "Done" },
-                new Lister.Lists.Domain.ValueObjects.Status { Name = "Backlog" }
-            });
+            .ReturnsAsync([
+                new Status { Name = "Active" },
+                new Status { Name = "Done" },
+                new Status { Name = "Backlog" }
+            ]);
         _lists.Setup(s => s.GetStatusTransitionsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[] { new StatusTransition { From = "Active", AllowedNext = ["Done"] } });
+            .ReturnsAsync([new StatusTransition { From = "Active", AllowedNext = ["Done"] }]);
 
         Assert.That(async () => await _agg.UpdateItemAsync(list, item, newBag, "tester"), Throws.Exception);
     }

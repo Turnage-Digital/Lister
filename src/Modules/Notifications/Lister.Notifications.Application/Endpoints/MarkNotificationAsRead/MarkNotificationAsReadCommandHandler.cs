@@ -12,9 +12,14 @@ public class MarkNotificationAsReadCommandHandler<TRule, TNotification>(
 {
     public async Task Handle(MarkNotificationAsReadCommand request, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(request.UserId))
+        {
+            throw new UnauthorizedAccessException("User is not authenticated.");
+        }
+
         var notification = await aggregate.GetNotificationByIdAsync(
             request.NotificationId,
-            request.UserId,
+            request.UserId!,
             cancellationToken);
 
         if (notification == null)

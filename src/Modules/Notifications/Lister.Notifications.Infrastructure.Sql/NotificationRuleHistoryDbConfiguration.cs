@@ -28,7 +28,7 @@ public class NotificationRuleHistoryDbConfiguration : IEntityTypeConfiguration<N
             .HasColumnType("JSON")
             .HasConversion(
                 e => JsonSerializer.Serialize(e, jsonSerializerOptions),
-                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!);
+                e => JsonSerializer.Deserialize<Dictionary<string, object?>>(e, jsonSerializerOptions)!);
 
         builder.HasOne(e => e.NotificationRule)
             .WithMany(e => e.History)

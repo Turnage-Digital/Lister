@@ -28,7 +28,7 @@ public class NotificationHistoryEntryDbConfiguration : IEntityTypeConfiguration<
             .HasColumnType("JSON")
             .HasConversion(
                 e => JsonSerializer.Serialize(e, jsonSerializerOptions),
-                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!);
+                e => JsonSerializer.Deserialize<Dictionary<string, object?>>(e, jsonSerializerOptions)!);
 
         builder.HasOne(e => e.Notification)
             .WithMany(e => e.History)

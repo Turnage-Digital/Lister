@@ -45,7 +45,7 @@ public abstract class UnitOfWork<TContext>(TContext dbContext, IMediator mediato
                 transaction.Dispose();
             }
         }
-        else
+
         {
             // InMemory and other non-relational providers: no transaction
             var retval = await dbContext.SaveChangesAsync(cancellationToken);

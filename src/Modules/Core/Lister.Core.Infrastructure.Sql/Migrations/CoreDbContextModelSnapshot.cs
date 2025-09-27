@@ -35,6 +35,9 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<DateTime?>("AvailableAfter")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
@@ -55,6 +58,8 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                         .HasColumnType("varchar(300)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AvailableAfter");
 
                     b.HasIndex("ProcessedOn");
 

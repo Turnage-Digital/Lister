@@ -7,6 +7,7 @@ public class OutboxMessageDb
     public string PayloadJson { get; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
     public DateTime? ProcessedOn { get; set; }
+    public DateTime? AvailableAfter { get; set; }
     public int Attempts { get; set; }
     public string? LastError { get; set; }
 }

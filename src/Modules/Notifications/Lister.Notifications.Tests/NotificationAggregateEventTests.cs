@@ -5,6 +5,7 @@ using Lister.Notifications.Domain.Enums;
 using Lister.Notifications.Domain.Events;
 using Lister.Notifications.Domain.ValueObjects;
 using Moq;
+using INotification = MediatR.INotification;
 
 namespace Lister.Notifications.Tests;
 
@@ -13,9 +14,17 @@ public class NotificationAggregateEventTests
 {
     private class TestQueue : IDomainEventQueue
     {
-        public readonly List<MediatR.INotification> Events = [];
-        public void Enqueue(MediatR.INotification @event, EventPhase phase) => Events.Add(@event);
-        public IReadOnlyCollection<MediatR.INotification> Dequeue(EventPhase phase) => Events.ToArray();
+        public readonly List<INotification> Events = [];
+
+        public void Enqueue(INotification @event, EventPhase phase)
+        {
+            Events.Add(@event);
+        }
+
+        public IReadOnlyCollection<INotification> Dequeue(EventPhase phase)
+        {
+            return Events.ToArray();
+        }
     }
 
     private class FakeRule : IWritableNotificationRule
@@ -72,7 +81,7 @@ public class NotificationAggregateEventTests
             _user,
             _listId,
             NotificationTrigger.ItemCreated(),
-            new[] { NotificationChannel.InApp() },
+            [NotificationChannel.InApp()],
             new NotificationSchedule());
 
         Assert.That(queue.Events.OfType<NotificationRuleCreatedEvent>().Any(), Is.True);
@@ -107,11 +116,14 @@ public class NotificationAggregateEventTests
         var (agg, _, queue, _, notifs) = Create();
         var n = new FakeNotification { UserId = _user, ListId = _listId };
         notifs.Setup(s => s.InitAsync(_user, _listId, It.IsAny<CancellationToken>())).ReturnsAsync(n);
-        notifs.Setup(s => s.SetContentAsync(n, It.IsAny<NotificationContent>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        notifs.Setup(s => s.SetPriorityAsync(n, NotificationPriority.Normal, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        notifs.Setup(s => s.SetContentAsync(n, It.IsAny<NotificationContent>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        notifs.Setup(s => s.SetPriorityAsync(n, NotificationPriority.Normal, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         notifs.Setup(s => s.CreateAsync(n, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-        await agg.CreateNotificationAsync(_user, _listId, null, null, new NotificationContent { Subject = "t", Body = "b" });
+        await agg.CreateNotificationAsync(_user, _listId, null, null,
+            new NotificationContent { Subject = "t", Body = "b" });
         Assert.That(queue.Events.OfType<NotificationCreatedEvent>().Any(), Is.True);
     }
 
@@ -135,7 +147,8 @@ public class NotificationAggregateEventTests
         var email = NotificationChannel.Email("user@example.com");
         notifs.Setup(s => s.GetDeliveryAttemptCountAsync(n, email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
-        notifs.Setup(s => s.AddDeliveryAttemptAsync(n, It.IsAny<NotificationDeliveryAttempt>(), It.IsAny<CancellationToken>()))
+        notifs.Setup(s =>
+                s.AddDeliveryAttemptAsync(n, It.IsAny<NotificationDeliveryAttempt>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         notifs.Setup(s => s.MarkAsDeliveredAsync(n, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);

@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.RegularExpressions;
 using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Enums;
@@ -195,7 +196,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                 }
 
                 // Number-specific range validation
-                if (col.Type == ColumnType.Number && value is not null && (col.MinNumber is not null || col.MaxNumber is not null))
+                if (col.Type == ColumnType.Number && value is not null &&
+                    (col.MinNumber is not null || col.MaxNumber is not null))
                 {
                     try
                     {
@@ -205,6 +207,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                             throw new InvalidOperationException(
                                 $"Bag property '{key}' value '{num}' is less than minimum {col.MinNumber}");
                         }
+
                         if (col.MaxNumber is not null && num > col.MaxNumber)
                         {
                             throw new InvalidOperationException(
@@ -220,7 +223,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                 // Text-specific regex validation
                 if (col.Type == ColumnType.Text && value is string sv && !string.IsNullOrWhiteSpace(col.Regex))
                 {
-                    if (!System.Text.RegularExpressions.Regex.IsMatch(sv, col.Regex!))
+                    if (!Regex.IsMatch(sv, col.Regex!))
                     {
                         throw new InvalidOperationException(
                             $"Bag property '{key}' value does not match required pattern");

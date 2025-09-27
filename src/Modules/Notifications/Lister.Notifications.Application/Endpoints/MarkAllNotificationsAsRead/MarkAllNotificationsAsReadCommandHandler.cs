@@ -13,8 +13,13 @@ public class
 {
     public async Task Handle(MarkAllNotificationsAsReadCommand request, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(request.UserId))
+        {
+            throw new UnauthorizedAccessException("User is not authenticated.");
+        }
+
         await aggregate.MarkAllNotificationsAsReadAsync(
-            request.UserId,
+            request.UserId!,
             DateTime.UtcNow,
             request.Before,
             cancellationToken);

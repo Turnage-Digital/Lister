@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Core.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(CoreDbContext))]
-    [Migration("20250927132610_Initial")]
+    [Migration("20250927170811_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<DateTime?>("AvailableAfter")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
@@ -58,6 +61,8 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                         .HasColumnType("varchar(300)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AvailableAfter");
 
                     b.HasIndex("ProcessedOn");
 

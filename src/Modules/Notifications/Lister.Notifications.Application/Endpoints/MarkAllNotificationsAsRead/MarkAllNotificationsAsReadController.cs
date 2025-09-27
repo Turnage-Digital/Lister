@@ -16,7 +16,7 @@ public class MarkAllNotificationsAsReadController(IMediator mediator) : Controll
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(
-        [FromBody] Request request,
+        [FromBody] Body body,
         CancellationToken cancellationToken
     )
     {
@@ -25,12 +25,12 @@ public class MarkAllNotificationsAsReadController(IMediator mediator) : Controll
             return BadRequest(ModelState);
         }
 
-        var command = new MarkAllNotificationsAsReadCommand { Before = request.Before };
+        var command = new MarkAllNotificationsAsReadCommand { Before = body.Before };
         await mediator.Send(command, cancellationToken);
         return Ok();
     }
 
-    public class Request
+    public class Body
     {
         public DateTime? Before { get; set; }
     }

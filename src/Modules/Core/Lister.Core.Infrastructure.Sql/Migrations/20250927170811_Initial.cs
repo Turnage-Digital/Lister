@@ -44,6 +44,7 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ProcessedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    AvailableAfter = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Attempts = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LastError = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -53,6 +54,11 @@ namespace Lister.Core.Infrastructure.Sql.Migrations
                     table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_AvailableAfter",
+                table: "OutboxMessages",
+                column: "AvailableAfter");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxMessages_CreatedOn_ProcessedOn",
