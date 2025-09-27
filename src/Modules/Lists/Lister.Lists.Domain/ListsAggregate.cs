@@ -193,6 +193,39 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                             $"Bag property '{key}' value '{valStr}' is not in allowed values");
                     }
                 }
+
+                // Number-specific range validation
+                if (col.Type == ColumnType.Number && value is not null && (col.MinNumber is not null || col.MaxNumber is not null))
+                {
+                    try
+                    {
+                        var num = Convert.ToDecimal(value);
+                        if (col.MinNumber is not null && num < col.MinNumber)
+                        {
+                            throw new InvalidOperationException(
+                                $"Bag property '{key}' value '{num}' is less than minimum {col.MinNumber}");
+                        }
+                        if (col.MaxNumber is not null && num > col.MaxNumber)
+                        {
+                            throw new InvalidOperationException(
+                                $"Bag property '{key}' value '{num}' exceeds maximum {col.MaxNumber}");
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        throw new InvalidOperationException($"Bag property '{key}' is not a valid number");
+                    }
+                }
+
+                // Text-specific regex validation
+                if (col.Type == ColumnType.Text && value is string sv && !string.IsNullOrWhiteSpace(col.Regex))
+                {
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(sv, col.Regex!))
+                    {
+                        throw new InvalidOperationException(
+                            $"Bag property '{key}' value does not match required pattern");
+                    }
+                }
             }
             else if (dict is not null && col.Required)
             {

@@ -9,7 +9,7 @@ public class ChangeFeed
 
     public ChannelReader<string> Reader => _channel.Reader;
 
-    public ValueTask PublishAsync(object evt, CancellationToken cancellationToken = default)
+    public virtual ValueTask PublishAsync(object evt, CancellationToken cancellationToken = default)
     {
         var json = JsonSerializer.Serialize(evt);
         return _channel.Writer.WriteAsync(json, cancellationToken);

@@ -297,10 +297,10 @@ public class NotificationAggregate<TRule, TNotification>(
                     return false;
                 }
 
-                // Evaluate the condition based on operator
+                // Evaluate the condition based on operator (allow null actuals)
                 return EvaluateCustomCondition(
                     ruleTrigger.Operator,
-                    actualValue.ToString(),
+                    actualValue?.ToString(),
                     ruleTrigger.Value);
 
             default:

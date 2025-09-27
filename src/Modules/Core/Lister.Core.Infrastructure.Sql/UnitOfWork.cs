@@ -19,29 +19,43 @@ public abstract class UnitOfWork<TContext>(TContext dbContext, IMediator mediato
             await _mediator.Publish(e, cancellationToken);
         }
 
-        var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
+        // Only wrap in a transaction for relational providers
+        if (dbContext.Database.IsRelational())
         {
-            var retval = await dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var retval = await dbContext.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
 
-            // Publish any queued AfterSave events
+                foreach (var e in _eventQueue.Dequeue(EventPhase.AfterSave))
+                {
+                    await _mediator.Publish(e, cancellationToken);
+                }
+
+                return retval;
+            }
+            catch
+            {
+                await transaction.RollbackAsync(cancellationToken)!;
+                throw;
+            }
+            finally
+            {
+                transaction.Dispose();
+            }
+        }
+        else
+        {
+            // InMemory and other non-relational providers: no transaction
+            var retval = await dbContext.SaveChangesAsync(cancellationToken);
+
             foreach (var e in _eventQueue.Dequeue(EventPhase.AfterSave))
             {
                 await _mediator.Publish(e, cancellationToken);
             }
 
             return retval;
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken)!;
-            throw;
-        }
-        finally
-        {
-            transaction.Dispose();
         }
     }
 
