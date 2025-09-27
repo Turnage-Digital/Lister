@@ -39,7 +39,14 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     ListId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Required = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
+                    AllowedValues = table.Column<string>(type: "JSON", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MinNumber = table.Column<decimal>(type: "DECIMAL(18,4)", nullable: true),
+                    MaxNumber = table.Column<decimal>(type: "DECIMAL(18,4)", nullable: true),
+                    Regex = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -124,6 +131,36 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "StatusTransitions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    From = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    To = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ListDbId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StatusTransitions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StatusTransitions_Lists_ListDbId",
+                        column: x => x.ListDbId,
+                        principalTable: "Lists",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_StatusTransitions_Lists_ListId",
+                        column: x => x.ListId,
+                        principalTable: "Lists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ItemHistory",
                 columns: table => new
                 {
@@ -173,6 +210,16 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 name: "IX_Statuses_ListId",
                 table: "Statuses",
                 column: "ListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StatusTransitions_ListDbId",
+                table: "StatusTransitions",
+                column: "ListDbId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StatusTransitions_ListId_From",
+                table: "StatusTransitions",
+                columns: new[] { "ListId", "From" });
         }
 
         /// <inheritdoc />
@@ -189,6 +236,9 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Statuses");
+
+            migrationBuilder.DropTable(
+                name: "StatusTransitions");
 
             migrationBuilder.DropTable(
                 name: "Items");

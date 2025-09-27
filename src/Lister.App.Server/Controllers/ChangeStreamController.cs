@@ -12,9 +12,9 @@ public class ChangeStreamController(ChangeFeed feed) : ControllerBase
     [HttpGet]
     public async Task Stream(CancellationToken cancellationToken)
     {
-        Response.Headers.Add("Cache-Control", "no-cache");
-        Response.Headers.Add("Content-Type", "text/event-stream");
-        Response.Headers.Add("X-Accel-Buffering", "no");
+        Response.Headers.Append("Cache-Control", "no-cache");
+        Response.Headers.Append("Content-Type", "text/event-stream");
+        Response.Headers.Append("X-Accel-Buffering", "no");
 
         var reader = feed.Reader;
         await foreach (var json in reader.ReadAllAsync(cancellationToken))

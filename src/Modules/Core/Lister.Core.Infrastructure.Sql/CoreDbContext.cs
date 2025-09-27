@@ -1,11 +1,14 @@
+using Lister.Core.Infrastructure.Sql.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lister.Core.Infrastructure.Sql.Outbox;
+namespace Lister.Core.Infrastructure.Sql;
 
-public class OutboxDbContext(DbContextOptions<OutboxDbContext> options)
-    : DbContext(options)
+public class CoreDbContext(DbContextOptions<CoreDbContext> options)
+    : DbContext(options), IDataProtectionKeyContext
 {
-    public DbSet<OutboxMessageDb> Messages => Set<OutboxMessageDb>();
+    public DbSet<OutboxMessageDb> OutboxMessages { get; set; } = null!;
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

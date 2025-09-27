@@ -1,11 +1,12 @@
 using System.Text.Json;
 using Lister.Core.Domain.IntegrationEvents;
-using Lister.Core.Infrastructure.Sql.Outbox;
+using Lister.Core.Infrastructure.Sql;
+using Lister.Core.Infrastructure.Sql.Entities;
 using MediatR;
 
 namespace Lister.App.Server.Integration;
 
-public class OutboxHandlerBase(OutboxDbContext db)
+public class OutboxHandlerBase(CoreDbContext db)
 {
     protected async Task EnqueueAsync<T>(T evt, CancellationToken ct)
     {
@@ -15,12 +16,12 @@ public class OutboxHandlerBase(OutboxDbContext db)
             PayloadJson = JsonSerializer.Serialize(evt),
             CreatedOn = DateTime.UtcNow
         };
-        db.Messages.Add(msg);
+        db.OutboxMessages.Add(msg);
         await db.SaveChangesAsync(ct);
     }
 }
 
-public class ListItemCreatedOutboxHandler(OutboxDbContext db)
+public class ListItemCreatedOutboxHandler(CoreDbContext db)
     : OutboxHandlerBase(db), INotificationHandler<ListItemCreatedIntegrationEvent>
 {
     public async Task Handle(ListItemCreatedIntegrationEvent notification, CancellationToken cancellationToken)
@@ -29,7 +30,7 @@ public class ListItemCreatedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class ListItemDeletedOutboxHandler(OutboxDbContext db)
+public class ListItemDeletedOutboxHandler(CoreDbContext db)
     : OutboxHandlerBase(db), INotificationHandler<ListItemDeletedIntegrationEvent>
 {
     public async Task Handle(ListItemDeletedIntegrationEvent notification, CancellationToken cancellationToken)
@@ -38,7 +39,7 @@ public class ListItemDeletedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class ListDeletedOutboxHandler(OutboxDbContext db)
+public class ListDeletedOutboxHandler(CoreDbContext db)
     : OutboxHandlerBase(db), INotificationHandler<ListDeletedIntegrationEvent>
 {
     public async Task Handle(ListDeletedIntegrationEvent notification, CancellationToken cancellationToken)

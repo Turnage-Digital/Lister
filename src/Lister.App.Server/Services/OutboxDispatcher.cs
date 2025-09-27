@@ -1,4 +1,5 @@
-using Lister.Core.Infrastructure.Sql.Outbox;
+using System.Text.Json;
+using Lister.Core.Infrastructure.Sql;
 
 namespace Lister.App.Server.Services;
 
@@ -13,9 +14,9 @@ public class OutboxDispatcher(ILogger<OutboxDispatcher> logger, IServiceScopeFac
             try
             {
                 using var scope = scopeFactory.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<CoreDbContext>();
 
-                var batch = db.Messages
+                var batch = db.OutboxMessages
                     .Where(m => m.ProcessedOn == null)
                     .OrderBy(m => m.CreatedOn)
                     .Take(50)
@@ -25,8 +26,18 @@ public class OutboxDispatcher(ILogger<OutboxDispatcher> logger, IServiceScopeFac
                 {
                     try
                     {
+                        object? payload;
+                        try
+                        {
+                            payload = JsonSerializer.Deserialize<JsonElement>(msg.PayloadJson);
+                        }
+                        catch
+                        {
+                            payload = msg.PayloadJson; // fallback to string
+                        }
+
                         await feed.PublishAsync(
-                            new { type = msg.Type, data = msg.PayloadJson, occurredOn = msg.CreatedOn }, stoppingToken);
+                            new { type = msg.Type, data = payload, occurredOn = msg.CreatedOn }, stoppingToken);
                         msg.ProcessedOn = DateTime.UtcNow;
                         msg.Attempts += 1;
                     }

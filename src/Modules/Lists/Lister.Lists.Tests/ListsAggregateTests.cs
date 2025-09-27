@@ -164,7 +164,7 @@ public class ListsAggregateTests
         var list = new ListDb { Id = Guid.NewGuid() };
         var bag = new Dictionary<string, object?> { { "priority", "Low" } };
         var columns = new[]
-            { new Column { Name = "Priority", Type = ColumnType.Text, AllowedValues = new[] { "High", "Medium" } } };
+            { new Column { Name = "Priority", Type = ColumnType.Text, AllowedValues = ["High", "Medium"] } };
 
         _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);

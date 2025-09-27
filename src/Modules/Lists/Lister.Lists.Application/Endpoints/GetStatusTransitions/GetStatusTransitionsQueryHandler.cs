@@ -19,4 +19,3 @@ public class GetStatusTransitionsQueryHandler<TList, TItem>(
         return transitions;
     }
 }
-

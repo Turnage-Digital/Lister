@@ -145,6 +145,7 @@ public class ListsStore(ListsDbContext dbContext)
                 });
             }
         }
+
         return Task.CompletedTask;
     }
 

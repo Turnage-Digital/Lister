@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Lister.Lists.Infrastructure.Sql.Entities;
+using Lister.Lists.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,7 +35,7 @@ public class ListDbConfiguration : IEntityTypeConfiguration<ListDb>
             .WithOne(e => e.List)
             .HasForeignKey(e => e.ListId);
 
-        builder.HasMany(typeof(Lister.Lists.Infrastructure.Sql.ValueObjects.StatusTransitionDb), nameof(ListDb.StatusTransitions))
+        builder.HasMany(typeof(StatusTransitionDb), nameof(ListDb.StatusTransitions))
             .WithOne("ListDb")
             .HasForeignKey("ListId");
     }

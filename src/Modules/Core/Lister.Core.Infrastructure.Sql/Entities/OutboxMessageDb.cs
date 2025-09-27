@@ -1,4 +1,4 @@
-namespace Lister.Core.Infrastructure.Sql.Outbox;
+namespace Lister.Core.Infrastructure.Sql.Entities;
 
 public class OutboxMessageDb
 {

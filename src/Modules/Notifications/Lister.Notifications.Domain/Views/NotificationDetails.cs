@@ -34,10 +34,10 @@ public record NotificationDetails
     public object? Metadata { get; init; }
 
     [JsonPropertyName("history")]
-    public Entry<NotificationHistoryType>[] History { get; init; } = Array.Empty<Entry<NotificationHistoryType>>();
+    public Entry<NotificationHistoryType>[] History { get; init; } = [];
 
     [JsonPropertyName("deliveryAttempts")]
-    public List<DeliveryAttemptView> DeliveryAttempts { get; init; } = new();
+    public List<DeliveryAttemptView> DeliveryAttempts { get; init; } = [];
 }
 
 public record DeliveryAttemptView

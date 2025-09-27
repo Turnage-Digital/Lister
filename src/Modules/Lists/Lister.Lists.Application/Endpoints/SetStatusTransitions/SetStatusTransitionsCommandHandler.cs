@@ -18,4 +18,3 @@ public class SetStatusTransitionsCommandHandler<TList, TItem>(
         await uow.SaveChangesAsync(cancellationToken);
     }
 }
-

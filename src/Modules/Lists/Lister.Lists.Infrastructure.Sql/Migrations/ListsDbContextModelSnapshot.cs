@@ -81,14 +81,37 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
 
+                    b.Property<string>("AllowedValues")
+                        .HasColumnType("JSON")
+                        .HasAnnotation("Relational:JsonPropertyName", "allowedValues");
+
                     b.Property<Guid?>("ListId")
                         .HasColumnType("char(36)");
+
+                    b.Property<decimal?>("MaxNumber")
+                        .HasColumnType("DECIMAL(18,4)")
+                        .HasAnnotation("Relational:JsonPropertyName", "maxNumber");
+
+                    b.Property<decimal?>("MinNumber")
+                        .HasColumnType("DECIMAL(18,4)")
+                        .HasAnnotation("Relational:JsonPropertyName", "minNumber");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasAnnotation("Relational:JsonPropertyName", "name");
+
+                    b.Property<string>("Regex")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasAnnotation("Relational:JsonPropertyName", "regex");
+
+                    b.Property<bool>("Required")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasAnnotation("Relational:JsonPropertyName", "required");
 
                     b.Property<int>("Type")
                         .HasColumnType("int")
@@ -209,6 +232,40 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.ToTable("Statuses", (string)null);
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusTransitionDb", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid?>("ListDbId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id")
+                        .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+
+                    b.HasIndex("ListDbId");
+
+                    b.HasIndex("ListId", "From");
+
+                    b.ToTable("StatusTransitions", (string)null);
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ItemDb", b =>
                 {
                     b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "List")
@@ -258,6 +315,21 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Navigation("ListDb");
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusTransitionDb", b =>
+                {
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", null)
+                        .WithMany("StatusTransitions")
+                        .HasForeignKey("ListDbId");
+
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "ListDb")
+                        .WithMany()
+                        .HasForeignKey("ListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ListDb");
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ItemDb", b =>
                 {
                     b.Navigation("History");
@@ -270,6 +342,8 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Navigation("History");
 
                     b.Navigation("Items");
+
+                    b.Navigation("StatusTransitions");
 
                     b.Navigation("Statuses");
                 });

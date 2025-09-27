@@ -121,7 +121,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         TItem item,
         object newBag,
         string updatedBy,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (list.Id is null)
         {
@@ -132,9 +133,10 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
 
         // Transition validation (if status changes)
         var oldBagObj = await unitOfWork.ItemsStore.GetBagAsync(item, cancellationToken);
-        var oldDict = oldBagObj as IDictionary<string, object?>;
         var newDict = newBag as IDictionary<string, object?>;
-        var oldStatus = oldDict != null && oldDict.TryGetValue("status", out var os) ? os as string : null;
+        var oldStatus = oldBagObj is IDictionary<string, object?> oldDict && oldDict.TryGetValue("status", out var os)
+            ? os as string
+            : null;
         var newStatus = newDict != null && newDict.TryGetValue("status", out var ns) ? ns as string : null;
 
         if (!string.IsNullOrWhiteSpace(oldStatus) && !string.IsNullOrWhiteSpace(newStatus) &&
@@ -149,7 +151,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                     .Any(s => string.Equals(s, newStatus, StringComparison.OrdinalIgnoreCase)) ?? false;
                 if (!allowed)
                 {
-                    throw new InvalidOperationException($"Transition from '{oldStatus}' to '{newStatus}' is not allowed");
+                    throw new InvalidOperationException(
+                        $"Transition from '{oldStatus}' to '{newStatus}' is not allowed");
                 }
             }
         }
@@ -197,7 +200,6 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
             }
             // If missing and not required, allow
         }
-
 
         // Status validation if provided
         if (dict is not null && dict.TryGetValue("status", out var statusVal) && statusVal is string statusStr)

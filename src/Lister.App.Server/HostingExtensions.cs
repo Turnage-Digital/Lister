@@ -9,15 +9,18 @@ using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
-using Lister.Core.Infrastructure.Sql.Outbox;
 using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
+using Lister.Lists.Application.Endpoints.GetStatusTransitions;
+using Lister.Lists.Application.Endpoints.SetStatusTransitions;
+using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
@@ -77,7 +80,7 @@ internal static class HostingExtensions
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
         var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
-        var dataProtectionKeyDbContextMigrationAssemblyName = typeof(DataProtectionKeyDbContext).Assembly.FullName!;
+        var coreDbContextMigrationAssemblyName = typeof(CoreDbContext).Assembly.FullName!;
         var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
         var notificationsDbContextMigrationAssemblyName = typeof(NotificationsDbContext).Assembly.FullName!;
         builder.Services.AddInfrastructure(config =>
@@ -85,8 +88,8 @@ internal static class HostingExtensions
             config.DatabaseOptions.ConnectionString = connectionString;
             config.DatabaseOptions.UsersDbContextMigrationAssemblyName =
                 usersDbContextMigrationAssemblyName;
-            config.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName =
-                dataProtectionKeyDbContextMigrationAssemblyName;
+            config.DatabaseOptions.CoreDbContextMigrationAssemblyName =
+                coreDbContextMigrationAssemblyName;
             config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
                 listsDbContextMigrationAssemblyName;
             config.DatabaseOptions.NotificationsDbContextMigrationAssemblyName =
@@ -113,7 +116,7 @@ internal static class HostingExtensions
 
         builder.Services.AddDataProtection()
             .SetApplicationName("Lister")
-            .PersistKeysToDbContext<DataProtectionKeyDbContext>();
+            .PersistKeysToDbContext<CoreDbContext>();
 
         builder.Services.Configure<OpenAiOptions>(
             builder.Configuration.GetSection("OpenAi"));
@@ -201,13 +204,11 @@ internal static class HostingExtensions
         var serverVersion = ServerVersion.AutoDetect(connectionString);
 
         /* Core */
-        var dataProtectionKeyDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.DataProtectionKeyDbContextMigrationAssemblyName;
-        services.AddDbContext<DataProtectionKeyDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(dataProtectionKeyDbContextMigrationAssemblyName)));
+        var coreDbContextMigrationAssemblyName =
+            configuration.DatabaseOptions.CoreDbContextMigrationAssemblyName;
+        services.AddDbContext<CoreDbContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(coreDbContextMigrationAssemblyName)));
         services.AddScoped<IDomainEventQueue, DomainEventQueue>();
-        services.AddDbContext<OutboxDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(OutboxDbContext).Assembly.FullName)));
 
         /* Users */
         var usersDbContextMigrationAssemblyName =
@@ -280,14 +281,14 @@ internal static class HostingExtensions
             typeof(DeleteListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommand>),
-            typeof(Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.GetStatusTransitions.GetStatusTransitionsQuery, Lister.Lists.Domain.ValueObjects.StatusTransition[]>),
-            typeof(Lister.Lists.Application.Endpoints.GetStatusTransitions.GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.SetStatusTransitions.SetStatusTransitionsCommand>),
-            typeof(Lister.Lists.Application.Endpoints.SetStatusTransitions.SetStatusTransitionsCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommand>),
-            typeof(Lister.Lists.Application.Endpoints.UpdateListItem.UpdateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
+            typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
+            typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<SetStatusTransitionsCommand>),
+            typeof(SetStatusTransitionsCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
+            typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
 
         // Notifications - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),

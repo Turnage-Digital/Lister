@@ -8,5 +8,5 @@ public record StatusTransition
     public string From { get; init; } = string.Empty;
 
     [JsonPropertyName("to")]
-    public string[] AllowedNext { get; init; } = Array.Empty<string>();
+    public string[] AllowedNext { get; init; } = [];
 }

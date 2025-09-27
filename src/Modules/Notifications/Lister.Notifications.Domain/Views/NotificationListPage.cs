@@ -5,7 +5,7 @@ namespace Lister.Notifications.Domain.Views;
 public record NotificationListPage
 {
     [JsonPropertyName("notifications")]
-    public List<NotificationSummary> Notifications { get; init; } = new();
+    public List<NotificationSummary> Notifications { get; init; } = [];
 
     [JsonPropertyName("totalCount")]
     public int TotalCount { get; init; }

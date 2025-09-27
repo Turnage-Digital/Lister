@@ -1,11 +1,12 @@
 using System.Text.Json;
-using Lister.Core.Infrastructure.Sql.Outbox;
+using Lister.Core.Infrastructure.Sql;
+using Lister.Core.Infrastructure.Sql.Entities;
 using Lister.Notifications.Domain.Events;
 using MediatR;
 
 namespace Lister.App.Server.Integration;
 
-public class NotificationOutboxBase(OutboxDbContext db)
+public class NotificationOutboxBase(CoreDbContext db)
 {
     protected async Task EnqueueAsync<T>(T evt, CancellationToken ct)
     {
@@ -15,12 +16,12 @@ public class NotificationOutboxBase(OutboxDbContext db)
             PayloadJson = JsonSerializer.Serialize(evt),
             CreatedOn = DateTime.UtcNow
         };
-        db.Messages.Add(msg);
+        db.OutboxMessages.Add(msg);
         await db.SaveChangesAsync(ct);
     }
 }
 
-public class NotificationCreatedOutboxHandler(OutboxDbContext db)
+public class NotificationCreatedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationCreatedEvent>
 {
     public Task Handle(NotificationCreatedEvent notification, CancellationToken cancellationToken)
@@ -29,7 +30,7 @@ public class NotificationCreatedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationProcessedOutboxHandler(OutboxDbContext db)
+public class NotificationProcessedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationProcessedEvent>
 {
     public Task Handle(NotificationProcessedEvent notification, CancellationToken cancellationToken)
@@ -38,7 +39,7 @@ public class NotificationProcessedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationReadOutboxHandler(OutboxDbContext db)
+public class NotificationReadOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationReadEvent>
 {
     public Task Handle(NotificationReadEvent notification, CancellationToken cancellationToken)
@@ -47,7 +48,7 @@ public class NotificationReadOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class AllNotificationsReadOutboxHandler(OutboxDbContext db)
+public class AllNotificationsReadOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<AllNotificationsReadEvent>
 {
     public Task Handle(AllNotificationsReadEvent notification, CancellationToken cancellationToken)
@@ -56,7 +57,7 @@ public class AllNotificationsReadOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationDeliveryAttemptedOutboxHandler(OutboxDbContext db)
+public class NotificationDeliveryAttemptedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationDeliveryAttemptedEvent>
 {
     public Task Handle(NotificationDeliveryAttemptedEvent notification, CancellationToken cancellationToken)
@@ -65,7 +66,7 @@ public class NotificationDeliveryAttemptedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationRuleCreatedOutboxHandler(OutboxDbContext db)
+public class NotificationRuleCreatedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationRuleCreatedEvent>
 {
     public Task Handle(NotificationRuleCreatedEvent notification, CancellationToken cancellationToken)
@@ -74,7 +75,7 @@ public class NotificationRuleCreatedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationRuleUpdatedOutboxHandler(OutboxDbContext db)
+public class NotificationRuleUpdatedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationRuleUpdatedEvent>
 {
     public Task Handle(NotificationRuleUpdatedEvent notification, CancellationToken cancellationToken)
@@ -83,7 +84,7 @@ public class NotificationRuleUpdatedOutboxHandler(OutboxDbContext db)
     }
 }
 
-public class NotificationRuleDeletedOutboxHandler(OutboxDbContext db)
+public class NotificationRuleDeletedOutboxHandler(CoreDbContext db)
     : NotificationOutboxBase(db), INotificationHandler<NotificationRuleDeletedEvent>
 {
     public Task Handle(NotificationRuleDeletedEvent notification, CancellationToken cancellationToken)
