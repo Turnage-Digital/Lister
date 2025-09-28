@@ -47,3 +47,12 @@ public class ListDeletedOutboxHandler(CoreDbContext db)
         await EnqueueAsync(notification, cancellationToken);
     }
 }
+
+public class ListUpdatedOutboxHandler(CoreDbContext db)
+    : OutboxHandlerBase(db), INotificationHandler<ListUpdatedIntegrationEvent>
+{
+    public async Task Handle(ListUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}

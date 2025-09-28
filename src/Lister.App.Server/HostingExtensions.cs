@@ -17,6 +17,7 @@ using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
 using Lister.Lists.Application.Endpoints.GetStatusTransitions;
 using Lister.Lists.Application.Endpoints.SetStatusTransitions;
+using Lister.Lists.Application.Endpoints.UpdateList;
 using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Services;
@@ -292,6 +293,8 @@ internal static class HostingExtensions
             typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<SetStatusTransitionsCommand>),
             typeof(SetStatusTransitionsCommandHandler<ListDb, ItemDb>));
+        services.AddScoped(typeof(IRequestHandler<UpdateListCommand>),
+            typeof(UpdateListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
 
@@ -327,11 +330,13 @@ internal static class HostingExtensions
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedStreamHandler>();
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedStreamHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedStreamHandler>();
+        services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedStreamHandler>();
 
         // Outbox handlers (persist events for durability)
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationCreatedEvent>, NotificationCreatedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationProcessedEvent>, NotificationProcessedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationReadEvent>, NotificationReadOutboxHandler>();

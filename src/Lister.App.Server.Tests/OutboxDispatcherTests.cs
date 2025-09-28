@@ -42,8 +42,11 @@ public class OutboxDispatcherTests
         await OutboxDispatcher.ProcessPendingOnceAsync(db, feed, logger, CancellationToken.None);
 
         var all = db.OutboxMessages.ToList();
-        Assert.That(all.All(m => m.ProcessedOn != null), Is.True);
-        Assert.That(all.All(m => m.Attempts == 1), Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(all.All(m => m.ProcessedOn != null), Is.True);
+            Assert.That(all.All(m => m.Attempts == 1), Is.True);
+        }
     }
 
     [Test]
@@ -64,9 +67,12 @@ public class OutboxDispatcherTests
         await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
 
         var msg = db.OutboxMessages.Single();
-        Assert.That(msg.ProcessedOn, Is.Null);
-        Assert.That(msg.Attempts, Is.EqualTo(1));
-        Assert.That(msg.LastError, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(msg.ProcessedOn, Is.Null);
+            Assert.That(msg.Attempts, Is.EqualTo(1));
+            Assert.That(msg.LastError, Is.Not.Null);
+        }
     }
 
     [Test]
@@ -88,14 +94,20 @@ public class OutboxDispatcherTests
         await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
         var msg = db.OutboxMessages.Single();
         var firstAvailableAfter = msg.AvailableAfter;
-        Assert.That(firstAvailableAfter, Is.Not.Null);
-        Assert.That(msg.Attempts, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(firstAvailableAfter, Is.Not.Null);
+            Assert.That(msg.Attempts, Is.EqualTo(1));
+        }
 
         // Second pass should skip since AvailableAfter is in the future
         await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
         msg = db.OutboxMessages.Single();
-        Assert.That(msg.Attempts, Is.EqualTo(1));
-        Assert.That(msg.ProcessedOn, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(msg.Attempts, Is.EqualTo(1));
+            Assert.That(msg.ProcessedOn, Is.Null);
+        }
     }
 
     [Test]

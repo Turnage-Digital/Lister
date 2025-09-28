@@ -28,10 +28,13 @@ public class OutboxHandlersTests
         await handler.Handle(evt, CancellationToken.None);
 
         var msg = db.OutboxMessages.Single();
-        Assert.That(msg.Type, Is.EqualTo(typeof(ListItemCreatedIntegrationEvent).FullName));
-        Assert.That(msg.PayloadJson, Does.Contain("\"EventType\":\"ListItemCreatedIntegrationEvent\""));
-        Assert.That(msg.Attempts, Is.EqualTo(0));
-        Assert.That(msg.ProcessedOn, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(msg.Type, Is.EqualTo(typeof(ListItemCreatedIntegrationEvent).FullName));
+            Assert.That(msg.PayloadJson, Does.Contain("\"EventType\":\"ListItemCreatedIntegrationEvent\""));
+            Assert.That(msg.Attempts, Is.EqualTo(0));
+            Assert.That(msg.ProcessedOn, Is.Null);
+        }
     }
 
     private class FakeNotification : IWritableNotification
@@ -53,7 +56,10 @@ public class OutboxHandlersTests
         await handler.Handle(evt, CancellationToken.None);
 
         var msg = db.OutboxMessages.Single();
-        Assert.That(msg.Type, Is.EqualTo(typeof(NotificationCreatedEvent).FullName));
-        Assert.That(msg.PayloadJson, Does.Contain("\"CreatedBy\":\"tester\""));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(msg.Type, Is.EqualTo(typeof(NotificationCreatedEvent).FullName));
+            Assert.That(msg.PayloadJson, Does.Contain("\"CreatedBy\":\"tester\""));
+        }
     }
 }

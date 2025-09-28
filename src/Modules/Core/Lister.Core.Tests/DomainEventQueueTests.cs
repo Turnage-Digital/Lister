@@ -24,11 +24,14 @@ public class DomainEventQueueTests
         var be = queue.Dequeue(EventPhase.BeforeSave);
         var ae = queue.Dequeue(EventPhase.AfterSave);
 
-        Assert.That(be.Single(), Is.SameAs(before));
-        Assert.That(ae.Single(), Is.SameAs(after));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(be.Single(), Is.SameAs(before));
+            Assert.That(ae.Single(), Is.SameAs(after));
 
-        // queues are cleared after dequeue
-        Assert.That(queue.Dequeue(EventPhase.BeforeSave), Is.Empty);
-        Assert.That(queue.Dequeue(EventPhase.AfterSave), Is.Empty);
+            // queues are cleared after dequeue
+            Assert.That(queue.Dequeue(EventPhase.BeforeSave), Is.Empty);
+            Assert.That(queue.Dequeue(EventPhase.AfterSave), Is.Empty);
+        }
     }
 }

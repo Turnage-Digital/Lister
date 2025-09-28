@@ -48,7 +48,10 @@ public class UnreadNotificationCountGetterTests
         var total = await getter.GetAsync(user, null, CancellationToken.None);
         var listACount = await getter.GetAsync(user, listA, CancellationToken.None);
 
-        Assert.That(total, Is.EqualTo(2));
-        Assert.That(listACount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(total, Is.EqualTo(2));
+            Assert.That(listACount, Is.EqualTo(1));
+        }
     }
 }

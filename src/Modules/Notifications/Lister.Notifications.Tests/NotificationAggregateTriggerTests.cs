@@ -57,9 +57,12 @@ public class NotificationAggregateTriggerTests
             new NotificationTrigger { Type = TriggerType.StatusChanged, FromValue = "Open", ToValue = "Done" },
             new Dictionary<string, object>());
 
-        Assert.That(ok, Is.True);
-        Assert.That(badFrom, Is.False);
-        Assert.That(badTo, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(badFrom, Is.False);
+            Assert.That(badTo, Is.False);
+        }
     }
 
     [Test]

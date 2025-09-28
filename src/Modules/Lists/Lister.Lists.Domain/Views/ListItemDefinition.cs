@@ -11,6 +11,9 @@ public record ListItemDefinition : IReadOnlyList
     [JsonPropertyName("statuses")]
     public Status[] Statuses { get; set; } = null!;
 
+    [JsonPropertyName("transitions")]
+    public StatusTransition[] Transitions { get; set; } = Array.Empty<StatusTransition>();
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 

@@ -172,7 +172,10 @@ public class NotificationAggregateEventTests
         await agg.MarkNotificationAsReadAsync(n, DateTime.UtcNow);
         await agg.MarkAllNotificationsAsReadAsync(_user, DateTime.UtcNow);
 
-        Assert.That(queue.Events.OfType<NotificationReadEvent>().Any(), Is.True);
-        Assert.That(queue.Events.OfType<AllNotificationsReadEvent>().Any(), Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(queue.Events.OfType<NotificationReadEvent>().Any(), Is.True);
+            Assert.That(queue.Events.OfType<AllNotificationsReadEvent>().Any(), Is.True);
+        }
     }
 }

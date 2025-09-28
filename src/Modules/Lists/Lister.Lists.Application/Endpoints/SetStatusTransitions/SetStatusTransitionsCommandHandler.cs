@@ -5,16 +5,22 @@ using MediatR;
 namespace Lister.Lists.Application.Endpoints.SetStatusTransitions;
 
 public class SetStatusTransitionsCommandHandler<TList, TItem>(
-    IListsUnitOfWork<TList, TItem> uow
+    ListsAggregate<TList, TItem> aggregate
 ) : IRequestHandler<SetStatusTransitionsCommand>
     where TList : IWritableList
     where TItem : IWritableItem
 {
     public async Task Handle(SetStatusTransitionsCommand request, CancellationToken cancellationToken)
     {
-        var list = await uow.ListsStore.GetByIdAsync(request.ListId, cancellationToken)
+        var list = await aggregate.GetListByIdAsync(request.ListId, cancellationToken)
                    ?? throw new InvalidOperationException($"List {request.ListId} not found");
-        await uow.ListsStore.SetStatusTransitionsAsync(list, request.Transitions, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+
+        await aggregate.UpdateListAsync(
+            list,
+            null,
+            null,
+            request.Transitions,
+            "system",
+            cancellationToken);
     }
 }

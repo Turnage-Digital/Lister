@@ -33,3 +33,13 @@ public class ListDeletedStreamHandler(ChangeFeed feed) : INotificationHandler<Li
         await feed.PublishAsync(envelope, cancellationToken);
     }
 }
+
+public class ListUpdatedStreamHandler(ChangeFeed feed) : INotificationHandler<ListUpdatedIntegrationEvent>
+{
+    public async Task Handle(ListUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+            { type = nameof(ListUpdatedIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}

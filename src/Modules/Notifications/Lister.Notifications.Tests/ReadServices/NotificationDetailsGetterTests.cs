@@ -56,16 +56,22 @@ public class NotificationDetailsGetterTests
         var details = await getter.GetAsync(user, id, CancellationToken.None);
 
         Assert.That(details, Is.Not.Null);
-        Assert.That(details!.Id, Is.EqualTo(id));
-        Assert.That(details.Title, Is.EqualTo("Subject"));
-        Assert.That(details.Body, Is.EqualTo("Body"));
-        Assert.That(((Dictionary<string, object>)details.Metadata!)["x"].ToString(), Is.EqualTo("42"));
-        // Ensure our created history entry is present
-        Assert.That(details.History.Any(h => h.Type == NotificationHistoryType.Created
-                                             && h.Bag is not null
-                                             && ((Dictionary<string, object?>)h.Bag)["k"]?.ToString() == "v"), Is.True);
-        Assert.That(details.DeliveryAttempts.Count, Is.EqualTo(1));
-        Assert.That(details.DeliveryAttempts[0].Channel, Is.EqualTo("Email"));
-        Assert.That(details.DeliveryAttempts[0].Status, Is.EqualTo("Delivered"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(details!.Id, Is.EqualTo(id));
+            Assert.That(details.Title, Is.EqualTo("Subject"));
+            Assert.That(details.Body, Is.EqualTo("Body"));
+            Assert.That(((Dictionary<string, object>)details.Metadata!)["x"].ToString(), Is.EqualTo("42"));
+            // Ensure our created history entry is present
+            Assert.That(details.History.Any(h => h.Type == NotificationHistoryType.Created
+                                                 && h.Bag is not null
+                                                 && ((Dictionary<string, object?>)h.Bag)["k"]?.ToString() == "v"), Is.True);
+            Assert.That(details.DeliveryAttempts.Count, Is.EqualTo(1));
+        }
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(details.DeliveryAttempts[0].Channel, Is.EqualTo("Email"));
+            Assert.That(details.DeliveryAttempts[0].Status, Is.EqualTo("Delivered"));
+        }
     }
 }

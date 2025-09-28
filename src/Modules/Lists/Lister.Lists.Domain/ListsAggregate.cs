@@ -29,12 +29,18 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         string name,
         IEnumerable<Status> statuses,
         IEnumerable<Column> columns,
+        IEnumerable<StatusTransition>? transitions = null,
         CancellationToken cancellationToken = default
     )
     {
         var retval = await unitOfWork.ListsStore.InitAsync(name, createdBy, cancellationToken);
         await unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
         await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
+        if (transitions is not null)
+        {
+            await unitOfWork.ListsStore.SetStatusTransitionsAsync(retval, transitions, cancellationToken);
+        }
+
         await unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
         events.Enqueue(new ListCreatedEvent(retval, createdBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -45,6 +51,127 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     {
         await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         events.Enqueue(new ListDeletedEvent(list, deletedBy), EventPhase.AfterSave);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateListAsync(
+        TList list,
+        IEnumerable<Column>? columns,
+        IEnumerable<Status>? statuses,
+        IEnumerable<StatusTransition>? transitions,
+        string updatedBy,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (list is null)
+        {
+            throw new ArgumentNullException(nameof(list));
+        }
+
+        // Load current
+        var currentColumns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
+        var currentStatuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
+
+        if (columns is not null)
+        {
+            // Guardrails: disallow removals or type changes
+            var currentByName = currentColumns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
+            var nextByName = columns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
+
+            // Removed columns
+            var removed = currentByName.Keys.Where(k => !nextByName.ContainsKey(k)).ToArray();
+            if (removed.Length > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Update would remove columns: {string.Join(", ", removed)} — migration required");
+            }
+
+            // Type changes
+            var typeChanges = currentByName
+                .Where(kv => nextByName.TryGetValue(kv.Key, out var next) && next.Type != kv.Value.Type)
+                .Select(kv => kv.Key)
+                .ToArray();
+            if (typeChanges.Length > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Update would change types for: {string.Join(", ", typeChanges)} — migration required");
+            }
+
+            // Tightening constraints heuristics
+            foreach (var kv in currentByName)
+            {
+                if (!nextByName.TryGetValue(kv.Key, out var next))
+                {
+                    continue;
+                }
+
+                var cur = kv.Value;
+                // Required: false -> true is breaking
+                if (!cur.Required && next.Required)
+                {
+                    throw new InvalidOperationException(
+                        $"Column '{kv.Key}': making required is breaking — migration required");
+                }
+
+                // AllowedValues: ensure next is superset (if both non-null)
+                if (cur.AllowedValues is { Length: > 0 } && next.AllowedValues is { Length: > 0 })
+                {
+                    var curSet = new HashSet<string>(cur.AllowedValues, StringComparer.OrdinalIgnoreCase);
+                    if (!next.AllowedValues.All(v => curSet.Contains(v)))
+                    {
+                        throw new InvalidOperationException(
+                            $"Column '{kv.Key}': allowedValues shrinking — migration required");
+                    }
+                }
+
+                // Range tightening
+                if (cur.MinNumber is not null && next.MinNumber is not null && next.MinNumber > cur.MinNumber)
+                {
+                    throw new InvalidOperationException(
+                        $"Column '{kv.Key}': increasing minimum is breaking — migration required");
+                }
+
+                if (cur.MaxNumber is not null && next.MaxNumber is not null && next.MaxNumber < cur.MaxNumber)
+                {
+                    throw new InvalidOperationException(
+                        $"Column '{kv.Key}': decreasing maximum is breaking — migration required");
+                }
+
+                // Regex: any change treated as breaking
+                if (!string.Equals(cur.Regex, next.Regex, StringComparison.Ordinal))
+                {
+                    throw new InvalidOperationException(
+                        $"Column '{kv.Key}': regex change is breaking — migration required");
+                }
+            }
+
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, cancellationToken);
+        }
+
+        if (statuses is not null)
+        {
+            // Disallow deletions or renames (by name)
+            var currentNames =
+                new HashSet<string>(currentStatuses.Select(s => s.Name), StringComparer.OrdinalIgnoreCase);
+            var nextNames = new HashSet<string>(statuses.Select(s => s.Name), StringComparer.OrdinalIgnoreCase);
+            var deletedStatuses = currentNames.Where(n => !nextNames.Contains(n)).ToArray();
+            if (deletedStatuses.Length > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Removing statuses [{string.Join(", ", deletedStatuses)}] is breaking — migration required");
+            }
+
+            // Color changes and additions are allowed
+            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, cancellationToken);
+        }
+
+        if (transitions is not null)
+        {
+            await unitOfWork.ListsStore.SetStatusTransitionsAsync(list, transitions, cancellationToken);
+        }
+
+        // Emit a domain event to capture update action
+        events.Enqueue(new ListUpdatedEvent(list, updatedBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
