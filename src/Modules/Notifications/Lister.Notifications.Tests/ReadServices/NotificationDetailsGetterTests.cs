@@ -65,9 +65,11 @@ public class NotificationDetailsGetterTests
             // Ensure our created history entry is present
             Assert.That(details.History.Any(h => h.Type == NotificationHistoryType.Created
                                                  && h.Bag is not null
-                                                 && ((Dictionary<string, object?>)h.Bag)["k"]?.ToString() == "v"), Is.True);
+                                                 && ((Dictionary<string, object?>)h.Bag)["k"]?.ToString() == "v"),
+                Is.True);
             Assert.That(details.DeliveryAttempts.Count, Is.EqualTo(1));
         }
+
         using (Assert.EnterMultipleScope())
         {
             Assert.That(details.DeliveryAttempts[0].Channel, Is.EqualTo("Email"));

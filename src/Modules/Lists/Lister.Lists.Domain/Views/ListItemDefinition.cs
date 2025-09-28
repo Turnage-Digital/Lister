@@ -12,7 +12,7 @@ public record ListItemDefinition : IReadOnlyList
     public Status[] Statuses { get; set; } = null!;
 
     [JsonPropertyName("transitions")]
-    public StatusTransition[] Transitions { get; set; } = Array.Empty<StatusTransition>();
+    public StatusTransition[] Transitions { get; set; } = [];
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;

@@ -56,6 +56,7 @@ public class UserNotificationsGetterTests
             Assert.That(page.UnreadCount, Is.EqualTo(1));
             Assert.That(page.Notifications.Count, Is.EqualTo(2));
         }
+
         using (Assert.EnterMultipleScope())
         {
             Assert.That(page.Notifications[1].Title, Is.EqualTo("A"));

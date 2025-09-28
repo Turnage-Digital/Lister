@@ -161,11 +161,11 @@ public class ListerApiClient
         CancellationToken cancellationToken = default
     )
     {
-        var json = JsonSerializer.Serialize(transitions, _jsonOptions);
-        var content = new StringContent(json, Encoding.UTF8);
+        var body = JsonSerializer.Serialize(new { transitions }, _jsonOptions);
+        var content = new StringContent(body, Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Put,
-            $"/api/lists/{listId}/statusTransitions", cancellationToken);
+            $"/api/lists/{listId}", cancellationToken);
         request.Content = content;
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();

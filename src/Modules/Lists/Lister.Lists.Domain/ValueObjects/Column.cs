@@ -5,6 +5,9 @@ namespace Lister.Lists.Domain.ValueObjects;
 
 public record Column
 {
+    [JsonPropertyName("key")]
+    public string? StorageKey { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 

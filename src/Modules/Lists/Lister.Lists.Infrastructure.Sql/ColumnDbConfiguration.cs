@@ -20,6 +20,10 @@ public class ColumnDbConfiguration : IEntityTypeConfiguration<ColumnDb>
             .HasMaxLength(50)
             .IsRequired();
 
+        // StorageKey is introduced for stable property addressing during migrations.
+        // Not persisted yet to avoid forcing a DB migration in this change set.
+        builder.Ignore(e => e.StorageKey);
+
         builder.Property(e => e.Type)
             .IsRequired();
 

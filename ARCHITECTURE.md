@@ -2,32 +2,58 @@
 
 This document captures the intentional architecture boundaries and composition patterns for the Lister monorepo.
 
+## Table of Contents
+
+1. Solution Structure
+2. Layers & Dependencies
+3. Composition Root (Host)
+4. Module Registration
+5. Conventions
+6. Entity Design
+7. Value Objects & Serialization
+8. Read Path & Views
+9. Persistence
+10. Store Pattern
+11. MediatR
+12. Behaviors & Controllers
+13. Integration Events
+14. Change Feed (SSE)
+15. List Schema Validation & Indexing (Bag)
+16. Endpoints Overview
+17. List Schema Migrations (Outbox + SSE)
+18. Testing
+19. Config
+20. Performance considerations
+
 ## Solution Structure
 
 ```
 /src
-  /Lister.App.Server         # Host/Composition Root
-  /Lister.Client             # React SPA
-  /Lister.Mcp.Server         # Dev-only MCP sidecar
+  /Lister.App.Server           # Host / Composition Root (DI, HTTP, SSE, Outbox dispatcher)
+  /Lister.App.Server.Tests     # Host tests
+  /Lister.Client               # React SPA
+  /Lister.Mcp.Server           # Dev-only MCP sidecar (tools over HTTP)
   /Modules
-    /Core                    # Shared kernel
-      /*.Domain
-      /*.Application  
-      /*.Infrastructure.Sql
-      /*.Infrastructure.OpenAi
-    /Lists                   # Lists module
-      /*.Domain
-      /*.Application
-      /*.Infrastructure.Sql
-      /*.Tests
-    /Notifications           # Notifications module
-      /*.Domain
-      /*.Application
-      /*.Infrastructure.Sql
-    /Users                   # Users/Identity module
-      /*.Domain
-      /*.Application
-      /*.Infrastructure.Sql
+    /Core                      # Shared kernel
+      /Lister.Core.Domain
+      /Lister.Core.Application
+      /Lister.Core.Infrastructure.Sql
+      /Lister.Core.Infrastructure.OpenAi
+      /Lister.Core.Tests
+    /Lists                     # Lists module
+      /Lister.Lists.Domain
+      /Lister.Lists.Application      # Endpoints (incl. UpdateList, Migrations), handlers
+      /Lister.Lists.Infrastructure.Sql
+      /Lister.Lists.Tests
+    /Notifications             # Notifications module
+      /Lister.Notifications.Domain
+      /Lister.Notifications.Application
+      /Lister.Notifications.Infrastructure.Sql
+      /Lister.Notifications.Tests
+    /Users                     # Users / Identity module
+      /Lister.Users.Domain
+      /Lister.Users.Application
+      /Lister.Users.Infrastructure.Sql
 ```
 
 ## Layers & Dependencies
@@ -77,17 +103,11 @@ Each module provides extension methods for registration:
 
 Host calls these in order: Infrastructure → Domain → Application
 
-## MediatR
+## Conventions
 
-- Use assembly scanning for non-generic handlers.
-- Use closed DI bindings (above) for generic handlers and integration event handlers.
-
-## Integration Events
-
-- Domain events that cross module boundaries (e.g., `ListItemCreatedIntegrationEvent`)
-- Handlers registered in Host using MediatR's `INotificationHandler<T>`
-- Enable loose coupling between modules (Lists → Notifications)
-- Published via MediatR after successful aggregate operations
+- Application must not reference Infrastructure projects.
+- Only Host closes generics and wires concrete EF implementations.
+- New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
 
 ## Persistence
 
@@ -100,27 +120,43 @@ Host calls these in order: Infrastructure → Domain → Application
 - Aggregates compose stores and add business logic, domain events, and invariant enforcement
 - Stores are registered in the Host and injected into aggregates via `IUnitOfWork`
 
+## MediatR
+
+- Use assembly scanning for non-generic handlers.
+- Use closed DI bindings (above) for generic handlers and integration event handlers.
+
 ## Behaviors & Controllers
 
 - `AssignUserBehavior` populates `UserId` on `RequestBase{,T}`.
 - `LoggingBehavior` logs request/response boundaries for RequestBase types.
 - Controllers live in Application (as done here); Host maps controllers.
 
-## Config
+## Integration Events
 
-- Greenfield dev may keep simple credentials checked in; production uses secrets/env vars.
+- Domain events that cross module boundaries (e.g., `ListItemCreatedIntegrationEvent`)
+- Handlers registered in Host using MediatR's `INotificationHandler<T>`
+- Enable loose coupling between modules (Lists → Notifications)
+- Published via MediatR after successful aggregate operations
 
-## Testing
+## Event Phases & Dispatch
 
-- Unit tests live alongside modules: `{Module}.Tests`
-- Test projects reference Domain and Application layers
-- Infrastructure mocked via interfaces defined in Domain
+- Purpose: Make the timing of domain/integration events explicit while preserving transactional guarantees.
+- Phases:
+    - `BeforeSave`: raised inside the transaction prior to persistence; use sparingly (e.g., validation that needs
+      observers).
+    - `AfterSave`: raised after `SaveChanges` commits; IDs exist; side-effects safe.
+- Mechanism:
+    - Domain enqueues events into `IDomainEventQueue` with a phase.
+    - `UnitOfWork.SaveChangesAsync` publishes `BeforeSave` events, saves/commits, then publishes `AfterSave` events.
+    - MediatR is used for dispatch; domain retains explicit control over when events fire (by phase and enqueue
+      location).
 
-## Conventions
+## Change Feed (SSE)
 
-- Application must not reference Infrastructure projects.
-- Only Host closes generics and wires concrete EF implementations.
-- New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
+- Route: `GET /api/changes/stream`
+- Envelope: `{ type, data, occurredOn }`
+- Producers: Integration event handlers publish to a ChangeFeed service; Outbox dispatcher replays persisted messages.
+- Consumers: The client registers handlers by `type` and invalidates relevant caches (e.g., list-items, list-definition).
 
 ## Entity Design
 
@@ -156,6 +192,32 @@ Host calls these in order: Infrastructure → Domain → Application
 - Mapping between write models and views.
     - AutoMapper profiles translate persistence entities to view models (e.g., `ListsMappingProfile`).
     - Query services return projection models tailored for reads; commands operate on `IWritable*` via aggregates.
+
+## Value Objects & Serialization
+
+- Value objects are record types intended to cross service/app boundaries.
+    - Author all ValueObjects as C# `record` types in Domain.
+    - Annotate every serializable property with `JsonPropertyName("{propName}")` to lock the wire contract explicitly.
+    - Keep them small and composable; use them inside commands, events, and views.
+
+- Views (read models) follow the same rule.
+    - Views are records and should annotate all properties with `JsonPropertyName`.
+    - Treat view types as API contracts; avoid leaking persistence-only fields.
+
+- What NOT to annotate
+    - Storage-only types (e.g., EF Core DB records like `ColumnDb`, `StatusDb`, history entry DB records) are not
+      serialized over the wire; do not add JSON attributes.
+    - Persistence entities exist for storage and mapping, not as API shapes.
+
+- Naming and JSON policy
+    - The app uses a camelCase JSON policy in controllers; `JsonPropertyName` ensures stability even if naming policies
+      change.
+    - Prefer explicit property names to prevent accidental wire breaks during refactors.
+
+- Example pattern
+    - ValueObject: `NotificationChannel`, `NotificationTrigger`, `Status`, `Column` — records with `JsonPropertyName` on
+      each field.
+    - View: `ListItem`, `ItemDetails`, `ListItemDefinition` — records with `JsonPropertyName` on each field.
 
 ## Read Path & Views
 
@@ -209,19 +271,6 @@ Host calls these in order: Infrastructure → Domain → Application
 - Timepoints are represented as history entries (`Entry<HistoryEnum>`); include `History` in detailed views when needed
   and derive convenience flags (e.g., `isRead`) from history/state.
 
-## Event Phases & Dispatch
-
-- Purpose: Make the timing of domain/integration events explicit while preserving transactional guarantees.
-- Phases:
-    - `BeforeSave`: raised inside the transaction prior to persistence; use sparingly (e.g., validation that needs
-      observers).
-    - `AfterSave`: raised after `SaveChanges` commits; IDs exist; side-effects safe.
-- Mechanism:
-    - Domain enqueues events into `IDomainEventQueue` with a phase.
-    - `UnitOfWork.SaveChangesAsync` publishes `BeforeSave` events, saves/commits, then publishes `AfterSave` events.
-    - MediatR is used for dispatch; domain retains explicit control over when events fire (by phase and enqueue
-      location).
-
 ## List Schema Validation & Indexing (Bag)
 
 - Validation: On write, the aggregate validates the `bag` against the list's `Columns` (type checks per `ColumnType`;
@@ -230,28 +279,102 @@ Host calls these in order: Infrastructure → Domain → Application
 - Indexing (future guidance): Frequently queried bag fields should be denormalized (computed/materialized columns) or
   indexed via JSON-path when supported; paginate server-side.
 
-## Value Objects & Serialization
+## Endpoints Overview
 
-- Value objects are record types intended to cross service/app boundaries.
-    - Author all ValueObjects as C# `record` types in Domain.
-    - Annotate every serializable property with `JsonPropertyName("{propName}")` to lock the wire contract explicitly.
-    - Keep them small and composable; use them inside commands, events, and views.
+- Lists
+  - `POST /api/lists/` → Create list (returns `ListItemDefinition`)
+  - `PUT /api/lists/{listId}` → Update list definition (Columns/Statuses/Transitions)
+  - `DELETE /api/lists/{listId}` → Delete list
+  - `GET /api/lists/names` → List names (for pickers/navigation)
+  - `GET /api/lists/{listId}/itemDefinition` → Read list definition (view)
+  - `GET /api/lists/{listId}/items` → Paged items (`PagedList`)
+  - `POST /api/lists/{listId}/items` → Create item
+  - `PUT /api/lists/{listId}/items/{itemId}` → Update item
+  - `DELETE /api/lists/{listId}/items/{itemId}` → Delete item
+  - `POST /api/lists/{listId}/migrations` → Run migrations (`mode: dryRun|execute`), progress via SSE
+  - `GET /api/lists/{listId}/statusTransitions` → Read-only transitions (for editors)
 
-- Views (read models) follow the same rule.
-    - Views are records and should annotate all properties with `JsonPropertyName`.
-    - Treat view types as API contracts; avoid leaking persistence-only fields.
+- Notifications
+  - `GET /api/notifications` → User notifications (filters: since, unread, listId, paging)
+  - `GET /api/notifications/{notificationId}` → Notification details
+  - `POST /api/notifications/{notificationId}/read` → Mark as read
+  - `POST /api/notifications/readAll` → Mark all as read
+  - Rules:
+    - `GET /api/notifications/rules` → User rules
+    - `POST /api/notifications/rules` → Create rule
+    - `PUT /api/notifications/rules` → Update rule
+    - `DELETE /api/notifications/rules` → Delete rule
 
-- What NOT to annotate
-    - Storage-only types (e.g., EF Core DB records like `ColumnDb`, `StatusDb`, history entry DB records) are not
-      serialized over the wire; do not add JSON attributes.
-    - Persistence entities exist for storage and mapping, not as API shapes.
+- Change Feed (SSE)
+  - `GET /api/changes/stream` → Server-Sent Events (typed envelopes `{ type, data, occurredOn }`)
+  - Event types include list item changes, list lifecycle (created/deleted/updated), notifications, and migration progress.
 
-- Naming and JSON policy
-    - The app uses a camelCase JSON policy in controllers; `JsonPropertyName` ensures stability even if naming policies
-      change.
-    - Prefer explicit property names to prevent accidental wire breaks during refactors.
+## List Schema Migrations (Outbox + SSE)
 
-- Example pattern
-    - ValueObject: `NotificationChannel`, `NotificationTrigger`, `Status`, `Column` — records with `JsonPropertyName` on
-      each field.
-    - View: `ListItem`, `ItemDetails`, `ListItemDefinition` — records with `JsonPropertyName` on each field.
+Goals
+- Safely evolve list schemas without breaking items or client contracts.
+- Provide dry-run validation, explicit execution, durable eventing (Outbox), and real-time progress (SSE).
+
+Key Concepts
+- Stable Column Keys: Columns have immutable `StorageKey` values (e.g., `prop1`, `prop2`) decoupled from display `Name`.
+  - Keys uniquely identify fields in item `bag` payloads and support safe renames.
+  - Aggregates assign missing keys during list creation; persistence stores round-trip keys.
+
+- MigrationPlan: Declarative set of operations the server validates and executes.
+  - ChangeColumnType(key, targetType, converter)
+  - RemoveColumn(key, policy)
+  - TightenConstraints(key, required?, allowedValues?, min?, max?, regex?)
+  - RenameStorageKey(from, to)
+  - RemoveStatus(name, mapTo?)
+
+- Validation (Dry-Run):
+  - Checks existence, collisions, converter presence, and constraint tightening safety.
+  - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
+
+- Execution (with SSE):
+  - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status mapping).
+  - Publishes progress via integration events → Outbox → SSE feed:
+    - `ListMigrationStartedIntegrationEvent`
+    - `ListMigrationProgressIntegrationEvent`
+    - `ListMigrationCompletedIntegrationEvent`
+    - `ListMigrationFailedIntegrationEvent`
+
+Contracts & Endpoints
+- POST `/api/lists/{listId}/migrations`
+  - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
+  - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
+  - UI subscribes to SSE to reflect live progress.
+
+Durability & Delivery
+- Outbox: All migration events are persisted and dispatched independently with exponential backoff and retention cleanup.
+- SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` and invalidates caches accordingly.
+
+CQRS Separation
+- Aggregates: Hydration-first for updates; schema updates still flow through aggregate guardrails outside explicit migrations.
+- Read Side: `IGetListItemDefinition` composes columns/statuses/transitions for validation and editors.
+
+Safety & Guardrails
+- The default update path rejects breaking changes (removals, type changes, constraint tightening) — use MigrationPlan instead.
+- Migration validation surfaces potential breakage; execution can include converter logic and mapping policies.
+
+Future Enhancements
+- Persist `StorageKey` in the database with uniqueness per list and indexes; expose via read models consistently.
+- Converter Registry: Named converters with strict/lenient modes and rich diagnostics.
+- Abort Thresholds: Stop execution if error rate exceeds a configurable limit; emit `Failed` event with details.
+- Rollback Strategy: Archive removed columns or write to a shadow field; expose recovery scripts.
+
+## Testing
+
+- Unit tests live alongside modules: `{Module}.Tests`.
+- Test projects reference Domain and Application layers.
+- Infrastructure mocked via interfaces defined in Domain.
+
+## Config
+
+- Greenfield dev may keep simple credentials checked in; production uses secrets/env vars.
+
+## Performance considerations
+
+- Views must only return what the endpoint needs; do not over-fetch.
+- Prefer server-side projection (`Select(...)`) into view types instead of materializing entities and mapping in-memory.
+- Use denormalized fields (e.g., `TriggerType`) to support efficient queries when JSON filtering would be expensive.

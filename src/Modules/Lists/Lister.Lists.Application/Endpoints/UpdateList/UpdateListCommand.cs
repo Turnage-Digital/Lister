@@ -9,4 +9,3 @@ public record UpdateListCommand(
     Status[]? Statuses,
     StatusTransition[]? Transitions
 ) : RequestBase;
-

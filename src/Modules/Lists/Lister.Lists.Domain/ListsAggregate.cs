@@ -34,7 +34,10 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     )
     {
         var retval = await unitOfWork.ListsStore.InitAsync(name, createdBy, cancellationToken);
-        await unitOfWork.ListsStore.SetColumnsAsync(retval, columns, cancellationToken);
+
+        // Ensure stable storage keys for columns
+        var normalizedColumns = AssignStorageKeys(columns);
+        await unitOfWork.ListsStore.SetColumnsAsync(retval, normalizedColumns, cancellationToken);
         await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
         if (transitions is not null)
         {
@@ -45,6 +48,44 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         events.Enqueue(new ListCreatedEvent(retval, createdBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return retval;
+    }
+
+    private static IEnumerable<Column> AssignStorageKeys(IEnumerable<Column> columns)
+    {
+        var list = columns.Select(c => new Column
+            {
+                StorageKey = c.StorageKey,
+                Name = c.Name,
+                Regex = c.Regex,
+                Required = c.Required,
+                AllowedValues = c.AllowedValues,
+                MinNumber = c.MinNumber,
+                MaxNumber = c.MaxNumber,
+                Type = c.Type
+            })
+            .ToList();
+
+        // Generate sequential keys for any missing StorageKey: prop1, prop2, ...
+        var used = new HashSet<string>(list.Where(c => !string.IsNullOrWhiteSpace(c.StorageKey))
+            .Select(c => c.StorageKey!)
+            .Select(s => s.ToLowerInvariant()));
+        var counter = 1;
+        foreach (var col in list)
+        {
+            if (string.IsNullOrWhiteSpace(col.StorageKey))
+            {
+                string key;
+                do
+                {
+                    key = $"prop{counter++}";
+                } while (used.Contains(key));
+
+                col.StorageKey = key;
+                used.Add(key);
+            }
+        }
+
+        return list;
     }
 
     public async Task DeleteListAsync(TList list, string deletedBy, CancellationToken cancellationToken = default)

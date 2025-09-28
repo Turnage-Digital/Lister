@@ -151,7 +151,7 @@ public class ListerTools
             var trigger = JsonSerializer.Deserialize<NotificationTrigger>(triggerJson, JsonOptions)
                           ?? NotificationTrigger.ItemCreated();
             var channels = JsonSerializer.Deserialize<NotificationChannel[]>(channelsJson, JsonOptions)
-                           ?? new[] { NotificationChannel.InApp() };
+                           ?? [NotificationChannel.InApp()];
             var schedule = JsonSerializer.Deserialize<NotificationSchedule>(scheduleJson, JsonOptions)
                            ?? NotificationSchedule.Immediate();
 
@@ -219,7 +219,7 @@ public class ListerTools
             var trigger = JsonSerializer.Deserialize<NotificationTrigger>(triggerJson, JsonOptions)
                           ?? NotificationTrigger.ItemCreated();
             var channels = JsonSerializer.Deserialize<NotificationChannel[]>(channelsJson, JsonOptions)
-                           ?? new[] { NotificationChannel.InApp() };
+                           ?? [NotificationChannel.InApp()];
             var schedule = JsonSerializer.Deserialize<NotificationSchedule>(scheduleJson, JsonOptions)
                            ?? NotificationSchedule.Immediate();
 

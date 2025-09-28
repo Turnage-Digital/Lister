@@ -34,6 +34,52 @@ public class ListDeletedStreamHandler(ChangeFeed feed) : INotificationHandler<Li
     }
 }
 
+public class ListMigrationStartedStreamHandler(ChangeFeed feed)
+    : INotificationHandler<ListMigrationStartedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationStartedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+            { type = nameof(ListMigrationStartedIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}
+
+public class ListMigrationProgressStreamHandler(ChangeFeed feed)
+    : INotificationHandler<ListMigrationProgressIntegrationEvent>
+{
+    public async Task Handle(ListMigrationProgressIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+            { type = nameof(ListMigrationProgressIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}
+
+public class ListMigrationCompletedStreamHandler(ChangeFeed feed)
+    : INotificationHandler<ListMigrationCompletedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationCompletedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+        {
+            type = nameof(ListMigrationCompletedIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow
+        };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}
+
+public class ListMigrationFailedStreamHandler(ChangeFeed feed)
+    : INotificationHandler<ListMigrationFailedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationFailedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+            { type = nameof(ListMigrationFailedIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}
+
 public class ListUpdatedStreamHandler(ChangeFeed feed) : INotificationHandler<ListUpdatedIntegrationEvent>
 {
     public async Task Handle(ListUpdatedIntegrationEvent notification, CancellationToken cancellationToken)

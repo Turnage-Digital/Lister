@@ -16,7 +16,7 @@ using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
 using Lister.Lists.Application.Endpoints.GetStatusTransitions;
-using Lister.Lists.Application.Endpoints.SetStatusTransitions;
+using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Application.Endpoints.UpdateList;
 using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
@@ -289,10 +289,12 @@ internal static class HostingExtensions
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
+        services.AddScoped<IMigrationValidator, MigrationValidator>();
+        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
+        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationDryRunResult>),
+            typeof(RunMigrationCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
             typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<SetStatusTransitionsCommand>),
-            typeof(SetStatusTransitionsCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListCommand>),
             typeof(UpdateListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
@@ -331,12 +333,32 @@ internal static class HostingExtensions
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedStreamHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedStreamHandler>();
         services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedStreamHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>, ListMigrationStartedStreamHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
+                ListMigrationProgressStreamHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
+                ListMigrationCompletedStreamHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>, ListMigrationFailedStreamHandler>();
 
         // Outbox handlers (persist events for durability)
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedOutboxHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>, ListMigrationStartedOutboxHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
+                ListMigrationProgressOutboxHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
+                ListMigrationCompletedOutboxHandler>();
+        services
+            .AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>, ListMigrationFailedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationCreatedEvent>, NotificationCreatedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationProcessedEvent>, NotificationProcessedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationReadEvent>, NotificationReadOutboxHandler>();

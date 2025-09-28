@@ -48,6 +48,42 @@ public class ListDeletedOutboxHandler(CoreDbContext db)
     }
 }
 
+public class ListMigrationStartedOutboxHandler(CoreDbContext db)
+    : OutboxHandlerBase(db), INotificationHandler<ListMigrationStartedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationStartedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
+public class ListMigrationProgressOutboxHandler(CoreDbContext db)
+    : OutboxHandlerBase(db), INotificationHandler<ListMigrationProgressIntegrationEvent>
+{
+    public async Task Handle(ListMigrationProgressIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
+public class ListMigrationCompletedOutboxHandler(CoreDbContext db)
+    : OutboxHandlerBase(db), INotificationHandler<ListMigrationCompletedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationCompletedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
+public class ListMigrationFailedOutboxHandler(CoreDbContext db)
+    : OutboxHandlerBase(db), INotificationHandler<ListMigrationFailedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationFailedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
 public class ListUpdatedOutboxHandler(CoreDbContext db)
     : OutboxHandlerBase(db), INotificationHandler<ListUpdatedIntegrationEvent>
 {

@@ -80,6 +80,7 @@ public class ListsStore(ListsDbContext dbContext)
         listDb.Columns = columns
             .Select(pd => new ColumnDb
             {
+                StorageKey = pd.StorageKey,
                 Name = pd.Name,
                 Type = pd.Type,
                 Required = pd.Required,
@@ -98,6 +99,7 @@ public class ListsStore(ListsDbContext dbContext)
         var retval = listDb.Columns
             .Select(pd => new Column
             {
+                StorageKey = pd.StorageKey,
                 Name = pd.Name, Type = pd.Type, Required = pd.Required, AllowedValues = pd.AllowedValues,
                 MinNumber = pd.MinNumber, MaxNumber = pd.MaxNumber, Regex = pd.Regex
             })

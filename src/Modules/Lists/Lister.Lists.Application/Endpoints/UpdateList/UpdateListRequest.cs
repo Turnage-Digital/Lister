@@ -14,4 +14,3 @@ public class UpdateListRequest
     [JsonPropertyName("transitions")]
     public StatusTransition[]? Transitions { get; set; }
 }
-
