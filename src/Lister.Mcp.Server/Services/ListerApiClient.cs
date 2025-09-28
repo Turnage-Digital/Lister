@@ -334,7 +334,7 @@ public class ListerApiClient
         }
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "/api/changes/stream");
-        request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/event-stream"));
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
         using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cts.Token);
         response.EnsureSuccessStatusCode();
 
@@ -344,7 +344,11 @@ public class ListerApiClient
         while (!reader.EndOfStream && events.Count < maxEvents && !cts.IsCancellationRequested)
         {
             var line = await reader.ReadLineAsync(cts.Token);
-            if (line is null) break;
+            if (line is null)
+            {
+                break;
+            }
+
             if (line.StartsWith("data: "))
             {
                 var json = line.Substring("data: ".Length);

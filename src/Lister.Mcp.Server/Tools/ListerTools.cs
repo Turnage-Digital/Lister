@@ -107,15 +107,18 @@ public class ListerTools
     [Description("Read the change feed SSE stream and return recent events")]
     public static async Task<string> ReadChangeFeed(
         ListerApiClient apiClient,
-        [Description("Maximum events to read (default 10)")] int maxEvents = 10,
-        [Description("Timeout in seconds (default 5)")] int timeoutSeconds = 5,
+        [Description("Maximum events to read (default 10)")]
+        int maxEvents = 10,
+        [Description("Timeout in seconds (default 5)")]
+        int timeoutSeconds = 5,
         CancellationToken cancellationToken = default
     )
     {
         Log.Information("ReadChangeFeed called with {Request}", new { maxEvents, timeoutSeconds });
         try
         {
-            var evts = await apiClient.ReadChangeFeedAsync(maxEvents, TimeSpan.FromSeconds(timeoutSeconds), cancellationToken);
+            var evts = await apiClient.ReadChangeFeedAsync(maxEvents, TimeSpan.FromSeconds(timeoutSeconds),
+                cancellationToken);
             return JsonSerializer.Serialize(new { success = true, events = evts }, JsonOptions);
         }
         catch (Exception ex)

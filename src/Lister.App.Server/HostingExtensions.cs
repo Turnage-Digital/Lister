@@ -53,6 +53,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Events;
 
 namespace Lister.App.Server;
 
@@ -61,6 +62,10 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog((_, config) => config
+            .MinimumLevel.Information()
+            // Temporarily quiet EF Core logs for clearer runtime sampling
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Error)
             .WriteTo.Console(outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")

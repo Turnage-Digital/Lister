@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Lister.Lists.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Lister.Lists.Infrastructure.Sql;
@@ -30,12 +31,19 @@ public class ColumnDbConfiguration : IEntityTypeConfiguration<ColumnDb>
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        builder.Property(e => e.AllowedValues)
+        var comparer = new ValueComparer<string[]?>(
+            (a, b) => ReferenceEquals(a, b) || (a != null && b != null && a.SequenceEqual(b)),
+            v => v == null ? 0 : v.Aggregate(0, (h, s) => HashCode.Combine(h, s.GetHashCode())),
+            v => v == null ? null : v.ToArray()
+        );
+
+        var allowedValues = builder.Property(e => e.AllowedValues)
             .HasColumnType("JSON")
             .HasConversion(
                 v => JsonSerializer.Serialize(v, jsonSerializerOptions),
                 v => JsonSerializer.Deserialize<string[]?>(v, jsonSerializerOptions)!)
             .IsRequired(false);
+        allowedValues.Metadata.SetValueComparer(comparer);
 
         builder.Property(e => e.MinNumber)
             .HasColumnType("DECIMAL(18,4)")
@@ -51,8 +59,8 @@ public class ColumnDbConfiguration : IEntityTypeConfiguration<ColumnDb>
 
         builder.Property(e => e.ListId);
 
-        builder.HasOne(d => d.ListDb)
-            .WithMany(p => p.Columns)
-            .HasForeignKey(d => d.ListId);
+        builder.HasOne(e => e.ListDb)
+            .WithMany(e => e.Columns)
+            .HasForeignKey(e => e.ListId);
     }
 }
