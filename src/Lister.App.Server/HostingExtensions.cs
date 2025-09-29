@@ -241,7 +241,6 @@ internal static class HostingExtensions
         services.AddDbContext<NotificationsDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(notificationsDbContextMigrationAssemblyName)));
         services.AddScoped<INotificationsUnitOfWork<NotificationRuleDb, NotificationDb>, NotificationsUnitOfWork>();
-        // Notifications read services (Views)
         services.AddScoped<IGetUserNotifications, UserNotificationsGetter>();
         services.AddScoped<IGetNotificationDetails, NotificationDetailsGetter>();
         services.AddScoped<IGetUserNotificationRules, UserNotificationRulesGetter>();

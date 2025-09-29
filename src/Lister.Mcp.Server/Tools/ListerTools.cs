@@ -234,15 +234,22 @@ public class ListerTools
         }
     }
 
+
     [McpServerTool]
-    [Description("Get configured status transitions for a list")]
-    public static async Task<string> GetStatusTransitions(
+    [Description("Update a list definition: columns, statuses, and/or transitions (unified)")]
+    public static async Task<string> UpdateList(
         ListerApiClient apiClient,
         [Description("The ID of the list")] string listId,
+        [Description("Optional JSON array of columns")]
+        string? columnsJson = null,
+        [Description("Optional JSON array of statuses")]
+        string? statusesJson = null,
+        [Description("Optional JSON array of transitions")]
+        string? transitionsJson = null,
         CancellationToken cancellationToken = default
     )
     {
-        Log.Information("GetStatusTransitions called with {Request}", new { listId });
+        Log.Information("UpdateList called with {Request}", new { listId });
         try
         {
             if (!Guid.TryParse(listId, out var guid))
@@ -250,41 +257,46 @@ public class ListerTools
                 return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
             }
 
-            var transitions = await apiClient.GetStatusTransitionsAsync(guid, cancellationToken);
-            return JsonSerializer.Serialize(new { success = true, transitions }, JsonOptions);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to get status transitions");
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
-        }
-    }
+            Column[]? columns = null;
+            Status[]? statuses = null;
+            StatusTransition[]? transitions = null;
 
-    [McpServerTool]
-    [Description("Set status transitions for a list")]
-    public static async Task<string> SetStatusTransitions(
-        ListerApiClient apiClient,
-        [Description("The ID of the list")] string listId,
-        [Description("JSON array of transitions: [{from, allowedNext: [..]}]")]
-        string transitionsJson,
-        CancellationToken cancellationToken = default
-    )
-    {
-        Log.Information("SetStatusTransitions called with {Request}", new { listId });
-        try
-        {
-            if (!Guid.TryParse(listId, out var guid))
+            if (!string.IsNullOrWhiteSpace(columnsJson))
             {
-                return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
+                columns = JsonSerializer.Deserialize<Column[]>(columnsJson, JsonOptions);
+                if (columns == null)
+                {
+                    return JsonSerializer.Serialize(new { success = false, error = "Invalid columns JSON" },
+                        JsonOptions);
+                }
             }
 
-            var transitions = JsonSerializer.Deserialize<StatusTransition[]>(transitionsJson, JsonOptions) ?? [];
-            await apiClient.SetStatusTransitionsAsync(guid, transitions, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(statusesJson))
+            {
+                statuses = JsonSerializer.Deserialize<Status[]>(statusesJson, JsonOptions);
+                if (statuses == null)
+                {
+                    return JsonSerializer.Serialize(new { success = false, error = "Invalid statuses JSON" },
+                        JsonOptions);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(transitionsJson))
+            {
+                transitions = JsonSerializer.Deserialize<StatusTransition[]>(transitionsJson, JsonOptions);
+                if (transitions == null)
+                {
+                    return JsonSerializer.Serialize(new { success = false, error = "Invalid transitions JSON" },
+                        JsonOptions);
+                }
+            }
+
+            await apiClient.UpdateListAsync(guid, columns, statuses, transitions, cancellationToken);
             return JsonSerializer.Serialize(new { success = true }, JsonOptions);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to set status transitions");
+            Log.Error(ex, "Failed to update list");
             return JsonSerializer.Serialize(new { success = false, error = ex.Message }, JsonOptions);
         }
     }

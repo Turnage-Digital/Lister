@@ -32,7 +32,7 @@ public class MigrationsController(IMediator mediator) : Controller
 
         var command = new RunMigrationCommand(listId, request.Plan, mode)
         {
-            UserId = HttpContext.User?.Identity?.Name
+            UserId = HttpContext.User.Identity?.Name
         };
 
         var result = await mediator.Send(command, ct);

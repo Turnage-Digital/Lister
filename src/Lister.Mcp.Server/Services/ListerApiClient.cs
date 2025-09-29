@@ -142,26 +142,16 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<StatusTransition[]> GetStatusTransitionsAsync(
-        Guid listId,
-        CancellationToken cancellationToken = default
-    )
-    {
-        using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get,
-            $"/api/lists/{listId}/statusTransitions", cancellationToken);
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<StatusTransition[]>(json, _jsonOptions) ?? [];
-    }
 
-    public async Task SetStatusTransitionsAsync(
+    public async Task UpdateListAsync(
         Guid listId,
-        StatusTransition[] transitions,
+        Column[]? columns = null,
+        Status[]? statuses = null,
+        StatusTransition[]? transitions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var body = JsonSerializer.Serialize(new { transitions }, _jsonOptions);
+        var body = JsonSerializer.Serialize(new { columns, statuses, transitions }, _jsonOptions);
         var content = new StringContent(body, Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Put,

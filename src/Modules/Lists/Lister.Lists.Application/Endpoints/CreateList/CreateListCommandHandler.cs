@@ -31,10 +31,9 @@ public class CreateListCommandHandler<TList, TItem>(
             request.Columns,
             request.Transitions,
             cancellationToken);
-
-        // Compose full definition (including transitions) via read side
-        var definition = await definitionGetter.GetAsync(created.Id!.Value, cancellationToken)
+        
+        var retval = await definitionGetter.GetAsync(created.Id!.Value, cancellationToken)
                          ?? throw new InvalidOperationException("Created list definition not found");
-        return definition;
+        return retval;
     }
 }
