@@ -37,9 +37,9 @@ public class OutboxDispatcherTests
         await db.SaveChangesAsync();
 
         var feed = new ChangeFeed();
-        var logger = Mock.Of<ILogger<OutboxDispatcher>>();
+        var logger = Mock.Of<ILogger<OutboxDispatcherService>>();
 
-        await OutboxDispatcher.ProcessPendingOnceAsync(db, feed, logger, CancellationToken.None);
+        await OutboxDispatcherService.ProcessPendingOnceAsync(db, feed, logger, CancellationToken.None);
 
         var all = db.OutboxMessages.ToList();
         using (Assert.EnterMultipleScope())
@@ -62,9 +62,9 @@ public class OutboxDispatcherTests
         await db.SaveChangesAsync();
 
         var throwingFeed = new ThrowingFeed();
-        var logger = Mock.Of<ILogger<OutboxDispatcher>>();
+        var logger = Mock.Of<ILogger<OutboxDispatcherService>>();
 
-        await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
+        await OutboxDispatcherService.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
 
         var msg = db.OutboxMessages.Single();
         using (Assert.EnterMultipleScope())
@@ -88,10 +88,10 @@ public class OutboxDispatcherTests
         await db.SaveChangesAsync();
 
         var throwingFeed = new ThrowingFeed();
-        var logger = Mock.Of<ILogger<OutboxDispatcher>>();
+        var logger = Mock.Of<ILogger<OutboxDispatcherService>>();
 
         // First attempt fails and sets AvailableAfter
-        await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
+        await OutboxDispatcherService.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
         var msg = db.OutboxMessages.Single();
         var firstAvailableAfter = msg.AvailableAfter;
         using (Assert.EnterMultipleScope())
@@ -101,7 +101,7 @@ public class OutboxDispatcherTests
         }
 
         // Second pass should skip since AvailableAfter is in the future
-        await OutboxDispatcher.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
+        await OutboxDispatcherService.ProcessPendingOnceAsync(db, throwingFeed, logger, CancellationToken.None);
         msg = db.OutboxMessages.Single();
         using (Assert.EnterMultipleScope())
         {
@@ -125,8 +125,8 @@ public class OutboxDispatcherTests
         await db.SaveChangesAsync();
 
         var feed = new ChangeFeed();
-        var logger = Mock.Of<ILogger<OutboxDispatcher>>();
-        await OutboxDispatcher.ProcessPendingOnceAsync(db, feed, logger, CancellationToken.None);
+        var logger = Mock.Of<ILogger<OutboxDispatcherService>>();
+        await OutboxDispatcherService.ProcessPendingOnceAsync(db, feed, logger, CancellationToken.None);
 
         Assert.That(db.OutboxMessages.Count(), Is.EqualTo(0));
     }

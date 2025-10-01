@@ -19,10 +19,6 @@ interface Props {
 const StatusChip = ({ status, onDelete }: Props) => {
   const theme = useTheme();
 
-  if (!status) {
-    return null;
-  }
-
   // Get appropriate icon based on status name (you can customize this logic)
   const getStatusIcon = (statusName: string) => {
     const name = statusName.toLowerCase();
@@ -60,11 +56,16 @@ const StatusChip = ({ status, onDelete }: Props) => {
   const [isAnimating, setIsAnimating] = React.useState(false);
 
   React.useEffect(() => {
+    if (!status) return;
     // Trigger entrance animation
     setIsAnimating(true);
     const timer = setTimeout(() => setIsAnimating(false), 300);
     return () => clearTimeout(timer);
-  }, [status.color, status.name]);
+  }, [status]);
+
+  if (!status) {
+    return null;
+  }
 
   return (
     <Chip

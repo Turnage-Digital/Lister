@@ -2,8 +2,23 @@
 
 Another list app... 🤦‍♂️
 
-codex
-Here’s a clear, end-to-end workflow plan so we can verify what’s done, what’s partial, and what we still need to build. I’ve grouped each workflow with goals, main UI, API/SSE backing, current status, and next steps.
+mkdir -p seq
+
+docker run \
+--name seq \
+-d \
+--restart unless-stopped \
+-e ACCEPT_EULA=Y \
+-e SEQ_FIRSTRUN_ADMINPASSWORDHASH="Pass123$" \
+-v seq:/data \
+-p 5341:80 \
+datalust/seq
+
+Configure apps to send logs to Seq
+
+- Defaults: both servers read `Seq:Url` from their `appsettings.json` (set to `http://localhost:5341`).
+- Override via environment: set `SEQ__URL` (and optional `SEQ__APIKEY`) for each process.
+- No config? The apps still log to console; Seq is added only when `Seq:Url` is present.
 
 Auth
 
@@ -161,8 +176,5 @@ Now / Next / Later (to implement)
     - Toast system for success/failure + SSE disconnect notice.
     - Optional UI for Notifications rule management.
 
-If this looks right, I’ll start with the “Now” work: item status dropdown (transitions-aware), mark-all-read in drawer, and the four mutations with cache updates.
-
-▌ Summarize recent commits
 
 > _It keeps you runnin', yeah it keeps you runnin'_ - The Doobie Brothers

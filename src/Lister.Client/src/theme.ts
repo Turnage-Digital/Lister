@@ -372,24 +372,7 @@ const theme = createTheme({
       },
     },
 
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          borderRadius: 4,
-          border: `1px solid ${colors.gray[200]}`,
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.gray[50],
-            borderBottom: `1px solid ${colors.gray[200]}`,
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: `1px solid ${colors.gray[200]}`,
-          },
-          "& .MuiDataGrid-row:hover": {
-            backgroundColor: colors.gray[50],
-          },
-        },
-      },
-    },
+    // DataGrid overrides can be restored after adding proper module augmentation
   },
 });
 

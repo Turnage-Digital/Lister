@@ -3,25 +3,22 @@ import * as React from "react";
 import { Link, Paper, Stack, Typography } from "@mui/material";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
+//
 import { SignUpForm } from "../components";
 
 const RouteComponent = () => {
   const router = useRouter();
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
-  const { auth, status } = Route.useRouteContext({
-    select: ({ auth }) => ({ auth, status: auth.status }),
-  });
+  const { auth } = Route.useRouteContext({ select: ({ auth }) => ({ auth }) });
+  const status = auth.status;
 
-  React.useLayoutEffect(() => {
-    if (status === "loggedIn" && search.callbackUrl) {
-      router.history.push(search.callbackUrl);
-    }
-  }, [status, search.callbackUrl, router.history]);
+  // Removed layout-effect push; navigate after signup handles redirect
 
   const handleSignedUp = async (email: string) => {
     auth.login(email);
-    await navigate({ to: search.callbackUrl });
+    await router.invalidate();
+    await navigate({ to: search.callbackUrl || "/" });
   };
 
   return (

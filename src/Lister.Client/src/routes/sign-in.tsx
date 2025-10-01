@@ -9,16 +9,11 @@ const RouteComponent = () => {
   const router = useRouter();
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
-  const { auth, status } = Route.useRouteContext({
-    select: ({ auth }) => ({ auth, status: auth.status }),
-  });
+  const { auth } = Route.useRouteContext({ select: ({ auth }) => ({ auth }) });
+  const status = auth.status;
   const { openDrawer } = useSideDrawer();
 
-  React.useLayoutEffect(() => {
-    if (status === "loggedIn" && search.callbackUrl) {
-      router.history.push(search.callbackUrl);
-    }
-  }, [status, search.callbackUrl, router.history]);
+  // Removed layout-effect push; navigate after login below handles redirect
 
   const handleForgotPasswordClick = () => {
     openDrawer("Reset Password", <ForgotPasswordDialog />);
@@ -26,7 +21,8 @@ const RouteComponent = () => {
 
   const handleSignedIn = async (email: string) => {
     auth.login(email);
-    await navigate({ to: search.callbackUrl });
+    await router.invalidate();
+    await navigate({ to: search.callbackUrl || "/" });
   };
 
   return (

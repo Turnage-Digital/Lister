@@ -6,23 +6,23 @@ using MediatR;
 
 namespace Lister.App.Server.Integration;
 
-public class OutboxHandlerBase(CoreDbContext db)
+public class OutboxHandlerBase(CoreDbContext dbContext)
 {
-    protected async Task EnqueueAsync<T>(T evt, CancellationToken ct)
+    protected async Task EnqueueAsync<T>(T @event, CancellationToken cancellationToken)
     {
         var msg = new OutboxMessageDb
         {
             Type = typeof(T).FullName ?? typeof(T).Name,
-            PayloadJson = JsonSerializer.Serialize(evt),
+            PayloadJson = JsonSerializer.Serialize(@event),
             CreatedOn = DateTime.UtcNow
         };
-        db.OutboxMessages.Add(msg);
-        await db.SaveChangesAsync(ct);
+        dbContext.OutboxMessages.Add(msg);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
 
-public class ListItemCreatedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListItemCreatedIntegrationEvent>
+public class ListItemCreatedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListItemCreatedIntegrationEvent>
 {
     public async Task Handle(ListItemCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -30,8 +30,8 @@ public class ListItemCreatedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListItemDeletedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListItemDeletedIntegrationEvent>
+public class ListItemDeletedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListItemDeletedIntegrationEvent>
 {
     public async Task Handle(ListItemDeletedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -39,8 +39,8 @@ public class ListItemDeletedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListDeletedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListDeletedIntegrationEvent>
+public class ListDeletedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListDeletedIntegrationEvent>
 {
     public async Task Handle(ListDeletedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -48,8 +48,8 @@ public class ListDeletedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListMigrationStartedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListMigrationStartedIntegrationEvent>
+public class ListMigrationStartedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListMigrationStartedIntegrationEvent>
 {
     public async Task Handle(ListMigrationStartedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -57,8 +57,8 @@ public class ListMigrationStartedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListMigrationProgressOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListMigrationProgressIntegrationEvent>
+public class ListMigrationProgressOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListMigrationProgressIntegrationEvent>
 {
     public async Task Handle(ListMigrationProgressIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -66,8 +66,8 @@ public class ListMigrationProgressOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListMigrationCompletedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListMigrationCompletedIntegrationEvent>
+public class ListMigrationCompletedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListMigrationCompletedIntegrationEvent>
 {
     public async Task Handle(ListMigrationCompletedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -75,8 +75,8 @@ public class ListMigrationCompletedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListMigrationFailedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListMigrationFailedIntegrationEvent>
+public class ListMigrationFailedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListMigrationFailedIntegrationEvent>
 {
     public async Task Handle(ListMigrationFailedIntegrationEvent notification, CancellationToken cancellationToken)
     {
@@ -84,8 +84,8 @@ public class ListMigrationFailedOutboxHandler(CoreDbContext db)
     }
 }
 
-public class ListUpdatedOutboxHandler(CoreDbContext db)
-    : OutboxHandlerBase(db), INotificationHandler<ListUpdatedIntegrationEvent>
+public class ListUpdatedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListUpdatedIntegrationEvent>
 {
     public async Task Handle(ListUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
     {

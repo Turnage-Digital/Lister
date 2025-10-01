@@ -71,7 +71,7 @@ This document captures the intentional architecture boundaries and composition p
 - MCP Server: Dev-only sidecar. Talks to Host over HTTP.
 - Client: React SPA, served by Host.
 
-## Composition Root (Host)
+## Root Composition (Host Program.cs)
 
 - Close open-generic handlers via DI. Do not add adapters in Application.
 - Register module services and aggregates per concrete EF types.

@@ -62,15 +62,28 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Host.UseSerilog((_, config) => config
-            .MinimumLevel.Information()
-            // Temporarily quiet EF Core logs for clearer runtime sampling
+        builder.Host.UseSerilog((ctx, config) =>
+        {
+            var seqUrl = ctx.Configuration["Seq:Url"];
+            var seqApiKey = ctx.Configuration["Seq:ApiKey"];
+
+            config
+            // // Temporarily quiet EF Core logs for clearer runtime sampling
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Error)
             .WriteTo.Console(outputTemplate:
                 "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
             .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
-            .Enrich.FromLogContext());
+            .Enrich.FromLogContext();
+
+            if (!string.IsNullOrWhiteSpace(seqUrl))
+            {
+                if (!string.IsNullOrWhiteSpace(seqApiKey))
+                    config.WriteTo.Seq(seqUrl, apiKey: seqApiKey);
+                else
+                    config.WriteTo.Seq(seqUrl);
+            }
+        });
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
@@ -370,7 +383,7 @@ internal static class HostingExtensions
 
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();
-        services.AddHostedService<OutboxDispatcher>();
+        services.AddHostedService<OutboxDispatcherService>();
         return services;
     }
 
