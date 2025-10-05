@@ -36,6 +36,17 @@ const RootComponent = () => {
             exact: false,
           });
         },
+      "Lister.Core.Domain.IntegrationEvents.ListItemUpdatedIntegrationEvent":
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["list-items"],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["list-item"],
+            exact: false,
+          });
+        },
       "Lister.Core.Domain.IntegrationEvents.ListItemDeletedIntegrationEvent":
         () => {
           queryClient.invalidateQueries({

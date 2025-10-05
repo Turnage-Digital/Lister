@@ -71,11 +71,11 @@ This document captures the intentional architecture boundaries and composition p
 - MCP Server: Dev-only sidecar. Talks to Host over HTTP.
 - Client: React SPA, served by Host.
 
-## Root Composition (Host Program.cs)
+## Host Composition & Module Registration
 
-- Close open-generic handlers via DI. Do not add adapters in Application.
-- Register module services and aggregates per concrete EF types.
-- Set EF migration assemblies for each DbContext.
+- Program.cs remains the composition root: it closes open generics, wires aggregates to concrete EF types, and keeps Application projects free of DI adapters.
+- Modules expose `AddInfrastructure()`, `AddDomain()`, and `AddApplication()` extension methods; call them in that order so stores and aggregates are available before handlers.
+- Set the EF migration assembly for each DbContext when registering infrastructure services.
 
 Example registrations:
 
@@ -93,20 +93,10 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
     NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
 ```
 
-## Module Registration
-
-Each module provides extension methods for registration:
-
-- `AddInfrastructure()`: Registers DbContexts, stores, query services
-- `AddDomain()`: Registers aggregates, domain services, domain event handlers
-- `AddApplication()`: Registers MediatR handlers, pipeline behaviors, controllers
-
-Host calls these in order: Infrastructure → Domain → Application
-
 ## Conventions
 
 - Application must not reference Infrastructure projects.
-- Only Host closes generics and wires concrete EF implementations.
+- Host is the only place that closes generics or binds module abstractions to concrete infrastructure (see Host Composition & Module Registration).
 - New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
 
 ## Persistence
@@ -273,7 +263,7 @@ Host calls these in order: Infrastructure → Domain → Application
 
 ## List Schema Validation & Indexing (Bag)
 
-- Validation: On write, the aggregate validates the `bag` against the list's `Columns` (type checks per `ColumnType`;
+- Validation: On write, the `ListItemBagValidator` validates the `bag` against the list's `Columns` (type checks per `ColumnType`; domain service injected into the aggregate);
   optional required rules future).
 - Status: `status` remains a conventional field; transitions can be validated as needed.
 - Indexing (future guidance): Frequently queried bag fields should be denormalized (computed/materialized columns) or
@@ -333,11 +323,13 @@ Key Concepts
 
 - Execution (with SSE):
   - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status mapping).
-  - Publishes progress via integration events → Outbox → SSE feed:
-    - `ListMigrationStartedIntegrationEvent`
-    - `ListMigrationProgressIntegrationEvent`
-    - `ListMigrationCompletedIntegrationEvent`
-    - `ListMigrationFailedIntegrationEvent`
+  - Publishes progress via integration events routed through the Outbox and SSE feed (see Migration Events).
+
+Migration Events
+- `ListMigrationStartedIntegrationEvent`: marks the migration request as executing.
+- `ListMigrationProgressIntegrationEvent`: emits progress percentage and contextual messages.
+- `ListMigrationCompletedIntegrationEvent`: signals all operations succeeded.
+- `ListMigrationFailedIntegrationEvent`: signals execution stopped with errors; payload should guide remediation.
 
 Contracts & Endpoints
 - POST `/api/lists/{listId}/migrations`
@@ -347,7 +339,7 @@ Contracts & Endpoints
 
 Durability & Delivery
 - Outbox: All migration events are persisted and dispatched independently with exponential backoff and retention cleanup.
-- SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` and invalidates caches accordingly.
+- SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` (including the migration events above) and invalidates caches accordingly.
 
 CQRS Separation
 - Aggregates: Hydration-first for updates; schema updates still flow through aggregate guardrails outside explicit migrations.
@@ -358,7 +350,7 @@ Safety & Guardrails
 - Migration validation surfaces potential breakage; execution can include converter logic and mapping policies.
 
 Future Enhancements
-- Persist `StorageKey` in the database with uniqueness per list and indexes; expose via read models consistently.
+- Persist `StorageKey` in the database with uniqueness per list and indexes to enforce the stable key contract consistently across read models.
 - Converter Registry: Named converters with strict/lenient modes and rich diagnostics.
 - Abort Thresholds: Stop execution if error rate exceeds a configurable limit; emit `Failed` event with details.
 - Rollback Strategy: Archive removed columns or write to a shadow field; expose recovery scripts.

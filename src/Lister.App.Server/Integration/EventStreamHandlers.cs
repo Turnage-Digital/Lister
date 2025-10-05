@@ -14,6 +14,16 @@ public class ListItemCreatedStreamHandler(ChangeFeed feed) : INotificationHandle
     }
 }
 
+public class ListItemUpdatedStreamHandler(ChangeFeed feed) : INotificationHandler<ListItemUpdatedIntegrationEvent>
+{
+    public async Task Handle(ListItemUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        var envelope = new
+            { type = nameof(ListItemUpdatedIntegrationEvent), data = notification, occurredOn = DateTime.UtcNow };
+        await feed.PublishAsync(envelope, cancellationToken);
+    }
+}
+
 public class ListItemDeletedStreamHandler(ChangeFeed feed) : INotificationHandler<ListItemDeletedIntegrationEvent>
 {
     public async Task Handle(ListItemDeletedIntegrationEvent notification, CancellationToken cancellationToken)

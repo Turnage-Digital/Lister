@@ -1,6 +1,7 @@
 using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
+using Lister.Lists.Domain.Events;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
@@ -16,17 +17,20 @@ public class ListsAggregateTests
         _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
         _mediator = new Mock<IDomainEventQueue>();
 
-        var listsStore = new Mock<IListsStore<ListDb>>();
-        var itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _listsStore = new Mock<IListsStore<ListDb>>();
+        _itemsStore = new Mock<IItemsStore<ItemDb>>();
 
-        _unitOfWork.SetupGet(x => x.ListsStore).Returns(listsStore.Object);
-        _unitOfWork.SetupGet(x => x.ItemsStore).Returns(itemsStore.Object);
+        _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
+        _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
+        var bagValidator = new ListItemBagValidator<ListDb>(_listsStore.Object);
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator);
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
     private Mock<IDomainEventQueue> _mediator;
+    private Mock<IListsStore<ListDb>> _listsStore = null!;
+    private Mock<IItemsStore<ItemDb>> _itemsStore = null!;
     private ListsAggregate<ListDb, ItemDb> _listsAggregate;
 
     private const string BY = "heath";
@@ -148,9 +152,9 @@ public class ListsAggregateTests
         var columns = Array.Empty<Column>();
         var statuses = new[] { new Status { Name = "Active" } };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
-        _unitOfWork.Setup(x => x.ListsStore.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(statuses);
 
         // Act + Assert
@@ -166,7 +170,7 @@ public class ListsAggregateTests
         var columns = new[]
             { new Column { Name = "Priority", Type = ColumnType.Text, AllowedValues = ["High", "Medium"] } };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
 
         // Act + Assert
@@ -181,7 +185,7 @@ public class ListsAggregateTests
         var bag = new Dictionary<string, object?> { { "title", "" } };
         var columns = new[] { new Column { Name = "Title", Type = ColumnType.Text, Required = true } };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
 
         // Act + Assert
@@ -196,7 +200,7 @@ public class ListsAggregateTests
         var bag = new Dictionary<string, object?> { { "score", 200 } };
         var columns = new[] { new Column { Name = "Score", Type = ColumnType.Number, MinNumber = 0, MaxNumber = 100 } };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
 
         // Act + Assert
@@ -212,7 +216,7 @@ public class ListsAggregateTests
         var columns = new[]
             { new Column { Name = "Email", Type = ColumnType.Text, Regex = @"^[^@\n]+@[^@\n]+\.[^@\n]+$" } };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
 
         // Act + Assert
@@ -243,6 +247,46 @@ public class ListsAggregateTests
             Assert.That(result.Count(), Is.EqualTo(items.Count));
             Assert.That(result, Is.EqualTo(items));
         });
+    }
+
+    [Test]
+    public async Task UpdateItemAsync_EnqueuesListItemUpdatedEvent()
+    {
+        // Arrange
+        var list = new ListDb
+        {
+            Id = Guid.NewGuid()
+        };
+        var item = new ItemDb
+        {
+            Id = 42,
+            ListId = list.Id
+        };
+
+        var oldBag = new Dictionary<string, object?> { { "title", "old" } };
+        var newBag = new Dictionary<string, object?> { { "title", "new" } };
+
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<Column>());
+        _unitOfWork.Setup(x => x.ItemsStore.GetBagAsync(item, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(oldBag);
+        _unitOfWork.Setup(x => x.ItemsStore.SetBagAsync(item, newBag, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
+
+        // Act
+        await _listsAggregate.UpdateItemAsync(list, item, newBag, BY);
+
+        // Assert
+        _mediator.Verify(q => q.Enqueue(
+                It.Is<ListItemUpdatedEvent>(evt =>
+                    evt.Item == item &&
+                    evt.UpdatedBy == BY &&
+                    evt.PreviousBag == oldBag &&
+                    evt.NewBag == newBag),
+                EventPhase.AfterSave),
+            Times.Once);
     }
 
     [Test]
@@ -280,9 +324,9 @@ public class ListsAggregateTests
             new Status { Name = "Active" }
         };
 
-        _unitOfWork.Setup(x => x.ListsStore.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(columns);
-        _unitOfWork.Setup(x => x.ListsStore.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(statuses);
 
         // Act

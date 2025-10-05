@@ -21,7 +21,11 @@ public class DeleteListCommandHandlerTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(itemsStore.Object);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
+        var bagValidator = new Mock<IValidateListItemBag<ListDb>>();
+        bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
         _handler = new DeleteListCommandHandler<ListDb, ItemDb>(_listsAggregate);
     }
 

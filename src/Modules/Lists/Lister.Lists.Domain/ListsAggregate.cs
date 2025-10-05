@@ -1,5 +1,6 @@
+using System.Collections.Generic;
 using System.Dynamic;
-using System.Text.RegularExpressions;
+using System.Linq;
 using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Enums;
@@ -8,7 +9,11 @@ using Lister.Lists.Domain.ValueObjects;
 
 namespace Lister.Lists.Domain;
 
-public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfWork, IDomainEventQueue events)
+public class ListsAggregate<TList, TItem>(
+    IListsUnitOfWork<TList, TItem> unitOfWork,
+    IDomainEventQueue events,
+    IValidateListItemBag<TList> bagValidator
+)
     where TList : IWritableList
     where TItem : IWritableItem
 {
@@ -35,10 +40,10 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
     {
         var retval = await unitOfWork.ListsStore.InitAsync(name, createdBy, cancellationToken);
 
-        // Ensure stable storage keys for columns
         var normalizedColumns = AssignStorageKeys(columns);
         await unitOfWork.ListsStore.SetColumnsAsync(retval, normalizedColumns, cancellationToken);
         await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
+        
         if (transitions is not null)
         {
             await unitOfWork.ListsStore.SetStatusTransitionsAsync(retval, transitions, cancellationToken);
@@ -50,9 +55,9 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         return retval;
     }
 
-    private static IEnumerable<Column> AssignStorageKeys(IEnumerable<Column> columns)
+    private static List<Column> AssignStorageKeys(IEnumerable<Column> columns)
     {
-        var list = columns.Select(c => new Column
+        var retval = columns.Select(c => new Column
             {
                 StorageKey = c.StorageKey,
                 Name = c.Name,
@@ -66,26 +71,23 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
             .ToList();
 
         // Generate sequential keys for any missing StorageKey: prop1, prop2, ...
-        var used = new HashSet<string>(list.Where(c => !string.IsNullOrWhiteSpace(c.StorageKey))
+        var used = new HashSet<string>(retval.Where(c => !string.IsNullOrWhiteSpace(c.StorageKey))
             .Select(c => c.StorageKey!)
             .Select(s => s.ToLowerInvariant()));
         var counter = 1;
-        foreach (var col in list)
+        foreach (var col in retval.Where(col => string.IsNullOrWhiteSpace(col.StorageKey)))
         {
-            if (string.IsNullOrWhiteSpace(col.StorageKey))
+            string key;
+            do
             {
-                string key;
-                do
-                {
-                    key = $"prop{counter++}";
-                } while (used.Contains(key));
+                key = $"prop{counter++}";
+            } while (used.Contains(key));
 
-                col.StorageKey = key;
-                used.Add(key);
-            }
+            col.StorageKey = key;
+            used.Add(key);
         }
 
-        return list;
+        return retval;
     }
 
     public async Task DeleteListAsync(TList list, string deletedBy, CancellationToken cancellationToken = default)
@@ -139,19 +141,18 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
             }
 
             // Tightening constraints heuristics
-            foreach (var kv in currentByName)
+            foreach (var (key, cur) in currentByName)
             {
-                if (!nextByName.TryGetValue(kv.Key, out var next))
+                if (!nextByName.TryGetValue(key, out var next))
                 {
                     continue;
                 }
 
-                var cur = kv.Value;
                 // Required: false -> true is breaking
                 if (!cur.Required && next.Required)
                 {
                     throw new InvalidOperationException(
-                        $"Column '{kv.Key}': making required is breaking — migration required");
+                        $"Column '{key}': making required is breaking — migration required");
                 }
 
                 // AllowedValues: ensure next is superset (if both non-null)
@@ -161,7 +162,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                     if (!next.AllowedValues.All(v => curSet.Contains(v)))
                     {
                         throw new InvalidOperationException(
-                            $"Column '{kv.Key}': allowedValues shrinking — migration required");
+                            $"Column '{key}': allowedValues shrinking — migration required");
                     }
                 }
 
@@ -169,20 +170,20 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
                 if (cur.MinNumber is not null && next.MinNumber is not null && next.MinNumber > cur.MinNumber)
                 {
                     throw new InvalidOperationException(
-                        $"Column '{kv.Key}': increasing minimum is breaking — migration required");
+                        $"Column '{key}': increasing minimum is breaking — migration required");
                 }
 
                 if (cur.MaxNumber is not null && next.MaxNumber is not null && next.MaxNumber < cur.MaxNumber)
                 {
                     throw new InvalidOperationException(
-                        $"Column '{kv.Key}': decreasing maximum is breaking — migration required");
+                        $"Column '{key}': decreasing maximum is breaking — migration required");
                 }
 
                 // Regex: any change treated as breaking
                 if (!string.Equals(cur.Regex, next.Regex, StringComparison.Ordinal))
                 {
                     throw new InvalidOperationException(
-                        $"Column '{kv.Key}': regex change is breaking — migration required");
+                        $"Column '{key}': regex change is breaking — migration required");
                 }
             }
 
@@ -243,7 +244,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
             throw new InvalidOperationException("List must have an Id");
         }
 
-        await ValidateBagAsync(list, bag, cancellationToken);
+        await bagValidator.ValidateAsync(list, bag, cancellationToken);
 
         var retval = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
         await unitOfWork.ItemsStore.SetBagAsync(retval, bag, cancellationToken);
@@ -268,7 +269,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         var retval = new List<TItem>();
         foreach (var bag in bags)
         {
-            await ValidateBagAsync(list, bag, cancellationToken);
+            await bagValidator.ValidateAsync(list, bag, cancellationToken);
             var item = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
             await unitOfWork.ItemsStore.SetBagAsync(item, bag, cancellationToken);
             await unitOfWork.ItemsStore.CreateAsync(item, cancellationToken);
@@ -298,7 +299,7 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
             throw new InvalidOperationException("List must have an Id");
         }
 
-        await ValidateBagAsync(list, newBag, cancellationToken);
+        await bagValidator.ValidateAsync(list, newBag, cancellationToken);
 
         // Transition validation (if status changes)
         var oldBagObj = await unitOfWork.ItemsStore.GetBagAsync(item, cancellationToken);
@@ -327,111 +328,8 @@ public class ListsAggregate<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfW
         }
 
         await unitOfWork.ItemsStore.SetBagAsync(item, newBag, cancellationToken);
+        events.Enqueue(new ListItemUpdatedEvent(item, updatedBy, oldBagObj, newBag), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task ValidateBagAsync(TList list, object bag, CancellationToken cancellationToken)
-    {
-        // Basic type validation against the list's column schema
-        var columns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
-
-        // Support common shapes: Dictionary<string, object?> or JsonElement
-        var dict = bag as IDictionary<string, object?>;
-
-        foreach (var col in columns)
-        {
-            var key = col.Property;
-            if (dict is not null && dict.TryGetValue(key, out var value))
-            {
-                if (!IsTypeCompatible(col.Type, value))
-                {
-                    throw new InvalidOperationException($"Bag property '{key}' is not of expected type {col.Type}");
-                }
-
-                if (col.Required && col.Type == ColumnType.Text && value is string s && string.IsNullOrWhiteSpace(s))
-                {
-                    throw new InvalidOperationException($"Bag property '{key}' cannot be empty");
-                }
-
-                if (col.AllowedValues is { Length: > 0 })
-                {
-                    var valStr = value?.ToString();
-                    if (valStr is not null && !col.AllowedValues.Contains(valStr, StringComparer.OrdinalIgnoreCase))
-                    {
-                        throw new InvalidOperationException(
-                            $"Bag property '{key}' value '{valStr}' is not in allowed values");
-                    }
-                }
-
-                // Number-specific range validation
-                if (col.Type == ColumnType.Number && value is not null &&
-                    (col.MinNumber is not null || col.MaxNumber is not null))
-                {
-                    try
-                    {
-                        var num = Convert.ToDecimal(value);
-                        if (col.MinNumber is not null && num < col.MinNumber)
-                        {
-                            throw new InvalidOperationException(
-                                $"Bag property '{key}' value '{num}' is less than minimum {col.MinNumber}");
-                        }
-
-                        if (col.MaxNumber is not null && num > col.MaxNumber)
-                        {
-                            throw new InvalidOperationException(
-                                $"Bag property '{key}' value '{num}' exceeds maximum {col.MaxNumber}");
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        throw new InvalidOperationException($"Bag property '{key}' is not a valid number");
-                    }
-                }
-
-                // Text-specific regex validation
-                if (col.Type == ColumnType.Text && value is string sv && !string.IsNullOrWhiteSpace(col.Regex))
-                {
-                    if (!Regex.IsMatch(sv, col.Regex!))
-                    {
-                        throw new InvalidOperationException(
-                            $"Bag property '{key}' value does not match required pattern");
-                    }
-                }
-            }
-            else if (dict is not null && col.Required)
-            {
-                throw new InvalidOperationException($"Bag property '{key}' is required");
-            }
-            // If missing and not required, allow
-        }
-
-        // Status validation if provided
-        if (dict is not null && dict.TryGetValue("status", out var statusVal) && statusVal is string statusStr)
-        {
-            var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
-            if (!statuses.Any(s => string.Equals(s.Name, statusStr, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new InvalidOperationException($"Status '{statusStr}' is not valid for this list");
-            }
-        }
-    }
-
-    private static bool IsTypeCompatible(ColumnType type, object? value)
-    {
-        if (value is null)
-        {
-            return true; // allow nulls for now
-        }
-
-        return type switch
-        {
-            ColumnType.Text => value is string,
-            ColumnType.Number => value is sbyte or byte or short or ushort or int or uint or long or ulong or float
-                or double or decimal,
-            ColumnType.Boolean => value is bool,
-            ColumnType.Date => value is DateTime or string,
-            _ => true
-        };
     }
 
     public async Task DeleteItemAsync(

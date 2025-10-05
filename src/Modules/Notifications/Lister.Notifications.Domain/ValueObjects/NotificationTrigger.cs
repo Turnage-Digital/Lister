@@ -33,6 +33,11 @@ public record NotificationTrigger
         return new NotificationTrigger { Type = TriggerType.ItemDeleted };
     }
 
+    public static NotificationTrigger ItemUpdated()
+    {
+        return new NotificationTrigger { Type = TriggerType.ItemUpdated };
+    }
+
     public static NotificationTrigger StatusChanged(string from, string to)
     {
         return new NotificationTrigger

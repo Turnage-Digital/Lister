@@ -67,14 +67,12 @@ internal static class HostingExtensions
             var seqUrl = ctx.Configuration["Seq:Url"];
             var seqApiKey = ctx.Configuration["Seq:ApiKey"];
 
-            config
-            // // Temporarily quiet EF Core logs for clearer runtime sampling
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Error)
-            .WriteTo.Console(outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
-            .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
-            .Enrich.FromLogContext();
+            config.WriteTo.Console(outputTemplate:
+                    "[{Timestamp:HH:mm:ss} {Level} {SourceContext}]{NewLine}{Message:lj}{NewLine}{NewLine}")
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Error)
+                .Enrich.WithCorrelationIdHeader("X-Correlation-ID")
+                .Enrich.FromLogContext();
 
             if (!string.IsNullOrWhiteSpace(seqUrl))
             {
@@ -242,6 +240,8 @@ internal static class HostingExtensions
         services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
             optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
+        services.AddScoped<IListsStore<ListDb>>(sp =>
+            sp.GetRequiredService<IListsUnitOfWork<ListDb, ItemDb>>().ListsStore);
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
@@ -270,6 +270,7 @@ internal static class HostingExtensions
 
     private static IServiceCollection AddDomain(this IServiceCollection services)
     {
+        services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb>>();
         services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
         services.AddScoped<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
         return services;
@@ -288,6 +289,9 @@ internal static class HostingExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>),
             typeof(LoggingBehavior<,>));
 
+        services.AddScoped<IMigrationValidator, MigrationValidator>();
+        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
+
         // Lists - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
             typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
@@ -301,8 +305,6 @@ internal static class HostingExtensions
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped<IMigrationValidator, MigrationValidator>();
-        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
         services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationDryRunResult>),
             typeof(RunMigrationCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
@@ -334,6 +336,9 @@ internal static class HostingExtensions
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
             NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
         services
+            .AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, Notifications.Application.EventHandlers.
+                ListItemUpdated.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
+        services
             .AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, Notifications.Application.EventHandlers.
                 ListItemDeleted.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
         services
@@ -342,6 +347,7 @@ internal static class HostingExtensions
 
         // Change feed event stream handlers
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedStreamHandler>();
+        services.AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, ListItemUpdatedStreamHandler>();
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedStreamHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedStreamHandler>();
         services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedStreamHandler>();
@@ -358,19 +364,18 @@ internal static class HostingExtensions
 
         // Outbox handlers (persist events for durability)
         services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, ListItemUpdatedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedOutboxHandler>();
         services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedOutboxHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>, ListMigrationStartedOutboxHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
-                ListMigrationProgressOutboxHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
-                ListMigrationCompletedOutboxHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>, ListMigrationFailedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>,
+            ListMigrationStartedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
+            ListMigrationProgressOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
+            ListMigrationCompletedOutboxHandler>();
+        services.AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>,
+            ListMigrationFailedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationCreatedEvent>, NotificationCreatedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationProcessedEvent>, NotificationProcessedOutboxHandler>();
         services.AddScoped<INotificationHandler<NotificationReadEvent>, NotificationReadOutboxHandler>();

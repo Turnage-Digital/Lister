@@ -19,7 +19,8 @@ public class StatusTransitionTests
         _uow.SetupGet(x => x.ListsStore).Returns(_lists.Object);
         _uow.SetupGet(x => x.ItemsStore).Returns(_items.Object);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
-        _agg = new ListsAggregate<ListDb, ItemDb>(_uow.Object, new NoopQueue());
+        var bagValidator = new ListItemBagValidator<ListDb>(_lists.Object);
+        _agg = new ListsAggregate<ListDb, ItemDb>(_uow.Object, new NoopQueue(), bagValidator);
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;

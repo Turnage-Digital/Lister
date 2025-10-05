@@ -29,7 +29,11 @@ public class CreateListCommandHandlerTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(itemsStore.Object);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
+        var bagValidator = new Mock<IValidateListItemBag<ListDb>>();
+        bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
         _definitionGetter = new Mock<IGetListItemDefinition>();
         _handler = new CreateListCommandHandler<ListDb, ItemDb>(_listsAggregate, _definitionGetter.Object);
     }

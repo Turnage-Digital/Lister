@@ -30,6 +30,15 @@ public class ListItemCreatedOutboxHandler(CoreDbContext dbContext)
     }
 }
 
+public class ListItemUpdatedOutboxHandler(CoreDbContext dbContext)
+    : OutboxHandlerBase(dbContext), INotificationHandler<ListItemUpdatedIntegrationEvent>
+{
+    public async Task Handle(ListItemUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
 public class ListItemDeletedOutboxHandler(CoreDbContext dbContext)
     : OutboxHandlerBase(dbContext), INotificationHandler<ListItemDeletedIntegrationEvent>
 {

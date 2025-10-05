@@ -35,6 +35,16 @@ public class NotificationAggregateTriggerTests
     }
 
     [Test]
+    public async Task ItemUpdated_Trigger_Matches()
+    {
+        var trigger = NotificationTrigger.ItemUpdated();
+        MockRulesTrigger(trigger);
+        var result = await _aggregate.ShouldTriggerNotificationAsync(_rule.Object,
+            NotificationTrigger.ItemUpdated(), new Dictionary<string, object>());
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
     public async Task Type_Mismatch_Returns_False()
     {
         MockRulesTrigger(NotificationTrigger.ItemDeleted());
