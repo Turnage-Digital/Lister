@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 interface Props {
-  onSignedIn: (email: string) => Promise<void>;
+  onSignedIn: (email: string) => Promise<void> | void;
 }
 
 const SignInForm = ({ onSignedIn }: Props) => {

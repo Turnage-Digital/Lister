@@ -1,17 +1,16 @@
 import * as React from "react";
 
-import { Delete, Visibility, List as ListIcon } from "@mui/icons-material";
+import { Delete, List as ListIcon, Visibility } from "@mui/icons-material";
 import {
+  alpha,
+  Box,
   Card,
   CardActions,
-  CardContent,
+  Chip,
+  Divider,
   IconButton,
   Tooltip,
   Typography,
-  Box,
-  Chip,
-  Divider,
-  alpha,
   useTheme,
 } from "@mui/material";
 
@@ -107,10 +106,7 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
       >
         <Tooltip title={`View ${listName.name}`}>
           <PreloadIconButton
-            to="/$listId"
-            params={{ listId: listName.id }}
-            search={{ page: 0, pageSize: 10 }}
-            preload="intent"
+            to={`/${listName.id}?page=0&pageSize=10`}
             sx={{
               color: "primary.main",
               "&:hover": {

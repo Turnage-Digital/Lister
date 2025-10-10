@@ -1,10 +1,10 @@
 using AutoMapper;
+using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql.Entities;
-using MediatR;
 using Moq;
 
 namespace Lister.Lists.Tests.CommandHandlers;
@@ -16,7 +16,7 @@ public class CreateListItemCommandHandlerTests
     public void SetUp()
     {
         _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
-        _mediator = new Mock<IMediator>();
+        _mediator = new Mock<IDomainEventQueue>();
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
@@ -24,13 +24,17 @@ public class CreateListItemCommandHandlerTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(itemsStore.Object);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
+        var bagValidator = new Mock<IValidateListItemBag<ListDb>>();
+        bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
         _mapper = new Mock<IMapper>();
         _handler = new CreateListItemCommandHandler<ListDb, ItemDb>(_listsAggregate, _mapper.Object);
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
-    private Mock<IMediator> _mediator;
+    private Mock<IDomainEventQueue> _mediator;
     private ListsAggregate<ListDb, ItemDb> _listsAggregate;
     private Mock<IMapper> _mapper;
     private CreateListItemCommandHandler<ListDb, ItemDb> _handler;

@@ -2,6 +2,11 @@ import shopifyEslintPlugin from "@shopify/eslint-plugin";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
+  {
+    ignores: [
+      "src/routeTree.gen.ts",
+    ],
+  },
   ...shopifyEslintPlugin.configs.typescript,
   ...shopifyEslintPlugin.configs["typescript-type-checking"],
   {

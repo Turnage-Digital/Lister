@@ -27,8 +27,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src",
-    "vite.config.ts"
+    "src"
   ],
   "types": [
     "vite/client"

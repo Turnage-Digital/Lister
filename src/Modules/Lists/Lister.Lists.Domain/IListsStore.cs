@@ -17,4 +17,12 @@ public interface IListsStore<TList>
 
     Task SetStatusesAsync(TList list, IEnumerable<Status> statuses, CancellationToken cancellationToken);
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
+
+    Task SetStatusTransitionsAsync(
+        TList list,
+        IEnumerable<StatusTransition> transitions,
+        CancellationToken cancellationToken
+    );
+
+    Task<StatusTransition[]> GetStatusTransitionsAsync(TList list, CancellationToken cancellationToken);
 }

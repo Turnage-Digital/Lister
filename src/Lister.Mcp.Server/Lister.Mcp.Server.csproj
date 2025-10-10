@@ -14,12 +14,14 @@
         <PackageReference Include="System.Text.Json" Version="8.0.6"/>
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3"/>
         <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Seq" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="../Modules/Core/Lister.Core.Domain/Lister.Core.Domain.csproj"/>
         <ProjectReference Include="../Modules/Lists/Lister.Lists.Domain/Lister.Lists.Domain.csproj"/>
         <ProjectReference Include="../Modules/Lists/Lister.Lists.Application/Lister.Lists.Application.csproj"/>
+        <ProjectReference Include="../Modules/Notifications/Lister.Notifications.Domain/Lister.Notifications.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

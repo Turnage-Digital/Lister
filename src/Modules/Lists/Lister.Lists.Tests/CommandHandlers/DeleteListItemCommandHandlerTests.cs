@@ -1,7 +1,7 @@
+using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Infrastructure.Sql.Entities;
-using MediatR;
 using Moq;
 
 namespace Lister.Lists.Tests.CommandHandlers;
@@ -13,7 +13,7 @@ public class DeleteListItemCommandHandlerTests
     public void SetUp()
     {
         _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
-        _mediator = new Mock<IMediator>();
+        _mediator = new Mock<IDomainEventQueue>();
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         _itemsStore = new Mock<IItemsStore<ItemDb>>();
@@ -21,12 +21,16 @@ public class DeleteListItemCommandHandlerTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object);
+        var bagValidator = new Mock<IValidateListItemBag<ListDb>>();
+        bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
         _handler = new DeleteListItemCommandHandler<ListDb, ItemDb>(_listsAggregate);
     }
 
     private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
-    private Mock<IMediator> _mediator;
+    private Mock<IDomainEventQueue> _mediator;
     private ListsAggregate<ListDb, ItemDb> _listsAggregate;
     private DeleteListItemCommandHandler<ListDb, ItemDb> _handler;
     private Mock<IListsStore<ListDb>> _listsStore;

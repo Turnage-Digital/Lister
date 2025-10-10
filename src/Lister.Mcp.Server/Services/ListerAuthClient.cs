@@ -37,38 +37,42 @@ public class ListerAuthClient
 
         Log.Information("Authenticating with Lister API for fresh token");
 
-        string? retval = null;
-
         var loginRequest = new { email, password };
         var json = JsonSerializer.Serialize(loginRequest, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         try
         {
-            var response = await _httpClient.PostAsync("/identity/login?useCookies=false",
-                content, cancellationToken);
+            using var response = await _httpClient.PostAsync(
+                "/identity/login?useCookies=false",
+                content,
+                cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
                 var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
                 var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseJson, _jsonOptions);
 
-                if (tokenResponse != null)
+                if (!string.IsNullOrEmpty(tokenResponse?.AccessToken))
                 {
                     Log.Information("Successfully authenticated with Lister API");
-                    retval = tokenResponse.AccessToken;
+                    return tokenResponse.AccessToken;
                 }
+
+                Log.Error("Authentication succeeded but no access token returned");
+                return null;
             }
 
+            var body = await response.Content.ReadAsStringAsync(cancellationToken);
             Log.Error("Failed to authenticate with Lister API with {Response}",
-                new { statusCode = response.StatusCode });
+                new { statusCode = response.StatusCode, body });
+            return null;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Exception occurred during authentication");
+            return null;
         }
-
-        return retval;
     }
 }
 

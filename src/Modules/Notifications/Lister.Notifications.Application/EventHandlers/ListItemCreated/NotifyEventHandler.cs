@@ -10,15 +10,14 @@ namespace Lister.Notifications.Application.EventHandlers.ListItemCreated;
 
 public class NotifyEventHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate,
-    INotificationRuleQueryService queryService
-)
-    : INotificationHandler<ListItemCreatedIntegrationEvent>
+    IGetActiveNotificationRules queryService
+) : INotificationHandler<ListItemCreatedIntegrationEvent>
     where TNotificationRule : class, IWritableNotificationRule
     where TNotification : class, IWritableNotification
 {
     public async Task Handle(ListItemCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var rules = await queryService.GetActiveRulesForListAsync(
+        var rules = await queryService.GetAsync(
             notification.ListId,
             TriggerType.ItemCreated,
             cancellationToken);

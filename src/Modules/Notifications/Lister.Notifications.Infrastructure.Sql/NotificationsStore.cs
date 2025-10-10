@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql;
 
-public class NotificationsStore(NotificationsDbContext dbContext) 
+public class NotificationsStore(NotificationsDbContext dbContext)
     : INotificationsStore<NotificationDb>
 {
     public Task<NotificationDb> InitAsync(string userId, Guid listId, CancellationToken cancellationToken)
@@ -155,30 +155,6 @@ public class NotificationsStore(NotificationsDbContext dbContext)
         return retval;
     }
 
-    public async Task<IEnumerable<NotificationDb>> GetUserNotificationsAsync(
-        string userId,
-        DateTime? since = null,
-        int pageSize = 20,
-        int page = 0,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var query = dbContext.Notifications
-            .Where(x => x.UserId == userId);
-
-        if (since.HasValue)
-        {
-            query = query.Where(x => x.CreatedOn >= since.Value);
-        }
-
-        return await query
-            .OrderByDescending(x => x.CreatedOn)
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .Include(x => x.DeliveryAttempts)
-            .ToListAsync(cancellationToken);
-    }
-
     // public async Task<int> GetUnreadCountAsync(
     //     string userId,
     //     Guid? listId = null,
@@ -247,5 +223,29 @@ public class NotificationsStore(NotificationsDbContext dbContext)
 
             notification.History.Add(historyEntry);
         }
+    }
+
+    public async Task<IEnumerable<NotificationDb>> GetUserNotificationsAsync(
+        string userId,
+        DateTime? since = null,
+        int pageSize = 20,
+        int page = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = dbContext.Notifications
+            .Where(x => x.UserId == userId);
+
+        if (since.HasValue)
+        {
+            query = query.Where(x => x.CreatedOn >= since.Value);
+        }
+
+        return await query
+            .OrderByDescending(x => x.CreatedOn)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Include(x => x.DeliveryAttempts)
+            .ToListAsync(cancellationToken);
     }
 }

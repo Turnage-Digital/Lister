@@ -1,15 +1,30 @@
 import * as React from "react";
 
 import { IconButton, IconButtonProps } from "@mui/material";
-import { createLink } from "@tanstack/react-router";
+import { Link, LinkProps } from "react-router-dom";
 
-const MUILinkComponent = React.forwardRef<HTMLAnchorElement, IconButtonProps>(
-  (props, ref) => {
-    return <IconButton component="a" ref={ref} {...props} />;
-  },
-);
-MUILinkComponent.displayName = "MUILinkComponent";
+type PreloadIconButtonProps = IconButtonProps & {
+  to: LinkProps["to"];
+  replace?: LinkProps["replace"];
+  state?: LinkProps["state"];
+};
 
-const PreloadIconButton = createLink(MUILinkComponent);
+const PreloadIconButton = React.forwardRef<
+  HTMLAnchorElement,
+  PreloadIconButtonProps
+>(function PreloadIconButton({ to, replace, state, ...iconButtonProps }, ref) {
+  return (
+    <IconButton
+      component={Link}
+      to={to}
+      replace={replace}
+      state={state}
+      ref={ref}
+      {...iconButtonProps}
+    />
+  );
+});
+
+PreloadIconButton.displayName = "PreloadIconButton";
 
 export default PreloadIconButton;

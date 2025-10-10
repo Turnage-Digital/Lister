@@ -1,16 +1,10 @@
-using MediatR;
+using Lister.Core.Application;
+using Lister.Notifications.Domain.Views;
 
 namespace Lister.Notifications.Application.Endpoints.
     GetUserNotificationRules;
 
-public class GetUserNotificationRulesQuery : IRequest<GetUserNotificationRulesResponse>
+public record GetUserNotificationRulesQuery : RequestBase<NotificationRule[]>
 {
-    public GetUserNotificationRulesQuery(string userId, Guid? listId = null)
-    {
-        UserId = userId;
-        ListId = listId;
-    }
-
-    public string UserId { get; }
-    public Guid? ListId { get; }
+    public Guid? ListId { get; set; }
 }

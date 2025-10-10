@@ -4,6 +4,10 @@ using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
+using Lister.Notifications.Domain;
+using Lister.Notifications.Domain.Enums;
+using Lister.Notifications.Domain.ValueObjects;
+using Lister.Notifications.Infrastructure.Sql.Entities;
 using Lister.Users.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
@@ -51,6 +55,10 @@ public static class SeedData
 
             var listAggregate = scope.ServiceProvider
                 .GetRequiredService<ListsAggregate<ListDb, ItemDb>>();
+            var listsUow = scope.ServiceProvider
+                .GetRequiredService<IListsUnitOfWork<ListDb, ItemDb>>();
+            var notifAggregate = scope.ServiceProvider
+                .GetRequiredService<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
 
             var list = listAggregate.GetListByNameAsync("Students").Result;
             if (list == null)
@@ -116,6 +124,117 @@ public static class SeedData
                 var students = faker.Generate(500);
 
                 listAggregate.CreateItemsAsync(list, students, heath.Id).Wait();
+
+                // Add status transitions for QA
+                listsUow.ListsStore.SetStatusTransitionsAsync(list,
+                        [
+                            new StatusTransition { From = "Active", AllowedNext = ["Inactive"] },
+                            new StatusTransition { From = "Inactive", AllowedNext = ["Active"] }
+                        ],
+                        CancellationToken.None
+                    )
+                    .Wait();
+
+                // Notifications seed for QA
+                // Create a rule for item created -> send InApp + Email immediately
+                var rule = notifAggregate.CreateNotificationRuleAsync(
+                        heath.Id,
+                        list.Id!.Value,
+                        NotificationTrigger.ItemCreated(),
+                        [NotificationChannel.InApp(), NotificationChannel.Email("heath@email.com")],
+                        NotificationSchedule.Immediate(),
+                        null,
+                        CancellationToken.None
+                    )
+                    .Result;
+
+                // Create a delivered notification
+                var delivered = notifAggregate.CreateNotificationAsync(
+                        heath.Id,
+                        list.Id!.Value,
+                        null,
+                        rule.Id,
+                        new NotificationContent
+                        {
+                            Subject = "Welcome to Students",
+                            Body = "This is a sample delivered notification.",
+                            Data = new Dictionary<string, object> { ["seed"] = true }
+                        },
+                        NotificationPriority.Normal,
+                        CancellationToken.None
+                    )
+                    .Result;
+                notifAggregate.RecordDeliveryAttemptAsync(
+                        delivered,
+                        NotificationChannel.InApp(),
+                        DeliveryStatus.Delivered,
+                        null,
+                        CancellationToken.None
+                    )
+                    .Wait();
+
+                // Create a failed attempt notification for retry scenarios
+                var failing = notifAggregate.CreateNotificationAsync(
+                        heath.Id,
+                        list.Id!.Value,
+                        null,
+                        rule.Id,
+                        new NotificationContent
+                        {
+                            Subject = "Delivery failure example",
+                            Body = "This notification has a failed email attempt.",
+                            Data = new Dictionary<string, object> { ["attempt"] = 1 }
+                        },
+                        NotificationPriority.High,
+                        CancellationToken.None
+                    )
+                    .Result;
+                notifAggregate.RecordDeliveryAttemptAsync(
+                        failing,
+                        NotificationChannel.Email("heath@email.com"),
+                        DeliveryStatus.Failed,
+                        "Simulated SMTP error",
+                        CancellationToken.None
+                    )
+                    .Wait();
+
+                // Create a couple of notifications for Erika, one read and one unread
+                var erikaId = erika!.Id;
+                var e1 = notifAggregate.CreateNotificationAsync(
+                        erikaId,
+                        list.Id!.Value,
+                        null,
+                        rule.Id,
+                        new NotificationContent { Subject = "Erika - Unread", Body = "Unread sample" },
+                        NotificationPriority.Low,
+                        CancellationToken.None
+                    )
+                    .Result;
+                var e2 = notifAggregate.CreateNotificationAsync(
+                        erikaId,
+                        list.Id!.Value,
+                        null,
+                        rule.Id,
+                        new NotificationContent { Subject = "Erika - Read", Body = "Read sample" },
+                        NotificationPriority.Low,
+                        CancellationToken.None
+                    )
+                    .Result;
+                // Mark second as delivered and read to exercise queries
+                notifAggregate.RecordDeliveryAttemptAsync(
+                        e2,
+                        NotificationChannel.InApp(),
+                        DeliveryStatus.Delivered,
+                        null,
+                        CancellationToken.None
+                    )
+                    .Wait();
+                notifAggregate.MarkNotificationAsReadAsync(
+                        e2,
+                        DateTime.UtcNow,
+                        CancellationToken.None
+                    )
+                    .Wait();
             }
 
             Log.Information("Done seeding database. Exiting.");

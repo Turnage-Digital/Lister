@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lister.Notifications.Infrastructure.Sql.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,47 +11,65 @@ public class NotificationRuleDbConfiguration : IEntityTypeConfiguration<Notifica
     {
         builder.ToTable("NotificationRules");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.UserId)
+        builder.Property(e => e.UserId)
             .HasMaxLength(450)
             .IsRequired();
 
-        builder.Property(x => x.ListId)
+        builder.Property(e => e.ListId)
             .IsRequired();
 
-        builder.Property(x => x.TriggerJson)
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        builder.Property(e => e.TriggerJson)
             .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!)
             .IsRequired();
 
-        builder.Property(x => x.ChannelsJson)
+        builder.Property(e => e.ChannelsJson)
             .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!)
             .IsRequired();
 
-        builder.Property(x => x.ScheduleJson)
+        builder.Property(e => e.ScheduleJson)
             .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!)
             .IsRequired();
 
-        builder.Property(x => x.TemplateId)
+        builder.Property(e => e.TriggerType)
+            .IsRequired();
+
+        builder.Property(e => e.TemplateId)
             .HasMaxLength(100);
 
-        builder.Property(x => x.CreatedBy)
+        builder.Property(e => e.CreatedBy)
             .HasMaxLength(450)
             .IsRequired();
 
-        builder.Property(x => x.UpdatedBy)
+        builder.Property(e => e.UpdatedBy)
             .HasMaxLength(450);
 
-        builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => x.ListId);
-        builder.HasIndex(x => new { x.ListId, x.IsActive, x.IsDeleted });
+        builder.HasIndex(e => e.UserId);
+        builder.HasIndex(e => e.ListId);
+        builder.HasIndex(e => new { e.ListId, e.IsActive, e.IsDeleted });
+        builder.HasIndex(e => new { e.ListId, e.TriggerType });
 
-        builder.HasMany(x => x.Notifications)
-            .WithOne(x => x.NotificationRule)
-            .HasForeignKey(x => x.NotificationRuleId)
+        builder.HasMany(e => e.Notifications)
+            .WithOne(e => e.NotificationRule)
+            .HasForeignKey(e => e.NotificationRuleId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

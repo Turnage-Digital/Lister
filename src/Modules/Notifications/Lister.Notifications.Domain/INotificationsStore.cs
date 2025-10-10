@@ -11,7 +11,11 @@ public interface INotificationsStore<TNotification>
     Task<TNotification?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken);
     Task CreateAsync(TNotification notification, CancellationToken cancellationToken);
 
-    Task SetContentAsync(TNotification notification, NotificationContent notificationContent, CancellationToken cancellationToken);
+    Task SetContentAsync(
+        TNotification notification,
+        NotificationContent notificationContent,
+        CancellationToken cancellationToken
+    );
 
     Task SetPriorityAsync(
         TNotification notification,

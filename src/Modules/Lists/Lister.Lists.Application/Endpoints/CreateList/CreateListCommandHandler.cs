@@ -1,6 +1,6 @@
-using AutoMapper;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using MediatR;
 
@@ -8,7 +8,7 @@ namespace Lister.Lists.Application.Endpoints.CreateList;
 
 public class CreateListCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
-    IMapper mapper
+    IGetListItemDefinition definitionGetter
 )
     : IRequestHandler<CreateListCommand, ListItemDefinition>
     where TList : IWritableList
@@ -23,15 +23,17 @@ public class CreateListCommandHandler<TList, TItem>(
         {
             throw new ArgumentNullException(nameof(request), "request.UserId cannot be null");
         }
-        
+
         var created = await listsAggregate.CreateListAsync(
             request.UserId,
             request.Name,
             request.Statuses,
             request.Columns,
+            request.Transitions,
             cancellationToken);
 
-        var retval = mapper.Map<ListItemDefinition>(created);
+        var retval = await definitionGetter.GetAsync(created.Id!.Value, cancellationToken)
+                     ?? throw new InvalidOperationException("Created list definition not found");
         return retval;
     }
 }

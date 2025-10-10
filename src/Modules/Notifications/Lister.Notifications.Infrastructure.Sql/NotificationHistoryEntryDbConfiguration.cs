@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lister.Notifications.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,21 +11,28 @@ public class NotificationHistoryEntryDbConfiguration : IEntityTypeConfiguration<
     {
         builder.ToTable("NotificationHistory");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.By)
+        builder.Property(e => e.By)
             .HasMaxLength(450)
             .IsRequired();
 
-        builder.Property(x => x.Bag)
-            .HasColumnType("JSON");
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        builder.Property(e => e.Bag)
+            .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<Dictionary<string, object?>>(e, jsonSerializerOptions)!);
 
-        builder.HasOne(x => x.Notification)
-            .WithMany(x => x.History)
-            .HasForeignKey(x => x.NotificationId)
+        builder.HasOne(e => e.Notification)
+            .WithMany(e => e.History)
+            .HasForeignKey(e => e.NotificationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

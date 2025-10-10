@@ -8,5 +8,6 @@ public interface INotificationsUnitOfWork<TRule, TNotification> : IUnitOfWork
     where TNotification : IWritableNotification
 {
     INotificationRulesStore<TRule> RulesStore { get; }
+
     INotificationsStore<TNotification> NotificationsStore { get; }
 }

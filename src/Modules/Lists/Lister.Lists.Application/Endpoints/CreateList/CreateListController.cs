@@ -26,7 +26,7 @@ public class CreateListController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        CreateListCommand command = new(request.Name, request.Statuses, request.Columns);
+        CreateListCommand command = new(request.Name, request.Statuses, request.Columns, request.Transitions);
         var result = await mediator.Send(command, cancellationToken);
         return Created($"/{result.Id}", result);
     }

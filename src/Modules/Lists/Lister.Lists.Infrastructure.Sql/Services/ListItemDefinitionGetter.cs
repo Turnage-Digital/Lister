@@ -20,7 +20,12 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
                     .Select(column => new Column
                     {
                         Name = column.Name,
-                        Type = column.Type
+                        Type = column.Type,
+                        Required = column.Required,
+                        AllowedValues = column.AllowedValues,
+                        MinNumber = column.MinNumber,
+                        MaxNumber = column.MaxNumber,
+                        Regex = column.Regex
                     })
                     .ToArray(),
                 Statuses = list.Statuses
@@ -28,6 +33,14 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
                     {
                         Name = status.Name,
                         Color = status.Color
+                    })
+                    .ToArray(),
+                Transitions = list.StatusTransitions
+                    .GroupBy(st => st.From)
+                    .Select(g => new StatusTransition
+                    {
+                        From = g.Key,
+                        AllowedNext = g.Select(x => x.To).ToArray()
                     })
                     .ToArray()
             })

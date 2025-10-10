@@ -15,7 +15,7 @@ public class DeleteListCommandHandler<TList, TItem>(ListsAggregate<TList, TItem>
         {
             throw new ArgumentNullException(nameof(request), "request.UserId cannot be null");
         }
-        
+
         var list = await listsAggregate.GetListByIdAsync(request.ListId, cancellationToken);
         if (list is null)
         {

@@ -1,9 +1,8 @@
-using MediatR;
+using Lister.Core.Application;
 
 namespace Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
 
-public class MarkAllNotificationsAsReadCommand : IRequest
+public record MarkAllNotificationsAsReadCommand : RequestBase
 {
-    public string UserId { get; set; } = string.Empty;
     public DateTime? Before { get; set; }
 }

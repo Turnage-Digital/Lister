@@ -17,4 +17,7 @@ public record CreateListRequest
     [JsonPropertyName("columns")]
     [Required]
     public Column[] Columns { get; set; } = null!;
+
+    [JsonPropertyName("transitions")]
+    public StatusTransition[]? Transitions { get; set; }
 }

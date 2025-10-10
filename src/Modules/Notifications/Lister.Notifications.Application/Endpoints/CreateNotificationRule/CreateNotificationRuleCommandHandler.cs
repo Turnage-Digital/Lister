@@ -1,16 +1,17 @@
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
+using Lister.Notifications.Domain.Views;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
 public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate
-) : IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>
+) : IRequestHandler<CreateNotificationRuleCommand, NotificationRule>
     where TNotificationRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    public async Task<CreateNotificationRuleResponse> Handle(
+    public async Task<NotificationRule> Handle(
         CreateNotificationRuleCommand request,
         CancellationToken cancellationToken
     )
@@ -24,9 +25,30 @@ public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotificati
             request.TemplateId,
             cancellationToken);
 
-        return new CreateNotificationRuleResponse
+        // Build view from created rule
+        // The concrete rule may store JSON strings; deserialize to typed value objects
+        var trigger = request.Trigger;
+        var channels = request.Channels;
+        var schedule = request.Schedule;
+
+        // If the rule has JSON strings (e.g., NotificationRuleDb), prefer them for round-trip
+        // if (rule is Notifications.Infrastructure.Sql.Entities.NotificationRuleDb db)
+        // {
+        //     trigger = JsonSerializer.Deserialize<NotificationTrigger>(db.TriggerJson)!;
+        //     channels = JsonSerializer.Deserialize<NotificationChannel[]>(db.ChannelsJson)!;
+        //     schedule = JsonSerializer.Deserialize<NotificationSchedule>(db.ScheduleJson)!;
+        // }
+
+        return new NotificationRule
         {
-            RuleId = rule.Id!.Value
+            Id = rule.Id,
+            UserId = request.UserId!,
+            ListId = request.ListId,
+            IsActive = true,
+            TemplateId = request.TemplateId,
+            Trigger = trigger,
+            Channels = channels,
+            Schedule = schedule
         };
     }
 }

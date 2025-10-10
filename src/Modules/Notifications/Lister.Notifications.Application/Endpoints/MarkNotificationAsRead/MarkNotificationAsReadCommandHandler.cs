@@ -4,22 +4,22 @@ using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
 
-public class MarkNotificationAsReadCommandHandler<TRule, TNotification> : IRequestHandler<MarkNotificationAsReadCommand>
+public class MarkNotificationAsReadCommandHandler<TRule, TNotification>(
+    NotificationAggregate<TRule, TNotification> aggregate
+) : IRequestHandler<MarkNotificationAsReadCommand>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    private readonly NotificationAggregate<TRule, TNotification> _aggregate;
-
-    public MarkNotificationAsReadCommandHandler(NotificationAggregate<TRule, TNotification> aggregate)
-    {
-        _aggregate = aggregate;
-    }
-
     public async Task Handle(MarkNotificationAsReadCommand request, CancellationToken cancellationToken)
     {
-        var notification = await _aggregate.GetNotificationByIdAsync(
+        if (string.IsNullOrWhiteSpace(request.UserId))
+        {
+            throw new UnauthorizedAccessException("User is not authenticated.");
+        }
+
+        var notification = await aggregate.GetNotificationByIdAsync(
             request.NotificationId,
-            request.UserId,
+            request.UserId!,
             cancellationToken);
 
         if (notification == null)
@@ -28,12 +28,12 @@ public class MarkNotificationAsReadCommandHandler<TRule, TNotification> : IReque
                 $"Notification {request.NotificationId} not found for user {request.UserId}");
         }
 
-        if (notification.ReadOn.HasValue)
-        {
-            return; // Already read
-        }
+        // if (notification.ReadOn.HasValue)
+        // {
+        //     return; // Already read
+        // }
 
-        await _aggregate.MarkNotificationAsReadAsync(
+        await aggregate.MarkNotificationAsReadAsync(
             notification,
             DateTime.UtcNow,
             cancellationToken);

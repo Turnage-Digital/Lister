@@ -4,5 +4,5 @@ using Lister.Lists.Domain.Views;
 
 namespace Lister.Lists.Application.Endpoints.CreateList;
 
-public record CreateListCommand(string Name, Status[] Statuses, Column[] Columns)
+public record CreateListCommand(string Name, Status[] Statuses, Column[] Columns, StatusTransition[]? Transitions)
     : RequestBase<ListItemDefinition>;

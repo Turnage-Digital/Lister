@@ -18,6 +18,7 @@ export { default as UserMenu } from "./user-menu";
 export { getGridColDefs } from "./col-defs";
 
 export * from "./items-display";
+export * from "./notifications";
 
 export type { Action } from "./titlebar";
 

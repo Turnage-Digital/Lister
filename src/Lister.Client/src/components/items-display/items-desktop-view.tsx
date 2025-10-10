@@ -11,10 +11,10 @@ interface Props {
   definition: ListItemDefinition;
   paginationModel: GridPaginationModel;
   sortModel: GridSortModel;
-  onPaginationChange: (model: GridPaginationModel) => Promise<void>;
-  onSortChange: (model: GridSortModel) => Promise<void>;
-  onViewItem: (listId: string, itemId: number) => Promise<void>;
-  onDeleteItem: (listId: string, itemId: number) => Promise<void>;
+  onPaginationChange: (model: GridPaginationModel) => Promise<void> | void;
+  onSortChange: (model: GridSortModel) => Promise<void> | void;
+  onViewItem: (listId: string, itemId: number) => Promise<void> | void;
+  onDeleteItem: (listId: string, itemId: number) => Promise<void> | void;
 }
 
 const ItemsDesktopView = ({

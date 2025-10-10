@@ -5,6 +5,9 @@ namespace Lister.Lists.Domain.ValueObjects;
 
 public record Column
 {
+    [JsonPropertyName("key")]
+    public string? StorageKey { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
@@ -22,4 +25,19 @@ public record Column
 
     [JsonPropertyName("type")]
     public ColumnType Type { get; set; }
+
+    [JsonPropertyName("required")]
+    public bool Required { get; set; }
+
+    [JsonPropertyName("allowedValues")]
+    public string[]? AllowedValues { get; set; }
+
+    [JsonPropertyName("minNumber")]
+    public decimal? MinNumber { get; set; }
+
+    [JsonPropertyName("maxNumber")]
+    public decimal? MaxNumber { get; set; }
+
+    [JsonPropertyName("regex")]
+    public string? Regex { get; set; }
 }

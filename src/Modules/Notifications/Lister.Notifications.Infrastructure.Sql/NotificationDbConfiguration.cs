@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lister.Notifications.Infrastructure.Sql.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,31 +11,38 @@ public class NotificationDbConfiguration : IEntityTypeConfiguration<Notification
     {
         builder.ToTable("Notifications");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(x => x.Id)
+        builder.Property(e => e.Id)
             .ValueGeneratedOnAdd();
 
-        builder.Property(x => x.UserId)
+        builder.Property(e => e.UserId)
             .HasMaxLength(450)
             .IsRequired();
 
-        builder.Property(x => x.ListId)
+        builder.Property(e => e.ListId)
             .IsRequired();
 
-        builder.Property(x => x.ContentJson)
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        builder.Property(e => e.ContentJson)
             .HasColumnType("JSON")
+            .HasConversion(
+                e => JsonSerializer.Serialize(e, jsonSerializerOptions),
+                e => JsonSerializer.Deserialize<string>(e, jsonSerializerOptions)!)
             .IsRequired();
 
-        builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => x.ListId);
-        builder.HasIndex(x => new { x.ProcessedOn, x.DeliveredOn });
-        builder.HasIndex(x => x.CreatedOn);
-        builder.HasIndex(x => new { x.UserId, x.ReadOn }); // For unread queries
+        builder.HasIndex(e => e.UserId);
+        builder.HasIndex(e => e.ListId);
+        builder.HasIndex(e => new { e.ProcessedOn, e.DeliveredOn });
+        builder.HasIndex(e => e.CreatedOn);
+        builder.HasIndex(e => new { e.UserId, e.ReadOn }); // For unread queries
 
-        builder.HasMany(x => x.DeliveryAttempts)
-            .WithOne(x => x.Notification)
-            .HasForeignKey(x => x.NotificationId)
+        builder.HasMany(e => e.DeliveryAttempts)
+            .WithOne(e => e.Notification)
+            .HasForeignKey(e => e.NotificationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

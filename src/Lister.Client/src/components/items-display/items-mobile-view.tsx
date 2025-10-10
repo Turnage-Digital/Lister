@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Box, Grid, Stack, Pagination } from "@mui/material";
+import { Box, Grid, Pagination, Stack } from "@mui/material";
 
 import { ListItem, ListItemDefinition } from "../../models";
 import ItemCard from "../item-card";
@@ -11,9 +11,9 @@ interface Props {
   totalCount: number;
   currentPage: number;
   pageSize: number;
-  onPageChange: (page: number) => Promise<void>;
-  onViewItem?: (listId: string, itemId: number) => Promise<void>;
-  onDeleteItem?: (listId: string, itemId: number) => Promise<void>;
+  onPageChange: (page: number) => Promise<void> | void;
+  onViewItem?: (listId: string, itemId: number) => Promise<void> | void;
+  onDeleteItem?: (listId: string, itemId: number) => Promise<void> | void;
 }
 
 const ItemsMobileView = ({
@@ -33,9 +33,9 @@ const ItemsMobileView = ({
       <Grid container spacing={3}>
         {items.map((item) => (
           <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <ItemCard 
-              item={item} 
-              definition={definition} 
+            <ItemCard
+              item={item}
+              definition={definition}
               onViewItem={onViewItem}
               onDeleteItem={onDeleteItem}
             />

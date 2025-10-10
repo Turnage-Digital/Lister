@@ -8,6 +8,14 @@ export type { ListName } from "./list-name";
 export type { PagedList } from "./paged-list";
 export type { Status } from "./status";
 export type { StatusColor } from "./status-colors";
+export type { StatusTransition } from "./status-transition";
+export type {
+  NotificationDetails,
+  NotificationListItem,
+  NotificationListPage,
+  DeliveryAttemptView,
+} from "./notifications";
+export type { ChangeFeedMessage, ChangeFeedHandler } from "./change-feed";
 
 export { ColumnType } from "./column-type";
 export { getStatusFromName } from "./status";

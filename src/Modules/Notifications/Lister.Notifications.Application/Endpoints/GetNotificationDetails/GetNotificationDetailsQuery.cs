@@ -1,9 +1,9 @@
-using MediatR;
+using Lister.Core.Application;
+using Lister.Notifications.Domain.Views;
 
 namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 
-public class GetNotificationDetailsQuery : IRequest<NotificationDetailsDto?>
+public record GetNotificationDetailsQuery : RequestBase<NotificationDetails?>
 {
     public Guid NotificationId { get; set; }
-    public string UserId { get; set; } = string.Empty;
 }
