@@ -18,8 +18,8 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 import {
   EditListColumnsContent,
@@ -30,9 +30,9 @@ import {
 } from "../components";
 import { ListItemDefinition } from "../models";
 
-const RouteComponent = () => {
-  const navigate = Route.useNavigate();
-  const { queryClient } = Route.useRouteContext();
+const CreateListPage = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const createListMutation = useMutation({
     mutationFn: async (list: ListItemDefinition) => {
@@ -69,15 +69,14 @@ const RouteComponent = () => {
     window.sessionStorage.setItem("updated_list", JSON.stringify(updated));
   }, [updated]);
 
-  const update = (key: keyof ListItemDefinition, value: any) => {
-    setUpdated((prev) => ({ ...prev, [key]: value }));
+  const update = (key: keyof ListItemDefinition, value: unknown) => {
+    setUpdated((prev) => ({ ...prev, [key]: value }) as ListItemDefinition);
   };
 
-  // Transitions matrix derived from current statuses
   const [matrix, setMatrix] = useState<Record<string, Record<string, boolean>>>(
     {},
   );
-  React.useEffect(() => {
+  useEffect(() => {
     setMatrix((prev) => {
       const names = updated.statuses.map((s) => s.name);
       const rows: Record<string, Record<string, boolean>> = {};
@@ -102,7 +101,6 @@ const RouteComponent = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Build transitions from matrix before submit
     const transitions = Object.entries(matrix).map(([from, row]) => ({
       from,
       allowedNext: Object.entries(row)
@@ -118,17 +116,14 @@ const RouteComponent = () => {
     }
 
     window.sessionStorage.removeItem("updated_list");
-    await navigate({
-      to: "/$listId",
-      params: { listId: mutated.id },
-      search: { page: 0, pageSize: 10 },
-    });
+    const search = createSearchParams({ page: "0", pageSize: "10" }).toString();
+    navigate(`/${mutated.id}?${search}`);
   };
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate("/"),
     },
   ];
 
@@ -239,6 +234,4 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/_auth/create")({
-  component: RouteComponent,
-});
+export default CreateListPage;

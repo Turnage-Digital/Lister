@@ -8,27 +8,25 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-import { Auth } from "../auth";
-import { SideDrawer, UserMenu, NotificationsBell } from "../components";
-import { connectChangeFeed, createChangeFeedRouter } from "../lib/sse";
+import { useAuth } from "./auth";
+import { NotificationsBell, SideDrawer, UserMenu } from "./components";
+import { connectChangeFeed, createChangeFeedRouter } from "./lib/sse";
 
-const RootComponent = () => {
-  const { auth } = Route.useRouteContext({
-    select: ({ auth }) => ({ auth }),
-  });
-  const { queryClient } = Route.useRouteContext({
-    select: ({ queryClient }) => ({ queryClient }),
-  });
+const Shell = () => {
+  const auth = useAuth();
+  const queryClient = useQueryClient();
   const theme = useTheme();
+  const location = useLocation();
 
   React.useEffect(() => {
-    if (auth.status !== "loggedIn") return;
-    // SSE → Query cache routing
+    if (auth.status !== "loggedIn") {
+      return undefined;
+    }
+
     const handler = createChangeFeedRouter({
-      // Lists
       "Lister.Core.Domain.IntegrationEvents.ListItemCreatedIntegrationEvent":
         () => {
           queryClient.invalidateQueries({
@@ -73,7 +71,6 @@ const RootComponent = () => {
             exact: false,
           });
         },
-      // Notifications
       "Lister.Notifications.Domain.Events.NotificationCreatedEvent": () => {
         queryClient.invalidateQueries({
           queryKey: ["notifications"],
@@ -143,17 +140,21 @@ const RootComponent = () => {
         // Optionally add a toast or log
       },
     });
+
     return () => close();
   }, [auth.status, queryClient]);
 
   if (auth.status !== "loggedIn") {
-    return <Outlet />;
+    const callbackUrl = `${location.pathname}${location.search}${location.hash}`;
+    const search = callbackUrl
+      ? `?callbackUrl=${encodeURIComponent(callbackUrl)}`
+      : "";
+    return <Navigate to={`/sign-in${search}`} replace />;
   }
 
   return (
     <>
       <Box sx={{ minHeight: "100vh" }}>
-        {/* AppBar */}
         <AppBar
           position="fixed"
           sx={{
@@ -175,11 +176,10 @@ const RootComponent = () => {
             </Typography>
 
             <NotificationsBell />
-            <UserMenu auth={auth} />
+            <UserMenu />
           </Toolbar>
         </AppBar>
 
-        {/* Main content */}
         <Container
           component="main"
           maxWidth="xl"
@@ -188,7 +188,7 @@ const RootComponent = () => {
             backgroundColor: theme.palette.background.default,
           }}
         >
-          <Box sx={(theme) => ({ ...theme.mixins.toolbar })} />
+          <Box sx={(muiTheme) => ({ ...muiTheme.mixins.toolbar })} />
           <Outlet />
         </Container>
       </Box>
@@ -198,9 +198,4 @@ const RootComponent = () => {
   );
 };
 
-export const Route = createRootRouteWithContext<{
-  auth: Auth;
-  queryClient: QueryClient;
-}>()({
-  component: RootComponent,
-});
+export default Shell;

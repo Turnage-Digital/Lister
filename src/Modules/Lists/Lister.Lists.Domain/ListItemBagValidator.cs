@@ -7,13 +7,14 @@ using Lister.Lists.Domain.Enums;
 
 namespace Lister.Lists.Domain;
 
-public class ListItemBagValidator<TList>(IListsStore<TList> listsStore)
+public class ListItemBagValidator<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfWork)
     : IValidateListItemBag<TList>
     where TList : IWritableList
+    where TItem : IWritableItem
 {
     public async Task ValidateAsync(TList list, object bag, CancellationToken cancellationToken)
     {
-        var columns = await listsStore.GetColumnsAsync(list, cancellationToken);
+        var columns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
         var dict = bag as IDictionary<string, object?>;
 
         foreach (var col in columns)
@@ -82,7 +83,7 @@ public class ListItemBagValidator<TList>(IListsStore<TList> listsStore)
 
         if (dict is not null && dict.TryGetValue("status", out var statusVal) && statusVal is string statusStr)
         {
-            var statuses = await listsStore.GetStatusesAsync(list, cancellationToken);
+            var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
             if (!statuses.Any(s => string.Equals(s.Name, statusStr, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException($"Status '{statusStr}' is not valid for this list");

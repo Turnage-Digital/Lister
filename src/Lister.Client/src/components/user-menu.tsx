@@ -13,16 +13,13 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { Auth } from "../auth";
+import { useAuth } from "../auth";
 
-interface Props {
-  auth: Auth;
-}
-
-const UserMenu = ({ auth }: Props) => {
-  const router = useRouter();
+const UserMenu = () => {
+  const auth = useAuth();
+  const queryClient = useQueryClient();
   const [userMenuAnchor, setUserMenuAnchor] =
     React.useState<null | HTMLElement>(null);
   const [logoutDialogOpen, setLogoutDialogOpen] = React.useState(false);
@@ -47,7 +44,7 @@ const UserMenu = ({ auth }: Props) => {
     const response = await fetch(request);
     if (response.ok) {
       auth.logout();
-      router.invalidate();
+      queryClient.clear();
     }
     setLogoutDialogOpen(false);
   };

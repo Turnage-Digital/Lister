@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Suspense } from "react";
 
 import {
   CssBaseline,
@@ -8,32 +9,16 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
 
-import { auth } from "./auth";
+import { AuthProvider } from "./auth";
 import { Loading, SideDrawerProvider } from "./components";
-import { routeTree } from "./routeTree.gen";
+import { createAppRouter } from "./router";
 import theme from "./theme";
 
 export const queryClient = new QueryClient();
-
-export const router = createRouter({
-  routeTree,
-  defaultPendingComponent: Loading,
-  context: {
-    auth,
-    queryClient,
-  },
-  defaultPreload: "intent",
-  defaultPreloadStaleTime: 0,
-});
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
+export const router = createAppRouter(queryClient);
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement!);
@@ -43,13 +28,16 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <SideDrawerProvider>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            {/* <TanStackRouterDevtools router={router} />*/}
-            {/* <ReactQueryDevtools />*/}
-          </QueryClientProvider>
-        </SideDrawerProvider>
+        <AuthProvider>
+          <SideDrawerProvider>
+            <QueryClientProvider client={queryClient}>
+              <Suspense fallback={<Loading />}>
+                <RouterProvider router={router} />
+              </Suspense>
+              {/* <ReactQueryDevtools />*/}
+            </QueryClientProvider>
+          </SideDrawerProvider>
+        </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
   </StyledEngineProvider>,

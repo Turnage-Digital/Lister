@@ -106,10 +106,7 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
       >
         <Tooltip title={`View ${listName.name}`}>
           <PreloadIconButton
-            to="/$listId"
-            params={{ listId: listName.id }}
-            search={{ page: 0, pageSize: 10 }}
-            preload="intent"
+            to={`/${listName.id}?page=0&pageSize=10`}
             sx={{
               color: "primary.main",
               "&:hover": {

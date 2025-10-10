@@ -98,11 +98,12 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 - Application must not reference Infrastructure projects.
 - Host is the only place that closes generics or binds module abstractions to concrete infrastructure (see Host Composition & Module Registration).
 - New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
+- Access stores exclusively via their unit of work abstractions; do not inject `IListsStore`, `IItemsStore`, etc. directly into handlers or services.
 
 ## Persistence
 
 - One DbContext per module; migrations live in the module's Infrastructure.Sql project.
-- Host provides `DatabaseOptions.*MigrationAssemblyName` and connection string.
+- Host registers DbContexts via `AddInfrastructure(connectionString)` which auto-detects each context's migration assembly.
 
 ## Store Pattern
 

@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class ActiveNotificationRulesGetter(NotificationsDbContext context) : IGetActiveNotificationRules
+public class ActiveNotificationRulesGetter(NotificationsDbContext context) 
+    : IGetActiveNotificationRules
 {
     public async Task<IEnumerable<IWritableNotificationRule>> GetAsync(
         Guid listId,
@@ -21,6 +22,8 @@ public class ActiveNotificationRulesGetter(NotificationsDbContext context) : IGe
             query = query.Where(r => r.TriggerType == tt);
         }
 
-        return await query.Cast<IWritableNotificationRule>().ToListAsync(cancellationToken);
+        var retval = await query.Cast<IWritableNotificationRule>()
+            .ToListAsync(cancellationToken);
+        return retval;
     }
 }

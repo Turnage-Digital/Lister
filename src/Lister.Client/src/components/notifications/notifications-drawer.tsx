@@ -86,7 +86,7 @@ const NotificationsDrawer = () => {
       <Divider />
       <List dense disablePadding>
         {items.map((n: NotificationListItem) => {
-          const isUnread = n.isRead === false;
+          const isUnread = !n.isRead;
           const secondary = isUnread ? (
             <IconButton
               edge="end"

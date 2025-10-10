@@ -13,7 +13,7 @@ import {
 interface Props {
   email: string;
   resetCode: string;
-  onPasswordReset: () => Promise<void>;
+  onPasswordReset: () => Promise<void> | void;
 }
 
 const ResetPasswordForm = ({ email, resetCode, onPasswordReset }: Props) => {

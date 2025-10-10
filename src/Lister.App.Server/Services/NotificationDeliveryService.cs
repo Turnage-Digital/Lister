@@ -12,11 +12,11 @@ public class NotificationDeliveryService(
     IServiceScopeFactory scopeFactory
 ) : BackgroundService
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("NotificationDelivery: service started");
 
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
@@ -27,7 +27,7 @@ public class NotificationDeliveryService(
                 var aggregate = scope.ServiceProvider
                     .GetRequiredService<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
 
-                var pending = await pendingGetter.GetAsync(50, stoppingToken);
+                var pending = await pendingGetter.GetAsync(50, cancellationToken);
                 var notifications = pending as IWritableNotification[] ?? pending.ToArray();
                 if (notifications.Length is 0)
                 {
@@ -56,7 +56,7 @@ public class NotificationDeliveryService(
 
                     // Reload concrete entity so aggregate operations work
                     var dbNotification = await aggregate.GetNotificationByIdAsync(notification.Id.Value,
-                        notification.UserId, stoppingToken);
+                        notification.UserId, cancellationToken);
                     if (dbNotification is null)
                     {
                         logger.LogWarning(
@@ -74,10 +74,10 @@ public class NotificationDeliveryService(
                     if (dbNotification.NotificationRuleId is not null)
                     {
                         var rule = await unitOfWork.RulesStore.GetByIdAsync(dbNotification.NotificationRuleId.Value,
-                            stoppingToken);
+                            cancellationToken);
                         if (rule is not null)
                         {
-                            var ruleChannels = await unitOfWork.RulesStore.GetChannelsAsync(rule, stoppingToken);
+                            var ruleChannels = await unitOfWork.RulesStore.GetChannelsAsync(rule, cancellationToken);
                             channels.AddRange(ruleChannels);
                             logger.LogInformation(
                                 "NotificationDelivery: rule resolved {@Rule} {@Channels}",
@@ -87,7 +87,7 @@ public class NotificationDeliveryService(
                         }
                     }
 
-                    if (channels.Count == 0)
+                    if (channels.Count is 0)
                     {
                         channels.Add(NotificationChannel.InApp());
                         logger.LogInformation(
@@ -109,11 +109,11 @@ public class NotificationDeliveryService(
                             channel,
                             DeliveryStatus.Delivered,
                             null,
-                            stoppingToken
+                            cancellationToken
                         );
                     }
 
-                    await aggregate.MarkNotificationAsProcessedAsync(dbNotification, stoppingToken);
+                    await aggregate.MarkNotificationAsProcessedAsync(dbNotification, cancellationToken);
                     logger.LogInformation(
                         "NotificationDelivery: processed {@Notification} with {Count} channel(s)",
                         new { dbNotification.Id, dbNotification.UserId },
@@ -130,7 +130,7 @@ public class NotificationDeliveryService(
             {
                 var delay = TimeSpan.FromSeconds(5);
                 logger.LogTrace("NotificationDelivery: sleeping {Delay}s", delay.TotalSeconds);
-                await Task.Delay(delay, stoppingToken);
+                await Task.Delay(delay, cancellationToken);
             }
             catch (TaskCanceledException)
             {

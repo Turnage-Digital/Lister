@@ -96,22 +96,7 @@ internal static class HostingExtensions
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-        var usersDbContextMigrationAssemblyName = typeof(UsersDbContext).Assembly.FullName!;
-        var coreDbContextMigrationAssemblyName = typeof(CoreDbContext).Assembly.FullName!;
-        var listsDbContextMigrationAssemblyName = typeof(ListsDbContext).Assembly.FullName!;
-        var notificationsDbContextMigrationAssemblyName = typeof(NotificationsDbContext).Assembly.FullName!;
-        builder.Services.AddInfrastructure(config =>
-        {
-            config.DatabaseOptions.ConnectionString = connectionString;
-            config.DatabaseOptions.UsersDbContextMigrationAssemblyName =
-                usersDbContextMigrationAssemblyName;
-            config.DatabaseOptions.CoreDbContextMigrationAssemblyName =
-                coreDbContextMigrationAssemblyName;
-            config.DatabaseOptions.ListsDbContextMigrationAssemblyName =
-                listsDbContextMigrationAssemblyName;
-            config.DatabaseOptions.NotificationsDbContextMigrationAssemblyName =
-                notificationsDbContextMigrationAssemblyName;
-        });
+        builder.Services.AddInfrastructure(connectionString);
         builder.Services.AddDomain();
         builder.Services.AddApplication();
 
@@ -204,44 +189,22 @@ internal static class HostingExtensions
 
     private static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        Action<InfrastructureConfiguration> configuration
+        string connectionString
     )
     {
-        var coreConfiguration = new InfrastructureConfiguration();
-        configuration(coreConfiguration);
-        return services.AddInfrastructure(coreConfiguration);
-    }
-
-    private static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        InfrastructureConfiguration configuration
-    )
-    {
-        var connectionString = configuration.DatabaseOptions.ConnectionString;
         var serverVersion = ServerVersion.AutoDetect(connectionString);
 
         /* Core */
-        var coreDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.CoreDbContextMigrationAssemblyName;
-        services.AddDbContext<CoreDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(coreDbContextMigrationAssemblyName)));
+        services.AddDbContextWithMigrations<CoreDbContext>(connectionString, serverVersion);
         services.AddScoped<IDomainEventQueue, DomainEventQueue>();
 
         /* Users */
-        var usersDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.UsersDbContextMigrationAssemblyName;
-        services.AddDbContext<UsersDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(usersDbContextMigrationAssemblyName)));
+        services.AddDbContextWithMigrations<UsersDbContext>(connectionString, serverVersion);
         services.AddScoped<IGetCurrentUser, CurrentUserGetter>();
 
         /* Lists */
-        var listsDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.ListsDbContextMigrationAssemblyName;
-        services.AddDbContext<ListsDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(listsDbContextMigrationAssemblyName)));
+        services.AddDbContextWithMigrations<ListsDbContext>(connectionString, serverVersion);
         services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
-        services.AddScoped<IListsStore<ListDb>>(sp =>
-            sp.GetRequiredService<IListsUnitOfWork<ListDb, ItemDb>>().ListsStore);
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
@@ -249,10 +212,7 @@ internal static class HostingExtensions
         services.AddScoped<IGetListNames, ListNamesGetter>();
 
         /* Notifications */
-        var notificationsDbContextMigrationAssemblyName =
-            configuration.DatabaseOptions.NotificationsDbContextMigrationAssemblyName;
-        services.AddDbContext<NotificationsDbContext>(options => options.UseMySql(connectionString, serverVersion,
-            optionsBuilder => optionsBuilder.MigrationsAssembly(notificationsDbContextMigrationAssemblyName)));
+        services.AddDbContextWithMigrations<NotificationsDbContext>(connectionString, serverVersion);
         services.AddScoped<INotificationsUnitOfWork<NotificationRuleDb, NotificationDb>, NotificationsUnitOfWork>();
         services.AddScoped<IGetUserNotifications, UserNotificationsGetter>();
         services.AddScoped<IGetNotificationDetails, NotificationDetailsGetter>();
@@ -270,7 +230,7 @@ internal static class HostingExtensions
 
     private static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb>>();
+        services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb, ItemDb>>();
         services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
         services.AddScoped<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
         return services;
@@ -392,8 +352,15 @@ internal static class HostingExtensions
         return services;
     }
 
-    private class InfrastructureConfiguration
+    private static IServiceCollection AddDbContextWithMigrations<TContext>(
+        this IServiceCollection services,
+        string connectionString,
+        ServerVersion serverVersion
+    ) where TContext : DbContext
     {
-        public DatabaseOptions DatabaseOptions { get; } = new();
+        var migrationsAssembly = typeof(TContext).Assembly.FullName!;
+        services.AddDbContext<TContext>(options => options.UseMySql(connectionString, serverVersion,
+            optionsBuilder => optionsBuilder.MigrationsAssembly(migrationsAssembly)));
+        return services;
     }
 }

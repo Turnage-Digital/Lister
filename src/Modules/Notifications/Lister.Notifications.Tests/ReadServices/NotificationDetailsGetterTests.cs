@@ -63,8 +63,7 @@ public class NotificationDetailsGetterTests
             Assert.That(details.Body, Is.EqualTo("Body"));
             Assert.That(((Dictionary<string, object>)details.Metadata!)["x"].ToString(), Is.EqualTo("42"));
             // Ensure our created history entry is present
-            Assert.That(details.History.Any(h => h.Type == NotificationHistoryType.Created
-                                                 && h.Bag is not null
+            Assert.That(details.History.Any(h => h is { Type: NotificationHistoryType.Created, Bag: not null }
                                                  && ((Dictionary<string, object?>)h.Bag)["k"]?.ToString() == "v"),
                 Is.True);
             Assert.That(details.DeliveryAttempts.Count, Is.EqualTo(1));

@@ -23,7 +23,7 @@ public class ListsAggregateTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);
 
-        var bagValidator = new ListItemBagValidator<ListDb>(_listsStore.Object);
+        var bagValidator = new ListItemBagValidator<ListDb, ItemDb>(_unitOfWork.Object);
         _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator);
     }
 

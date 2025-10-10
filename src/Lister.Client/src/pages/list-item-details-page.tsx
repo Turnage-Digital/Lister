@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Grid, Stack } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { ItemCard, Titlebar } from "../components";
 import {
@@ -10,15 +10,19 @@ import {
   listItemDefinitionQueryOptions,
 } from "../query-options";
 
-const RouteComponent = () => {
-  const { listId, itemId } = Route.useParams();
-  const navigate = Route.useNavigate();
+const ListItemDetailsPage = () => {
+  const { listId, itemId } = useParams<{ listId: string; itemId: string }>();
+  if (!listId || !itemId) {
+    throw new Error("List id and item id are required");
+  }
+
+  const navigate = useNavigate();
 
   const listItemDefinitionQuery = useSuspenseQuery(
     listItemDefinitionQueryOptions(listId),
   );
 
-  const itemQuery = useSuspenseQuery(itemQueryOptions(listId, itemId));
+  const itemQuery = useSuspenseQuery(itemQueryOptions(listId, Number(itemId)));
 
   if (!listItemDefinitionQuery.isSuccess || !itemQuery.isSuccess) {
     return null;
@@ -27,11 +31,11 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate(`/`),
     },
     {
       title: listItemDefinitionQuery.data.name || "",
-      onClick: () => navigate({ to: `/${listId}` }),
+      onClick: () => navigate(`/${listId}`),
     },
   ];
 
@@ -51,6 +55,4 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/_auth/$listId/$itemId/")({
-  component: RouteComponent,
-});
+export default ListItemDetailsPage;

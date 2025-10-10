@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class UserNotificationRulesGetter(NotificationsDbContext context) : IGetUserNotificationRules
+public class UserNotificationRulesGetter(NotificationsDbContext context) 
+    : IGetUserNotificationRules
 {
     public async Task<IEnumerable<NotificationRule>> GetAsync(
         string userId,
@@ -21,7 +22,7 @@ public class UserNotificationRulesGetter(NotificationsDbContext context) : IGetU
         }
 
         var rules = await query.ToListAsync(cancellationToken);
-        return rules.Select(rule => new NotificationRule
+        var retval = rules.Select(rule => new NotificationRule
         {
             Id = rule.Id,
             UserId = rule.UserId,
@@ -32,5 +33,6 @@ public class UserNotificationRulesGetter(NotificationsDbContext context) : IGetU
             Channels = JsonSerializer.Deserialize<NotificationChannel[]>(rule.ChannelsJson)!,
             Schedule = JsonSerializer.Deserialize<NotificationSchedule>(rule.ScheduleJson)!
         });
+        return retval;
     }
 }

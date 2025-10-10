@@ -2,15 +2,19 @@ import * as React from "react";
 
 import { PlaylistAdd } from "@mui/icons-material";
 import { Grid, Stack } from "@mui/material";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import { ListCard, Titlebar } from "../components";
 import { listNamesQueryOptions } from "../query-options";
 
-const RouteComponent = () => {
-  const navigate = Route.useNavigate();
-  const { queryClient } = Route.useRouteContext();
+const ListsPage = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const deleteListMutation = useMutation({
     mutationFn: async (listId: string) => {
@@ -37,7 +41,7 @@ const RouteComponent = () => {
     {
       title: "Create a List",
       icon: <PlaylistAdd />,
-      onClick: () => navigate({ to: "/create" }),
+      onClick: () => navigate("/create"),
     },
   ];
 
@@ -59,8 +63,4 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/_auth/")({
-  component: RouteComponent,
-  loader: (options) =>
-    options.context.queryClient.ensureQueryData(listNamesQueryOptions()),
-});
+export default ListsPage;

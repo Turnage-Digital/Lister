@@ -87,12 +87,13 @@ public class UserNotificationsGetter(NotificationsDbContext context) : IGetUserN
             })
             .ToList();
 
-        return new NotificationListPage
+        var retval = new NotificationListPage
         {
             Notifications = items,
             TotalCount = total,
             UnreadCount = unreadCount,
             HasMore = items.Count == pageSize
         };
+        return retval;
     }
 }

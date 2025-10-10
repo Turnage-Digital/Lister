@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class UnreadNotificationCountGetter(NotificationsDbContext context) : IGetUnreadNotificationCount
+public class UnreadNotificationCountGetter(NotificationsDbContext context) 
+    : IGetUnreadNotificationCount
 {
     public async Task<int> GetAsync(string userId, Guid? listId, CancellationToken cancellationToken)
     {
@@ -14,6 +15,7 @@ public class UnreadNotificationCountGetter(NotificationsDbContext context) : IGe
             query = query.Where(n => n.ListId == listId.Value);
         }
 
-        return await query.CountAsync(cancellationToken);
+        var retval = await query.CountAsync(cancellationToken);
+        return retval;
     }
 }

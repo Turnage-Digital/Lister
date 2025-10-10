@@ -4,7 +4,8 @@ using MediatR;
 
 namespace Lister.App.Server.Integration;
 
-public class ListItemCreatedStreamHandler(ChangeFeed feed) : INotificationHandler<ListItemCreatedIntegrationEvent>
+public class ListItemCreatedStreamHandler(ChangeFeed feed) 
+    : INotificationHandler<ListItemCreatedIntegrationEvent>
 {
     public async Task Handle(ListItemCreatedIntegrationEvent notification, CancellationToken cancellationToken)
     {

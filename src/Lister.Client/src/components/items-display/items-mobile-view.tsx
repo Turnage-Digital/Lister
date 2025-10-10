@@ -11,9 +11,9 @@ interface Props {
   totalCount: number;
   currentPage: number;
   pageSize: number;
-  onPageChange: (page: number) => Promise<void>;
-  onViewItem?: (listId: string, itemId: number) => Promise<void>;
-  onDeleteItem?: (listId: string, itemId: number) => Promise<void>;
+  onPageChange: (page: number) => Promise<void> | void;
+  onViewItem?: (listId: string, itemId: number) => Promise<void> | void;
+  onDeleteItem?: (listId: string, itemId: number) => Promise<void> | void;
 }
 
 const ItemsMobileView = ({

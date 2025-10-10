@@ -10,16 +10,16 @@ public class OutboxDispatcherService(
     ChangeFeed feed
 ) : BackgroundService
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Outbox dispatcher started");
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 using var scope = scopeFactory.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<CoreDbContext>();
-                await ProcessPendingOnceAsync(db, feed, logger, stoppingToken);
+                await ProcessPendingOnceAsync(db, feed, logger, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -30,7 +30,7 @@ public class OutboxDispatcherService(
             {
                 var delay = TimeSpan.FromSeconds(2);
                 logger.LogTrace("Outbox: sleeping {Delay}s", delay.TotalSeconds);
-                await Task.Delay(delay, stoppingToken);
+                await Task.Delay(delay, cancellationToken);
             }
             catch
             {

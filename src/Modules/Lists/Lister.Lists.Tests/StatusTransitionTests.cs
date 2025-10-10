@@ -19,7 +19,7 @@ public class StatusTransitionTests
         _uow.SetupGet(x => x.ListsStore).Returns(_lists.Object);
         _uow.SetupGet(x => x.ItemsStore).Returns(_items.Object);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
-        var bagValidator = new ListItemBagValidator<ListDb>(_lists.Object);
+        var bagValidator = new ListItemBagValidator<ListDb, ItemDb>(_uow.Object);
         _agg = new ListsAggregate<ListDb, ItemDb>(_uow.Object, new NoopQueue(), bagValidator);
     }
 

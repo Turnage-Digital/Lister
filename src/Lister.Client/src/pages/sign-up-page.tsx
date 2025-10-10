@@ -1,24 +1,23 @@
 import * as React from "react";
 
 import { Link, Paper, Stack, Typography } from "@mui/material";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-//
+import { useAuth } from "../auth";
 import { SignUpForm } from "../components";
 
-const RouteComponent = () => {
-  const router = useRouter();
-  const navigate = Route.useNavigate();
-  const search = Route.useSearch();
-  const { auth } = Route.useRouteContext({ select: ({ auth }) => ({ auth }) });
-  const status = auth.status;
-
-  // Removed layout-effect push; navigate after signup handles redirect
+const SignUpPage = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const auth = useAuth();
 
   const handleSignedUp = async (email: string) => {
     auth.login(email);
-    await router.invalidate();
-    await navigate({ to: search.callbackUrl || "/" });
+    await queryClient.invalidateQueries();
+    const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+    navigate(callbackUrl, { replace: true });
   };
 
   return (
@@ -55,7 +54,12 @@ const RouteComponent = () => {
               <Link
                 component="button"
                 type="button"
-                onClick={() => navigate({ to: "/sign-in", search })}
+                onClick={() => {
+                  const searchString = searchParams.toString();
+                  navigate(
+                    searchString ? `/sign-in?${searchString}` : "/sign-in",
+                  );
+                }}
                 sx={{
                   textDecoration: "none",
                   transition: "color 0.2s ease-in-out",
@@ -74,16 +78,4 @@ const RouteComponent = () => {
     </Stack>
   );
 };
-
-export interface SignUpSearch {
-  callbackUrl?: string;
-}
-
-export const Route = createFileRoute("/sign-up")({
-  component: RouteComponent,
-  validateSearch: (search): SignUpSearch => {
-    return {
-      callbackUrl: search.callbackUrl as string | undefined,
-    };
-  },
-});
+export default SignUpPage;

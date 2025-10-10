@@ -4,8 +4,12 @@ import { FormEvent, useEffect, useState } from "react";
 import { ContentPaste, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Divider, Stack } from "@mui/material";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   EditListItemColumnContent,
@@ -18,11 +22,15 @@ import {
 import { ListItem } from "../models";
 import { listItemDefinitionQueryOptions } from "../query-options";
 
-const RouteComponent = () => {
+const CreateListItemPage = () => {
   const { openDrawer, closeDrawer } = useSideDrawer();
-  const { listId } = Route.useParams();
-  const navigate = Route.useNavigate();
-  const { queryClient } = Route.useRouteContext();
+  const { listId } = useParams<{ listId: string }>();
+  if (!listId) {
+    throw new Error("List id is required");
+  }
+
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const createItemMutation = useMutation({
     mutationFn: async (item: ListItem) => {
@@ -66,7 +74,7 @@ const RouteComponent = () => {
     );
   }, [listItemDefinitionQuery, updated]);
 
-  const handleUpdate = (key: string, value: any) => {
+  const handleUpdate = (key: string, value: unknown) => {
     const newBag = { ...updated.bag, [key]: value };
     setUpdated({ ...updated, bag: newBag });
   };
@@ -101,10 +109,7 @@ const RouteComponent = () => {
     window.sessionStorage.removeItem(
       listItemDefinitionQuery.data.id ?? "updated_item",
     );
-    await navigate({
-      to: "/$listId/$itemId",
-      params: { listId, itemId: mutated.id },
-    });
+    navigate(`/${listId}/${mutated.id}`);
   };
 
   if (!listItemDefinitionQuery.isSuccess) {
@@ -123,11 +128,11 @@ const RouteComponent = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate({ to: "/" }),
+      onClick: () => navigate(`/`),
     },
     {
       title: listItemDefinitionQuery.data.name,
-      onClick: () => navigate({ to: `/${listId}` }),
+      onClick: () => navigate(`/${listId}`),
     },
   ];
 
@@ -187,6 +192,4 @@ const RouteComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/_auth/$listId/create")({
-  component: RouteComponent,
-});
+export default CreateListItemPage;
