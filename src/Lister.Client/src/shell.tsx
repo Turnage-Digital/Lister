@@ -34,6 +34,14 @@ const Shell = () => {
             queryKey: ["list-items"],
             exact: false,
           });
+          queryClient.invalidateQueries({
+            queryKey: ["item-history"],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["list-history"],
+            exact: false,
+          });
         },
       "Lister.Core.Domain.IntegrationEvents.ListItemUpdatedIntegrationEvent":
         () => {
@@ -43,6 +51,10 @@ const Shell = () => {
           });
           queryClient.invalidateQueries({
             queryKey: ["list-item"],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["item-history"],
             exact: false,
           });
         },
@@ -56,6 +68,10 @@ const Shell = () => {
             queryKey: ["list-item"],
             exact: false,
           });
+          queryClient.invalidateQueries({
+            queryKey: ["item-history"],
+            exact: false,
+          });
         },
       "Lister.Core.Domain.IntegrationEvents.ListDeletedIntegrationEvent":
         () => {
@@ -64,11 +80,19 @@ const Shell = () => {
             queryKey: ["list-items"],
             exact: false,
           });
+          queryClient.invalidateQueries({
+            queryKey: ["list-history"],
+            exact: false,
+          });
         },
       "Lister.Core.Domain.IntegrationEvents.ListUpdatedIntegrationEvent":
         () => {
           queryClient.invalidateQueries({
             queryKey: ["list-definition"],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["list-history"],
             exact: false,
           });
         },

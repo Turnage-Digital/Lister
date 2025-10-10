@@ -5,9 +5,10 @@ import { Stack, TextField } from "@mui/material";
 interface Props {
   name: string | null;
   onNameChanged: (name: string) => void;
+  disabled?: boolean;
 }
 
-const EditListNameContent = ({ name, onNameChanged }: Props) => {
+const EditListNameContent = ({ name, onNameChanged, disabled }: Props) => {
   return (
     <Stack spacing={2}>
       <TextField
@@ -24,6 +25,7 @@ const EditListNameContent = ({ name, onNameChanged }: Props) => {
         onChange={(event) => {
           onNameChanged(event.target.value);
         }}
+        disabled={disabled}
       />
     </Stack>
   );

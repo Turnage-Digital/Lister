@@ -36,14 +36,69 @@ interface Props {
   item: ListItem;
   definition: ListItemDefinition;
   onViewItem?: (listId: string, itemId: number) => void;
+  onEditItem?: (listId: string, itemId: number) => void;
   onDeleteItem?: (listId: string, itemId: number) => void;
 }
 
-const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
+const ItemCard = ({
+  item,
+  definition,
+  onViewItem,
+  onEditItem,
+  onDeleteItem,
+}: Props) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
   const statusChip = status && <StatusChip status={status} />;
+
+  const viewAction = onViewItem ? (
+    <Tooltip title={`View item ${item.id}`}>
+      <IconButton
+        onClick={() => onViewItem(definition.id!, item.id!)}
+        sx={{
+          color: "primary.main",
+          "&:hover": {
+            backgroundColor: alpha(theme.palette.primary.main, 0.1),
+          },
+        }}
+      >
+        <Visibility />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
+  const editAction = onEditItem ? (
+    <Tooltip title={`Edit item ${item.id}`}>
+      <IconButton
+        onClick={() => onEditItem(definition.id!, item.id!)}
+        sx={{
+          color: "secondary.main",
+          "&:hover": {
+            backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+          },
+        }}
+      >
+        <Edit />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
+  const deleteAction = onDeleteItem ? (
+    <Tooltip title={`Delete item ${item.id}`}>
+      <IconButton
+        onClick={() => onDeleteItem(definition.id!, item.id!)}
+        sx={{
+          color: "error.main",
+          "&:hover": {
+            backgroundColor: alpha(theme.palette.error.main, 0.1),
+          },
+        }}
+      >
+        <Delete />
+      </IconButton>
+    </Tooltip>
+  ) : null;
 
   const getFieldIcon = (type: ColumnType) => {
     switch (type) {
@@ -213,46 +268,12 @@ const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
           p: 2,
           opacity: 0.7,
           transition: "opacity 0.2s ease-in-out",
+          gap: 0.5,
         }}
       >
-        <Tooltip title={`View item ${item.id}`}>
-          <IconButton
-            onClick={() => onViewItem?.(definition.id!, item.id!)}
-            sx={{
-              color: "primary.main",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-              },
-            }}
-          >
-            <Visibility />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={`Edit item ${item.id}`}>
-          <IconButton
-            sx={{
-              color: "text.secondary",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.text.secondary, 0.1),
-              },
-            }}
-          >
-            <Edit />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={`Delete item ${item.id}`}>
-          <IconButton
-            onClick={() => onDeleteItem?.(definition.id!, item.id!)}
-            sx={{
-              color: "error.main",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.error.main, 0.1),
-              },
-            }}
-          >
-            <Delete />
-          </IconButton>
-        </Tooltip>
+        {viewAction}
+        {editAction}
+        {deleteAction}
       </CardActions>
     </Card>
   );

@@ -24,6 +24,7 @@ This document captures the intentional architecture boundaries and composition p
 18. Testing
 19. Config
 20. Performance considerations
+21. Routing (React Router v6)
 
 ## Solution Structure
 
@@ -371,3 +372,34 @@ Future Enhancements
 - Views must only return what the endpoint needs; do not over-fetch.
 - Prefer server-side projection (`Select(...)`) into view types instead of materializing entities and mapping in-memory.
 - Use denormalized fields (e.g., `TriggerType`) to support efficient queries when JSON filtering would be expensive.
+
+## Routing (React Router v6)
+
+- **Framework:** React 19
+- **Build Tool:** Vite (`@vitejs/plugin-react`)
+- **UI:** MUI (Core + X DataGrid / Date Pickers)
+- **Data Fetching / Cache:** React Query v5 (`@tanstack/react-query`)
+- **Routing:** React Router v6 (`react-router-dom`)
+
+### Structure
+Routes are defined in `src/Lister.Client/src/router.tsx` using `createBrowserRouter`.  
+Loaders are used for **auth-gated** and **data-prefetched** routes.
+
+**Example:**
+```tsx
+export const createAppRouter = (queryClient: QueryClient) =>
+  createBrowserRouter([
+    {
+      path: '/',
+      element: <Shell />,
+      loader: async () => {
+        const auth = await ensureAuthenticated();
+        if (!auth) throw redirect('/sign-in');
+        return null;
+      },
+      children: [
+        { index: true, element: <Dashboard /> },
+        { path: 'lists/:listId', loader: ensureListPrefetch(queryClient), element: <ListItems /> },
+      ],
+    },
+  ]);

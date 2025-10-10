@@ -8,7 +8,7 @@ public class UnreadNotificationCountGetter(NotificationsDbContext context)
 {
     public async Task<int> GetAsync(string userId, Guid? listId, CancellationToken cancellationToken)
     {
-        var query = context.Notifications.AsQueryable()
+        var query = context.Notifications 
             .Where(n => n.UserId == userId && n.ReadOn == null);
         if (listId.HasValue)
         {

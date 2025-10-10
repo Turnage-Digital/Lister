@@ -14,6 +14,7 @@ interface Props {
   onPaginationChange: (model: GridPaginationModel) => Promise<void> | void;
   onSortChange: (model: GridSortModel) => Promise<void> | void;
   onViewItem: (listId: string, itemId: number) => Promise<void> | void;
+  onEditItem: (listId: string, itemId: number) => Promise<void> | void;
   onDeleteItem: (listId: string, itemId: number) => Promise<void> | void;
 }
 
@@ -25,9 +26,15 @@ const ItemsDesktopView = ({
   onPaginationChange,
   onSortChange,
   onViewItem,
+  onEditItem,
   onDeleteItem,
 }: Props) => {
-  const gridColDefs = getGridColDefs(definition, onViewItem, onDeleteItem);
+  const gridColDefs = getGridColDefs(
+    definition,
+    onViewItem,
+    onEditItem,
+    onDeleteItem,
+  );
 
   const rows = data.items.map((item) => ({
     id: item.id,

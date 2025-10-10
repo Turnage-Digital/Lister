@@ -1,13 +1,18 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import {
+  fetchNotificationDetails,
+  fetchNotifications,
+} from "./api/notifications";
+import {
   ItemDetails,
   ListItemDefinition,
   ListName,
   ListSearch,
-  PagedList,
   NotificationDetails,
-  NotificationListPage,
+  NotificationRule,
+  NotificationsSearch,
+  PagedList,
 } from "./models";
 
 export const listNamesQueryOptions = () =>
@@ -76,15 +81,6 @@ export const itemQueryOptions = (listId?: string, itemId?: number) =>
     enabled: Boolean(listId) && Boolean(itemId),
   });
 
-// Notifications
-export interface NotificationsSearch {
-  since?: string;
-  unread?: boolean;
-  listId?: string;
-  pageSize?: number;
-  page?: number;
-}
-
 export const notificationsListQueryOptions = (
   search: NotificationsSearch = {},
 ) =>
@@ -97,35 +93,13 @@ export const notificationsListQueryOptions = (
       search.pageSize ?? 20,
       search.page ?? 0,
     ],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (search.since) params.set("since", search.since);
-      if (typeof search.unread === "boolean")
-        params.set("unread", String(search.unread));
-      if (search.listId) params.set("listId", search.listId);
-      params.set("pageSize", String(search.pageSize ?? 20));
-      params.set("page", String(search.page ?? 0));
-
-      const request = new Request(`/api/notifications?${params.toString()}`, {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      const retval: NotificationListPage = await response.json();
-      return retval;
-    },
+    queryFn: () => fetchNotifications(search),
   });
 
 export const notificationDetailsQueryOptions = (notificationId?: string) =>
   queryOptions({
     queryKey: ["notification", notificationId],
-    queryFn: async () => {
-      const request = new Request(`/api/notifications/${notificationId}`, {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      const retval: NotificationDetails = await response.json();
-      return retval;
-    },
+    queryFn: () => fetchNotificationDetails(notificationId as string),
     enabled: Boolean(notificationId),
   });
 
@@ -138,6 +112,33 @@ export const unreadCountQueryOptions = (listId?: string) =>
         : "/api/notifications/unreadCount";
       const response = await fetch(url, { method: "GET" });
       const retval: number = await response.json();
+      return retval;
+    },
+  });
+
+export const notificationRulesQueryOptions = (listId?: string) =>
+  queryOptions({
+    queryKey: ["notification-rules", listId ?? null],
+    enabled: Boolean(listId),
+    queryFn: async () => {
+      if (!listId) {
+        return [] as NotificationRule[];
+      }
+
+      const params = new URLSearchParams();
+      params.set("listId", listId);
+      const request = new Request(
+        `/api/notifications/rules?${params.toString()}`,
+        { method: "GET" },
+      );
+      const response = await fetch(request);
+      if (response.status === 204) {
+        return [] as NotificationRule[];
+      }
+      if (!response.ok) {
+        throw new Error("Failed to load notification rules");
+      }
+      const retval: NotificationRule[] = await response.json();
       return retval;
     },
   });

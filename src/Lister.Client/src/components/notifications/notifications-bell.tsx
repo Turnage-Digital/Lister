@@ -18,11 +18,7 @@ const NotificationsBell = () => {
 
   return (
     <Tooltip title="Notifications">
-      <IconButton
-        color="inherit"
-        onClick={onClick}
-        aria-label="Open notifications"
-      >
+      <IconButton onClick={onClick}>
         <Badge
           color="error"
           badgeContent={unreadCount}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ContentPaste, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -12,9 +12,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  EditListItemColumnContent,
-  EditListItemStatusesContent,
   FormBlock,
+  ListItemEditor,
   SmartPasteDialog,
   Titlebar,
   useSideDrawer,
@@ -39,7 +38,7 @@ const CreateListItemPage = () => {
           "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(item),
+        body: JSON.stringify({ bag: item.bag }),
       });
       const response = await fetch(request);
       const retval: ListItem = await response.json();
@@ -54,29 +53,29 @@ const CreateListItemPage = () => {
     listItemDefinitionQueryOptions(listId),
   );
 
-  const defaultListItem: ListItem = {
+  const definition = listItemDefinitionQuery.data;
+
+  const [formState, setFormState] = useState<ListItem>({
     id: null,
     listId,
     bag: {},
-  };
-
-  const [updated, setUpdated] = useState<ListItem>(() => {
-    const item = window.sessionStorage.getItem(
-      listItemDefinitionQuery.data.id ?? "updated_item",
-    );
-    return item ? JSON.parse(item) : defaultListItem;
   });
 
-  useEffect(() => {
-    window.sessionStorage.setItem(
-      listItemDefinitionQuery.data.id ?? "updated_item",
-      JSON.stringify(updated),
-    );
-  }, [listItemDefinitionQuery, updated]);
+  const initialStatus = useMemo(
+    () => definition.statuses[0]?.name,
+    [definition.statuses],
+  );
 
-  const handleUpdate = (key: string, value: unknown) => {
-    const newBag = { ...updated.bag, [key]: value };
-    setUpdated({ ...updated, bag: newBag });
+  useEffect(() => {
+    setFormState({
+      id: null,
+      listId,
+      bag: initialStatus ? { status: initialStatus } : {},
+    });
+  }, [initialStatus, listId, definition.id]);
+
+  const handleBagChange = (nextBag: Record<string, unknown>) => {
+    setFormState((prev) => ({ ...prev, bag: nextBag }));
   };
 
   const handlePaste = async (text: string) => {
@@ -96,25 +95,18 @@ const CreateListItemPage = () => {
     const response = await fetch(postRequest);
     const json: ListItem = await response.json();
 
-    setUpdated({ ...updated, bag: json.bag });
+    setFormState((prev) => ({ ...prev, bag: { ...prev.bag, ...json.bag } }));
     closeDrawer();
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const mutated = await createItemMutation.mutateAsync(updated);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const mutated = await createItemMutation.mutateAsync(formState);
     if (mutated.id === null) {
       throw new Error("Item was not created.");
     }
-    window.sessionStorage.removeItem(
-      listItemDefinitionQuery.data.id ?? "updated_item",
-    );
     navigate(`/${listId}/${mutated.id}`);
   };
-
-  if (!listItemDefinitionQuery.isSuccess) {
-    return null;
-  }
 
   const actions = [
     {
@@ -151,23 +143,13 @@ const CreateListItemPage = () => {
       />
 
       <FormBlock
-        title="Columns"
+        title="Item details"
+        subtitle="Enter values for each column and pick the current status."
         content={
-          <EditListItemColumnContent
-            listItemDefinition={listItemDefinitionQuery.data}
-            item={updated}
-            onItemUpdated={handleUpdate}
-          />
-        }
-      />
-
-      <FormBlock
-        title="Status"
-        content={
-          <EditListItemStatusesContent
-            listItemDefinition={listItemDefinitionQuery.data}
-            item={updated}
-            onItemUpdated={handleUpdate}
+          <ListItemEditor
+            definition={definition}
+            bag={formState.bag}
+            onBagChange={handleBagChange}
           />
         }
       />

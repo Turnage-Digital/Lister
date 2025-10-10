@@ -1,3 +1,5 @@
+using Lister.Core.Domain.ValueObjects;
+using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +18,17 @@ public class ItemDetailsGetter(ListsDbContext dbContext) : IGetItemDetails
             {
                 Bag = item.Bag,
                 ListId = item.ListId,
-                Id = item.Id
+                Id = item.Id,
+                History = item.History
+                    .OrderByDescending(entry => entry.On)
+                    .Select(entry => new Entry<ItemHistoryType>
+                    {
+                        By = entry.By,
+                        On = entry.On,
+                        Type = entry.Type,
+                        Bag = entry.Bag,
+                    })
+                    .ToArray()
             })
             .SingleOrDefaultAsync(cancellationToken);
         return retval;

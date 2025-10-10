@@ -1,6 +1,11 @@
 import * as React from "react";
 
-import { Delete, List as ListIcon, Visibility } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  List as ListIcon,
+  Visibility,
+} from "@mui/icons-material";
 import {
   alpha,
   Box,
@@ -115,6 +120,19 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
             }}
           >
             <Visibility />
+          </PreloadIconButton>
+        </Tooltip>
+        <Tooltip title={`Edit ${listName.name}`}>
+          <PreloadIconButton
+            to={`/${listName.id}/edit`}
+            sx={{
+              color: "secondary.main",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+              },
+            }}
+          >
+            <Edit />
           </PreloadIconButton>
         </Tooltip>
         <Tooltip title={`Delete ${listName.name}`}>

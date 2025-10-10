@@ -9,6 +9,7 @@ import StatusChip from "./status-chip";
 export const getGridColDefs = (
   listItemDefinition: ListItemDefinition,
   handleViewClicked: (listId: string, itemId: number) => void,
+  handleEditClicked: (listId: string, itemId: number) => void,
   handleDeleteClicked: (listId: string, itemId: number) => void,
 ): GridColDef[] => {
   const retval: GridColDef[] = [];
@@ -93,6 +94,9 @@ export const getGridColDefs = (
             />
           }
           label="Edit"
+          onClick={() =>
+            handleEditClicked(listItemDefinition.id!, id as number)
+          }
         />,
         <GridActionsCellItem
           key={`${id}-delete`}

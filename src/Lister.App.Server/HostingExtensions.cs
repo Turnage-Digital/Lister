@@ -15,6 +15,8 @@ using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
+using Lister.Lists.Application.Endpoints.GetItemHistory;
+using Lister.Lists.Application.Endpoints.GetListHistory;
 using Lister.Lists.Application.Endpoints.GetStatusTransitions;
 using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Application.Endpoints.UpdateList;
@@ -210,6 +212,8 @@ internal static class HostingExtensions
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
         services.AddScoped<IGetPagedList, PagedListGetter>();
         services.AddScoped<IGetListNames, ListNamesGetter>();
+        services.AddScoped<IGetListHistory, ListHistoryGetter>();
+        services.AddScoped<IGetItemHistory, ItemHistoryGetter>();
 
         /* Notifications */
         services.AddDbContextWithMigrations<NotificationsDbContext>(connectionString, serverVersion);

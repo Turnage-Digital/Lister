@@ -61,3 +61,11 @@ export interface NotificationListPage {
   pageSize: number;
   total: number;
 }
+
+export interface NotificationsSearch {
+  since?: string;
+  unread?: boolean;
+  listId?: string;
+  pageSize?: number;
+  page?: number;
+}

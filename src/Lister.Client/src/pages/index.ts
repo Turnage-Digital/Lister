@@ -1,5 +1,7 @@
 export { default as CreateListItemPage } from "./create-list-item-page";
 export { default as CreateListPage } from "./create-list-page";
+export { default as EditListPage } from "./edit-list-page";
+export { default as EditListItemPage } from "./edit-list-item-page";
 export { default as ListItemDetailsPage } from "./list-item-details-page";
 export { default as ListItemsPage, getListSearch } from "./list-items-page";
 export { default as ListsPage } from "./lists-page";

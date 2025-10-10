@@ -6,6 +6,8 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import {
   CreateListItemPage,
   CreateListPage,
+  EditListItemPage,
+  EditListPage,
   ListItemDetailsPage,
   ListItemsPage,
   ListsPage,
@@ -18,6 +20,7 @@ import {
   itemQueryOptions,
   listItemDefinitionQueryOptions,
   listNamesQueryOptions,
+  notificationRulesQueryOptions,
   pagedItemsQueryOptions,
 } from "./query-options";
 import Shell from "./shell";
@@ -70,6 +73,20 @@ export const createAppRouter = (queryClient: QueryClient) =>
               element: <ListItemsPage />,
             },
             {
+              path: "edit",
+              loader: async ({ params }) => {
+                const listId = params.listId;
+                if (!listId) {
+                  throw new Response("Not Found", { status: 404 });
+                }
+                await queryClient.ensureQueryData(
+                  notificationRulesQueryOptions(listId),
+                );
+                return null;
+              },
+              element: <EditListPage />,
+            },
+            {
               path: "create",
               element: <CreateListItemPage />,
             },
@@ -90,6 +107,21 @@ export const createAppRouter = (queryClient: QueryClient) =>
                 {
                   index: true,
                   element: <ListItemDetailsPage />,
+                },
+                {
+                  path: "edit",
+                  loader: async ({ params }) => {
+                    const listId = params.listId;
+                    const itemId = params.itemId;
+                    if (!listId || !itemId) {
+                      throw new Response("Not Found", { status: 404 });
+                    }
+                    await queryClient.ensureQueryData(
+                      itemQueryOptions(listId, Number(itemId)),
+                    );
+                    return null;
+                  },
+                  element: <EditListItemPage />,
                 },
               ],
             },

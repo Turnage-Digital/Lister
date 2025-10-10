@@ -15,7 +15,8 @@ public class UserNotificationRulesGetter(NotificationsDbContext context)
         CancellationToken cancellationToken
     )
     {
-        var query = context.NotificationRules.AsQueryable().Where(r => r.UserId == userId && !r.IsDeleted);
+        var query = context.NotificationRules
+            .Where(r => r.UserId == userId && !r.IsDeleted);
         if (listId.HasValue)
         {
             query = query.Where(r => r.ListId == listId.Value);

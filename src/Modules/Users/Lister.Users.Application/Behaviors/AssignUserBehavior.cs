@@ -28,7 +28,7 @@ public class AssignUserBehavior<TRequest, TResponse>(IGetCurrentUser getter)
             requestBase.UserId = userId;
         }
 
-        var retval = await next();
+        var retval = await next(cancellationToken);
         return retval;
     }
 

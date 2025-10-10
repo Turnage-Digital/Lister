@@ -13,8 +13,20 @@ export type {
   NotificationDetails,
   NotificationListItem,
   NotificationListPage,
+  NotificationsSearch,
   DeliveryAttemptView,
 } from "./notifications";
+export type {
+  NotificationRule,
+  NotificationRuleInput,
+  NotificationTrigger,
+  NotificationTriggerType,
+  NotificationChannel,
+  NotificationChannelType,
+  NotificationSchedule,
+  NotificationScheduleType,
+} from "./notification-rule";
+export type { HistoryEntry, HistoryPage } from "./history";
 export type { ChangeFeedMessage, ChangeFeedHandler } from "./change-feed";
 
 export { ColumnType } from "./column-type";

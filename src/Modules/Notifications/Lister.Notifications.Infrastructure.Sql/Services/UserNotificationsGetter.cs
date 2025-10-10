@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class UserNotificationsGetter(NotificationsDbContext context) : IGetUserNotifications
+public class UserNotificationsGetter(NotificationsDbContext context) 
+    : IGetUserNotifications
 {
     public async Task<NotificationListPage> GetAsync(
         string userId,
@@ -32,7 +33,9 @@ public class UserNotificationsGetter(NotificationsDbContext context) : IGetUserN
 
         if (unread.HasValue)
         {
-            query = unread.Value ? query.Where(n => n.ReadOn == null) : query.Where(n => n.ReadOn != null);
+            query = unread.Value ? 
+                query.Where(n => n.ReadOn == null) : 
+                query.Where(n => n.ReadOn != null);
         }
 
         var total = await query.CountAsync(cancellationToken);
