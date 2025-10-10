@@ -1,9 +1,8 @@
 import * as React from "react";
 
 import { QueryClient } from "@tanstack/react-query";
-import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import { getStoredAuth } from "./auth";
 import {
   CreateListItemPage,
   CreateListPage,
@@ -28,19 +27,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: "/",
       element: <Shell />,
-      loader: ({ request }) => {
-        const auth = getStoredAuth();
-        if (auth.status !== "loggedIn") {
-          const url = new URL(request.url);
-          const callbackUrl = `${url.pathname}${url.search}${url.hash}`;
-          const search = callbackUrl
-            ? `?callbackUrl=${encodeURIComponent(callbackUrl)}`
-            : "";
-
-          throw redirect(`/sign-in${search}`);
-        }
-        return null;
-      },
       children: [
         {
           index: true,

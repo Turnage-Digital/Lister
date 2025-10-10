@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   AppBar,
   Box,
+  CircularProgress,
   Container,
   Toolbar,
   Typography,
@@ -143,6 +144,21 @@ const Shell = () => {
 
     return () => close();
   }, [auth.status, queryClient]);
+
+  if (auth.status === "checking") {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (auth.status !== "loggedIn") {
     const callbackUrl = `${location.pathname}${location.search}${location.hash}`;

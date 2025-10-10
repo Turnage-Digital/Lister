@@ -1,62 +1,143 @@
 import * as React from "react";
 
-export type AuthStatus = "loggedOut" | "loggedIn";
+export type AuthStatus = "checking" | "loggedOut" | "loggedIn";
+
+export interface UserInfo {
+  userName?: string;
+  email?: string;
+  name?: string;
+  [key: string]: unknown;
+}
+
+interface AuthState {
+  status: AuthStatus;
+  username?: string;
+  user: UserInfo | null;
+}
 
 export interface Auth {
   status: AuthStatus;
   username?: string;
-  login: (username: string) => void;
+  user: UserInfo | null;
+  login: (username?: string) => void;
   logout: () => void;
+  refresh: () => void;
 }
-
-interface StoredAuth {
-  status: AuthStatus;
-  username?: string;
-}
-
-export const getStoredAuth = (): StoredAuth => {
-  try {
-    const stored = sessionStorage.getItem("auth");
-    if (stored) {
-      const parsed = JSON.parse(stored) as Partial<StoredAuth>;
-      return {
-        status: parsed.status === "loggedIn" ? "loggedIn" : "loggedOut",
-        username:
-          typeof parsed.username === "string" ? parsed.username : undefined,
-      };
-    }
-  } catch {
-    // Invalid stored data, fall back to logged out
-  }
-  return { status: "loggedOut", username: undefined };
-};
-
-const setStoredAuth = (status: AuthStatus, username?: string) => {
-  try {
-    sessionStorage.setItem("auth", JSON.stringify({ status, username }));
-  } catch {
-    // Storage not available, continue without persistence
-  }
-};
 
 const AuthContext = React.createContext<Auth | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, setState] = React.useState<StoredAuth>(() => getStoredAuth());
+const getUsernameFromInfo = (info: UserInfo | null | undefined) => {
+  if (!info) {
+    return undefined;
+  }
 
-  const login = React.useCallback((username: string) => {
-    setState({ status: "loggedIn", username });
-    setStoredAuth("loggedIn", username);
+  if (typeof info.userName === "string" && info.userName.length > 0) {
+    return info.userName;
+  }
+  if (typeof info.email === "string" && info.email.length > 0) {
+    return info.email;
+  }
+  if (typeof info.name === "string" && info.name.length > 0) {
+    return info.name;
+  }
+  return undefined;
+};
+
+const createLoggedOutState = (): AuthState => ({
+  status: "loggedOut",
+  username: undefined,
+  user: null,
+});
+
+const createCheckingState = (username?: string): AuthState => ({
+  status: "checking",
+  username,
+  user: null,
+});
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [state, setState] = React.useState<AuthState>(() =>
+    createCheckingState(),
+  );
+  const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  const refresh = React.useCallback(() => {
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setState((prev) => createCheckingState(prev.username));
+
+    const load = async () => {
+      try {
+        const response = await fetch("/identity/manage/info", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (response.status === 204) {
+          setState(createLoggedOutState());
+          return;
+        }
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            setState(createLoggedOutState());
+            return;
+          }
+
+          throw new Error("Failed to load user info");
+        }
+
+        const info = (await response.json()) as UserInfo | null;
+        const username = getUsernameFromInfo(info);
+        setState({ status: "loggedIn", username, user: info ?? null });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        setState(createLoggedOutState());
+      }
+    };
+
+    load().catch(() => {
+      // load() already handles its own error paths; this catch silences
+      // the unhandled rejection warning some browsers emit when an async
+      // function throws after the caller intentionally ignores the promise.
+    });
   }, []);
 
+  React.useEffect(() => {
+    refresh();
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [refresh]);
+
+  const login = React.useCallback(
+    (username?: string) => {
+      setState(createCheckingState(username));
+      refresh();
+    },
+    [refresh],
+  );
+
   const logout = React.useCallback(() => {
-    setState({ status: "loggedOut", username: undefined });
-    setStoredAuth("loggedOut");
+    abortControllerRef.current?.abort();
+    setState(createLoggedOutState());
   }, []);
 
   const value = React.useMemo<Auth>(
-    () => ({ status: state.status, username: state.username, login, logout }),
-    [state.status, state.username, login, logout],
+    () => ({
+      status: state.status,
+      username: state.username,
+      user: state.user,
+      login,
+      logout,
+      refresh,
+    }),
+    [state.status, state.username, state.user, login, logout, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
