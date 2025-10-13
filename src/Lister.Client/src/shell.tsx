@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "./auth";
-import { NotificationsBell, SideDrawer, UserMenu } from "./components";
+import { NotificationsBell, UserMenu } from "./components";
 import { connectChangeFeed, createChangeFeedRouter } from "./lib/sse";
 
 const Shell = () => {
@@ -232,8 +232,6 @@ const Shell = () => {
           <Outlet />
         </Container>
       </Box>
-
-      <SideDrawer />
     </>
   );
 };

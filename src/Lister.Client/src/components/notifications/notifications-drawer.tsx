@@ -20,11 +20,11 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQueryClient,
   useSuspenseQuery,
-  type InfiniteData,
 } from "@tanstack/react-query";
 
 import {
@@ -97,14 +97,21 @@ const NotificationsDrawer = () => {
     return [...infiniteData.pages];
   }, [infiniteData]);
 
-  const notifications = React.useMemo(
-    () => pages.flatMap((page) => page.items as NotificationListItem[]),
-    [pages],
-  );
+  const notifications = React.useMemo<NotificationListItem[]>(() => {
+    return pages.flatMap((page) => {
+      if (!Array.isArray(page.items)) {
+        return [] as NotificationListItem[];
+      }
+
+      return page.items.filter((item): item is NotificationListItem =>
+        Boolean(item),
+      );
+    });
+  }, [pages]);
 
   const totalAvailable = React.useMemo(() => {
     const lastPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    return lastPage ? lastPage.total : notifications.length;
+    return lastPage?.total ?? notifications.length;
   }, [pages, notifications.length]);
 
   const invalidateNotifications = React.useCallback(() => {

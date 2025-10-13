@@ -12,7 +12,8 @@ public class ItemHistoryGetter(ListsDbContext dbContext) : IGetItemHistory
         int itemId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var query = dbContext.Items
             .Where(item => item.ListId == listId)
@@ -29,7 +30,7 @@ public class ItemHistoryGetter(ListsDbContext dbContext) : IGetItemHistory
                 By = entry.By,
                 On = entry.On,
                 Type = entry.Type,
-                Bag = entry.Bag,
+                Bag = entry.Bag
             })
             .ToArrayAsync(cancellationToken);
 
@@ -38,7 +39,7 @@ public class ItemHistoryGetter(ListsDbContext dbContext) : IGetItemHistory
             Items = items,
             Page = page,
             PageSize = pageSize,
-            Total = total,
+            Total = total
         };
     }
 }

@@ -1,10 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Lister.App.Server.Integration;
 using Lister.App.Server.Services;
 using Lister.Core.Application.Behaviors;
 using Lister.Core.Domain;
-using Lister.Core.Domain.IntegrationEvents;
 using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
@@ -15,8 +13,6 @@ using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
-using Lister.Lists.Application.Endpoints.GetItemHistory;
-using Lister.Lists.Application.Endpoints.GetListHistory;
 using Lister.Lists.Application.Endpoints.GetStatusTransitions;
 using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Application.Endpoints.UpdateList;
@@ -29,19 +25,9 @@ using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
-using Lister.Notifications.Application.Endpoints.CreateNotificationRule;
-using Lister.Notifications.Application.Endpoints.DeleteNotificationRule;
 using Lister.Notifications.Application.Endpoints.GetNotificationDetails;
-using Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
-using Lister.Notifications.Application.Endpoints.GetUserNotifications;
-using Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
-using Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
-using Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
-using Lister.Notifications.Application.EventHandlers.ListItemCreated;
 using Lister.Notifications.Domain;
-using Lister.Notifications.Domain.Events;
 using Lister.Notifications.Domain.Services;
-using Lister.Notifications.Domain.Views;
 using Lister.Notifications.Infrastructure.Sql;
 using Lister.Notifications.Infrastructure.Sql.Entities;
 using Lister.Notifications.Infrastructure.Sql.Services;
@@ -79,9 +65,13 @@ internal static class HostingExtensions
             if (!string.IsNullOrWhiteSpace(seqUrl))
             {
                 if (!string.IsNullOrWhiteSpace(seqApiKey))
+                {
                     config.WriteTo.Seq(seqUrl, apiKey: seqApiKey);
+                }
                 else
+                {
                     config.WriteTo.Seq(seqUrl);
+                }
             }
         });
 
@@ -277,78 +267,6 @@ internal static class HostingExtensions
             typeof(UpdateListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-
-        // Notifications - close generic handlers in composition root
-        services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),
-            typeof(CreateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<UpdateNotificationRuleCommand>),
-            typeof(UpdateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<DeleteNotificationRuleCommand>),
-            typeof(DeleteNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<MarkNotificationAsReadCommand>),
-            typeof(MarkNotificationAsReadCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<MarkAllNotificationsAsReadCommand>),
-            typeof(MarkAllNotificationsAsReadCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<GetNotificationDetailsQuery, NotificationDetails?>),
-            typeof(GetNotificationDetailsQueryHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<GetUserNotificationsQuery, NotificationListPage>),
-            typeof(GetUserNotificationsQueryHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<GetUnreadNotificationCountQuery, int>),
-            typeof(GetUnreadNotificationCountQueryHandler<NotificationRuleDb, NotificationDb>));
-
-        // Notifications integration event handlers (use namespace qualifier as requested)
-        services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
-            NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
-        services
-            .AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, Notifications.Application.EventHandlers.
-                ListItemUpdated.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
-        services
-            .AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, Notifications.Application.EventHandlers.
-                ListItemDeleted.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
-        services
-            .AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, Notifications.Application.EventHandlers.
-                ListDeleted.NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
-
-        // Change feed event stream handlers
-        services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedStreamHandler>();
-        services.AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, ListItemUpdatedStreamHandler>();
-        services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedStreamHandler>();
-        services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedStreamHandler>();
-        services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedStreamHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>, ListMigrationStartedStreamHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
-                ListMigrationProgressStreamHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
-                ListMigrationCompletedStreamHandler>();
-        services
-            .AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>, ListMigrationFailedStreamHandler>();
-
-        // Outbox handlers (persist events for durability)
-        services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>, ListItemCreatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListItemUpdatedIntegrationEvent>, ListItemUpdatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListItemDeletedIntegrationEvent>, ListItemDeletedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListDeletedIntegrationEvent>, ListDeletedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListUpdatedIntegrationEvent>, ListUpdatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListMigrationStartedIntegrationEvent>,
-            ListMigrationStartedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListMigrationProgressIntegrationEvent>,
-            ListMigrationProgressOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListMigrationCompletedIntegrationEvent>,
-            ListMigrationCompletedOutboxHandler>();
-        services.AddScoped<INotificationHandler<ListMigrationFailedIntegrationEvent>,
-            ListMigrationFailedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationCreatedEvent>, NotificationCreatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationProcessedEvent>, NotificationProcessedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationReadEvent>, NotificationReadOutboxHandler>();
-        services.AddScoped<INotificationHandler<AllNotificationsReadEvent>, AllNotificationsReadOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationDeliveryAttemptedEvent>,
-            NotificationDeliveryAttemptedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationRuleCreatedEvent>, NotificationRuleCreatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationRuleUpdatedEvent>, NotificationRuleUpdatedOutboxHandler>();
-        services.AddScoped<INotificationHandler<NotificationRuleDeletedEvent>, NotificationRuleDeletedOutboxHandler>();
 
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();

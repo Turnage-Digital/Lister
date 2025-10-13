@@ -21,7 +21,7 @@ public record Entry<TType>
 public record HistoryPage<TType>
     where TType : Enum
 {
-    public Entry<TType>[] Items { get; init; } = Array.Empty<Entry<TType>>();
+    public Entry<TType>[] Items { get; init; } = [];
 
     public int Page { get; init; }
 

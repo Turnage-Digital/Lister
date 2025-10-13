@@ -9,5 +9,6 @@ public interface IGetListHistory
         Guid listId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }

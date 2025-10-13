@@ -13,7 +13,12 @@ public interface IItemsStore<TItem>
 
     Task DeleteAsync(TItem item, string deletedBy, CancellationToken cancellationToken);
 
-    Task SetBagAsync(TItem item, object bag, CancellationToken cancellationToken);
+    Task SetBagAsync(
+        TItem item,
+        object bag,
+        string actedBy,
+        CancellationToken cancellationToken
+    );
 
     Task<object> GetBagAsync(TItem item, CancellationToken cancellationToken);
 

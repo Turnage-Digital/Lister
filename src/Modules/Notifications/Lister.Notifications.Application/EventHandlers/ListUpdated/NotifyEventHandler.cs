@@ -6,31 +6,30 @@ using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Domain.ValueObjects;
 using MediatR;
 
-namespace Lister.Notifications.Application.EventHandlers.ListItemUpdated;
+namespace Lister.Notifications.Application.EventHandlers.ListUpdated;
 
 public class NotifyEventHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate,
     IGetActiveNotificationRules queryService
-) : INotificationHandler<ListItemUpdatedIntegrationEvent>
+) : INotificationHandler<ListUpdatedIntegrationEvent>
     where TNotificationRule : class, IWritableNotificationRule
     where TNotification : class, IWritableNotification
 {
-    public async Task Handle(ListItemUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(ListUpdatedIntegrationEvent notification, CancellationToken cancellationToken)
     {
         var rules = await queryService.GetAsync(
             notification.ListId,
-            TriggerType.ItemUpdated,
+            TriggerType.ListUpdated,
             cancellationToken);
 
         foreach (var rule in rules)
         {
-            var trigger = NotificationTrigger.ItemUpdated();
+            var trigger = NotificationTrigger.ListUpdated();
             var context = new Dictionary<string, object>
             {
-                ["ItemId"] = notification.ItemId ?? 0,
-                ["UpdatedBy"] = notification.UpdatedBy,
-                ["PreviousBag"] = notification.PreviousBag ?? new Dictionary<string, object?>(),
-                ["NewBag"] = notification.NewBag
+                ["ListId"] = notification.ListId,
+                ["ListName"] = notification.ListName,
+                ["UpdatedBy"] = notification.UpdatedBy
             };
 
             if (rule is TNotificationRule r &&
@@ -38,18 +37,18 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
             {
                 var content = new NotificationContent
                 {
-                    Subject = "Item Updated",
-                    Body = $"An item was updated in your list by {notification.UpdatedBy}",
-                    ItemIdentifier = notification.ItemId?.ToString(),
+                    Subject = "List Updated",
+                    Body = $"The list '{notification.ListName}' was updated by {notification.UpdatedBy}",
+                    ListName = notification.ListName,
                     TriggeringUser = notification.UpdatedBy,
                     OccurredOn = DateTime.UtcNow
                 };
 
                 await aggregate.CreateNotificationAsync(
-                    rule.UserId,
+                    r.UserId,
                     notification.ListId,
-                    notification.ItemId,
-                    rule.Id,
+                    null,
+                    r.Id,
                     content,
                     NotificationPriority.Normal,
                     cancellationToken);

@@ -81,6 +81,12 @@ const StatusTransitionsEditor = ({
                   {...params}
                   placeholder="Select allowed next statuses"
                   size="small"
+                  InputProps={{
+                    ...params.InputProps,
+                    sx: {
+                      backgroundColor: "background.paper",
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option, { selected }) => (

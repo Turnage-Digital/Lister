@@ -9,7 +9,6 @@ import {
   ListItemDefinition,
   ListName,
   ListSearch,
-  NotificationDetails,
   NotificationRule,
   NotificationsSearch,
   PagedList,
@@ -23,6 +22,12 @@ export const listNamesQueryOptions = () =>
         method: "GET",
       });
       const response = await fetch(request);
+      if (!response.ok) {
+        const message = await response
+          .text()
+          .catch(() => "Failed to load list names");
+        throw new Error(message || "Failed to load list names");
+      }
       const retval: ListName[] = await response.json();
       return retval;
     },

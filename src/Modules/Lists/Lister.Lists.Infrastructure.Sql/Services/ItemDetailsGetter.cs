@@ -26,7 +26,7 @@ public class ItemDetailsGetter(ListsDbContext dbContext) : IGetItemDetails
                         By = entry.By,
                         On = entry.On,
                         Type = entry.Type,
-                        Bag = entry.Bag,
+                        Bag = entry.Bag
                     })
                     .ToArray()
             })

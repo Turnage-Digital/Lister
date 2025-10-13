@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class PendingNotificationsGetter(NotificationsDbContext context) 
+public class PendingNotificationsGetter(NotificationsDbContext context)
     : IGetPendingNotifications
 {
     public async Task<IEnumerable<IWritableNotification>> GetAsync(int batchSize, CancellationToken cancellationToken)

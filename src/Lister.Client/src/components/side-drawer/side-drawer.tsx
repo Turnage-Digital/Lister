@@ -16,7 +16,11 @@ const SideDrawer = () => {
       open={content !== null}
       onClose={closeDrawer}
       PaperProps={{
-        sx: { width: 500 },
+        sx: {
+          width: 500,
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+        },
       }}
     >
       {content}

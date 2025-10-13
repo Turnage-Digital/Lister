@@ -9,8 +9,7 @@ namespace Lister.Lists.Application.Endpoints.CreateList;
 public class CreateListCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
     IGetListItemDefinition definitionGetter
-)
-    : IRequestHandler<CreateListCommand, ListItemDefinition>
+) : IRequestHandler<CreateListCommand, ListItemDefinition>
     where TList : IWritableList
     where TItem : IWritableItem
 {

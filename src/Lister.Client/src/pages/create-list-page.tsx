@@ -7,9 +7,9 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import { createNotificationRule } from "../api/notification-rules";
 import {
   ListEditor,
-  Titlebar,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
+  Titlebar,
 } from "../components";
 import { ListItemDefinition } from "../models";
 
@@ -93,7 +93,15 @@ const CreateListPage = () => {
   };
 
   return (
-    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{
+        maxWidth: 1160,
+        mx: "auto",
+        px: { xs: 3, md: 7 },
+        py: { xs: 4, md: 6 },
+      }}
+      spacing={{ xs: 6, md: 7 }}
+    >
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
       <ListEditor
         mode="create"

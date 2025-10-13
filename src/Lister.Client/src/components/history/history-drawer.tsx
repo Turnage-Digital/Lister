@@ -1,25 +1,26 @@
 import * as React from "react";
 
-import CloseIcon from "@mui/icons-material/Close";
 import RestoreIcon from "@mui/icons-material/Restore";
 import {
   Box,
   Button,
   CircularProgress,
-  IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
+import { type InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 
 import { HistoryPage } from "../../models";
-import SideDrawerContent from "../side-drawer/side-drawer-content";
-import useSideDrawer from "../side-drawer/use-side-drawer";
+import {
+  SideDrawerContainer,
+  SideDrawerContent,
+  SideDrawerFooter,
+  SideDrawerHeader,
+} from "../side-drawer";
 
 const formatTimestamp = (isoString: string | undefined) => {
   if (!isoString) {
@@ -36,20 +37,16 @@ const formatTimestamp = (isoString: string | undefined) => {
 };
 
 interface HistoryDrawerProps {
-  title: string;
   subtitle?: string;
   queryKey: ReadonlyArray<unknown>;
   fetchPage: (pageParam: number) => Promise<HistoryPage>;
 }
 
 const HistoryDrawer = ({
-  title,
   subtitle,
   queryKey,
   fetchPage,
 }: HistoryDrawerProps) => {
-  const { closeDrawer } = useSideDrawer();
-
   const infiniteQuery = useInfiniteQuery<
     HistoryPage,
     Error,
@@ -85,22 +82,34 @@ const HistoryDrawer = ({
 
   const hasEntries = entries.length > 0;
 
-  const loadMoreLabel = infiniteQuery.hasNextPage
-    ? "Load more"
-    : "All history loaded";
-
   const loadMoreIcon = infiniteQuery.isFetchingNextPage ? (
     <CircularProgress size={16} />
   ) : undefined;
 
+  const loadMoreNode = infiniteQuery.hasNextPage ? (
+    <Button
+      variant="outlined"
+      size="small"
+      onClick={() => infiniteQuery.fetchNextPage()}
+      endIcon={loadMoreIcon}
+      disabled={infiniteQuery.isFetchingNextPage}
+    >
+      Load more
+    </Button>
+  ) : (
+    <Typography variant="caption" color="text.secondary">
+      All history loaded
+    </Typography>
+  );
+
   const subtitleNode = subtitle ? (
-    <Typography variant="body2" color="text.secondary">
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
       {subtitle}
     </Typography>
   ) : null;
 
   const listContent = hasEntries ? (
-    <List disablePadding sx={{ px: 2 }}>
+    <List disablePadding sx={{ flex: 1 }}>
       {entries.map((entry) => {
         const entryKey = `${entry.on}-${entry.type}-${entry.by ?? "unknown"}`;
         const byLine = entry.by ? (
@@ -140,39 +149,44 @@ const HistoryDrawer = ({
   );
 
   return (
-    <SideDrawerContent>
-      <Stack spacing={2} sx={{ p: 2 }}>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {title}
-          </Typography>
-          <IconButton aria-label="Close" onClick={closeDrawer}>
-            <CloseIcon />
-          </IconButton>
-        </Stack>
-        {subtitleNode}
-      </Stack>
-
-      <Box sx={{ flex: 1, overflowY: "auto" }}>{listContent}</Box>
-
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => infiniteQuery.fetchNextPage()}
-          disabled={!infiniteQuery.hasNextPage}
-          endIcon={loadMoreIcon}
+    <SideDrawerContainer>
+      <SideDrawerHeader />
+      <SideDrawerContent>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            px: 3,
+            py: 3,
+            gap: 2,
+          }}
         >
-          {loadMoreLabel}
-        </Button>
-      </Box>
-    </SideDrawerContent>
+          {subtitleNode}
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {listContent}
+          </Box>
+        </Box>
+      </SideDrawerContent>
+      <SideDrawerFooter>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            justifyContent: infiniteQuery.hasNextPage ? "flex-end" : "center",
+          }}
+        >
+          {loadMoreNode}
+        </Box>
+      </SideDrawerFooter>
+    </SideDrawerContainer>
   );
 };
 

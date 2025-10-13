@@ -107,10 +107,15 @@ const EditListItemPage = () => {
   return (
     <Stack
       component="form"
-      divider={<Divider />}
+      divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
       onSubmit={handleSubmit}
-      sx={{ px: 2, py: 4 }}
-      spacing={4}
+      sx={{
+        maxWidth: 1180,
+        mx: "auto",
+        px: { xs: 3, md: 7 },
+        py: { xs: 4, md: 6 },
+      }}
+      spacing={{ xs: 6, md: 7 }}
     >
       <Titlebar title={`Edit Item ${item.id}`} breadcrumbs={breadcrumbs} />
 

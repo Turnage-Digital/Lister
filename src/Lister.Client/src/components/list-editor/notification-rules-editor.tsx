@@ -199,7 +199,7 @@ const NotificationRulesEditor = ({
         No notification rules configured yet.
       </Typography>
     ) : (
-      <Stack spacing={2}>
+      <Stack spacing={3.5}>
         {rules.map((rule, index) => {
           const channels = rule.channels;
           const hasChannel = (type: NotificationChannelType) =>
@@ -217,16 +217,32 @@ const NotificationRulesEditor = ({
                 handleChannelAddressChange(rule, "Email", event.target.value)
               }
               placeholder="name@example.com"
+              fullWidth
+              InputProps={{
+                sx: {
+                  backgroundColor: "background.paper",
+                },
+              }}
             />
           ) : null;
 
           return (
-            <Paper key={rule.clientId} variant="outlined" sx={{ p: 2 }}>
-              <Stack spacing={2}>
+            <Paper
+              key={rule.clientId}
+              variant="outlined"
+              sx={{
+                p: { xs: 2.5, md: 3 },
+                m: 3,
+                boxShadow: "none",
+                borderColor: (theme) => theme.palette.divider,
+              }}
+            >
+              <Stack spacing={3}>
                 <Stack
                   direction="row"
                   alignItems="center"
                   justifyContent="space-between"
+                  sx={{ pb: 0.5 }}
                 >
                   <Typography fontWeight={600}>Rule {index + 1}</Typography>
                   <Button
@@ -253,6 +269,9 @@ const NotificationRulesEditor = ({
                         event.target.value as NotificationTriggerType,
                       )
                     }
+                    sx={{
+                      backgroundColor: "background.paper",
+                    }}
                   >
                     {triggerOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
@@ -263,7 +282,10 @@ const NotificationRulesEditor = ({
                 </FormControl>
 
                 {rule.trigger.type === "StatusChanged" && (
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+                  <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={{ xs: 2, md: 3 }}
+                  >
                     <FormControl fullWidth>
                       <InputLabel id={`from-${rule.clientId}`}>
                         From status
@@ -281,6 +303,9 @@ const NotificationRulesEditor = ({
                               : (event.target.value as string),
                           )
                         }
+                        sx={{
+                          backgroundColor: "background.paper",
+                        }}
                       >
                         <MenuItem value="">
                           <em>Any</em>
@@ -313,6 +338,9 @@ const NotificationRulesEditor = ({
                               : (event.target.value as string),
                           )
                         }
+                        sx={{
+                          backgroundColor: "background.paper",
+                        }}
                       >
                         <MenuItem value="">
                           <em>Any</em>
@@ -334,7 +362,7 @@ const NotificationRulesEditor = ({
                   <Typography fontWeight={600} gutterBottom>
                     Channels
                   </Typography>
-                  <FormGroup row>
+                  <FormGroup row sx={{ gap: 2.5 }}>
                     {channelOptions.map((option) => (
                       <FormControlLabel
                         key={option.value}
@@ -380,6 +408,9 @@ const NotificationRulesEditor = ({
                         event.target.value as NotificationScheduleType,
                       )
                     }
+                    sx={{
+                      backgroundColor: "background.paper",
+                    }}
                   >
                     {scheduleOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
@@ -399,6 +430,11 @@ const NotificationRulesEditor = ({
                     handleTemplateChange(rule, event.target.value)
                   }
                   placeholder="Enter a template identifier"
+                  InputProps={{
+                    sx: {
+                      backgroundColor: "background.paper",
+                    },
+                  }}
                 />
               </Stack>
             </Paper>
@@ -408,7 +444,7 @@ const NotificationRulesEditor = ({
     );
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2.5}>
       <Box>
         <Button
           onClick={onAddRule}

@@ -10,7 +10,8 @@ public class GetListHistoryQueryHandler(IGetListHistory historyGetter)
 {
     public Task<HistoryPage<ListHistoryType>> Handle(
         GetListHistoryQuery request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         return historyGetter.GetAsync(
             request.ListId,

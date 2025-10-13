@@ -17,6 +17,13 @@ public class DeleteListItemCommandHandlerTests
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         _itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _itemsStore
+            .Setup(x => x.SetBagAsync(
+                It.IsAny<ItemDb>(),
+                It.IsAny<object>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);

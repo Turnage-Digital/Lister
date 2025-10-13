@@ -223,11 +223,12 @@ const ListEditor = ({
     <Stack
       component="form"
       onSubmit={handleSubmit}
-      divider={<Divider />}
-      spacing={4}
+      divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
+      spacing={{ xs: 6, md: 7 }}
     >
       <FormBlock
         title="Name"
+        subtitle="Give this list a clear, human-friendly name so everyone knows what lives here."
         content={
           <EditListNameContent
             name={state.name}
@@ -239,6 +240,7 @@ const ListEditor = ({
 
       <FormBlock
         title="Columns"
+        subtitle="Define the fields each item should capture — text, numbers, dates, or yes/no toggles."
         content={
           <EditListColumnsContent
             columns={state.columns}
@@ -249,6 +251,7 @@ const ListEditor = ({
 
       <FormBlock
         title="Statuses"
+        subtitle="List the steps in your workflow so items move from start to finish in a predictable way."
         content={
           <EditListStatusesContent
             statuses={state.statuses}
@@ -259,6 +262,7 @@ const ListEditor = ({
 
       <FormBlock
         title="Status transitions"
+        subtitle="Choose which status changes are allowed to keep items flowing through the process safely."
         content={
           <StatusTransitionsEditor
             statuses={state.statuses}
@@ -270,7 +274,7 @@ const ListEditor = ({
 
       <FormBlock
         title="Notification rules"
-        subtitle="Send alerts when important changes happen in this list."
+        subtitle="Send alerts to teammates when important list or item changes occur."
         content={
           <NotificationRulesEditor
             rules={state.notificationRules}

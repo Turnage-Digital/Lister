@@ -1,25 +1,24 @@
 import * as React from "react";
 
 import { QueryClient } from "@tanstack/react-query";
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import {
   CreateListItemPage,
   CreateListPage,
   EditListItemPage,
   EditListPage,
+  getListSearch,
   ListItemDetailsPage,
   ListItemsPage,
   ListsPage,
   ResetPasswordPage,
   SignInPage,
   SignUpPage,
-  getListSearch,
 } from "./pages";
 import {
   itemQueryOptions,
   listItemDefinitionQueryOptions,
-  listNamesQueryOptions,
   notificationRulesQueryOptions,
   pagedItemsQueryOptions,
 } from "./query-options";
@@ -33,10 +32,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
       children: [
         {
           index: true,
-          loader: async () => {
-            await queryClient.ensureQueryData(listNamesQueryOptions());
-            return null;
-          },
           element: <ListsPage />,
         },
         {

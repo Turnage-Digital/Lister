@@ -55,9 +55,29 @@ public class ItemsStore(ListsDbContext dbContext)
         return Task.CompletedTask;
     }
 
-    public Task SetBagAsync(ItemDb item, object bag, CancellationToken cancellationToken)
+    public Task SetBagAsync(
+        ItemDb item,
+        object bag,
+        string actedBy,
+        CancellationToken cancellationToken
+    )
     {
+        var previousBag = item.Bag;
+        var hasChanged = !Equals(previousBag, bag);
+
         item.Bag = bag;
+
+        if (item.Id.HasValue && hasChanged)
+        {
+            item.History.Add(new ItemHistoryEntryDb
+            {
+                Type = ItemHistoryType.Updated,
+                On = DateTime.UtcNow,
+                By = actedBy,
+                Item = item
+            });
+        }
+
         return Task.CompletedTask;
     }
 

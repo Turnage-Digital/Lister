@@ -11,10 +11,16 @@ interface Props {
 
 const FormBlock = ({ title, subtitle, content }: Props) => {
   return (
-    <Grid container>
+    <Grid
+      container
+      columnSpacing={{ xs: 5, md: 8 }}
+      rowSpacing={{ xs: 4.5, md: 5.5 }}
+      alignItems="flex-start"
+      sx={{ px: { xs: 2, md: 3.5 } }}
+    >
       <Grid size={{ xs: 12, md: 4 }}>
-        <Stack spacing={1} sx={{ pb: { xs: 4, md: 0 } }}>
-          <Typography color="primary" fontWeight="medium" variant="h6">
+        <Stack spacing={1.5} sx={{ pb: { xs: 2, md: 1 } }}>
+          <Typography color="primary" variant="h6" fontWeight={600}>
             {title}
           </Typography>
           {subtitle && (
@@ -24,7 +30,7 @@ const FormBlock = ({ title, subtitle, content }: Props) => {
           )}
         </Stack>
       </Grid>
-      <Grid size={{ xs: 12, md: 4 }}>{content}</Grid>
+      <Grid size={{ xs: 12, md: 8 }}>{content}</Grid>
     </Grid>
   );
 };

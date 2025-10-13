@@ -19,6 +19,13 @@ public class CreateListCommandHandlerTests
 
         var listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
+        itemsStore
+            .Setup(x => x.SetBagAsync(
+                It.IsAny<ItemDb>(),
+                It.IsAny<object>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         // Ensure created list has an Id like real stores would
         listsStore

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class UserNotificationRulesGetter(NotificationsDbContext context) 
+public class UserNotificationRulesGetter(NotificationsDbContext context)
     : IGetUserNotificationRules
 {
     public async Task<IEnumerable<NotificationRule>> GetAsync(

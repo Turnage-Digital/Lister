@@ -74,8 +74,10 @@ This document captures the intentional architecture boundaries and composition p
 
 ## Host Composition & Module Registration
 
-- Program.cs remains the composition root: it closes open generics, wires aggregates to concrete EF types, and keeps Application projects free of DI adapters.
-- Modules expose `AddInfrastructure()`, `AddDomain()`, and `AddApplication()` extension methods; call them in that order so stores and aggregates are available before handlers.
+- Program.cs remains the composition root: it closes open generics, wires aggregates to concrete EF types, and keeps
+  Application projects free of DI adapters.
+- Modules expose `AddInfrastructure()`, `AddDomain()`, and `AddApplication()` extension methods; call them in that order
+  so stores and aggregates are available before handlers.
 - Set the EF migration assembly for each DbContext when registering infrastructure services.
 
 Example registrations:
@@ -97,20 +99,27 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 ## Conventions
 
 - Application must not reference Infrastructure projects.
-- Host is the only place that closes generics or binds module abstractions to concrete infrastructure (see Host Composition & Module Registration).
+- Host is the only place that closes generics or binds module abstractions to concrete infrastructure (see Host
+  Composition & Module Registration).
 - New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
-- Access stores exclusively via their unit of work abstractions; do not inject `IListsStore`, `IItemsStore`, etc. directly into handlers or services.
+- Access stores exclusively via their unit of work abstractions; do not inject `IListsStore`, `IItemsStore`, etc.
+  directly into handlers or services.
 
 ## Persistence
 
 - One DbContext per module; migrations live in the module's Infrastructure.Sql project.
-- Host registers DbContexts via `AddInfrastructure(connectionString)` which auto-detects each context's migration assembly.
+- Host registers DbContexts via `AddInfrastructure(connectionString)` which auto-detects each context's migration
+  assembly.
 
 ## Store Pattern
 
 - Stores (`INotificationsStore<T>`, `INotificationRulesStore<T>`, etc.) handle low-level persistence operations
 - Aggregates compose stores and add business logic, domain events, and invariant enforcement
+- Stores are responsible for appending history entries for their entities (create/update/delete), so aggregates stay
+  focused on business invariants while the persistence layer maintains audit trails consistently.
 - Stores are registered in the Host and injected into aggregates via `IUnitOfWork`
+- `Get*` methods on stores should eagerly hydrate everything the aggregate needs (navigation properties, history,
+  metadata). Aggregates assume the returned entity is complete and will not issue additional queries.
 
 ## MediatR
 
@@ -148,7 +157,8 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 - Route: `GET /api/changes/stream`
 - Envelope: `{ type, data, occurredOn }`
 - Producers: Integration event handlers publish to a ChangeFeed service; Outbox dispatcher replays persisted messages.
-- Consumers: The client registers handlers by `type` and invalidates relevant caches (e.g., list-items, list-definition).
+- Consumers: The client registers handlers by `type` and invalidates relevant caches (e.g., list-items,
+  list-definition).
 
 ## Entity Design
 
@@ -185,6 +195,23 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
     - AutoMapper profiles translate persistence entities to view models (e.g., `ListsMappingProfile`).
     - Query services return projection models tailored for reads; commands operate on `IWritable*` via aggregates.
 
+## Aggregate Design
+
+- Aggregates are responsible for enforcing invariants; they never talk to EF/DbContexts directly.
+- All persistence happens through the module unit of work + stores. Aggregates call store methods such as
+  `GetListByIdAsync`, `GetItemByIdAsync`, `SetBagAsync`, `SetStatusesAsync`, etc.
+- Store `Get*` methods must return a *fully hydrated* aggregate root. For example, `ListsStore.GetByIdAsync` eagerly
+  loads columns, statuses, transitions, and history so that the aggregate has everything it needs to validate rules
+  without issuing extra queries. If you add new invariant-sensitive data, make sure the store hydrates it.
+- Aggregates never partially load state. If a method needs a list, call `GetListByIdAsync` and pass the result around;
+  do not create ad hoc projections or rely on lazy loading.
+- Store `Get*` methods are strictly for mutation flows; they return exactly one aggregate root (or null). They are not
+  query APIs—use read models for reporting/listing screens.
+- Aggregates orchestrate multiple stores through `IListsUnitOfWork`, ensuring that state changes stay within a single
+  transaction and that `UnitOfWork.SaveChangesAsync` can dispatch domain events in the correct phase.
+- When aggregates need supporting data (e.g., status transitions, notification rules), they request it via store APIs.
+  Stores remain thin on business logic but handle hydration, materialized histories, and entity tracking.
+
 ## Value Objects & Serialization
 
 - Value objects are record types intended to cross service/app boundaries.
@@ -215,10 +242,11 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 
 - Views are read-only projections tailored to specific API needs.
     - Multiple views can represent the same entity for different use-cases.
-      - Example (Lists): `ListItem` (lightweight for listings) and `ItemDetails` (includes `History`) both represent an
-      item.
-        - Views live under `*.Domain.Views` and typically implement an `IReadOnly*` interface that extends the base
-          identifier interface (`IReadOnlyItem : IItem`).
+        - Example (Lists): `ListItem` (lightweight for listings) and `ItemDetails` (includes `History`) both represent
+          an
+          item.
+            - Views live under `*.Domain.Views` and typically implement an `IReadOnly*` interface that extends the base
+              identifier interface (`IReadOnlyItem : IItem`).
 
 - Query services compose views efficiently without loading aggregates.
     - Application handlers call small interfaces (e.g., `IGetItemDetails`, `IGetListItemDefinition`, `IGetPagedList`,
@@ -265,7 +293,8 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 
 ## List Schema Validation & Indexing (Bag)
 
-- Validation: On write, the `ListItemBagValidator` validates the `bag` against the list's `Columns` (type checks per `ColumnType`; domain service injected into the aggregate);
+- Validation: On write, the `ListItemBagValidator` validates the `bag` against the list's `Columns` (type checks per
+  `ColumnType`; domain service injected into the aggregate);
   optional required rules future).
 - Status: `status` remains a conventional field; transitions can be validated as needed.
 - Indexing (future guidance): Frequently queried bag fields should be denormalized (computed/materialized columns) or
@@ -274,85 +303,102 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 ## Endpoints Overview
 
 - Lists
-  - `POST /api/lists/` → Create list (returns `ListItemDefinition`)
-  - `PUT /api/lists/{listId}` → Update list definition (Columns/Statuses/Transitions)
-  - `DELETE /api/lists/{listId}` → Delete list
-  - `GET /api/lists/names` → List names (for pickers/navigation)
-  - `GET /api/lists/{listId}/itemDefinition` → Read list definition (view)
-  - `GET /api/lists/{listId}/items` → Paged items (`PagedList`)
-  - `POST /api/lists/{listId}/items` → Create item
-  - `PUT /api/lists/{listId}/items/{itemId}` → Update item
-  - `DELETE /api/lists/{listId}/items/{itemId}` → Delete item
-  - `POST /api/lists/{listId}/migrations` → Run migrations (`mode: dryRun|execute`), progress via SSE
-  - `GET /api/lists/{listId}/statusTransitions` → Read-only transitions (for editors)
+    - `POST /api/lists/` → Create list (returns `ListItemDefinition`)
+    - `PUT /api/lists/{listId}` → Update list definition (Columns/Statuses/Transitions)
+    - `DELETE /api/lists/{listId}` → Delete list
+    - `GET /api/lists/names` → List names (for pickers/navigation)
+    - `GET /api/lists/{listId}/itemDefinition` → Read list definition (view)
+    - `GET /api/lists/{listId}/items` → Paged items (`PagedList`)
+    - `GET /api/lists/{listId}/history` → Paginated list history (`HistoryPage<ListHistoryType>`)
+    - `POST /api/lists/{listId}/items` → Create item
+    - `PUT /api/lists/{listId}/items/{itemId}` → Update item
+    - `DELETE /api/lists/{listId}/items/{itemId}` → Delete item
+    - `GET /api/lists/{listId}/items/{itemId}/history` → Paginated item history (`HistoryPage<ItemHistoryType>`)
+    - `POST /api/lists/{listId}/migrations` → Run migrations (`mode: dryRun|execute`), progress via SSE
+    - `GET /api/lists/{listId}/statusTransitions` → Read-only transitions (for editors)
 
 - Notifications
-  - `GET /api/notifications` → User notifications (filters: since, unread, listId, paging)
-  - `GET /api/notifications/{notificationId}` → Notification details
-  - `POST /api/notifications/{notificationId}/read` → Mark as read
-  - `POST /api/notifications/readAll` → Mark all as read
-  - Rules:
-    - `GET /api/notifications/rules` → User rules
-    - `POST /api/notifications/rules` → Create rule
-    - `PUT /api/notifications/rules` → Update rule
-    - `DELETE /api/notifications/rules` → Delete rule
+    - `GET /api/notifications` → User notifications (filters: since, unread, listId, paging)
+    - `GET /api/notifications/{notificationId}` → Notification details
+    - `POST /api/notifications/{notificationId}/read` → Mark as read
+    - `POST /api/notifications/readAll` → Mark all as read
+    - Rules:
+        - `GET /api/notifications/rules` → User rules
+        - `POST /api/notifications/rules` → Create rule
+        - `PUT /api/notifications/rules` → Update rule
+        - `DELETE /api/notifications/rules` → Delete rule
 
 - Change Feed (SSE)
-  - `GET /api/changes/stream` → Server-Sent Events (typed envelopes `{ type, data, occurredOn }`)
-  - Event types include list item changes, list lifecycle (created/deleted/updated), notifications, and migration progress.
+    - `GET /api/changes/stream` → Server-Sent Events (typed envelopes `{ type, data, occurredOn }`)
+    - Event types include list item changes, list lifecycle (created/deleted/updated), notifications, and migration
+      progress.
 
 ## List Schema Migrations (Outbox + SSE)
 
 Goals
+
 - Safely evolve list schemas without breaking items or client contracts.
 - Provide dry-run validation, explicit execution, durable eventing (Outbox), and real-time progress (SSE).
 
 Key Concepts
+
 - Stable Column Keys: Columns have immutable `StorageKey` values (e.g., `prop1`, `prop2`) decoupled from display `Name`.
-  - Keys uniquely identify fields in item `bag` payloads and support safe renames.
-  - Aggregates assign missing keys during list creation; persistence stores round-trip keys.
+    - Keys uniquely identify fields in item `bag` payloads and support safe renames.
+    - Aggregates assign missing keys during list creation; persistence stores round-trip keys.
 
 - MigrationPlan: Declarative set of operations the server validates and executes.
-  - ChangeColumnType(key, targetType, converter)
-  - RemoveColumn(key, policy)
-  - TightenConstraints(key, required?, allowedValues?, min?, max?, regex?)
-  - RenameStorageKey(from, to)
-  - RemoveStatus(name, mapTo?)
+    - ChangeColumnType(key, targetType, converter)
+    - RemoveColumn(key, policy)
+    - TightenConstraints(key, required?, allowedValues?, min?, max?, regex?)
+    - RenameStorageKey(from, to)
+    - RemoveStatus(name, mapTo?)
 
 - Validation (Dry-Run):
-  - Checks existence, collisions, converter presence, and constraint tightening safety.
-  - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
+    - Checks existence, collisions, converter presence, and constraint tightening safety.
+    - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
 
 - Execution (with SSE):
-  - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status mapping).
-  - Publishes progress via integration events routed through the Outbox and SSE feed (see Migration Events).
+    - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status
+      mapping).
+    - Publishes progress via integration events routed through the Outbox and SSE feed (see Migration Events).
 
 Migration Events
+
 - `ListMigrationStartedIntegrationEvent`: marks the migration request as executing.
 - `ListMigrationProgressIntegrationEvent`: emits progress percentage and contextual messages.
 - `ListMigrationCompletedIntegrationEvent`: signals all operations succeeded.
 - `ListMigrationFailedIntegrationEvent`: signals execution stopped with errors; payload should guide remediation.
 
 Contracts & Endpoints
+
 - POST `/api/lists/{listId}/migrations`
-  - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
-  - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
-  - UI subscribes to SSE to reflect live progress.
+    - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
+    - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
+    - UI subscribes to SSE to reflect live progress.
 
 Durability & Delivery
-- Outbox: All migration events are persisted and dispatched independently with exponential backoff and retention cleanup.
-- SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` (including the migration events above) and invalidates caches accordingly.
+
+- Outbox: All migration events are persisted and dispatched independently with exponential backoff and retention
+  cleanup.
+- SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` (including the migration
+  events above) and invalidates caches accordingly.
 
 CQRS Separation
-- Aggregates: Hydration-first for updates; schema updates still flow through aggregate guardrails outside explicit migrations.
+
+- Aggregates: Hydration-first for updates; schema updates still flow through aggregate guardrails outside explicit
+  migrations.
 - Read Side: `IGetListItemDefinition` composes columns/statuses/transitions for validation and editors.
 
 Safety & Guardrails
-- The default update path rejects breaking changes (removals, type changes, constraint tightening) — use MigrationPlan instead.
+
+- The default update path rejects breaking changes (removals, type changes, constraint tightening) — use MigrationPlan
+  instead.
 - Migration validation surfaces potential breakage; execution can include converter logic and mapping policies.
 
 Future Enhancements
-- Persist `StorageKey` in the database with uniqueness per list and indexes to enforce the stable key contract consistently across read models.
+
+- Persist `StorageKey` in the database with uniqueness per list and indexes to enforce the stable key contract
+  consistently across read models.
 - Converter Registry: Named converters with strict/lenient modes and rich diagnostics.
 - Abort Thresholds: Stop execution if error rate exceeds a configurable limit; emit `Failed` event with details.
 - Rollback Strategy: Archive removed columns or write to a shadow field; expose recovery scripts.
@@ -382,10 +428,12 @@ Future Enhancements
 - **Routing:** React Router v6 (`react-router-dom`)
 
 ### Structure
+
 Routes are defined in `src/Lister.Client/src/router.tsx` using `createBrowserRouter`.  
 Loaders are used for **auth-gated** and **data-prefetched** routes.
 
 **Example:**
+
 ```tsx
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
@@ -403,3 +451,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ],
     },
   ]);
+```
+
+### History UX
+
+- Shared drawers live under `src/Lister.Client/src/components/history` and wrap a generic `HistoryDrawer` (React Query +
+  `SideDrawerContent`).
+- `ListItemsPage` surfaces a “Show history” action beside “Create an Item”; `ListItemDetailsPage` mirrors the
+  affordance.
+- SSE change-feed handlers (`shell.tsx`) invalidate `list-history` and `item-history` query keys so drawers stay current
+  after mutations or background events.

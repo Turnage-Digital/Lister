@@ -26,8 +26,8 @@ export const fetchNotifications = async (
 
   const response = await fetch(`/api/notifications?${params.toString()}`);
   await throwIfNotOk(response, "Failed to load notifications");
-  const payload = (await response.json()) as NotificationListPage;
-  return payload;
+  const retval = (await response.json()) as NotificationListPage;
+  return retval;
 };
 
 export const fetchNotificationDetails = async (

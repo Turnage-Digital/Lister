@@ -5,17 +5,19 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  type ButtonProps,
   Grid,
   Link,
   Stack,
   Typography,
-  useTheme,
 } from "@mui/material";
 
 export interface Action {
   title: string;
   icon?: React.ReactNode;
   onClick?: () => void;
+  variant?: "contained" | "outlined";
+  color?: ButtonProps["color"];
 }
 
 export interface Breadcrumb {
@@ -30,8 +32,6 @@ export interface TitlebarProps {
 }
 
 const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
-  const theme = useTheme();
-
   const hasActions = Boolean(actions && actions.length > 0);
   const titleGridSizeMd = hasActions ? 8 : 12;
   const actionsNode = hasActions ? (
@@ -44,25 +44,16 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
     >
       <Stack direction="row" spacing={1.5}>
         {actions!.map((action, index) => {
-          const isPrimary = index === 0;
-          const variant = isPrimary ? "contained" : "outlined";
-          const boxShadow = isPrimary ? theme.shadows[2] : "none";
-          const hoverBoxShadow = isPrimary
-            ? theme.shadows[4]
-            : theme.shadows[1];
-
+          const variant =
+            action.variant ?? (index === 0 ? "contained" : "outlined");
+          const color = action.color ?? "primary";
           return (
             <Button
               key={action.title}
               variant={variant}
               startIcon={action.icon}
               onClick={action.onClick}
-              sx={{
-                boxShadow,
-                "&:hover": {
-                  boxShadow: hoverBoxShadow,
-                },
-              }}
+              color={color}
             >
               {action.title}
             </Button>
@@ -113,9 +104,14 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
   ) : null;
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: { xs: 3, md: 4 } }}>
       {/* Title and Actions Section */}
-      <Grid container alignItems="center" spacing={2} sx={{ mb: 2 }}>
+      <Grid
+        container
+        alignItems="center"
+        spacing={{ xs: 2, md: 3 }}
+        sx={{ mb: { xs: 2, md: 3 } }}
+      >
         <Grid size={{ xs: 12, md: titleGridSizeMd }}>
           <Typography
             variant="h4"

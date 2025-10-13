@@ -68,4 +68,9 @@ public record NotificationTrigger
     {
         return new NotificationTrigger { Type = TriggerType.ListDeleted };
     }
+
+    public static NotificationTrigger ListUpdated()
+    {
+        return new NotificationTrigger { Type = TriggerType.ListUpdated };
+    }
 }

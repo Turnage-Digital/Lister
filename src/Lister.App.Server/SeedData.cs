@@ -131,6 +131,7 @@ public static class SeedData
                             new StatusTransition { From = "Active", AllowedNext = ["Inactive"] },
                             new StatusTransition { From = "Inactive", AllowedNext = ["Active"] }
                         ],
+                        heath.Id,
                         CancellationToken.None
                     )
                     .Wait();

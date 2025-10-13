@@ -10,7 +10,6 @@ interface ItemHistoryDrawerProps {
 
 const ItemHistoryDrawer = ({ listId, itemId }: ItemHistoryDrawerProps) => (
   <HistoryDrawer
-    title={`Item ${itemId} history`}
     subtitle="Status changes and updates for this item."
     queryKey={["item-history", listId, itemId]}
     fetchPage={(page) => fetchItemHistory(listId, itemId, page)}

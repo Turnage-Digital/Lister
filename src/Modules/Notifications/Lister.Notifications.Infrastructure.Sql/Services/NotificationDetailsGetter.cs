@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
 
-public class NotificationDetailsGetter(NotificationsDbContext context) 
+public class NotificationDetailsGetter(NotificationsDbContext context)
     : IGetNotificationDetails
 {
     public async Task<NotificationDetails?> GetAsync(
@@ -18,7 +18,7 @@ public class NotificationDetailsGetter(NotificationsDbContext context)
     )
     {
         NotificationDetails? retval = null;
-        
+
         var entity = await context.Notifications
             .AsNoTracking()
             .AsSplitQuery()
@@ -66,7 +66,7 @@ public class NotificationDetailsGetter(NotificationsDbContext context)
                     AttemptNumber = a.AttemptNumber
                 })
                 .ToList();
-            
+
             retval = new NotificationDetails
             {
                 Id = entity.Id!.Value,

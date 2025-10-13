@@ -10,5 +10,6 @@ public interface IGetItemHistory
         int itemId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken
+    );
 }

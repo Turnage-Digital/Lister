@@ -11,7 +11,8 @@ public class ListHistoryGetter(ListsDbContext dbContext) : IGetListHistory
         Guid listId,
         int page,
         int pageSize,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var query = dbContext.Lists
             .Where(list => list.Id == listId)
@@ -36,7 +37,7 @@ public class ListHistoryGetter(ListsDbContext dbContext) : IGetListHistory
             Items = items,
             Page = page,
             PageSize = pageSize,
-            Total = total,
+            Total = total
         };
     }
 }

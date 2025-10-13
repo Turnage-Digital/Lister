@@ -15,11 +15,11 @@ import {
 } from "../api/notification-rules";
 import {
   ListEditor,
-  Titlebar,
-  toNotificationRuleFormValue,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
   type NotificationRuleSubmission,
+  Titlebar,
+  toNotificationRuleFormValue,
 } from "../components";
 import {
   listItemDefinitionQueryOptions,
@@ -167,7 +167,15 @@ const EditListPage = () => {
   };
 
   return (
-    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{
+        maxWidth: 1160,
+        mx: "auto",
+        px: { xs: 3, md: 7 },
+        py: { xs: 4, md: 6 },
+      }}
+      spacing={{ xs: 6, md: 7 }}
+    >
       <Titlebar
         title={`Edit ${listDefinitionQuery.data.name}`}
         breadcrumbs={breadcrumbs}

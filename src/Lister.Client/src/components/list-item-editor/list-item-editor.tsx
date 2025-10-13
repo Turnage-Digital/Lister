@@ -3,10 +3,9 @@ import * as React from "react";
 import {
   FormControl,
   FormControlLabel,
-  FormLabel,
+  Grid,
   InputLabel,
   MenuItem,
-  Grid,
   Select,
   Stack,
   Switch,
@@ -19,8 +18,8 @@ import { isValid } from "date-fns";
 import {
   Column,
   ColumnType,
-  ListItemDefinition,
   getStatusFromName,
+  ListItemDefinition,
 } from "../../models";
 import StatusChip from "../status-chip";
 
@@ -69,6 +68,11 @@ const ListItemFields = ({
             fullWidth
             value={value ?? ""}
             onChange={(event) => handleChange(property, event.target.value)}
+            InputProps={{
+              sx: {
+                backgroundColor: "background.paper",
+              },
+            }}
           />
         );
 
@@ -99,7 +103,16 @@ const ListItemFields = ({
                 handleChange(property, undefined);
               }
             }}
-            slotProps={{ textField: { fullWidth: true } }}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                InputProps: {
+                  sx: {
+                    backgroundColor: "background.paper",
+                  },
+                },
+              },
+            }}
           />
         );
 
@@ -111,6 +124,11 @@ const ListItemFields = ({
             fullWidth
             value={value ?? ""}
             onChange={(event) => handleChange(property, event.target.value)}
+            InputProps={{
+              sx: {
+                backgroundColor: "background.paper",
+              },
+            }}
           />
         );
     }
@@ -125,7 +143,7 @@ const ListItemFields = ({
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={{ xs: 3.5, md: 4.5 }}>
       {definition.columns.map((column) => (
         <Grid key={ensureProperty(column)} size={{ xs: 12, md: 6 }}>
           {renderField(column)}
@@ -153,11 +171,24 @@ const ListItemStatusSelect = ({
       label="Status"
       value={value ?? ""}
       onChange={(event) => onChange(event.target.value as string)}
-      renderValue={(selected) => (
-        <StatusChip
-          status={getStatusFromName(definition.statuses, selected as string)}
-        />
-      )}
+      displayEmpty
+      sx={{
+        backgroundColor: (theme) => theme.palette.background.paper,
+      }}
+      renderValue={(selected) => {
+        if (!selected) {
+          return (
+            <Typography variant="body2" color="text.secondary">
+              Select a status
+            </Typography>
+          );
+        }
+        return (
+          <StatusChip
+            status={getStatusFromName(definition.statuses, selected as string)}
+          />
+        );
+      }}
     >
       {definition.statuses.map((status) => (
         <MenuItem key={status.name} value={status.name}>
@@ -190,21 +221,18 @@ export const ListItemEditor = ({
   );
 
   return (
-    <Stack spacing={3}>
+    <Stack spacing={{ xs: 3.5, md: 4.5 }}>
       <ListItemFields
         definition={definition}
         bag={bag}
         onBagChange={onBagChange}
       />
 
-      <Stack spacing={1}>
-        <FormLabel sx={{ fontWeight: 600 }}>Status</FormLabel>
-        <ListItemStatusSelect
-          definition={definition}
-          value={bag.status as string | undefined}
-          onChange={handleStatusChange}
-        />
-      </Stack>
+      <ListItemStatusSelect
+        definition={definition}
+        value={bag.status as string | undefined}
+        onChange={handleStatusChange}
+      />
     </Stack>
   );
 };

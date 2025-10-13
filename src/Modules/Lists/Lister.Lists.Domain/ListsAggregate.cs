@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Enums;
@@ -41,12 +39,12 @@ public class ListsAggregate<TList, TItem>(
         var retval = await unitOfWork.ListsStore.InitAsync(name, createdBy, cancellationToken);
 
         var normalizedColumns = AssignStorageKeys(columns);
-        await unitOfWork.ListsStore.SetColumnsAsync(retval, normalizedColumns, cancellationToken);
-        await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, cancellationToken);
-        
+        await unitOfWork.ListsStore.SetColumnsAsync(retval, normalizedColumns, createdBy, cancellationToken);
+        await unitOfWork.ListsStore.SetStatusesAsync(retval, statuses, createdBy, cancellationToken);
+
         if (transitions is not null)
         {
-            await unitOfWork.ListsStore.SetStatusTransitionsAsync(retval, transitions, cancellationToken);
+            await unitOfWork.ListsStore.SetStatusTransitionsAsync(retval, transitions, createdBy, cancellationToken);
         }
 
         await unitOfWork.ListsStore.CreateAsync(retval, cancellationToken);
@@ -187,7 +185,7 @@ public class ListsAggregate<TList, TItem>(
                 }
             }
 
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, cancellationToken);
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, updatedBy, cancellationToken);
         }
 
         if (statuses is not null)
@@ -204,12 +202,12 @@ public class ListsAggregate<TList, TItem>(
             }
 
             // Color changes and additions are allowed
-            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, cancellationToken);
+            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, updatedBy, cancellationToken);
         }
 
         if (transitions is not null)
         {
-            await unitOfWork.ListsStore.SetStatusTransitionsAsync(list, transitions, cancellationToken);
+            await unitOfWork.ListsStore.SetStatusTransitionsAsync(list, transitions, updatedBy, cancellationToken);
         }
 
         // Emit a domain event to capture update action
@@ -247,7 +245,7 @@ public class ListsAggregate<TList, TItem>(
         await bagValidator.ValidateAsync(list, bag, cancellationToken);
 
         var retval = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
-        await unitOfWork.ItemsStore.SetBagAsync(retval, bag, cancellationToken);
+        await unitOfWork.ItemsStore.SetBagAsync(retval, bag, createdBy, cancellationToken);
         await unitOfWork.ItemsStore.CreateAsync(retval, cancellationToken);
         events.Enqueue(new ListItemCreatedEvent(retval, createdBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -271,7 +269,7 @@ public class ListsAggregate<TList, TItem>(
         {
             await bagValidator.ValidateAsync(list, bag, cancellationToken);
             var item = await unitOfWork.ItemsStore.InitAsync(list.Id.Value, createdBy, cancellationToken);
-            await unitOfWork.ItemsStore.SetBagAsync(item, bag, cancellationToken);
+            await unitOfWork.ItemsStore.SetBagAsync(item, bag, createdBy, cancellationToken);
             await unitOfWork.ItemsStore.CreateAsync(item, cancellationToken);
             retval.Add(item);
         }
@@ -327,7 +325,7 @@ public class ListsAggregate<TList, TItem>(
             }
         }
 
-        await unitOfWork.ItemsStore.SetBagAsync(item, newBag, cancellationToken);
+        await unitOfWork.ItemsStore.SetBagAsync(item, newBag, updatedBy, cancellationToken);
         events.Enqueue(new ListItemUpdatedEvent(item, updatedBy, oldBagObj, newBag), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

@@ -31,7 +31,7 @@ public class GetListHistoryController(IMediator mediator) : Controller
 
         var query = new GetListHistoryQuery(listId, page, pageSize)
         {
-            UserId = HttpContext.User?.Identity?.Name ?? string.Empty,
+            UserId = HttpContext.User?.Identity?.Name ?? string.Empty
         };
 
         var result = await mediator.Send(query, cancellationToken);

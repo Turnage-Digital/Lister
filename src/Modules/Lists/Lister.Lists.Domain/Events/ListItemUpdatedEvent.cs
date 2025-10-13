@@ -1,4 +1,3 @@
-using Lister.Lists.Domain;
 using MediatR;
 
 namespace Lister.Lists.Domain.Events;

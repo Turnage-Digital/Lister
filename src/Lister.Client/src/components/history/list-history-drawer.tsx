@@ -9,7 +9,6 @@ interface ListHistoryDrawerProps {
 
 const ListHistoryDrawer = ({ listId }: ListHistoryDrawerProps) => (
   <HistoryDrawer
-    title="List history"
     subtitle="Latest changes to this list."
     queryKey={["list-history", listId]}
     fetchPage={(page) => fetchListHistory(listId, page)}
