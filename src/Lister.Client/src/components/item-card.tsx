@@ -15,7 +15,6 @@ import {
   Box,
   Card,
   CardActions,
-  CardContent,
   Divider,
   Grid,
   IconButton,
@@ -36,14 +35,54 @@ interface Props {
   item: ListItem;
   definition: ListItemDefinition;
   onViewItem?: (listId: string, itemId: number) => void;
+  onEditItem?: (listId: string, itemId: number) => void;
   onDeleteItem?: (listId: string, itemId: number) => void;
 }
 
-const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
+const ItemCard = ({
+  item,
+  definition,
+  onViewItem,
+  onEditItem,
+  onDeleteItem,
+}: Props) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
   const statusChip = status && <StatusChip status={status} />;
+
+  const viewAction = onViewItem ? (
+    <Tooltip title={`View item ${item.id}`}>
+      <IconButton
+        onClick={() => onViewItem(definition.id!, item.id!)}
+        color="primary"
+      >
+        <Visibility />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
+  const editAction = onEditItem ? (
+    <Tooltip title={`Edit item ${item.id}`}>
+      <IconButton
+        onClick={() => onEditItem(definition.id!, item.id!)}
+        color="primary"
+      >
+        <Edit />
+      </IconButton>
+    </Tooltip>
+  ) : null;
+
+  const deleteAction = onDeleteItem ? (
+    <Tooltip title={`Delete item ${item.id}`}>
+      <IconButton
+        onClick={() => onDeleteItem(definition.id!, item.id!)}
+        color="error"
+      >
+        <Delete />
+      </IconButton>
+    </Tooltip>
+  ) : null;
 
   const getFieldIcon = (type: ColumnType) => {
     switch (type) {
@@ -79,60 +118,68 @@ const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
     }
   };
 
+  const statusChipNode = statusChip ? (
+    <Box sx={{ ml: "auto" }}>{statusChip}</Box>
+  ) : null;
+
   return (
     <Card
       variant="outlined"
       sx={{
-        transition: "all 0.2s ease-in-out",
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+        p: 3,
+        minHeight: 240,
+        borderColor: alpha(theme.palette.primary.main, 0.12),
+        transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
-          transform: "translateY(-2px)",
-          boxShadow: theme.shadows[4],
-          borderColor: alpha(theme.palette.primary.main, 0.5),
-          "& .card-actions": {
-            opacity: 1,
-          },
+          borderColor: alpha(theme.palette.primary.main, 0.3),
+          boxShadow: theme.shadows[3],
         },
       }}
     >
-      {/* Header with ID and status */}
       <Box
         sx={{
-          p: 3,
-          pb: 2,
-          backgroundColor: alpha(theme.palette.primary.main, 0.03),
-          borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-          <Receipt
-            sx={{
-              fontSize: 20,
-              color: "primary.main",
-              p: 0.5,
-              backgroundColor: alpha(theme.palette.primary.main, 0.1),
-              borderRadius: 1,
-            }}
-          />
-          {statusChip && <Box sx={{ ml: "auto" }}>{statusChip}</Box>}
-        </Box>
-
-        <Typography
-          variant="h6"
-          component="div"
-          fontWeight="600"
+        <Box
           sx={{
-            fontSize: "1.25rem",
-            lineHeight: 1.3,
-            color: "text.primary",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 44,
+            height: 44,
+            borderRadius: 2,
+            backgroundColor: alpha(theme.palette.primary.main, 0.1),
+            color: "primary.main",
           }}
         >
-          ID {item.id}
+          <Receipt sx={{ fontSize: 22 }} />
+        </Box>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{
+            letterSpacing: 0.4,
+            textTransform: "uppercase",
+            flexGrow: 1,
+          }}
+        >
+          Item
         </Typography>
+        {statusChipNode}
       </Box>
 
-      <CardContent sx={{ p: 3, pt: 3 }}>
-        {/* Fields Grid */}
-        <Grid container spacing={2}>
+      <Typography variant="h6" component="div">
+        ID {item.id}
+      </Typography>
+
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid container spacing={{ xs: 3, md: 3.5 }}>
           {definition.columns.map((column, index) => {
             const key = column.property ?? column.name;
             const rawValue = item.bag[key];
@@ -201,58 +248,16 @@ const ItemCard = ({ item, definition, onViewItem, onDeleteItem }: Props) => {
             );
           })}
         </Grid>
-      </CardContent>
-
-      <Divider sx={{ borderColor: alpha(theme.palette.divider, 0.6) }} />
+      </Box>
 
       {/* Action buttons */}
       <CardActions
         className="card-actions"
-        sx={{
-          justifyContent: "flex-end",
-          p: 2,
-          opacity: 0.7,
-          transition: "opacity 0.2s ease-in-out",
-        }}
+        sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}
       >
-        <Tooltip title={`View item ${item.id}`}>
-          <IconButton
-            onClick={() => onViewItem?.(definition.id!, item.id!)}
-            sx={{
-              color: "primary.main",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-              },
-            }}
-          >
-            <Visibility />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={`Edit item ${item.id}`}>
-          <IconButton
-            sx={{
-              color: "text.secondary",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.text.secondary, 0.1),
-              },
-            }}
-          >
-            <Edit />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={`Delete item ${item.id}`}>
-          <IconButton
-            onClick={() => onDeleteItem?.(definition.id!, item.id!)}
-            sx={{
-              color: "error.main",
-              "&:hover": {
-                backgroundColor: alpha(theme.palette.error.main, 0.1),
-              },
-            }}
-          >
-            <Delete />
-          </IconButton>
-        </Tooltip>
+        {viewAction}
+        {editAction}
+        {deleteAction}
       </CardActions>
     </Card>
   );

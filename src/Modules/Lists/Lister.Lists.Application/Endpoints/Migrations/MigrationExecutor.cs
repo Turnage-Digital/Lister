@@ -51,7 +51,7 @@ public class MigrationExecutor<TList, TItem>(
                 }
             }
 
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, ct);
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, userId, ct);
             await mediator.Publish(new ListMigrationProgressIntegrationEvent(listId, correlationId,
                 $"Renamed {plan.RenameStorageKeys.Length} storage keys", 10), ct);
         }
@@ -89,7 +89,7 @@ public class MigrationExecutor<TList, TItem>(
                     if (dict.TryGetValue(key, out var value))
                     {
                         dict[key] = ConvertValue(value, op.TargetType, op.Converter);
-                        await unitOfWork.ItemsStore.SetBagAsync(item, dict, ct);
+                        await unitOfWork.ItemsStore.SetBagAsync(item, dict, userId, ct);
                     }
 
                     done++;
@@ -104,7 +104,7 @@ public class MigrationExecutor<TList, TItem>(
                 processed += total;
             }
 
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, ct);
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, userId, ct);
         }
 
         // Remove columns (drop from metadata and bags)
@@ -129,7 +129,7 @@ public class MigrationExecutor<TList, TItem>(
                     dict.Remove(r);
                 }
 
-                await unitOfWork.ItemsStore.SetBagAsync(item, dict, ct);
+                await unitOfWork.ItemsStore.SetBagAsync(item, dict, userId, ct);
                 done++;
                 if (done % 50 == 0)
                 {
@@ -141,7 +141,7 @@ public class MigrationExecutor<TList, TItem>(
 
             processed += total;
             columns = columns.Where(c => !removeSet.Contains(KeyOf(c))).ToList();
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, ct);
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, userId, ct);
         }
 
         // Tighten constraints: metadata only (per earlier guardrails)
@@ -182,7 +182,7 @@ public class MigrationExecutor<TList, TItem>(
                 }
             }
 
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, ct);
+            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, userId, ct);
         }
 
         // Remove statuses with mapping
@@ -210,7 +210,7 @@ public class MigrationExecutor<TList, TItem>(
                     mapping.TryGetValue(cs, out var mt))
                 {
                     dict["status"] = mt;
-                    await unitOfWork.ItemsStore.SetBagAsync(item, dict, ct);
+                    await unitOfWork.ItemsStore.SetBagAsync(item, dict, userId, ct);
                 }
 
                 done++;
@@ -222,7 +222,7 @@ public class MigrationExecutor<TList, TItem>(
                 }
             }
 
-            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, ct);
+            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, userId, ct);
         }
 
         await unitOfWork.SaveChangesAsync(ct);

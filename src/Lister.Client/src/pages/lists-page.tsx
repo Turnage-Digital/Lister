@@ -46,7 +46,15 @@ const ListsPage = () => {
   ];
 
   return (
-    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{
+        maxWidth: 1400,
+        mx: "auto",
+        px: { xs: 3, md: 8 },
+        py: { xs: 4, md: 6 },
+      }}
+      spacing={{ xs: 6, md: 7 }}
+    >
       <Titlebar title="Lists" actions={actions} />
 
       <Grid container spacing={3}>

@@ -1,23 +1,25 @@
 import * as React from "react";
 
 import { QueryClient } from "@tanstack/react-query";
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import {
   CreateListItemPage,
   CreateListPage,
+  EditListItemPage,
+  EditListPage,
+  getListSearch,
   ListItemDetailsPage,
   ListItemsPage,
   ListsPage,
   ResetPasswordPage,
   SignInPage,
   SignUpPage,
-  getListSearch,
 } from "./pages";
 import {
   itemQueryOptions,
   listItemDefinitionQueryOptions,
-  listNamesQueryOptions,
+  notificationRulesQueryOptions,
   pagedItemsQueryOptions,
 } from "./query-options";
 import Shell from "./shell";
@@ -30,10 +32,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
       children: [
         {
           index: true,
-          loader: async () => {
-            await queryClient.ensureQueryData(listNamesQueryOptions());
-            return null;
-          },
           element: <ListsPage />,
         },
         {
@@ -70,6 +68,20 @@ export const createAppRouter = (queryClient: QueryClient) =>
               element: <ListItemsPage />,
             },
             {
+              path: "edit",
+              loader: async ({ params }) => {
+                const listId = params.listId;
+                if (!listId) {
+                  throw new Response("Not Found", { status: 404 });
+                }
+                await queryClient.ensureQueryData(
+                  notificationRulesQueryOptions(listId),
+                );
+                return null;
+              },
+              element: <EditListPage />,
+            },
+            {
               path: "create",
               element: <CreateListItemPage />,
             },
@@ -90,6 +102,21 @@ export const createAppRouter = (queryClient: QueryClient) =>
                 {
                   index: true,
                   element: <ListItemDetailsPage />,
+                },
+                {
+                  path: "edit",
+                  loader: async ({ params }) => {
+                    const listId = params.listId;
+                    const itemId = params.itemId;
+                    if (!listId || !itemId) {
+                      throw new Response("Not Found", { status: 404 });
+                    }
+                    await queryClient.ensureQueryData(
+                      itemQueryOptions(listId, Number(itemId)),
+                    );
+                    return null;
+                  },
+                  element: <EditListItemPage />,
                 },
               ],
             },

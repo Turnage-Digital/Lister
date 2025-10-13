@@ -13,6 +13,7 @@ interface Props {
   pageSize: number;
   onPageChange: (page: number) => Promise<void> | void;
   onViewItem?: (listId: string, itemId: number) => Promise<void> | void;
+  onEditItem?: (listId: string, itemId: number) => Promise<void> | void;
   onDeleteItem?: (listId: string, itemId: number) => Promise<void> | void;
 }
 
@@ -24,12 +25,13 @@ const ItemsMobileView = ({
   pageSize,
   onPageChange,
   onViewItem,
+  onEditItem,
   onDeleteItem,
 }: Props) => {
   const totalPages = Math.ceil(totalCount / pageSize);
   const showPagination = totalPages > 1;
   return (
-    <Stack spacing={4}>
+    <Stack spacing={{ xs: 3, md: 4 }}>
       <Grid container spacing={3}>
         {items.map((item) => (
           <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -37,6 +39,7 @@ const ItemsMobileView = ({
               item={item}
               definition={definition}
               onViewItem={onViewItem}
+              onEditItem={onEditItem}
               onDeleteItem={onDeleteItem}
             />
           </Grid>

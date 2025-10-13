@@ -6,6 +6,7 @@ export interface UserInfo {
   userName?: string;
   email?: string;
   name?: string;
+
   [key: string]: unknown;
 }
 
@@ -59,74 +60,71 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = React.useState<AuthState>(() =>
     createCheckingState(),
   );
-  const abortControllerRef = React.useRef<AbortController | null>(null);
+  const requestIdRef = React.useRef(0);
 
-  const refresh = React.useCallback(() => {
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+  const loadUserInfo = React.useCallback(async (usernameHint?: string) => {
+    const requestId = ++requestIdRef.current;
 
-    setState((prev) => createCheckingState(prev.username));
+    setState((prev) => createCheckingState(usernameHint ?? prev.username));
 
-    const load = async () => {
-      try {
-        const response = await fetch("/identity/manage/info", {
-          credentials: "include",
-          signal: controller.signal,
-        });
+    try {
+      const response = await fetch("/identity/manage/info", {
+        credentials: "include",
+      });
 
-        if (response.status === 204) {
-          setState(createLoggedOutState());
-          return;
-        }
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            setState(createLoggedOutState());
-            return;
-          }
-
-          throw new Error("Failed to load user info");
-        }
-
-        const info = (await response.json()) as UserInfo | null;
-        const username = getUsernameFromInfo(info);
-        setState({ status: "loggedIn", username, user: info ?? null });
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        setState(createLoggedOutState());
+      if (requestId !== requestIdRef.current) {
+        return;
       }
-    };
 
-    load().catch(() => {
-      // load() already handles its own error paths; this catch silences
-      // the unhandled rejection warning some browsers emit when an async
-      // function throws after the caller intentionally ignores the promise.
-    });
+      if (response.status === 204 || response.status === 401) {
+        setState(createLoggedOutState());
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to load user info");
+      }
+
+      const info = (await response.json()) as UserInfo | null;
+      const username = getUsernameFromInfo(info);
+      setState({ status: "loggedIn", username, user: info ?? null });
+    } catch (error) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+      setState(createLoggedOutState());
+    }
   }, []);
 
   React.useEffect(() => {
-    refresh();
+    loadUserInfo().catch(() => {
+      // handled inside loadUserInfo
+    });
+
     return () => {
-      abortControllerRef.current?.abort();
+      requestIdRef.current += 1;
     };
-  }, [refresh]);
+  }, [loadUserInfo]);
 
   const login = React.useCallback(
     (username?: string) => {
-      setState(createCheckingState(username));
-      refresh();
+      loadUserInfo(username).catch(() => {
+        // handled inside loadUserInfo
+      });
     },
-    [refresh],
+    [loadUserInfo],
   );
 
   const logout = React.useCallback(() => {
-    abortControllerRef.current?.abort();
+    requestIdRef.current += 1;
     setState(createLoggedOutState());
   }, []);
+
+  const refresh = React.useCallback(() => {
+    loadUserInfo().catch(() => {
+      // handled inside loadUserInfo
+    });
+  }, [loadUserInfo]);
 
   const value = React.useMemo<Auth>(
     () => ({

@@ -19,6 +19,13 @@ public class ListsAggregateTests
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         _itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _itemsStore
+            .Setup(x => x.SetBagAsync(
+                It.IsAny<ItemDb>(),
+                It.IsAny<object>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);
@@ -270,7 +277,7 @@ public class ListsAggregateTests
             .ReturnsAsync(Array.Empty<Column>());
         _unitOfWork.Setup(x => x.ItemsStore.GetBagAsync(item, It.IsAny<CancellationToken>()))
             .ReturnsAsync(oldBag);
-        _unitOfWork.Setup(x => x.ItemsStore.SetBagAsync(item, newBag, It.IsAny<CancellationToken>()))
+        _unitOfWork.Setup(x => x.ItemsStore.SetBagAsync(item, newBag, BY, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         _unitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);

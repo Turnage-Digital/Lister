@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Lister.Core.Domain.IntegrationEvents;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;

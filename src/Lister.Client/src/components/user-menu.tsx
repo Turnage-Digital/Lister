@@ -11,6 +11,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,9 +56,11 @@ const UserMenu = () => {
 
   return (
     <>
-      <IconButton onClick={handleUserMenuClick}>
-        <AccountCircleIcon />
-      </IconButton>
+      <Tooltip title="Account">
+        <IconButton onClick={handleUserMenuClick}>
+          <AccountCircleIcon />
+        </IconButton>
+      </Tooltip>
 
       <Menu
         anchorEl={userMenuAnchor}

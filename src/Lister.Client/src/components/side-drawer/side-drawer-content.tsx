@@ -7,7 +7,17 @@ type Props = PropsWithChildren;
 
 const SideDrawerContent = ({ children }: Props) => {
   return (
-    <Box sx={{ overflowY: "auto", display: "flex", flex: 1 }}>{children}</Box>
+    <Box
+      sx={{
+        display: "flex",
+        flex: 1,
+        flexDirection: "column",
+        width: "100%",
+        overflowY: "auto",
+      }}
+    >
+      {children}
+    </Box>
   );
 };
 

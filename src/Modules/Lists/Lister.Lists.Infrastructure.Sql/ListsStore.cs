@@ -74,6 +74,7 @@ public class ListsStore(ListsDbContext dbContext)
     public Task SetColumnsAsync(
         ListDb listDb,
         IEnumerable<Column> columns,
+        string actedBy,
         CancellationToken cancellationToken
     )
     {
@@ -91,6 +92,8 @@ public class ListsStore(ListsDbContext dbContext)
                 ListDb = listDb
             })
             .ToList();
+
+        TouchUpdatedHistory(listDb, actedBy);
         return Task.CompletedTask;
     }
 
@@ -111,12 +114,15 @@ public class ListsStore(ListsDbContext dbContext)
     public Task SetStatusesAsync(
         ListDb listDb,
         IEnumerable<Status> statuses,
+        string actedBy,
         CancellationToken cancellationToken
     )
     {
         listDb.Statuses = statuses
             .Select(sd => new StatusDb { Name = sd.Name, Color = sd.Color, ListDb = listDb })
             .ToList();
+
+        TouchUpdatedHistory(listDb, actedBy);
         return Task.CompletedTask;
     }
 
@@ -131,6 +137,7 @@ public class ListsStore(ListsDbContext dbContext)
     public Task SetStatusTransitionsAsync(
         ListDb listDb,
         IEnumerable<StatusTransition> transitions,
+        string actedBy,
         CancellationToken cancellationToken
     )
     {
@@ -148,6 +155,7 @@ public class ListsStore(ListsDbContext dbContext)
             }
         }
 
+        TouchUpdatedHistory(listDb, actedBy);
         return Task.CompletedTask;
     }
 
@@ -161,5 +169,32 @@ public class ListsStore(ListsDbContext dbContext)
                 { From = g.Key, AllowedNext = g.Select(r => r.To).ToArray() })
             .ToArray();
         return Task.FromResult(retval);
+    }
+
+    private static void TouchUpdatedHistory(ListDb listDb, string actedBy)
+    {
+        if (string.IsNullOrWhiteSpace(actedBy) || !listDb.Id.HasValue)
+        {
+            return;
+        }
+
+        var updatedEntry = listDb.History
+            .OrderByDescending(h => h.On)
+            .FirstOrDefault();
+
+        if (updatedEntry is { Type: ListHistoryType.Updated } &&
+            string.Equals(updatedEntry.By, actedBy, StringComparison.OrdinalIgnoreCase))
+        {
+            updatedEntry.On = DateTime.UtcNow;
+            return;
+        }
+
+        listDb.History.Add(new ListHistoryEntryDb
+        {
+            Type = ListHistoryType.Updated,
+            On = DateTime.UtcNow,
+            By = actedBy,
+            List = listDb
+        });
     }
 }

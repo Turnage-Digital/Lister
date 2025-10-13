@@ -14,6 +14,7 @@ interface Props {
   onPaginationChange: (model: GridPaginationModel) => Promise<void> | void;
   onSortChange: (model: GridSortModel) => Promise<void> | void;
   onViewItem: (listId: string, itemId: number) => Promise<void> | void;
+  onEditItem: (listId: string, itemId: number) => Promise<void> | void;
   onDeleteItem: (listId: string, itemId: number) => Promise<void> | void;
 }
 
@@ -25,9 +26,15 @@ const ItemsDesktopView = ({
   onPaginationChange,
   onSortChange,
   onViewItem,
+  onEditItem,
   onDeleteItem,
 }: Props) => {
-  const gridColDefs = getGridColDefs(definition, onViewItem, onDeleteItem);
+  const gridColDefs = getGridColDefs(
+    definition,
+    onViewItem,
+    onEditItem,
+    onDeleteItem,
+  );
 
   const rows = data.items.map((item) => ({
     id: item.id,
@@ -35,7 +42,14 @@ const ItemsDesktopView = ({
   }));
 
   return (
-    <Paper>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: { xs: 1.5, md: 2.5 },
+        backgroundColor: "background.paper",
+        boxShadow: "none",
+      }}
+    >
       <DataGrid
         columns={gridColDefs}
         rows={rows}
@@ -57,6 +71,16 @@ const ItemsDesktopView = ({
         disableColumnFilter
         disableColumnSelector
         disableRowSelectionOnClick
+        sx={{
+          backgroundColor: "background.paper",
+          border: "none",
+          "& .MuiDataGrid-columnHeaders": {
+            borderBottomColor: "divider",
+          },
+          "& .MuiDataGrid-row": {
+            transition: "background-color 0.2s ease",
+          },
+        }}
       />
     </Paper>
   );

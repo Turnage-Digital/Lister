@@ -16,6 +16,13 @@ public class StatusTransitionTests
         _uow = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
         _lists = new Mock<IListsStore<ListDb>>();
         _items = new Mock<IItemsStore<ItemDb>>();
+        _items
+            .Setup(x => x.SetBagAsync(
+                It.IsAny<ItemDb>(),
+                It.IsAny<object>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         _uow.SetupGet(x => x.ListsStore).Returns(_lists.Object);
         _uow.SetupGet(x => x.ItemsStore).Returns(_items.Object);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);

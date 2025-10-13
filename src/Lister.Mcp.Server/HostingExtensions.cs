@@ -21,9 +21,13 @@ internal static class HostingExtensions
             if (!string.IsNullOrWhiteSpace(seqUrl))
             {
                 if (!string.IsNullOrWhiteSpace(seqApiKey))
+                {
                     config.WriteTo.Seq(seqUrl, apiKey: seqApiKey);
+                }
                 else
+                {
                     config.WriteTo.Seq(seqUrl);
+                }
             }
         });
 

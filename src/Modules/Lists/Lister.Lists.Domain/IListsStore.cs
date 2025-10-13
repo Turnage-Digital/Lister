@@ -12,15 +12,28 @@ public interface IListsStore<TList>
     Task CreateAsync(TList list, CancellationToken cancellationToken);
     Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken);
 
-    Task SetColumnsAsync(TList list, IEnumerable<Column> columns, CancellationToken cancellationToken);
+    Task SetColumnsAsync(
+        TList list,
+        IEnumerable<Column> columns,
+        string actedBy,
+        CancellationToken cancellationToken
+    );
+
     Task<Column[]> GetColumnsAsync(TList list, CancellationToken cancellationToken);
 
-    Task SetStatusesAsync(TList list, IEnumerable<Status> statuses, CancellationToken cancellationToken);
+    Task SetStatusesAsync(
+        TList list,
+        IEnumerable<Status> statuses,
+        string actedBy,
+        CancellationToken cancellationToken
+    );
+
     Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken);
 
     Task SetStatusTransitionsAsync(
         TList list,
         IEnumerable<StatusTransition> transitions,
+        string actedBy,
         CancellationToken cancellationToken
     );
 

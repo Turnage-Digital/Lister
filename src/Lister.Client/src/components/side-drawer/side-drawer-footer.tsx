@@ -9,13 +9,11 @@ const SideDrawerFooter = ({ children }: Props) => {
   return (
     <Box
       sx={(theme) => ({
-        padding: 2,
-        borderTop: 1,
-        borderColor: theme.palette.divider,
-        backgroundColor: theme.palette.grey[50],
+        padding: theme.spacing(2),
+        borderTop: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.background.paper,
         display: "flex",
         width: "100%",
-        zIndex: 9999,
       })}
     >
       {children}

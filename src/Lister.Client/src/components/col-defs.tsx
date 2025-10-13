@@ -9,6 +9,7 @@ import StatusChip from "./status-chip";
 export const getGridColDefs = (
   listItemDefinition: ListItemDefinition,
   handleViewClicked: (listId: string, itemId: number) => void,
+  handleEditClicked: (listId: string, itemId: number) => void,
   handleDeleteClicked: (listId: string, itemId: number) => void,
 ): GridColDef[] => {
   const retval: GridColDef[] = [];
@@ -64,16 +65,7 @@ export const getGridColDefs = (
         <GridActionsCellItem
           key={`${id}-view`}
           showInMenu
-          icon={
-            <Visibility
-              sx={{
-                color: "primary.main",
-                opacity: 0.7,
-                transition: "opacity 0.2s ease-in-out",
-                "&:hover": { opacity: 1 },
-              }}
-            />
-          }
+          icon={<Visibility color="primary" fontSize="small" />}
           label="View"
           onClick={() =>
             handleViewClicked(listItemDefinition.id!, id as number)
@@ -82,31 +74,16 @@ export const getGridColDefs = (
         <GridActionsCellItem
           key={`${id}-edit`}
           showInMenu
-          icon={
-            <Edit
-              sx={{
-                color: "text.secondary",
-                opacity: 0.7,
-                transition: "opacity 0.2s ease-in-out",
-                "&:hover": { opacity: 1 },
-              }}
-            />
-          }
+          icon={<Edit color="primary" fontSize="small" />}
           label="Edit"
+          onClick={() =>
+            handleEditClicked(listItemDefinition.id!, id as number)
+          }
         />,
         <GridActionsCellItem
           key={`${id}-delete`}
           showInMenu
-          icon={
-            <Delete
-              sx={{
-                color: "error.main",
-                opacity: 0.7,
-                transition: "opacity 0.2s ease-in-out",
-                "&:hover": { opacity: 1 },
-              }}
-            />
-          }
+          icon={<Delete color="error" fontSize="small" />}
           label="Delete"
           onClick={() =>
             handleDeleteClicked(listItemDefinition.id!, id as number)

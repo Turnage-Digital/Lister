@@ -17,3 +17,15 @@ public record Entry<TType>
     [JsonPropertyName("bag")]
     public object? Bag { get; set; }
 }
+
+public record HistoryPage<TType>
+    where TType : Enum
+{
+    public Entry<TType>[] Items { get; init; } = [];
+
+    public int Page { get; init; }
+
+    public int PageSize { get; init; }
+
+    public int Total { get; init; }
+}

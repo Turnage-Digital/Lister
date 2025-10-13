@@ -1,6 +1,4 @@
 export { default as EditListColumnsContent } from "./edit-list-columns-content";
-export { default as EditListItemColumnContent } from "./edit-list-item-column-content";
-export { default as EditListItemStatusesContent } from "./edit-list-item-statuses-content";
 export { default as EditListNameContent } from "./edit-list-name-content";
 export { default as EditListStatusesContent } from "./edit-list-statuses-content";
 export { default as ForgotPasswordDialog } from "./forgot-password-dialog";
@@ -14,11 +12,15 @@ export { default as SignUpForm } from "./sign-up-form";
 export { default as SmartPasteDialog } from "./smart-paste-dialog";
 export { default as Titlebar } from "./titlebar";
 export { default as UserMenu } from "./user-menu";
+export { ListEditor } from "./list-editor";
 
 export { getGridColDefs } from "./col-defs";
 
 export * from "./items-display";
 export * from "./notifications";
+export * from "./list-editor";
+export * from "./list-item-editor";
+export * from "./history";
 
 export type { Action } from "./titlebar";
 

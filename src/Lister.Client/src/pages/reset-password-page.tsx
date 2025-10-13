@@ -35,7 +35,16 @@ const ResetPasswordPage = () => {
     ) : null;
 
   return (
-    <Stack sx={{ width: "450px", mx: "auto", px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{
+        maxWidth: 420,
+        width: "100%",
+        mx: "auto",
+        px: { xs: 3, md: 4 },
+        py: { xs: 4, md: 5 },
+      }}
+      spacing={{ xs: 4, md: 5 }}
+    >
       <Typography variant="h5">Reset Password</Typography>
 
       {formContent}

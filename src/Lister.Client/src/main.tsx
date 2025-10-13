@@ -13,7 +13,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 
 import { AuthProvider } from "./auth";
-import { Loading, SideDrawerProvider } from "./components";
+import { Loading, SideDrawer, SideDrawerProvider } from "./components";
 import { createAppRouter } from "./router";
 import theme from "./theme";
 
@@ -31,6 +31,7 @@ root.render(
         <AuthProvider>
           <SideDrawerProvider>
             <QueryClientProvider client={queryClient}>
+              <SideDrawer />
               <Suspense fallback={<Loading />}>
                 <RouterProvider router={router} />
               </Suspense>

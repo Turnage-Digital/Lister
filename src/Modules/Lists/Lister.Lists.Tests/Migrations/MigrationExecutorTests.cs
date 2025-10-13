@@ -20,6 +20,13 @@ public class MigrationExecutorTests
         var uow = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
         var listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
+        itemsStore
+            .Setup(x => x.SetBagAsync(
+                It.IsAny<ItemDb>(),
+                It.IsAny<object>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         uow.SetupGet(x => x.ListsStore).Returns(listsStore.Object);
         uow.SetupGet(x => x.ItemsStore).Returns(itemsStore.Object);
 
@@ -50,6 +57,7 @@ public class MigrationExecutorTests
         Assert.That(result.IsSafe, Is.True);
         listsStore.Verify(x => x.SetColumnsAsync(list,
             It.Is<IEnumerable<Column>>(cols => cols.Any(c => c.StorageKey == "prop1" && c.Required)),
+            user,
             It.IsAny<CancellationToken>()), Times.AtLeastOnce);
         mediator.Verify(m => m.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }

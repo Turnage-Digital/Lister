@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { AddCircle } from "@mui/icons-material";
+import { AddCircle, History } from "@mui/icons-material";
 import { Stack, useMediaQuery, useTheme } from "@mui/material";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import {
@@ -10,7 +10,13 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { ItemsDesktopView, ItemsMobileView, Titlebar } from "../components";
+import {
+  ItemsDesktopView,
+  ItemsMobileView,
+  ListHistoryDrawer,
+  Titlebar,
+  useSideDrawer,
+} from "../components";
 import { ListSearch } from "../models";
 import {
   listItemDefinitionQueryOptions,
@@ -50,6 +56,7 @@ const ListItemsPage = () => {
   }
 
   const navigate = useNavigate();
+  const { openDrawer } = useSideDrawer();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const search = getListSearch(searchParams);
@@ -116,6 +123,10 @@ const ListItemsPage = () => {
     navigate(`/${currentListId}/${itemId}`);
   };
 
+  const handleEditItem = (currentListId: string, itemId: number) => {
+    navigate(`/${currentListId}/${itemId}/edit`);
+  };
+
   const handleDeleteItem = async (currentListId: string, itemId: number) => {
     await deleteItemMutation.mutateAsync({ listId: currentListId, itemId });
   };
@@ -155,6 +166,14 @@ const ListItemsPage = () => {
       icon: <AddCircle />,
       onClick: () => navigate(`/${listId}/create`),
     },
+    {
+      title: "Show history",
+      icon: <History />,
+      variant: "outlined" as const,
+      color: "secondary" as const,
+      onClick: () =>
+        openDrawer("List history", <ListHistoryDrawer listId={listId} />),
+    },
   ];
 
   const breadcrumbs = [
@@ -173,6 +192,7 @@ const ListItemsPage = () => {
       pageSize={search.pageSize}
       onPageChange={handleMobilePageChange}
       onViewItem={handleViewItem}
+      onEditItem={handleEditItem}
       onDeleteItem={handleDeleteItem}
     />
   ) : (
@@ -184,12 +204,21 @@ const ListItemsPage = () => {
       onPaginationChange={handlePaginationChange}
       onSortChange={handleSortChange}
       onViewItem={handleViewItem}
+      onEditItem={handleEditItem}
       onDeleteItem={handleDeleteItem}
     />
   );
 
   return (
-    <Stack sx={{ px: 2, py: 4 }} spacing={4}>
+    <Stack
+      sx={{
+        maxWidth: 1400,
+        mx: "auto",
+        px: { xs: 3, md: 8 },
+        py: { xs: 4, md: 6 },
+      }}
+      spacing={{ xs: 6, md: 7 }}
+    >
       <Titlebar
         title={listItemDefinitionQuery.data.name}
         actions={actions}
