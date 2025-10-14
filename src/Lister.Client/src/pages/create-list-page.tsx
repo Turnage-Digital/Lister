@@ -4,14 +4,13 @@ import { Stack } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
-import { createNotificationRule } from "../api/notification-rules";
 import {
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
   Titlebar,
 } from "../components";
-import { ListItemDefinition } from "../models";
+import { ListItemDefinition, NotificationRuleInput } from "../models";
 
 const initialValue: ListEditorInitialValue = {
   id: null,
@@ -20,6 +19,36 @@ const initialValue: ListEditorInitialValue = {
   statuses: [],
   transitions: [],
   notificationRules: [],
+};
+
+const createNotificationRule = async (
+  listId: string,
+  input: NotificationRuleInput,
+) => {
+  const payload = {
+    listId,
+    trigger: input.trigger,
+    channels: input.channels,
+    schedule: input.schedule,
+    templateId: input.templateId,
+  };
+
+  const response = await fetch("/api/notifications/rules", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to create notification rule");
+    throw new Error(message);
+  }
+
+  await response.json();
 };
 
 const CreateListPage = () => {

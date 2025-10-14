@@ -160,17 +160,6 @@ const ItemCard = ({
         >
           <Receipt sx={{ fontSize: 22 }} />
         </Box>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{
-            letterSpacing: 0.4,
-            textTransform: "uppercase",
-            flexGrow: 1,
-          }}
-        >
-          Item
-        </Typography>
         {statusChipNode}
       </Box>
 

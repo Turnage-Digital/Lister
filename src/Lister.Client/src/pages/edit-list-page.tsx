@@ -9,11 +9,6 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  createNotificationRule,
-  deleteNotificationRule,
-  updateNotificationRule,
-} from "../api/notification-rules";
-import {
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -25,6 +20,80 @@ import {
   listItemDefinitionQueryOptions,
   notificationRulesQueryOptions,
 } from "../query-options";
+
+type NotificationRuleMutationInput = Pick<
+  NotificationRuleSubmission,
+  "trigger" | "channels" | "schedule" | "templateId"
+>;
+
+const buildNotificationRulePayload = (
+  input: NotificationRuleMutationInput,
+) => ({
+  trigger: input.trigger,
+  channels: input.channels,
+  schedule: input.schedule,
+  templateId: input.templateId,
+});
+
+const createNotificationRule = async (
+  listId: string,
+  input: NotificationRuleMutationInput,
+) => {
+  const payload = {
+    listId,
+    ...buildNotificationRulePayload(input),
+  };
+
+  const response = await fetch("/api/notifications/rules", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to create notification rule");
+    throw new Error(message);
+  }
+
+  await response.json();
+};
+
+const updateNotificationRule = async (
+  ruleId: string,
+  input: NotificationRuleMutationInput,
+) => {
+  const response = await fetch(`/api/notifications/rules/${ruleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(buildNotificationRulePayload(input)),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to update notification rule");
+    throw new Error(message);
+  }
+};
+
+const deleteNotificationRule = async (ruleId: string) => {
+  const response = await fetch(`/api/notifications/rules/${ruleId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to delete notification rule");
+    throw new Error(message);
+  }
+};
 
 const EditListPage = () => {
   const { listId } = useParams<{ listId: string }>();

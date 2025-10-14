@@ -28,16 +28,12 @@ import {
 } from "@tanstack/react-query";
 
 import {
-  fetchNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
-} from "../../api/notifications";
-import {
-  NotificationListItem,
+  NotificationSummary,
   NotificationListPage,
   NotificationsSearch,
 } from "../../models";
 import {
+  notificationsInfiniteQueryOptions,
   notificationDetailsQueryOptions,
   unreadCountQueryOptions,
 } from "../../query-options";
@@ -45,6 +41,34 @@ import SideDrawerContent from "../side-drawer/side-drawer-content";
 import useSideDrawer from "../side-drawer/use-side-drawer";
 
 const PAGE_SIZE = 20;
+
+const markNotificationRead = async (notificationId: string) => {
+  const response = await fetch(`/api/notifications/${notificationId}/read`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to mark notification as read");
+    throw new Error(message);
+  }
+};
+
+const markAllNotificationsRead = async () => {
+  const response = await fetch(`/api/notifications/readAll`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to mark notifications as read");
+    throw new Error(message);
+  }
+};
 
 const formatTimestamp = (isoString: string | undefined) => {
   if (!isoString) {
@@ -74,17 +98,9 @@ const NotificationsDrawer = () => {
 
   const search = React.useMemo(() => buildSearch(filter), [filter]);
 
-  const infiniteQuery = useInfiniteQuery({
-    queryKey: ["notifications", search],
-    initialPageParam: 0,
-    queryFn: ({ pageParam }) =>
-      fetchNotifications({ ...search, page: pageParam }),
-    getNextPageParam: (lastPage) => {
-      const totalPages = Math.ceil(lastPage.total / lastPage.pageSize);
-      const nextPage = lastPage.page + 1;
-      return nextPage < totalPages ? nextPage : undefined;
-    },
-  });
+  const infiniteQuery = useInfiniteQuery(
+    notificationsInfiniteQueryOptions(search),
+  );
 
   const infiniteData = infiniteQuery.data as
     | InfiniteData<NotificationListPage>
@@ -97,21 +113,21 @@ const NotificationsDrawer = () => {
     return [...infiniteData.pages];
   }, [infiniteData]);
 
-  const notifications = React.useMemo<NotificationListItem[]>(() => {
+  const notifications = React.useMemo<NotificationSummary[]>(() => {
     return pages.flatMap((page) => {
-      if (!Array.isArray(page.items)) {
-        return [] as NotificationListItem[];
+      if (!Array.isArray(page.notifications)) {
+        return [] as NotificationSummary[];
       }
 
-      return page.items.filter((item): item is NotificationListItem =>
+      return page.notifications.filter((item): item is NotificationSummary =>
         Boolean(item),
       );
     });
   }, [pages]);
 
   const totalAvailable = React.useMemo(() => {
-    const lastPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    return lastPage?.total ?? notifications.length;
+    const firstPage = pages.length > 0 ? pages[0] : undefined;
+    return firstPage?.totalCount ?? notifications.length;
   }, [pages, notifications.length]);
 
   const invalidateNotifications = React.useCallback(() => {

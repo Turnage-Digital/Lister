@@ -1,35 +1,125 @@
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 
 import {
-  fetchNotificationDetails,
-  fetchNotifications,
-} from "./api/notifications";
-import {
+  HistoryPage,
   ItemDetails,
   ListItemDefinition,
   ListName,
   ListSearch,
+  NotificationDetails,
+  NotificationListPage,
   NotificationRule,
   NotificationsSearch,
   PagedList,
 } from "./models";
 
+const throwIfNotOk = async (response: Response, message: string) => {
+  if (response.ok) {
+    return response;
+  }
+
+  const text = await response.text().catch(() => undefined);
+  throw new Error(text || message);
+};
+
+const fetchNotificationsPage = async (
+  search: NotificationsSearch,
+  pageParam: number,
+): Promise<NotificationListPage> => {
+  const params = new URLSearchParams();
+  if (search.since) params.set("since", search.since);
+  if (typeof search.unread === "boolean")
+    params.set("unread", String(search.unread));
+  if (search.listId) params.set("listId", search.listId);
+  params.set("pageSize", String(search.pageSize ?? 20));
+  params.set("page", String(pageParam));
+
+  const response = await fetch(`/api/notifications?${params.toString()}`);
+  await throwIfNotOk(response, "Failed to load notifications");
+  return (await response.json()) as NotificationListPage;
+};
+
+export const notificationsInfiniteQueryOptions = (
+  search: NotificationsSearch = {},
+) =>
+  infiniteQueryOptions<
+    NotificationListPage,
+    Error,
+    NotificationListPage,
+    readonly ["notifications", NotificationsSearch],
+    number
+  >({
+    queryKey: ["notifications", search],
+    initialPageParam: search.page ?? 0,
+    queryFn: ({ pageParam }) => fetchNotificationsPage(search, pageParam),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages.length : undefined,
+  });
+
+const fetchHistoryPage = async (url: string): Promise<HistoryPage> => {
+  const response = await fetch(url);
+  await throwIfNotOk(response, "Failed to load history");
+  return (await response.json()) as HistoryPage;
+};
+
+const nextHistoryPageParam = (lastPage: HistoryPage) => {
+  const totalPages = Math.ceil(lastPage.total / lastPage.pageSize);
+  const next = lastPage.page + 1;
+  return next < totalPages ? next : undefined;
+};
+
+export const listHistoryInfiniteQueryOptions = (
+  listId: string,
+  pageSize = 20,
+) =>
+  infiniteQueryOptions<
+    HistoryPage,
+    Error,
+    HistoryPage,
+    readonly ["list-history", string, number],
+    number
+  >({
+    queryKey: ["list-history", listId, pageSize],
+    initialPageParam: 0,
+    enabled: Boolean(listId),
+    queryFn: ({ pageParam }) =>
+      fetchHistoryPage(
+        `/api/lists/${listId}/history?page=${typeof pageParam === "number" ? pageParam : 0}&pageSize=${pageSize}`,
+      ),
+    getNextPageParam: nextHistoryPageParam,
+  });
+
+export const itemHistoryInfiniteQueryOptions = (
+  listId: string,
+  itemId: number,
+  pageSize = 20,
+) =>
+  infiniteQueryOptions<
+    HistoryPage,
+    Error,
+    HistoryPage,
+    readonly ["item-history", string, number, number],
+    number
+  >({
+    queryKey: ["item-history", listId, itemId, pageSize],
+    initialPageParam: 0,
+    enabled: Boolean(listId) && Number.isInteger(itemId),
+    queryFn: ({ pageParam }) =>
+      fetchHistoryPage(
+        `/api/lists/${listId}/items/${itemId}/history?page=${
+          typeof pageParam === "number" ? pageParam : 0
+        }&pageSize=${pageSize}`,
+      ),
+    getNextPageParam: nextHistoryPageParam,
+  });
+
 export const listNamesQueryOptions = () =>
   queryOptions({
     queryKey: ["list-names"],
     queryFn: async () => {
-      const request = new Request("/api/lists/names", {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      if (!response.ok) {
-        const message = await response
-          .text()
-          .catch(() => "Failed to load list names");
-        throw new Error(message || "Failed to load list names");
-      }
-      const retval: ListName[] = await response.json();
-      return retval;
+      const response = await fetch("/api/lists/names", { method: "GET" });
+      await throwIfNotOk(response, "Failed to load list names");
+      return (await response.json()) as ListName[];
     },
   });
 
@@ -37,12 +127,11 @@ export const listItemDefinitionQueryOptions = (listId?: string) =>
   queryOptions({
     queryKey: ["list-definition", listId],
     queryFn: async () => {
-      const request = new Request(`/api/lists/${listId}/itemDefinition`, {
+      const response = await fetch(`/api/lists/${listId}/itemDefinition`, {
         method: "GET",
       });
-      const response = await fetch(request);
-      const retval: ListItemDefinition = await response.json();
-      return retval;
+      await throwIfNotOk(response, "Failed to load list definition");
+      return (await response.json()) as ListItemDefinition;
     },
     enabled: Boolean(listId),
   });
@@ -62,12 +151,9 @@ export const pagedItemsQueryOptions = (search: ListSearch, listId?: string) =>
       if (search.field && search.sort) {
         url += `&field=${search.field}&sort=${search.sort}`;
       }
-      const request = new Request(url, {
-        method: "GET",
-      });
-      const response = await fetch(request);
-      const retval: PagedList = await response.json();
-      return retval;
+      const response = await fetch(url, { method: "GET" });
+      await throwIfNotOk(response, "Failed to load list items");
+      return (await response.json()) as PagedList;
     },
     enabled: Boolean(listId),
   });
@@ -76,35 +162,25 @@ export const itemQueryOptions = (listId?: string, itemId?: number) =>
   queryOptions({
     queryKey: ["list-item", listId, itemId],
     queryFn: async () => {
-      const request = new Request(`/api/lists/${listId}/items/${itemId}`, {
+      const response = await fetch(`/api/lists/${listId}/items/${itemId}`, {
         method: "GET",
       });
-      const response = await fetch(request);
-      const retval: ItemDetails = await response.json();
-      return retval;
+      await throwIfNotOk(response, "Failed to load item");
+      return (await response.json()) as ItemDetails;
     },
     enabled: Boolean(listId) && Boolean(itemId),
-  });
-
-export const notificationsListQueryOptions = (
-  search: NotificationsSearch = {},
-) =>
-  queryOptions({
-    queryKey: [
-      "notifications",
-      search.since ?? null,
-      search.unread ?? null,
-      search.listId ?? null,
-      search.pageSize ?? 20,
-      search.page ?? 0,
-    ],
-    queryFn: () => fetchNotifications(search),
   });
 
 export const notificationDetailsQueryOptions = (notificationId?: string) =>
   queryOptions({
     queryKey: ["notification", notificationId],
-    queryFn: () => fetchNotificationDetails(notificationId as string),
+    queryFn: async () => {
+      const response = await fetch(`/api/notifications/${notificationId}`, {
+        method: "GET",
+      });
+      await throwIfNotOk(response, "Failed to load notification details");
+      return (await response.json()) as NotificationDetails;
+    },
     enabled: Boolean(notificationId),
   });
 
@@ -116,8 +192,8 @@ export const unreadCountQueryOptions = (listId?: string) =>
         ? `/api/notifications/unreadCount?listId=${encodeURIComponent(listId)}`
         : "/api/notifications/unreadCount";
       const response = await fetch(url, { method: "GET" });
-      const retval: number = await response.json();
-      return retval;
+      await throwIfNotOk(response, "Failed to load unread notification count");
+      return (await response.json()) as number;
     },
   });
 
@@ -140,10 +216,7 @@ export const notificationRulesQueryOptions = (listId?: string) =>
       if (response.status === 204) {
         return [] as NotificationRule[];
       }
-      if (!response.ok) {
-        throw new Error("Failed to load notification rules");
-      }
-      const retval: NotificationRule[] = await response.json();
-      return retval;
+      await throwIfNotOk(response, "Failed to load notification rules");
+      return (await response.json()) as NotificationRule[];
     },
   });

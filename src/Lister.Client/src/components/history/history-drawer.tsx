@@ -12,7 +12,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { type InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  type UseInfiniteQueryResult,
+} from "@tanstack/react-query";
 
 import { HistoryPage } from "../../models";
 import {
@@ -38,31 +41,11 @@ const formatTimestamp = (isoString: string | undefined) => {
 
 interface HistoryDrawerProps {
   subtitle?: string;
-  queryKey: ReadonlyArray<unknown>;
-  fetchPage: (pageParam: number) => Promise<HistoryPage>;
+  query: UseInfiniteQueryResult<HistoryPage>;
 }
 
-const HistoryDrawer = ({
-  subtitle,
-  queryKey,
-  fetchPage,
-}: HistoryDrawerProps) => {
-  const infiniteQuery = useInfiniteQuery<
-    HistoryPage,
-    Error,
-    HistoryPage,
-    ReadonlyArray<unknown>,
-    number
-  >({
-    queryKey,
-    initialPageParam: 0,
-    queryFn: ({ pageParam }) => fetchPage(pageParam),
-    getNextPageParam: (lastPage) => {
-      const totalPages = Math.ceil(lastPage.total / lastPage.pageSize);
-      const next = lastPage.page + 1;
-      return next < totalPages ? next : undefined;
-    },
-  });
+const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
+  const infiniteQuery = query;
 
   const infiniteData = infiniteQuery.data as
     | InfiniteData<HistoryPage>
