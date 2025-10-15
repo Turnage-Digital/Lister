@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 
 namespace Lister.Lists.Application.Endpoints.Migrations;
 

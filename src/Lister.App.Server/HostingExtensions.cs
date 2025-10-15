@@ -18,7 +18,7 @@ using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Application.Endpoints.UpdateList;
 using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
@@ -34,6 +34,7 @@ using Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
 using Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
 using Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
 using Lister.Notifications.Domain;
+using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Domain.Views;
 using Lister.Notifications.Infrastructure.Sql;
@@ -234,6 +235,7 @@ internal static class HostingExtensions
     {
         services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb, ItemDb>>();
         services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
+        services.AddScoped<INotificationTriggerEvaluator, NotificationTriggerEvaluator>();
         services.AddScoped<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
         return services;
     }
@@ -275,7 +277,7 @@ internal static class HostingExtensions
             typeof(UpdateListCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-        
+
         // Notifications - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),
             typeof(CreateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
@@ -293,7 +295,7 @@ internal static class HostingExtensions
             typeof(GetUserNotificationsQueryHandler<NotificationRuleDb, NotificationDb>));
         services.AddScoped(typeof(IRequestHandler<GetUnreadNotificationCountQuery, int>),
             typeof(GetUnreadNotificationCountQueryHandler<NotificationRuleDb, NotificationDb>));
-        
+
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();
         services.AddHostedService<OutboxDispatcherService>();

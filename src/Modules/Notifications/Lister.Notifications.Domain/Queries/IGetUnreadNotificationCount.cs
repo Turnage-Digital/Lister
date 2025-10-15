@@ -1,4 +1,4 @@
-namespace Lister.Notifications.Domain.Services;
+namespace Lister.Notifications.Domain.Queries;
 
 public interface IGetUnreadNotificationCount
 {

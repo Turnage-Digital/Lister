@@ -1,4 +1,4 @@
-using Lister.Notifications.Domain.Services;
+using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.Views;
 using MediatR;
 

@@ -28,13 +28,13 @@ import {
 } from "@tanstack/react-query";
 
 import {
-  NotificationSummary,
   NotificationListPage,
   NotificationsSearch,
+  NotificationSummary,
 } from "../../models";
 import {
-  notificationsInfiniteQueryOptions,
   notificationDetailsQueryOptions,
+  notificationsInfiniteQueryOptions,
   unreadCountQueryOptions,
 } from "../../query-options";
 import SideDrawerContent from "../side-drawer/side-drawer-content";

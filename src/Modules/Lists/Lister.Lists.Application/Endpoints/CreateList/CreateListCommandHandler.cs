@@ -1,6 +1,6 @@
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.Views;
 using MediatR;
 

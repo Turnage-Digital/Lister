@@ -1,6 +1,6 @@
 using Lister.Lists.Domain.Views;
 
-namespace Lister.Lists.Domain.Services;
+namespace Lister.Lists.Domain.Queries;
 
 public interface IGetListNames
 {

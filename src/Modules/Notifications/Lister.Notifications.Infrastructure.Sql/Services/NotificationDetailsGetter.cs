@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Lister.Core.Domain.ValueObjects;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Services;
+using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.Domain.Views;
 using Microsoft.EntityFrameworkCore;
