@@ -31,14 +31,6 @@ public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotificati
         var channels = request.Channels;
         var schedule = request.Schedule;
 
-        // If the rule has JSON strings (e.g., NotificationRuleDb), prefer them for round-trip
-        // if (rule is Notifications.Infrastructure.Sql.Entities.NotificationRuleDb db)
-        // {
-        //     trigger = JsonSerializer.Deserialize<NotificationTrigger>(db.TriggerJson)!;
-        //     channels = JsonSerializer.Deserialize<NotificationChannel[]>(db.ChannelsJson)!;
-        //     schedule = JsonSerializer.Deserialize<NotificationSchedule>(db.ScheduleJson)!;
-        // }
-
         return new NotificationRule
         {
             Id = rule.Id,

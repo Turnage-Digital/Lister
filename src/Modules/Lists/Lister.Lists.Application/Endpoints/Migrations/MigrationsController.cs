@@ -30,10 +30,7 @@ public class MigrationsController(IMediator mediator) : Controller
             ? MigrationMode.Execute
             : MigrationMode.DryRun;
 
-        var command = new RunMigrationCommand(listId, request.Plan, mode)
-        {
-            UserId = HttpContext.User.Identity?.Name
-        };
+        var command = new RunMigrationCommand(listId, request.Plan, mode);
 
         var result = await mediator.Send(command, ct);
         return Ok(result);

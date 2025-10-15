@@ -6,25 +6,24 @@ This document captures the intentional architecture boundaries and composition p
 
 1. Solution Structure
 2. Layers & Dependencies
-3. Composition Root (Host)
-4. Module Registration
-5. Conventions
-6. Entity Design
-7. Value Objects & Serialization
-8. Read Path & Views
-9. Persistence
-10. Store Pattern
-11. MediatR
-12. Behaviors & Controllers
-13. Integration Events
-14. Change Feed (SSE)
-15. List Schema Validation & Indexing (Bag)
-16. Endpoints Overview
-17. List Schema Migrations (Outbox + SSE)
-18. Testing
-19. Config
-20. Performance considerations
-21. Routing (React Router v6)
+3. Host Composition & Module Registration
+4. Conventions
+5. Persistence & Mutation Flow
+6. MediatR
+7. Behaviors & Controllers
+8. Integration Events
+9. Event Phases & Dispatch
+10. Change Feed (SSE)
+11. Entity Design
+12. Value Objects & Serialization
+13. Read Path & Views
+14. List Schema Validation & Indexing (Bag)
+15. Endpoints Overview
+16. List Schema Migrations (Outbox + SSE)
+17. Testing
+18. Config
+19. Performance considerations
+20. Routing (React Router v6)
 
 ## Solution Structure
 
@@ -105,21 +104,39 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 - Access stores exclusively via their unit of work abstractions; do not inject `IListsStore`, `IItemsStore`, etc.
   directly into handlers or services.
 
-## Persistence
+## Persistence & Mutation Flow
+
+### DbContexts
 
 - One DbContext per module; migrations live in the module's Infrastructure.Sql project.
 - Host registers DbContexts via `AddInfrastructure(connectionString)` which auto-detects each context's migration
   assembly.
 
-## Store Pattern
+### Stores
 
-- Stores (`INotificationsStore<T>`, `INotificationRulesStore<T>`, etc.) handle low-level persistence operations
-- Aggregates compose stores and add business logic, domain events, and invariant enforcement
-- Stores are responsible for appending history entries for their entities (create/update/delete), so aggregates stay
-  focused on business invariants while the persistence layer maintains audit trails consistently.
-- Stores are registered in the Host and injected into aggregates via `IUnitOfWork`
-- `Get*` methods on stores should eagerly hydrate everything the aggregate needs (navigation properties, history,
-  metadata). Aggregates assume the returned entity is complete and will not issue additional queries.
+- Stores (`INotificationsStore<T>`, `INotificationRulesStore<T>`, etc.) handle low-level persistence operations and
+  remain thin on business logic.
+- Stores are registered in the Host and injected into aggregates via their module unit of work abstractions.
+- Store `Get*` methods eagerly hydrate the full aggregate root (navigation properties, history, metadata); mutation
+  flows assume they will not issue additional queries. When you add new invariant-sensitive data, update the store
+  hydration accordingly.
+- Store `Get*` methods exist strictly for mutation paths—use read services for projections or listings.
+- Stores append history entries for their entities (create/update/delete/etc.) so aggregates stay focused on invariants
+  while the persistence layer maintains audit trails consistently.
+
+### Aggregates
+
+- Aggregates compose stores to add business logic, domain events, and invariant enforcement; they do not access
+  EF/DbContexts directly.
+- All persistence flows through the module unit of work and its stores; aggregates call store methods such as
+  `GetListByIdAsync`, `GetItemByIdAsync`, `SetBagAsync`, `SetStatusesAsync`, etc.
+- Aggregates never partially load state—hydrate once via store APIs and pass the result through the workflow rather
+  than building ad hoc projections.
+- Aggregates orchestrate multiple stores via their module unit of work (e.g., `IListsUnitOfWork`), keeping work inside
+  a single transaction and enabling `UnitOfWork.SaveChangesAsync` to dispatch queued domain events in the correct
+  phase.
+- When aggregates need supporting data (status transitions, notification rules, etc.) they request it from store APIs
+  so hydration responsibilities stay centralized.
 
 ## MediatR
 
@@ -194,23 +211,6 @@ services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
 - Mapping between write models and views.
     - AutoMapper profiles translate persistence entities to view models (e.g., `ListsMappingProfile`).
     - Query services return projection models tailored for reads; commands operate on `IWritable*` via aggregates.
-
-## Aggregate Design
-
-- Aggregates are responsible for enforcing invariants; they never talk to EF/DbContexts directly.
-- All persistence happens through the module unit of work + stores. Aggregates call store methods such as
-  `GetListByIdAsync`, `GetItemByIdAsync`, `SetBagAsync`, `SetStatusesAsync`, etc.
-- Store `Get*` methods must return a *fully hydrated* aggregate root. For example, `ListsStore.GetByIdAsync` eagerly
-  loads columns, statuses, transitions, and history so that the aggregate has everything it needs to validate rules
-  without issuing extra queries. If you add new invariant-sensitive data, make sure the store hydrates it.
-- Aggregates never partially load state. If a method needs a list, call `GetListByIdAsync` and pass the result around;
-  do not create ad hoc projections or rely on lazy loading.
-- Store `Get*` methods are strictly for mutation flows; they return exactly one aggregate root (or null). They are not
-  query APIs—use read models for reporting/listing screens.
-- Aggregates orchestrate multiple stores through `IListsUnitOfWork`, ensuring that state changes stay within a single
-  transaction and that `UnitOfWork.SaveChangesAsync` can dispatch domain events in the correct phase.
-- When aggregates need supporting data (e.g., status transitions, notification rules), they request it via store APIs.
-  Stores remain thin on business logic but handle hydration, materialized histories, and entity tracking.
 
 ## Value Objects & Serialization
 

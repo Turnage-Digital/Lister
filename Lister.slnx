@@ -4,7 +4,6 @@
     <File Path=".gitignore" />
     <File Path="docker-compose.yml" />
     <File Path="LICENSE" />
-    <File Path="README.md" />
     <File Path="nuget.config" />
     <File Path="ef-reset.ps1" />
     <File Path="ARCHITECTURE.md" />

@@ -48,12 +48,11 @@ public class UserNotificationsGetter(NotificationsDbContext context)
             .Select(n => new
             {
                 n.Id,
-                n.NotificationRuleId,
-                n.UserId,
                 n.ListId,
                 n.ItemId,
                 n.ContentJson,
-                n.ReadOn
+                n.ReadOn,
+                n.CreatedOn
             })
             .ToListAsync(cancellationToken);
 
@@ -62,6 +61,7 @@ public class UserNotificationsGetter(NotificationsDbContext context)
                 var title = string.Empty;
                 var body = string.Empty;
                 object? metadata = null;
+                var occurredOn = r.CreatedOn;
                 if (!string.IsNullOrEmpty(r.ContentJson))
                 {
                     var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
@@ -69,21 +69,28 @@ public class UserNotificationsGetter(NotificationsDbContext context)
                     {
                         title = content.Subject;
                         body = content.Body;
-                        metadata = content.Data;
+                        if (content.Data is { Count: > 0 })
+                        {
+                            metadata = content.Data;
+                        }
+
+                        if (content.OccurredOn != default)
+                        {
+                            occurredOn = content.OccurredOn;
+                        }
                     }
                 }
 
                 return new NotificationSummary
                 {
                     Id = r.Id!.Value,
-                    NotificationRuleId = r.NotificationRuleId,
-                    UserId = r.UserId,
                     ListId = r.ListId,
                     ItemId = r.ItemId,
                     Title = title,
                     Body = body,
                     Metadata = metadata,
-                    IsRead = r.ReadOn.HasValue
+                    IsRead = r.ReadOn.HasValue,
+                    OccurredOn = occurredOn
                 };
             })
             .ToList();
@@ -93,7 +100,7 @@ public class UserNotificationsGetter(NotificationsDbContext context)
             Notifications = items,
             TotalCount = total,
             UnreadCount = unreadCount,
-            HasMore = items.Count == pageSize
+            HasMore = (page + 1) * pageSize < total
         };
         return retval;
     }
