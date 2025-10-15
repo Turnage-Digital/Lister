@@ -24,6 +24,7 @@ public class UpdateNotificationRuleCommandHandler<TNotificationRule, TNotificati
             request.Trigger,
             request.Channels,
             request.Schedule,
+            request.TemplateId,
             null, // isActive
             cancellationToken);
     }

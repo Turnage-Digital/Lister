@@ -56,6 +56,7 @@ public class NotificationAggregate<TRule, TNotification>(
         NotificationTrigger? trigger = null,
         NotificationChannel[]? channels = null,
         NotificationSchedule? schedule = null,
+        string? templateId = null,
         bool? isActive = null,
         CancellationToken cancellationToken = default
     )
@@ -73,6 +74,11 @@ public class NotificationAggregate<TRule, TNotification>(
         if (schedule is not null)
         {
             await unitOfWork.RulesStore.SetScheduleAsync(rule, schedule, cancellationToken);
+        }
+
+        if (templateId is not null)
+        {
+            await unitOfWork.RulesStore.SetTemplateAsync(rule, templateId, cancellationToken);
         }
 
         if (isActive is not null)

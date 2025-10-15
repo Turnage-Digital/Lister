@@ -100,6 +100,21 @@ public class NotificationAggregateEventTests
     }
 
     [Test]
+    public async Task UpdateNotificationRule_WithTemplate_Updates_Store()
+    {
+        var (agg, _, queue, rules, _) = Create();
+        var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
+        const string templateId = "tpl-123";
+        rules.Setup(s => s.UpdateAsync(rule, _user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        rules.Setup(s => s.SetTemplateAsync(rule, templateId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        await agg.UpdateNotificationRuleAsync(rule, _user, templateId: templateId);
+
+        rules.Verify(s => s.SetTemplateAsync(rule, templateId, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.That(queue.Events.OfType<NotificationRuleUpdatedEvent>().Any(), Is.True);
+    }
+
+    [Test]
     public async Task DeleteNotificationRule_Enqueues_Event()
     {
         var (agg, _, queue, rules, _) = Create();
