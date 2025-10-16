@@ -19,8 +19,9 @@ import {
   useTheme,
 } from "@mui/material";
 
+import { Link as RouterLink } from "react-router-dom";
+
 import { ListName } from "../models";
-import PreloadIconButton from "./preload-icon-button";
 
 interface Props {
   listName: ListName;
@@ -83,17 +84,22 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
 
       <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
         <Tooltip title={`View ${listName.name}`}>
-          <PreloadIconButton
+          <IconButton
+            component={RouterLink}
             to={`/${listName.id}?page=0&pageSize=10`}
             color="primary"
           >
             <Visibility />
-          </PreloadIconButton>
+          </IconButton>
         </Tooltip>
         <Tooltip title={`Edit ${listName.name}`}>
-          <PreloadIconButton to={`/${listName.id}/edit`} color="primary">
+          <IconButton
+            component={RouterLink}
+            to={`/${listName.id}/edit`}
+            color="primary"
+          >
             <Edit />
-          </PreloadIconButton>
+          </IconButton>
         </Tooltip>
         <Tooltip title={`Delete ${listName.name}`}>
           <IconButton onClick={() => onDeleteClick(listName.id)} color="error">

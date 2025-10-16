@@ -172,7 +172,7 @@ const CreateListItemPage = () => {
           loading={createItemMutation.isPending}
           sx={{ width: { xs: "100%", md: "auto" } }}
         >
-          Submit
+          Save changes
         </LoadingButton>
       </Box>
     </Stack>

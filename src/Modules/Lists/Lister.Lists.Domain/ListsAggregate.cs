@@ -115,9 +115,10 @@ public class ListsAggregate<TList, TItem>(
 
         if (columns is not null)
         {
+            var incomingColumns = columns.ToList();
             // Guardrails: disallow removals or type changes
             var currentByName = currentColumns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
-            var nextByName = columns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
+            var nextByName = incomingColumns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
 
             // Removed columns
             var removed = currentByName.Keys.Where(k => !nextByName.ContainsKey(k)).ToArray();
@@ -185,7 +186,32 @@ public class ListsAggregate<TList, TItem>(
                 }
             }
 
-            await unitOfWork.ListsStore.SetColumnsAsync(list, columns, updatedBy, cancellationToken);
+            var normalizedColumns = incomingColumns
+                .Select(c => new Column
+                {
+                    StorageKey = c.StorageKey,
+                    Name = c.Name,
+                    Type = c.Type,
+                    Required = c.Required,
+                    AllowedValues = c.AllowedValues,
+                    MinNumber = c.MinNumber,
+                    MaxNumber = c.MaxNumber,
+                    Regex = c.Regex
+                })
+                .ToList();
+
+            foreach (var column in normalizedColumns.Where(c => string.IsNullOrWhiteSpace(c.StorageKey)))
+            {
+                if (currentByName.TryGetValue(column.Name, out var existing) &&
+                    !string.IsNullOrWhiteSpace(existing.StorageKey))
+                {
+                    column.StorageKey = existing.StorageKey;
+                }
+            }
+
+            normalizedColumns = AssignStorageKeys(normalizedColumns);
+
+            await unitOfWork.ListsStore.SetColumnsAsync(list, normalizedColumns, updatedBy, cancellationToken);
         }
 
         if (statuses is not null)

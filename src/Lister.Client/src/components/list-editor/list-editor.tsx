@@ -106,7 +106,7 @@ const ListEditor = ({
   mode,
   onSubmit,
   isSubmitting,
-  submitLabel = mode === "create" ? "Create list" : "Save changes",
+  submitLabel = "Save changes",
   onCancel,
   disableNameField = false,
 }: Props) => {

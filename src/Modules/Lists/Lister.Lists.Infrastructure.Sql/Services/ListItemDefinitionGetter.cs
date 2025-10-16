@@ -19,6 +19,7 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
                 Columns = list.Columns
                     .Select(column => new Column
                     {
+                        StorageKey = column.StorageKey,
                         Name = column.Name,
                         Type = column.Type,
                         Required = column.Required,
