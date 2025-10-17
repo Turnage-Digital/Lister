@@ -1,7 +1,9 @@
 export { default as EditListColumnsContent } from "./edit-list-columns-content";
 export { default as EditListNameContent } from "./edit-list-name-content";
 export { default as EditListStatusesContent } from "./edit-list-statuses-content";
+export { default as AuthPageLayout } from "./auth-page-layout";
 export { default as FormBlock } from "./form-block";
+export { default as ForgotPasswordForm } from "./forgot-password-form";
 export { default as ItemCard } from "./item-card";
 export { default as ListCard } from "./list-card";
 export { default as Loading } from "./loading";

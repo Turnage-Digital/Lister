@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { Alert, Stack, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { ResetPasswordForm } from "../components";
+import { AuthPageLayout, ResetPasswordForm } from "../components";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -35,22 +35,15 @@ const ResetPasswordPage = () => {
     ) : null;
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 450,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 4 },
-        py: { xs: 4, md: 5 },
-      }}
-      spacing={{ xs: 4, md: 5 }}
-    >
-      <Typography variant="h5">Reset Password</Typography>
+    <AuthPageLayout>
+      <Typography variant="h5" align="center" gutterBottom>
+        Reset Password
+      </Typography>
 
       {formContent}
 
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-    </Stack>
+    </AuthPageLayout>
   );
 };
 
