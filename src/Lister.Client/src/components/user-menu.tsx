@@ -85,9 +85,13 @@ const UserMenu = () => {
           <Typography>Log Out</Typography>
         </MenuItem>
       </Menu>
-
-      <Dialog open={logoutDialogOpen} onClose={handleLogoutCancel}>
-        <DialogTitle>Confirm Logout</DialogTitle>
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={handleLogoutCancel}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Log out</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to log out?
@@ -97,8 +101,8 @@ const UserMenu = () => {
           <Button onClick={handleLogoutCancel}>Cancel</Button>
           <Button
             onClick={handleLogoutConfirm}
-            color="error"
             variant="contained"
+            color="primary"
           >
             Log Out
           </Button>

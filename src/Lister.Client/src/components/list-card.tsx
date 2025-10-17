@@ -18,14 +18,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { ListName } from "../models";
 
 interface Props {
   listName: ListName;
-  onDeleteClick: (id: string) => void;
+  onDeleteClick: (list: ListName) => void;
 }
 
 const ListCard = ({ listName, onDeleteClick }: Props) => {
@@ -102,7 +101,7 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
           </IconButton>
         </Tooltip>
         <Tooltip title={`Delete ${listName.name}`}>
-          <IconButton onClick={() => onDeleteClick(listName.id)} color="error">
+          <IconButton onClick={() => onDeleteClick(listName)} color="error">
             <Delete />
           </IconButton>
         </Tooltip>

@@ -1,7 +1,17 @@
 import * as React from "react";
 
 import { AddCircle, History } from "@mui/icons-material";
-import { Stack, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import {
   useMutation,
@@ -62,6 +72,14 @@ const ListItemsPage = () => {
   const search = getListSearch(searchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const [itemToDelete, setItemToDelete] = React.useState<{
+    listId: string;
+    itemId: number;
+  } | null>(null);
+
+  const deleteItemDialogMessage = itemToDelete
+    ? `Are you sure you want to delete item #${itemToDelete.itemId}? This action cannot be undone.`
+    : "Are you sure you want to delete this item? This action cannot be undone.";
 
   const listItemDefinitionQuery = useSuspenseQuery(
     listItemDefinitionQueryOptions(listId),
@@ -127,8 +145,24 @@ const ListItemsPage = () => {
     navigate(`/${currentListId}/${itemId}/edit`);
   };
 
-  const handleDeleteItem = async (currentListId: string, itemId: number) => {
-    await deleteItemMutation.mutateAsync({ listId: currentListId, itemId });
+  const handleDeleteItem = (currentListId: string, itemId: number) => {
+    setItemToDelete({ listId: currentListId, itemId });
+  };
+
+  const handleConfirmDeleteItem = async () => {
+    if (!itemToDelete) {
+      return;
+    }
+
+    try {
+      await deleteItemMutation.mutateAsync(itemToDelete);
+    } finally {
+      setItemToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteItem = () => {
+    setItemToDelete(null);
   };
 
   const handleMobilePageChange = (newPage: number) => {
@@ -225,6 +259,28 @@ const ListItemsPage = () => {
         breadcrumbs={breadcrumbs}
       />
       {itemsView}
+      <Dialog
+        open={Boolean(itemToDelete)}
+        onClose={handleCancelDeleteItem}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Delete item</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{deleteItemDialogMessage}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDeleteItem}>Cancel</Button>
+          <Button
+            onClick={handleConfirmDeleteItem}
+            color="error"
+            variant="contained"
+            disabled={deleteItemMutation.isPending}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 };

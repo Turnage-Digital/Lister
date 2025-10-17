@@ -5,17 +5,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../auth";
-import { ForgotPasswordDialog, SignInForm, useSideDrawer } from "../components";
+import { SignInForm } from "../components";
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const auth = useAuth();
-  const { openDrawer } = useSideDrawer();
 
   const handleForgotPasswordClick = () => {
-    openDrawer("Reset Password", <ForgotPasswordDialog />);
+    const query = searchParams.toString();
+    navigate(query ? `/forgot-password?${query}` : "/forgot-password");
   };
 
   const handleSignedIn = async (email: string) => {

@@ -8,6 +8,7 @@ import {
   CreateListPage,
   EditListItemPage,
   EditListPage,
+  ForgotPasswordPage,
   getListSearch,
   ListItemDetailsPage,
   ListItemsPage,
@@ -131,6 +132,10 @@ export const createAppRouter = (queryClient: QueryClient) =>
     {
       path: "/sign-up",
       element: <SignUpPage />,
+    },
+    {
+      path: "/forgot-password",
+      element: <ForgotPasswordPage />,
     },
     {
       path: "/reset-password",

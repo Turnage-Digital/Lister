@@ -16,17 +16,17 @@ import {
   ListItemEditor,
   SmartPasteDialog,
   Titlebar,
-  useSideDrawer,
 } from "../components";
 import { ListItem } from "../models";
 import { listItemDefinitionQueryOptions } from "../query-options";
 
 const CreateListItemPage = () => {
-  const { openDrawer, closeDrawer } = useSideDrawer();
   const { listId } = useParams<{ listId: string }>();
   if (!listId) {
     throw new Error("List id is required");
   }
+
+  const [smartPasteOpen, setSmartPasteOpen] = useState(false);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -96,7 +96,7 @@ const CreateListItemPage = () => {
     const json: ListItem = await response.json();
 
     setFormState((prev) => ({ ...prev, bag: { ...prev.bag, ...json.bag } }));
-    closeDrawer();
+    setSmartPasteOpen(false);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -112,8 +112,7 @@ const CreateListItemPage = () => {
     {
       title: "Smart Paste",
       icon: <ContentPaste />,
-      onClick: () =>
-        openDrawer("Smart Paste", <SmartPasteDialog onPaste={handlePaste} />),
+      onClick: () => setSmartPasteOpen(true),
     },
   ];
 
@@ -175,6 +174,11 @@ const CreateListItemPage = () => {
           Save changes
         </LoadingButton>
       </Box>
+      <SmartPasteDialog
+        open={smartPasteOpen}
+        onClose={() => setSmartPasteOpen(false)}
+        onPaste={handlePaste}
+      />
     </Stack>
   );
 };

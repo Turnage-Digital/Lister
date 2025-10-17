@@ -1,52 +1,69 @@
 import * as React from "react";
-import { useState } from "react";
 
 import { ContentPaste } from "@mui/icons-material";
-import { Box, Button, TextField } from "@mui/material";
-
 import {
-  SideDrawerContainer,
-  SideDrawerContent,
-  SideDrawerFooter,
-  SideDrawerHeader,
-  useSideDrawer,
-} from "./side-drawer";
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 interface Props {
+  open: boolean;
+  onClose: () => void;
   onPaste: (text: string) => void;
 }
 
-const SmartPasteDialog = ({ onPaste }: Props) => {
-  const { closeDrawer } = useSideDrawer();
-  const [text, setText] = useState("");
+const SmartPasteDialog = ({ open, onClose, onPaste }: Props) => {
+  const [text, setText] = React.useState("");
+
+  React.useEffect(() => {
+    if (!open) {
+      setText("");
+    }
+  }, [open]);
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handlePasteClick = () => {
+    onPaste(text);
+    onClose();
+  };
 
   return (
-    <SideDrawerContainer>
-      <SideDrawerHeader />
-      <SideDrawerContent>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>Smart Paste</DialogTitle>
+      <DialogContent>
         <TextField
           multiline
           fullWidth
-          rows={10}
+          minRows={8}
           placeholder="Paste your text here..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          sx={{ p: 2, flex: 1 }}
+          inputRef={(node) => {
+            if (open && node) {
+              node.focus();
+            }
+          }}
         />
-      </SideDrawerContent>
-      <SideDrawerFooter>
-        <Button onClick={closeDrawer}>Cancel</Button>
-        <Box sx={{ flex: 1 }} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button
           variant="contained"
           startIcon={<ContentPaste />}
-          sx={{ ml: 2 }}
-          onClick={() => onPaste(text)}
+          disabled={text.trim().length === 0}
+          onClick={handlePasteClick}
         >
           Smart Paste
         </Button>
-      </SideDrawerFooter>
-    </SideDrawerContainer>
+      </DialogActions>
+    </Dialog>
   );
 };
 
