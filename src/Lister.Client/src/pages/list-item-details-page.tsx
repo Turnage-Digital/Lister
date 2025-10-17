@@ -64,6 +64,7 @@ const ListItemDetailsPage = () => {
     <Stack
       sx={{
         maxWidth: 1180,
+        width: "100%",
         mx: "auto",
         px: { xs: 3, md: 7 },
         py: { xs: 4, md: 6 },

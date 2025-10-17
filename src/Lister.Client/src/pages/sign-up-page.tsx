@@ -22,8 +22,15 @@ const SignUpPage = () => {
 
   return (
     <Stack
-      sx={{ width: "450px", mx: "auto", px: 2, pt: 18, pb: 4 }}
-      spacing={4}
+      sx={{
+        maxWidth: 450,
+        width: "100%",
+        mx: "auto",
+        px: { xs: 2, md: 2 },
+        py: { xs: 4, md: 4 },
+        pt: 18,
+      }}
+      spacing={{ xs: 4, md: 4 }}
     >
       <Paper
         elevation={1}

@@ -37,7 +37,7 @@ const ResetPasswordPage = () => {
   return (
     <Stack
       sx={{
-        maxWidth: 420,
+        maxWidth: 450,
         width: "100%",
         mx: "auto",
         px: { xs: 3, md: 4 },
