@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { Stack } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
 import {
+  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -122,24 +122,14 @@ const CreateListPage = () => {
   };
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1180,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <EditorPageLayout>
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
       <ListEditor
-        mode="create"
         initialValue={initialValue}
         onSubmit={handleSubmit}
         isSubmitting={createListMutation.isPending}
       />
-    </Stack>
+    </EditorPageLayout>
   );
 };
 

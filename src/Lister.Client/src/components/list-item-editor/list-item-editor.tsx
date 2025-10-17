@@ -1,6 +1,11 @@
 import * as React from "react";
 
+import { Save } from "@mui/icons-material";
 import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -21,6 +26,7 @@ import {
   getStatusFromName,
   ListItemDefinition,
 } from "../../models";
+import FormBlock from "../form-block";
 import StatusChip from "../status-chip";
 
 interface ListItemFormProps {
@@ -203,12 +209,20 @@ interface ListItemEditorProps {
   definition: ListItemDefinition;
   bag: Record<string, unknown>;
   onBagChange: (next: Record<string, unknown>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void> | void;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+  onCancel?: () => void;
 }
 
 export const ListItemEditor = ({
   definition,
   bag,
   onBagChange,
+  onSubmit,
+  isSubmitting,
+  submitLabel = "Save changes",
+  onCancel,
 }: ListItemEditorProps) => {
   const handleStatusChange = React.useCallback(
     (nextStatus: string) => {
@@ -220,19 +234,68 @@ export const ListItemEditor = ({
     [bag, onBagChange],
   );
 
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
+    event.preventDefault();
+    await onSubmit(event);
+  };
+
+  const submitStartIcon = isSubmitting ? (
+    <CircularProgress size={20} color="inherit" />
+  ) : (
+    <Save />
+  );
+
   return (
-    <Stack spacing={{ xs: 3.5, md: 4.5 }}>
-      <ListItemFields
-        definition={definition}
-        bag={bag}
-        onBagChange={onBagChange}
+    <Stack
+      component="form"
+      onSubmit={handleSubmit}
+      divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
+      spacing={{ xs: 6, md: 7 }}
+    >
+      <FormBlock
+        title="Item details"
+        subtitle="Enter values for each column and pick the current status."
+        content={
+          <Stack spacing={{ xs: 3.5, md: 4.5 }}>
+            <ListItemFields
+              definition={definition}
+              bag={bag}
+              onBagChange={onBagChange}
+            />
+
+            <ListItemStatusSelect
+              definition={definition}
+              value={bag.status as string | undefined}
+              onChange={handleStatusChange}
+            />
+          </Stack>
+        }
       />
 
-      <ListItemStatusSelect
-        definition={definition}
-        value={bag.status as string | undefined}
-        onChange={handleStatusChange}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: { xs: "center", md: "flex-end" },
+          gap: 2,
+        }}
+      >
+        {onCancel && (
+          <Button variant="text" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button
+          type="submit"
+          variant="contained"
+          startIcon={submitStartIcon}
+          disabled={isSubmitting}
+          sx={{ width: { xs: "100%", md: "auto" } }}
+        >
+          {submitLabel}
+        </Button>
+      </Box>
     </Stack>
   );
 };

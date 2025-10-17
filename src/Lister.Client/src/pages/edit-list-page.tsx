@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { Stack } from "@mui/material";
 import {
   useMutation,
   useQueryClient,
@@ -9,6 +8,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
+  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -236,23 +236,13 @@ const EditListPage = () => {
   };
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1180,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <EditorPageLayout>
       <Titlebar
         title={`Edit ${listDefinitionQuery.data.name}`}
         breadcrumbs={breadcrumbs}
       />
       <ListEditor
         key={listId}
-        mode="edit"
         disableNameField
         initialValue={initialValue}
         onSubmit={handleSubmit}
@@ -260,7 +250,7 @@ const EditListPage = () => {
         isSubmitting={updateListMutation.isPending}
         submitLabel="Save changes"
       />
-    </Stack>
+    </EditorPageLayout>
   );
 };
 

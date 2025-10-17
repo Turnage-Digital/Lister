@@ -1,9 +1,7 @@
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 
-import { ContentPaste, Save } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Box, Divider, Stack } from "@mui/material";
+import { ContentPaste } from "@mui/icons-material";
 import {
   useMutation,
   useQueryClient,
@@ -12,7 +10,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  FormBlock,
+  EditorPageLayout,
   ListItemEditor,
   SmartPasteDialog,
   Titlebar,
@@ -127,60 +125,30 @@ const CreateListItemPage = () => {
     },
   ];
 
+  const isSubmitting = createItemMutation.isPending;
+
   return (
-    <Stack
-      component="form"
-      divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
-      onSubmit={handleSubmit}
-      sx={{
-        maxWidth: 1180,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
-      <Titlebar
-        title="Create an Item"
-        actions={actions}
-        breadcrumbs={breadcrumbs}
-      />
-
-      <FormBlock
-        title="Item details"
-        subtitle="Enter values for each column and pick the current status."
-        content={
-          <ListItemEditor
-            definition={definition}
-            bag={formState.bag}
-            onBagChange={handleBagChange}
-          />
-        }
-      />
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" },
-        }}
-      >
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          startIcon={<Save />}
-          loading={createItemMutation.isPending}
-          sx={{ width: { xs: "100%", md: "auto" } }}
-        >
-          Save changes
-        </LoadingButton>
-      </Box>
+    <>
+      <EditorPageLayout>
+        <Titlebar
+          title="Create an Item"
+          actions={actions}
+          breadcrumbs={breadcrumbs}
+        />
+        <ListItemEditor
+          definition={definition}
+          bag={formState.bag}
+          onBagChange={handleBagChange}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      </EditorPageLayout>
       <SmartPasteDialog
         open={smartPasteOpen}
         onClose={() => setSmartPasteOpen(false)}
         onPaste={handlePaste}
       />
-    </Stack>
+    </>
   );
 };
 
