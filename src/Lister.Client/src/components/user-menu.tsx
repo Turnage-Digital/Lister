@@ -57,7 +57,7 @@ const UserMenu = () => {
   return (
     <>
       <Tooltip title="Account">
-        <IconButton onClick={handleUserMenuClick}>
+        <IconButton color="primary" onClick={handleUserMenuClick}>
           <AccountCircleIcon />
         </IconButton>
       </Tooltip>

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Link, Stack, Typography } from "@mui/material";
+import { Button, Link, Stack, Typography } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { AuthPageLayout, ForgotPasswordForm } from "../components";
@@ -25,25 +25,20 @@ const ForgotPasswordPage = () => {
       <Typography variant="h5" align="center" gutterBottom>
         Check your inbox
       </Typography>
+
       <Typography variant="body2" color="text.secondary" align="center">
         We sent a password reset link to the address on file. Follow the
         instructions in that email to finish resetting your password.
       </Typography>
-      <Link
-        component="button"
-        type="button"
+
+      <Button
+        variant="contained"
+        size="large"
+        fullWidth
         onClick={handleNavigateToSignIn}
-        sx={{
-          textDecoration: "none",
-          transition: "color 0.2s ease-in-out",
-          display: "inline",
-          "&:hover": {
-            textDecoration: "underline",
-          },
-        }}
       >
-        Click here to return to sign in
-      </Link>
+        Return to sign in
+      </Button>
     </Stack>
   ) : (
     <>
