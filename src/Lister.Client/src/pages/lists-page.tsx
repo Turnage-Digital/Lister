@@ -9,7 +9,6 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
-  Stack,
 } from "@mui/material";
 import {
   useMutation,
@@ -18,7 +17,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { ListCard, Titlebar } from "../components";
+import { DisplayPageLayout, ListCard, Titlebar } from "../components";
 import { ListName } from "../models";
 import { listNamesQueryOptions } from "../query-options";
 
@@ -76,16 +75,7 @@ const ListsPage = () => {
   ];
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1400,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 8 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <DisplayPageLayout>
       <Titlebar title="Lists" actions={actions} />
 
       <Grid container spacing={3}>
@@ -118,7 +108,7 @@ const ListsPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Stack>
+    </DisplayPageLayout>
   );
 };
 

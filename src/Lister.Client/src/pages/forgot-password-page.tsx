@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Link, Stack, Typography } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { AuthPageLayout, ForgotPasswordForm } from "../components";
@@ -9,34 +9,47 @@ const ForgotPasswordPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(
-    null,
-  );
+  const [successEmail, setSuccessEmail] = React.useState<string | null>(null);
 
-  const handleBackToSignIn = () => {
+  const handleNavigateToSignIn = () => {
     const query = searchParams.toString();
     navigate(query ? `/sign-in?${query}` : "/sign-in");
   };
 
   const handleSubmitStart = () => {
-    setSuccessMessage(null);
+    setSuccessEmail(null);
   };
 
-  const continueButton = successMessage ? (
-    <Button variant="contained" onClick={handleBackToSignIn} fullWidth>
-      Continue
-    </Button>
-  ) : null;
-
-  const successAlert = successMessage ? (
-    <Alert severity="success">{successMessage}</Alert>
-  ) : null;
-
-  return (
-    <AuthPageLayout>
-      <Stack spacing={2}>
+  const content = successEmail ? (
+    <Stack spacing={2} alignItems="center">
+      <Typography variant="h5" align="center" gutterBottom>
+        Check your inbox
+      </Typography>
+      <Typography variant="body2" color="text.secondary" align="center">
+        We sent a password reset link to the address on file. Follow the
+        instructions in that email to finish resetting your password.
+      </Typography>
+      <Link
+        component="button"
+        type="button"
+        onClick={handleNavigateToSignIn}
+        sx={{
+          textDecoration: "none",
+          transition: "color 0.2s ease-in-out",
+          display: "inline",
+          "&:hover": {
+            textDecoration: "underline",
+          },
+        }}
+      >
+        Click here to return to sign in
+      </Link>
+    </Stack>
+  ) : (
+    <>
+      <Stack spacing={2} alignItems="center">
         <Typography variant="h5" align="center" gutterBottom>
-          Reset password
+          Forgot password
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center">
           Enter your account&apos;s email address and we&apos;ll send you a
@@ -46,19 +59,36 @@ const ForgotPasswordPage = () => {
 
       <ForgotPasswordForm
         onSubmitStart={handleSubmitStart}
-        onSuccess={(message) => setSuccessMessage(message)}
+        onSuccess={(email) => setSuccessEmail(email)}
       />
 
-      {successAlert}
-
-      <Stack spacing={2} alignItems="center">
-        <Button onClick={handleBackToSignIn} fullWidth>
-          Back to sign in
-        </Button>
-        {continueButton}
-      </Stack>
-    </AuthPageLayout>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        align="center"
+        component="div"
+      >
+        Remembered your password?{" "}
+        <Link
+          component="button"
+          type="button"
+          onClick={handleNavigateToSignIn}
+          sx={{
+            textDecoration: "none",
+            transition: "color 0.2s ease-in-out",
+            display: "inline",
+            "&:hover": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+          Sign in
+        </Link>
+      </Typography>
+    </>
   );
+
+  return <AuthPageLayout>{content}</AuthPageLayout>;
 };
 
 export default ForgotPasswordPage;

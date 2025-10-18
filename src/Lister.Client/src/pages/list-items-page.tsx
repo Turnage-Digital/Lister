@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Stack,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -21,6 +20,7 @@ import {
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
+  DisplayPageLayout,
   ItemsDesktopView,
   ItemsMobileView,
   ListHistoryDrawer,
@@ -244,16 +244,7 @@ const ListItemsPage = () => {
   );
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1400,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 8 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <DisplayPageLayout>
       <Titlebar
         title={listItemDefinitionQuery.data.name}
         actions={actions}
@@ -282,7 +273,7 @@ const ListItemsPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Stack>
+    </DisplayPageLayout>
   );
 };
 

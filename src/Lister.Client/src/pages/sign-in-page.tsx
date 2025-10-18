@@ -33,7 +33,7 @@ const SignInPage = () => {
 
       <SignInForm onSignedIn={handleSignedIn} />
 
-      <Stack spacing={2} alignItems="center">
+      <Stack spacing={2}>
         <Link
           component="button"
           type="button"

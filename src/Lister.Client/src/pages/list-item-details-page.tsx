@@ -1,13 +1,14 @@
 import * as React from "react";
 
 import { History } from "@mui/icons-material";
-import { Grid, Stack } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
   ItemCard,
   ItemHistoryDrawer,
+  DisplayPageLayout,
   Titlebar,
   useSideDrawer,
 } from "../components";
@@ -61,16 +62,7 @@ const ListItemDetailsPage = () => {
   ];
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1180,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <DisplayPageLayout>
       <Titlebar
         title={`ID ${itemQuery.data.id}`}
         breadcrumbs={breadcrumbs}
@@ -91,7 +83,7 @@ const ListItemDetailsPage = () => {
           />
         </Grid>
       </Grid>
-    </Stack>
+    </DisplayPageLayout>
   );
 };
 

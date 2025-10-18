@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Alert, Typography } from "@mui/material";
+import { Alert, Link, Stack, Typography } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { AuthPageLayout, ResetPasswordForm } from "../components";
@@ -25,6 +25,10 @@ const ResetPasswordPage = () => {
     navigate("/sign-in");
   };
 
+  const handleNavigateToSignIn = () => {
+    navigate("/sign-in");
+  };
+
   const formContent =
     email && resetCode ? (
       <ResetPasswordForm
@@ -36,13 +40,44 @@ const ResetPasswordPage = () => {
 
   return (
     <AuthPageLayout>
-      <Typography variant="h5" align="center" gutterBottom>
-        Reset Password
-      </Typography>
+      <Stack spacing={2} alignItems="center">
+        <Typography variant="h5" align="center" gutterBottom>
+          Reset Password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" align="center">
+          Choose a new password to get back into your account.
+        </Typography>
+      </Stack>
 
       {formContent}
 
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
+      <Stack spacing={2} alignItems="center">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          component="div"
+        >
+          Already have an account?{" "}
+          <Link
+            component="button"
+            type="button"
+            onClick={handleNavigateToSignIn}
+            sx={{
+              textDecoration: "none",
+              transition: "color 0.2s ease-in-out",
+              display: "inline",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            Sign in
+          </Link>
+        </Typography>
+      </Stack>
     </AuthPageLayout>
   );
 };

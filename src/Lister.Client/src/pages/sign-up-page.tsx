@@ -28,7 +28,7 @@ const SignUpPage = () => {
 
       <SignUpForm onSignedUp={handleSignedUp} />
 
-      <Stack spacing={2} alignItems="center">
+      <Stack spacing={2}>
         <Typography
           variant="body2"
           color="text.secondary"

@@ -125,8 +125,6 @@ const CreateListItemPage = () => {
     },
   ];
 
-  const isSubmitting = createItemMutation.isPending;
-
   return (
     <>
       <EditorPageLayout>
@@ -140,7 +138,7 @@ const CreateListItemPage = () => {
           bag={formState.bag}
           onBagChange={handleBagChange}
           onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
+          isSubmitting={createItemMutation.isPending}
         />
       </EditorPageLayout>
       <SmartPasteDialog

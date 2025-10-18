@@ -4,7 +4,7 @@ import { Alert, Button, Stack, TextField } from "@mui/material";
 
 interface ForgotPasswordFormProps {
   onSubmitStart?: () => void;
-  onSuccess: (message: string) => void;
+  onSuccess: (email: string) => void;
 }
 
 const ForgotPasswordForm = ({
@@ -19,6 +19,7 @@ const ForgotPasswordForm = ({
   const [formErrorMessage, setFormErrorMessage] = React.useState<string | null>(
     null,
   );
+  const [submittedEmail, setSubmittedEmail] = React.useState<string>("");
 
   const validateInputs = () => {
     if (email && /\S+@\S+\.\S+/.test(email)) {
@@ -41,6 +42,7 @@ const ForgotPasswordForm = ({
     try {
       setFormErrorMessage(null);
       setLoading(true);
+      setSubmittedEmail(email);
 
       const response = await fetch("/identity/forgotPassword", {
         method: "POST",
