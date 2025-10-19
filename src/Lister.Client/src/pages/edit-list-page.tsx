@@ -112,6 +112,8 @@ const EditListPage = () => {
     notificationRulesQueryOptions(listId),
   );
 
+  const definition = listDefinitionQuery.data;
+
   const initialValue = React.useMemo<ListEditorInitialValue>(() => {
     const definition = listDefinitionQuery.data;
     const rules = notificationRulesQuery.data.map(toNotificationRuleFormValue);
@@ -209,23 +211,17 @@ const EditListPage = () => {
           queryKey: ["list-names"],
         }),
       ]);
-      navigate(`/${listId}?page=0&pageSize=10`);
+      handleNavigateToList();
     },
   });
 
-  const breadcrumbs = React.useMemo(
-    () => [
-      {
-        title: "Lists",
-        onClick: () => navigate("/"),
-      },
-      {
-        title: listDefinitionQuery.data.name,
-        onClick: () => navigate(`/${listId}?page=0&pageSize=10`),
-      },
-    ],
-    [listDefinitionQuery.data.name, listId, navigate],
-  );
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}?page=0&pageSize=10`);
+  };
 
   const handleSubmit = async (result: ListEditorSubmitResult) => {
     await updateListMutation.mutateAsync(result);
@@ -235,12 +231,20 @@ const EditListPage = () => {
     navigate(-1);
   };
 
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: handleNavigateToLists,
+    },
+    {
+      title: definition.name,
+      onClick: handleNavigateToList,
+    },
+  ];
+
   return (
     <EditorPageLayout>
-      <Titlebar
-        title={`Edit ${listDefinitionQuery.data.name}`}
-        breadcrumbs={breadcrumbs}
-      />
+      <Titlebar title={`Edit ${definition.name}`} breadcrumbs={breadcrumbs} />
       <ListEditor
         key={listId}
         disableNameField
@@ -248,7 +252,6 @@ const EditListPage = () => {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={updateListMutation.isPending}
-        submitLabel="Save changes"
       />
     </EditorPageLayout>
   );

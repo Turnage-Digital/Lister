@@ -16,7 +16,6 @@ const FormBlock = ({ title, subtitle, content }: Props) => {
       columnSpacing={{ xs: 5, md: 8 }}
       rowSpacing={{ xs: 4.5, md: 5.5 }}
       alignItems="flex-start"
-      sx={{ px: { xs: 2, md: 3.5 } }}
     >
       <Grid size={{ xs: 12, md: 4 }}>
         <Stack spacing={1.5} sx={{ pb: { xs: 2, md: 1 } }}>

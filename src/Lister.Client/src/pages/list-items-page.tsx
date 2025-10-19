@@ -89,6 +89,8 @@ const ListItemsPage = () => {
     pagedItemsQueryOptions(search, listId),
   );
 
+  const definition = listItemDefinitionQuery.data;
+
   const deleteItemMutation = useMutation({
     mutationFn: async ({
       listId: currentListId,
@@ -103,7 +105,13 @@ const ListItemsPage = () => {
           method: "DELETE",
         },
       );
-      await fetch(request);
+      const response = await fetch(request);
+      if (!response.ok) {
+        const message = await response
+          .text()
+          .catch(() => "Failed to delete item");
+        throw new Error(message);
+      }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -173,12 +181,18 @@ const ListItemsPage = () => {
     );
   };
 
-  if (!listItemDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
-    return null;
-  }
+  const handleCreateItem = () => {
+    navigate(`/${listId}/create`);
+  };
 
-  const definition = listItemDefinitionQuery.data;
+  const handleShowHistory = () => {
+    openDrawer("List history", <ListHistoryDrawer listId={listId} />);
+  };
 
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+  
   const paginationModel: GridPaginationModel = {
     page: search.page,
     pageSize: search.pageSize,
@@ -198,22 +212,21 @@ const ListItemsPage = () => {
     {
       title: "Create an Item",
       icon: <AddCircle />,
-      onClick: () => navigate(`/${listId}/create`),
+      onClick: handleCreateItem,
     },
     {
       title: "Show history",
       icon: <History />,
       variant: "outlined" as const,
       color: "secondary" as const,
-      onClick: () =>
-        openDrawer("List history", <ListHistoryDrawer listId={listId} />),
+      onClick: handleShowHistory,
     },
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate(`/`),
+      onClick: handleNavigateToLists,
     },
   ];
 

@@ -40,7 +40,6 @@ interface Props {
   initialValue: ListEditorInitialValue;
   onSubmit: (result: ListEditorSubmitResult) => Promise<void> | void;
   isSubmitting?: boolean;
-  submitLabel?: string;
   onCancel?: () => void;
   disableNameField?: boolean;
 }
@@ -104,7 +103,6 @@ const ListEditor = ({
   initialValue,
   onSubmit,
   isSubmitting,
-  submitLabel = "Save changes",
   onCancel,
   disableNameField = false,
 }: Props) => {
@@ -310,7 +308,7 @@ const ListEditor = ({
           startIcon={<Save />}
           disabled={isSubmitting}
         >
-          {submitLabel}
+          Submit
         </Button>
       </Box>
     </Stack>

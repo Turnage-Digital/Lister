@@ -29,24 +29,6 @@ const CreateListItemPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const createItemMutation = useMutation({
-    mutationFn: async (item: ListItem) => {
-      const request = new Request(`/api/lists/${listId}/items`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ bag: item.bag }),
-      });
-      const response = await fetch(request);
-      const retval: ListItem = await response.json();
-      return retval;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries();
-    },
-  });
-
   const listItemDefinitionQuery = useSuspenseQuery(
     listItemDefinitionQueryOptions(listId),
   );
@@ -72,8 +54,42 @@ const CreateListItemPage = () => {
     });
   }, [initialStatus, listId, definition.id]);
 
+  const createItemMutation = useMutation({
+    mutationFn: async (item: ListItem) => {
+      const request = new Request(`/api/lists/${listId}/items`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ bag: item.bag }),
+      });
+      const response = await fetch(request);
+      const retval: ListItem = await response.json();
+      return retval;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
+
   const handleBagChange = (nextBag: Record<string, unknown>) => {
     setFormState((prev) => ({ ...prev, bag: nextBag }));
+  };
+
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}`);
+  };
+
+  const handleOpenSmartPaste = () => {
+    setSmartPasteOpen(true);
+  };
+
+  const handleCloseSmartPaste = () => {
+    setSmartPasteOpen(false);
   };
 
   const handlePaste = async (text: string) => {
@@ -94,7 +110,7 @@ const CreateListItemPage = () => {
     const json: ListItem = await response.json();
 
     setFormState((prev) => ({ ...prev, bag: { ...prev.bag, ...json.bag } }));
-    setSmartPasteOpen(false);
+    handleCloseSmartPaste();
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -110,18 +126,18 @@ const CreateListItemPage = () => {
     {
       title: "Smart Paste",
       icon: <ContentPaste />,
-      onClick: () => setSmartPasteOpen(true),
+      onClick: handleOpenSmartPaste,
     },
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate(`/`),
+      onClick: handleNavigateToLists,
     },
     {
       title: listItemDefinitionQuery.data.name,
-      onClick: () => navigate(`/${listId}`),
+      onClick: handleNavigateToList,
     },
   ];
 
@@ -143,7 +159,7 @@ const CreateListItemPage = () => {
       </EditorPageLayout>
       <SmartPasteDialog
         open={smartPasteOpen}
-        onClose={() => setSmartPasteOpen(false)}
+        onClose={handleCloseSmartPaste}
         onPaste={handlePaste}
       />
     </>

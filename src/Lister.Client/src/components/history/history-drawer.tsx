@@ -45,11 +45,7 @@ interface HistoryDrawerProps {
 }
 
 const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
-  const infiniteQuery = query;
-
-  const infiniteData = infiniteQuery.data as
-    | InfiniteData<HistoryPage>
-    | undefined;
+  const infiniteData = query.data as InfiniteData<HistoryPage> | undefined;
 
   const pages = React.useMemo<HistoryPage[]>(() => {
     if (!infiniteData) {
@@ -63,19 +59,17 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
     [pages],
   );
 
-  const hasEntries = entries.length > 0;
-
-  const loadMoreIcon = infiniteQuery.isFetchingNextPage ? (
+  const loadMoreIcon = query.isFetchingNextPage ? (
     <CircularProgress size={16} />
   ) : undefined;
 
-  const loadMoreNode = infiniteQuery.hasNextPage ? (
+  const loadMoreNode = query.hasNextPage ? (
     <Button
       variant="outlined"
       size="small"
-      onClick={() => infiniteQuery.fetchNextPage()}
+      onClick={() => query.fetchNextPage()}
       endIcon={loadMoreIcon}
-      disabled={infiniteQuery.isFetchingNextPage}
+      disabled={query.isFetchingNextPage}
     >
       Load more
     </Button>
@@ -91,45 +85,46 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
     </Typography>
   ) : null;
 
-  const listContent = hasEntries ? (
-    <List disablePadding sx={{ flex: 1 }}>
-      {entries.map((entry) => {
-        const entryKey = `${entry.on}-${entry.type}-${entry.by ?? "unknown"}`;
-        const byLine = entry.by ? (
-          <Typography variant="caption" color="text.secondary">
-            {entry.by}
-          </Typography>
-        ) : null;
+  const listContent =
+    entries.length > 0 ? (
+      <List disablePadding sx={{ flex: 1 }}>
+        {entries.map((entry) => {
+          const entryKey = `${entry.on}-${entry.type}-${entry.by ?? "unknown"}`;
+          const byLine = entry.by ? (
+            <Typography variant="caption" color="text.secondary">
+              {entry.by}
+            </Typography>
+          ) : null;
 
-        return (
-          <ListItem key={entryKey} alignItems="flex-start">
-            <ListItemAvatar>
-              <Tooltip title={String(entry.type)}>
-                <RestoreIcon color="action" />
-              </Tooltip>
-            </ListItemAvatar>
-            <ListItemText
-              primary={formatTimestamp(entry.on)}
-              secondary={
-                <>
-                  <Typography variant="body2" color="text.primary">
-                    {entry.type}
-                  </Typography>
-                  {byLine}
-                </>
-              }
-            />
-          </ListItem>
-        );
-      })}
-    </List>
-  ) : (
-    <Box sx={{ py: 8, textAlign: "center" }}>
-      <Typography variant="body2" color="text.secondary">
-        No history entries yet.
-      </Typography>
-    </Box>
-  );
+          return (
+            <ListItem key={entryKey} alignItems="flex-start">
+              <ListItemAvatar>
+                <Tooltip title={String(entry.type)}>
+                  <RestoreIcon color="action" />
+                </Tooltip>
+              </ListItemAvatar>
+              <ListItemText
+                primary={formatTimestamp(entry.on)}
+                secondary={
+                  <>
+                    <Typography variant="body2" color="text.primary">
+                      {entry.type}
+                    </Typography>
+                    {byLine}
+                  </>
+                }
+              />
+            </ListItem>
+          );
+        })}
+      </List>
+    ) : (
+      <Box sx={{ py: 8, textAlign: "center" }}>
+        <Typography variant="body2" color="text.secondary">
+          No history entries yet.
+        </Typography>
+      </Box>
+    );
 
   return (
     <SideDrawerContainer>
@@ -163,7 +158,7 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
           sx={{
             display: "flex",
             width: "100%",
-            justifyContent: infiniteQuery.hasNextPage ? "flex-end" : "center",
+            justifyContent: query.hasNextPage ? "flex-end" : "center",
           }}
         >
           {loadMoreNode}

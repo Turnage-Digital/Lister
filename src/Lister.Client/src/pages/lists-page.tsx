@@ -35,7 +35,13 @@ const ListsPage = () => {
       const request = new Request(`/api/lists/${listId}`, {
         method: "DELETE",
       });
-      await fetch(request);
+      const response = await fetch(request);
+      if (!response.ok) {
+        const message = await response
+          .text()
+          .catch(() => "Failed to delete list");
+        throw new Error(message);
+      }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -62,15 +68,16 @@ const ListsPage = () => {
   };
 
   const listNamesQuery = useSuspenseQuery(listNamesQueryOptions());
-  if (!listNamesQuery.isSuccess) {
-    return null;
-  }
+
+  const handleCreateList = () => {
+    navigate("/create");
+  };
 
   const actions = [
     {
       title: "Create a List",
       icon: <PlaylistAdd />,
-      onClick: () => navigate("/create"),
+      onClick: handleCreateList,
     },
   ];
 

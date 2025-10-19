@@ -69,9 +69,21 @@ const EditListItemPage = () => {
           queryKey: ["list-item", listId, Number(itemId)],
         }),
       ]);
-      navigate(`/${listId}/${itemId}`);
+      handleNavigateToItemDetails();
     },
   });
+
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}`);
+  };
+
+  const handleNavigateToItemDetails = () => {
+    navigate(`/${listId}/${itemId}`);
+  };
 
   const handleBagChange = (nextBag: Record<string, unknown>) => {
     setFormState((prev) => ({ ...prev, bag: nextBag }));
@@ -89,15 +101,15 @@ const EditListItemPage = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate("/"),
+      onClick: handleNavigateToLists,
     },
     {
       title: definition.name,
-      onClick: () => navigate(`/${listId}`),
+      onClick: handleNavigateToList,
     },
     {
       title: `ID ${item.id}`,
-      onClick: () => navigate(`/${listId}/${item.id}`),
+      onClick: handleNavigateToItemDetails,
     },
   ];
 

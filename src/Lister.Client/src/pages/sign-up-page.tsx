@@ -13,6 +13,11 @@ const SignUpPage = () => {
   const queryClient = useQueryClient();
   const auth = useAuth();
 
+  const handleNavigateToSignIn = () => {
+    const searchString = searchParams.toString();
+    navigate(searchString ? `/sign-in?${searchString}` : "/sign-in");
+  };
+
   const handleSignedUp = async (email: string) => {
     auth.login(email);
     await queryClient.invalidateQueries();
@@ -39,10 +44,7 @@ const SignUpPage = () => {
           <Link
             component="button"
             type="button"
-            onClick={() => {
-              const searchString = searchParams.toString();
-              navigate(searchString ? `/sign-in?${searchString}` : "/sign-in");
-            }}
+            onClick={handleNavigateToSignIn}
             sx={{
               textDecoration: "none",
               transition: "color 0.2s ease-in-out",

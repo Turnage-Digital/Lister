@@ -211,7 +211,6 @@ interface ListItemEditorProps {
   onBagChange: (next: Record<string, unknown>) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void> | void;
   isSubmitting?: boolean;
-  submitLabel?: string;
   onCancel?: () => void;
 }
 
@@ -221,7 +220,6 @@ export const ListItemEditor = ({
   onBagChange,
   onSubmit,
   isSubmitting,
-  submitLabel = "Save changes",
   onCancel,
 }: ListItemEditorProps) => {
   const handleStatusChange = React.useCallback(
@@ -293,7 +291,7 @@ export const ListItemEditor = ({
           disabled={isSubmitting}
           sx={{ width: { xs: "100%", md: "auto" } }}
         >
-          {submitLabel}
+          Submit
         </Button>
       </Box>
     </Stack>

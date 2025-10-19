@@ -20,6 +20,10 @@ const ForgotPasswordPage = () => {
     setSuccessEmail(null);
   };
 
+  const handleSubmitSuccess = (email: string) => {
+    setSuccessEmail(email);
+  };
+
   const content = successEmail ? (
     <Stack spacing={2} alignItems="center">
       <Typography variant="h5" align="center" gutterBottom>
@@ -54,7 +58,7 @@ const ForgotPasswordPage = () => {
 
       <ForgotPasswordForm
         onSubmitStart={handleSubmitStart}
-        onSuccess={(email) => setSuccessEmail(email)}
+        onSuccess={handleSubmitSuccess}
       />
 
       <Typography

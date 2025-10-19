@@ -6,9 +6,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
+  DisplayPageLayout,
   ItemCard,
   ItemHistoryDrawer,
-  DisplayPageLayout,
   Titlebar,
   useSideDrawer,
 } from "../components";
@@ -32,18 +32,40 @@ const ListItemDetailsPage = () => {
 
   const itemQuery = useSuspenseQuery(itemQueryOptions(listId, Number(itemId)));
 
-  if (!listItemDefinitionQuery.isSuccess || !itemQuery.isSuccess) {
-    return null;
-  }
+  const definition = listItemDefinitionQuery.data;
+  const item = itemQuery.data;
+
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}`);
+  };
+
+  const handleShowHistory = () => {
+    openDrawer(
+      "Item history",
+      <ItemHistoryDrawer listId={listId} itemId={Number(itemId)} />,
+    );
+  };
+
+  const handleEditItem = (currentListId: string, currentItemId: number) => {
+    navigate(`/${currentListId}/${currentItemId}/edit`);
+  };
+
+  const handleViewItem = (currentListId: string, currentItemId: number) => {
+    navigate(`/${currentListId}/${currentItemId}`);
+  };
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate(`/`),
+      onClick: handleNavigateToLists,
     },
     {
-      title: listItemDefinitionQuery.data.name || "",
-      onClick: () => navigate(`/${listId}`),
+      title: definition.name || "",
+      onClick: handleNavigateToList,
     },
   ];
 
@@ -53,18 +75,14 @@ const ListItemDetailsPage = () => {
       icon: <History />,
       variant: "outlined" as const,
       color: "secondary" as const,
-      onClick: () =>
-        openDrawer(
-          "Item history",
-          <ItemHistoryDrawer listId={listId} itemId={Number(itemId)} />,
-        ),
+      onClick: handleShowHistory,
     },
   ];
 
   return (
     <DisplayPageLayout>
       <Titlebar
-        title={`ID ${itemQuery.data.id}`}
+        title={`ID ${item.id}`}
         breadcrumbs={breadcrumbs}
         actions={actions}
       />
@@ -72,14 +90,10 @@ const ListItemDetailsPage = () => {
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 6 }}>
           <ItemCard
-            item={itemQuery.data}
-            definition={listItemDefinitionQuery.data}
-            onEditItem={(currentListId, currentItemId) =>
-              navigate(`/${currentListId}/${currentItemId}/edit`)
-            }
-            onViewItem={(currentListId, currentItemId) =>
-              navigate(`/${currentListId}/${currentItemId}`)
-            }
+            item={item}
+            definition={definition}
+            onEditItem={handleEditItem}
+            onViewItem={handleViewItem}
           />
         </Grid>
       </Grid>

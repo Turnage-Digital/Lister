@@ -18,6 +18,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Stack,
   Tooltip,
   Typography,
   useTheme,
@@ -130,7 +131,7 @@ const ItemCard = ({
         flexDirection: "column",
         gap: 3,
         p: 3,
-        minHeight: 240,
+        minHeight: 220,
         borderColor: alpha(theme.palette.primary.main, 0.12),
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
@@ -139,12 +140,11 @@ const ItemCard = ({
         },
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-        }}
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        spacing={2}
       >
         <Box
           sx={{
@@ -161,7 +161,7 @@ const ItemCard = ({
           <Receipt sx={{ fontSize: 22 }} />
         </Box>
         {statusChipNode}
-      </Box>
+      </Stack>
 
       <Typography variant="h6" component="div">
         ID {item.id}

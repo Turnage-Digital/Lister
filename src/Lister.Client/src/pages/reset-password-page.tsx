@@ -21,10 +21,6 @@ const ResetPasswordPage = () => {
     }
   }, [email, resetCode]);
 
-  const handlePasswordReset = () => {
-    navigate("/sign-in");
-  };
-
   const handleNavigateToSignIn = () => {
     navigate("/sign-in");
   };
@@ -34,7 +30,7 @@ const ResetPasswordPage = () => {
       <ResetPasswordForm
         email={email}
         resetCode={resetCode}
-        onPasswordReset={handlePasswordReset}
+        onPasswordReset={handleNavigateToSignIn}
       />
     ) : null;
 

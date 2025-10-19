@@ -107,19 +107,20 @@ const CreateListPage = () => {
     },
   });
 
-  const breadcrumbs = React.useMemo(
-    () => [
-      {
-        title: "Lists",
-        onClick: () => navigate("/"),
-      },
-    ],
-    [navigate],
-  );
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
 
   const handleSubmit = async (result: ListEditorSubmitResult) => {
     await createListMutation.mutateAsync(result);
   };
+
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: handleNavigateToLists,
+    },
+  ];
 
   return (
     <EditorPageLayout>
