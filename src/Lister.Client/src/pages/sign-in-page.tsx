@@ -43,13 +43,6 @@ const SignInPage = () => {
           component="button"
           type="button"
           onClick={handleForgotPasswordClick}
-          sx={{
-            textDecoration: "none",
-            transition: "color 0.2s ease-in-out",
-            "&:hover": {
-              textDecoration: "underline",
-            },
-          }}
         >
           Forgot your password?
         </Link>
@@ -65,14 +58,6 @@ const SignInPage = () => {
             component="button"
             type="button"
             onClick={handleNavigateToSignUp}
-            sx={{
-              textDecoration: "none",
-              transition: "color 0.2s ease-in-out",
-              display: "inline",
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            }}
           >
             Sign up
           </Link>

@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { History } from "@mui/icons-material";
-import { Grid } from "@mui/material";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -87,16 +86,12 @@ const ListItemDetailsPage = () => {
         actions={actions}
       />
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <ItemCard
-            item={item}
-            definition={definition}
-            onEditItem={handleEditItem}
-            onViewItem={handleViewItem}
-          />
-        </Grid>
-      </Grid>
+      <ItemCard
+        item={item}
+        definition={definition}
+        onEditItem={handleEditItem}
+        onViewItem={handleViewItem}
+      />
     </DisplayPageLayout>
   );
 };

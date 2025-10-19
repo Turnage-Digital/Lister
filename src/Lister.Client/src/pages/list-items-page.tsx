@@ -1,16 +1,7 @@
 import * as React from "react";
 
 import { AddCircle, History } from "@mui/icons-material";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import {
   useMutation,
@@ -21,6 +12,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   DisplayPageLayout,
+  ConfirmDeleteDialog,
   ItemsDesktopView,
   ItemsMobileView,
   ListHistoryDrawer,
@@ -192,7 +184,7 @@ const ListItemsPage = () => {
   const handleNavigateToLists = () => {
     navigate("/");
   };
-  
+
   const paginationModel: GridPaginationModel = {
     page: search.page,
     pageSize: search.pageSize,
@@ -264,28 +256,14 @@ const ListItemsPage = () => {
         breadcrumbs={breadcrumbs}
       />
       {itemsView}
-      <Dialog
+      <ConfirmDeleteDialog
         open={Boolean(itemToDelete)}
-        onClose={handleCancelDeleteItem}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete item</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{deleteItemDialogMessage}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDeleteItem}>Cancel</Button>
-          <Button
-            onClick={handleConfirmDeleteItem}
-            color="error"
-            variant="contained"
-            disabled={deleteItemMutation.isPending}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        title="Delete item"
+        description={deleteItemDialogMessage}
+        confirmDisabled={deleteItemMutation.isPending}
+        onCancel={handleCancelDeleteItem}
+        onConfirm={handleConfirmDeleteItem}
+      />
     </DisplayPageLayout>
   );
 };

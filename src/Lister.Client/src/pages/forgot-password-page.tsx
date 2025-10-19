@@ -68,19 +68,7 @@ const ForgotPasswordPage = () => {
         component="div"
       >
         Remembered your password?{" "}
-        <Link
-          component="button"
-          type="button"
-          onClick={handleNavigateToSignIn}
-          sx={{
-            textDecoration: "none",
-            transition: "color 0.2s ease-in-out",
-            display: "inline",
-            "&:hover": {
-              textDecoration: "underline",
-            },
-          }}
-        >
+        <Link component="button" type="button" onClick={handleNavigateToSignIn}>
           Sign in
         </Link>
       </Typography>

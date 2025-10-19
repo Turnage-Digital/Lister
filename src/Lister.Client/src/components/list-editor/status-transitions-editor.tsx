@@ -11,7 +11,7 @@ import {
 
 import { Status, StatusTransition } from "../../models";
 
-interface Props {
+interface StatusTransitionsEditorProps {
   statuses: Status[];
   transitions: StatusTransition[];
   onChange: (next: StatusTransition[]) => void;
@@ -21,7 +21,7 @@ const StatusTransitionsEditor = ({
   statuses,
   transitions,
   onChange,
-}: Props) => {
+}: StatusTransitionsEditorProps) => {
   const statusNames = React.useMemo(
     () => statuses.map((status) => status.name),
     [statuses],
@@ -80,7 +80,6 @@ const StatusTransitionsEditor = ({
                 <TextField
                   {...params}
                   placeholder="Select allowed next statuses"
-                  size="small"
                   InputProps={{
                     ...params.InputProps,
                     sx: {

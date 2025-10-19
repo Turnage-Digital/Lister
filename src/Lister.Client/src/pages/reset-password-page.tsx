@@ -13,7 +13,7 @@ const ResetPasswordPage = () => {
   const email = searchParams.get("email") ?? undefined;
   const resetCode = searchParams.get("code") ?? undefined;
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!email || !resetCode) {
       setErrorMessage(
         "Invalid reset link. Please request a new password reset.",
@@ -61,14 +61,6 @@ const ResetPasswordPage = () => {
             component="button"
             type="button"
             onClick={handleNavigateToSignIn}
-            sx={{
-              textDecoration: "none",
-              transition: "color 0.2s ease-in-out",
-              display: "inline",
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            }}
           >
             Sign in
           </Link>

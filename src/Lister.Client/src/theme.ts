@@ -368,6 +368,19 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: "none",
+          transition: "color 0.2s ease-in-out",
+          display: "inline",
+          "&:hover": {
+            textDecoration: "underline",
+          },
+        },
+      },
+    },
   },
 });
 

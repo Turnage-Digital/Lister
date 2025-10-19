@@ -131,7 +131,7 @@ const ItemCard = ({
         flexDirection: "column",
         gap: 3,
         p: 3,
-        minHeight: 220,
+        maxWidth: 500,
         borderColor: alpha(theme.palette.primary.main, 0.12),
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
@@ -239,7 +239,6 @@ const ItemCard = ({
         </Grid>
       </Box>
 
-      {/* Action buttons */}
       <CardActions
         className="card-actions"
         sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}

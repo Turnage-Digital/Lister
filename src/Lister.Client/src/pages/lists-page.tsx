@@ -1,15 +1,7 @@
 import * as React from "react";
 
 import { PlaylistAdd } from "@mui/icons-material";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-} from "@mui/material";
+import { Grid } from "@mui/material";
 import {
   useMutation,
   useQueryClient,
@@ -17,7 +9,12 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { DisplayPageLayout, ListCard, Titlebar } from "../components";
+import {
+  ConfirmDeleteDialog,
+  DisplayPageLayout,
+  ListCard,
+  Titlebar,
+} from "../components";
 import { ListName } from "../models";
 import { listNamesQueryOptions } from "../query-options";
 
@@ -25,6 +22,8 @@ const ListsPage = () => {
   const navigate = useNavigate();
   const [listToDelete, setListToDelete] = React.useState<ListName | null>(null);
   const queryClient = useQueryClient();
+
+  const listNamesQuery = useSuspenseQuery(listNamesQueryOptions());
 
   const deleteListDialogMessage = listToDelete
     ? `Are you sure you want to delete "${listToDelete.name}"? This action cannot be undone.`
@@ -67,8 +66,6 @@ const ListsPage = () => {
     setListToDelete(null);
   };
 
-  const listNamesQuery = useSuspenseQuery(listNamesQueryOptions());
-
   const handleCreateList = () => {
     navigate("/create");
   };
@@ -93,28 +90,14 @@ const ListsPage = () => {
         ))}
       </Grid>
 
-      <Dialog
+      <ConfirmDeleteDialog
         open={Boolean(listToDelete)}
-        onClose={handleCancelDelete}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete list</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{deleteListDialogMessage}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            disabled={deleteListMutation.isPending}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        title="Delete list"
+        description={deleteListDialogMessage}
+        confirmDisabled={deleteListMutation.isPending}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </DisplayPageLayout>
   );
 };
