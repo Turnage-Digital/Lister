@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Skeleton,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -44,6 +45,28 @@ interface HistoryDrawerProps {
   query: UseInfiniteQueryResult<HistoryPage>;
 }
 
+const HistoryListSkeleton = () => (
+  <List disablePadding sx={{ flex: 1 }}>
+    {Array.from({ length: 4 }).map((_, index) => (
+      <ListItem key={index} alignItems="flex-start">
+        <ListItemAvatar>
+          <Skeleton variant="circular" width={32} height={32} />
+        </ListItemAvatar>
+        <ListItemText
+          primary={<Skeleton variant="text" width="45%" />}
+          secondary={
+            <Box sx={{ mt: 1 }}>
+              <Skeleton variant="text" width="60%" />
+              <Skeleton variant="text" width="30%" />
+            </Box>
+          }
+          secondaryTypographyProps={{ component: "div" }}
+        />
+      </ListItem>
+    ))}
+  </List>
+);
+
 const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
   const infiniteData = query.data as InfiniteData<HistoryPage> | undefined;
 
@@ -59,11 +82,16 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
     [pages],
   );
 
+  const isInitialLoading =
+    query.isPending || (query.isFetching && entries.length === 0);
+
   const loadMoreIcon = query.isFetchingNextPage ? (
     <CircularProgress size={16} />
   ) : undefined;
 
-  const loadMoreNode = query.hasNextPage ? (
+  const loadMoreNode = isInitialLoading ? (
+    <CircularProgress size={20} />
+  ) : query.hasNextPage ? (
     <Button
       variant="outlined"
       size="small"
@@ -126,6 +154,11 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
       </Box>
     );
 
+  const contentNode = isInitialLoading ? <HistoryListSkeleton /> : listContent;
+
+  const footerJustify =
+    isInitialLoading || !query.hasNextPage ? "center" : "flex-end";
+
   return (
     <SideDrawerContainer>
       <SideDrawerHeader />
@@ -149,7 +182,7 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
               flexDirection: "column",
             }}
           >
-            {listContent}
+            {contentNode}
           </Box>
         </Box>
       </SideDrawerContent>
@@ -158,7 +191,7 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
           sx={{
             display: "flex",
             width: "100%",
-            justifyContent: query.hasNextPage ? "flex-end" : "center",
+            justifyContent: footerJustify,
           }}
         >
           {loadMoreNode}

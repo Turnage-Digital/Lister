@@ -14,6 +14,7 @@ import {
   List,
   ListItemButton,
   Stack,
+  Skeleton,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -89,6 +90,40 @@ const buildSearch = (filter: "all" | "unread"): NotificationsSearch => ({
   pageSize: PAGE_SIZE,
 });
 
+const NOTIFICATION_SKELETON_COUNT = 5;
+
+const NotificationListSkeleton = () => (
+  <List disablePadding sx={{ px: 2, py: 1 }}>
+    {Array.from({ length: NOTIFICATION_SKELETON_COUNT }).map((_, index) => (
+      <Box
+        key={index}
+        component="li"
+        sx={{
+          mb: 1,
+          borderRadius: 1,
+          px: 2,
+          py: 1.5,
+          border: (theme) => `1px solid ${theme.palette.divider}`,
+          backgroundColor: "background.paper",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 1.5,
+        }}
+      >
+        <Stack spacing={1} sx={{ flexGrow: 1 }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Skeleton variant="rounded" width={36} height={18} />
+            <Skeleton variant="text" width="50%" />
+            <Skeleton variant="text" width="18%" />
+          </Stack>
+          <Skeleton variant="text" width="95%" />
+        </Stack>
+        <Skeleton variant="circular" width={24} height={24} />
+      </Box>
+    ))}
+  </List>
+);
+
 const NotificationsDrawer = () => {
   const queryClient = useQueryClient();
   const { closeDrawer, openDrawer } = useSideDrawer();
@@ -129,6 +164,10 @@ const NotificationsDrawer = () => {
     const firstPage = pages.length > 0 ? pages[0] : undefined;
     return firstPage?.totalCount ?? notifications.length;
   }, [pages, notifications.length]);
+
+  const isInitialLoading =
+    infiniteQuery.isPending ||
+    (infiniteQuery.isFetching && notifications.length === 0);
 
   const invalidateNotifications = React.useCallback(() => {
     queryClient.invalidateQueries({
@@ -278,13 +317,17 @@ const NotificationsDrawer = () => {
     );
   });
 
-  let content: React.ReactNode = emptyState;
-  if (notifications.length > 0) {
+  let content: React.ReactNode;
+  if (isInitialLoading) {
+    content = <NotificationListSkeleton />;
+  } else if (notifications.length > 0) {
     content = (
       <List disablePadding sx={{ px: 2, py: 1 }}>
         {listItems}
       </List>
     );
+  } else {
+    content = emptyState;
   }
 
   const loadMoreLabel = infiniteQuery.hasNextPage
@@ -295,7 +338,29 @@ const NotificationsDrawer = () => {
     <CircularProgress size={16} />
   ) : undefined;
 
-  const loadMoreDisabled = !infiniteQuery.hasNextPage;
+  const loadMoreDisabled = isInitialLoading || !infiniteQuery.hasNextPage;
+
+  const footerContent = isInitialLoading ? (
+    <>
+      <Skeleton variant="text" width={200} />
+      <Skeleton variant="rounded" width={120} height={32} />
+    </>
+  ) : (
+    <>
+      <Typography variant="body2" color="text.secondary">
+        Showing {notifications.length} of {totalAvailable}
+      </Typography>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleLoadMore}
+        disabled={loadMoreDisabled}
+        endIcon={loadMoreIcon}
+      >
+        {loadMoreLabel}
+      </Button>
+    </>
+  );
 
   const chipColor = unreadTotal > 0 ? "primary" : "default";
   const chipVariant = unreadTotal > 0 ? "outlined" : "filled";
@@ -358,18 +423,7 @@ const NotificationsDrawer = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="body2" color="text.secondary">
-          Showing {notifications.length} of {totalAvailable}
-        </Typography>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={handleLoadMore}
-          disabled={loadMoreDisabled}
-          endIcon={loadMoreIcon}
-        >
-          {loadMoreLabel}
-        </Button>
+        {footerContent}
       </Box>
     </SideDrawerContent>
   );

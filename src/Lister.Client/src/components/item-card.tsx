@@ -32,7 +32,7 @@ import {
 } from "../models";
 import StatusChip from "./status-chip";
 
-interface Props {
+interface ItemCardProps {
   item: ListItem;
   definition: ListItemDefinition;
   onViewItem?: (listId: string, itemId: number) => void;
@@ -46,7 +46,7 @@ const ItemCard = ({
   onViewItem,
   onEditItem,
   onDeleteItem,
-}: Props) => {
+}: ItemCardProps) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
@@ -239,10 +239,7 @@ const ItemCard = ({
         </Grid>
       </Box>
 
-      <CardActions
-        className="card-actions"
-        sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}
-      >
+      <CardActions sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}>
         {viewAction}
         {editAction}
         {deleteAction}

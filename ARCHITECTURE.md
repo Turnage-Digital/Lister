@@ -89,10 +89,6 @@ services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
 // Notifications
 services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>),
     typeof(CreateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
-
-// Integration events
-services.AddScoped<INotificationHandler<ListItemCreatedIntegrationEvent>,
-    NotifyEventHandler<NotificationRuleDb, NotificationDb>>();
 ```
 
 ## Conventions
