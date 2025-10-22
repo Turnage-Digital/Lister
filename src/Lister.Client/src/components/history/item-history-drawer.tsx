@@ -16,10 +16,7 @@ const ItemHistoryDrawer = ({ listId, itemId }: ItemHistoryDrawerProps) => {
   );
 
   return (
-    <HistoryDrawer
-      subtitle="Status changes and updates for this item."
-      query={query}
-    />
+    <HistoryDrawer subtitle="Recent changes" query={query} />
   );
 };
 

@@ -307,6 +307,7 @@ const ListEditor = ({
           variant="contained"
           startIcon={<Save />}
           disabled={isSubmitting}
+          fullWidth
         >
           Submit
         </Button>

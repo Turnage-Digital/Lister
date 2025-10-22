@@ -289,7 +289,7 @@ export const ListItemEditor = ({
           variant="contained"
           startIcon={submitStartIcon}
           disabled={isSubmitting}
-          sx={{ width: { xs: "100%", md: "auto" } }}
+          fullWidth
         >
           Submit
         </Button>

@@ -357,6 +357,73 @@ const theme = createTheme({
         root: {
           borderRadius: 8,
           fontWeight: 600,
+          paddingInline: "0.35rem",
+          paddingBlock: "0.15rem",
+        },
+      },
+    },
+
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: colors.gray[50],
+          borderRadius: 999,
+          padding: "0.35rem",
+          gap: "0.35rem",
+        },
+        grouped: {
+          border: "none",
+          margin: 0,
+        },
+      },
+    },
+
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 999,
+          paddingInline: "1rem",
+          paddingBlock: "0.45rem",
+          textTransform: "none",
+          fontWeight: 600,
+          letterSpacing: "0.01em",
+          color: colors.gray[600],
+          "&.Mui-selected": {
+            backgroundColor: colors.primary[50],
+            color: colors.primary[700],
+            boxShadow: `inset 0 0 0 1px ${colors.primary[200]}`,
+          },
+          "&:hover": {
+            backgroundColor: colors.gray[100],
+          },
+        },
+      },
+    },
+
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          paddingBlock: "0.9rem",
+          paddingInline: "1rem",
+          border: `1px solid ${colors.gray[200]}`,
+          transition: "border-color 0.2s ease, background-color 0.2s ease",
+          "&:hover": {
+            borderColor: colors.primary[200],
+            backgroundColor: colors.primary[50],
+          },
+          "&.Mui-selected": {
+            borderColor: colors.primary[300],
+            backgroundColor: colors.primary[50],
+          },
+        },
+      },
+    },
+
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
         },
       },
     },

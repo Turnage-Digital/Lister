@@ -12,9 +12,7 @@ interface ListHistoryDrawerProps {
 const ListHistoryDrawer = ({ listId }: ListHistoryDrawerProps) => {
   const query = useInfiniteQuery(listHistoryInfiniteQueryOptions(listId));
 
-  return (
-    <HistoryDrawer subtitle="Latest changes to this list." query={query} />
-  );
+  return <HistoryDrawer subtitle="Latest list updates" query={query} />;
 };
 
 export default ListHistoryDrawer;
