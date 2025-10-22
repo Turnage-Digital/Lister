@@ -27,10 +27,7 @@ public class UpdateListController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateListCommand(listId, request.Columns, request.Statuses, request.Transitions)
-        {
-            UserId = HttpContext.User?.Identity?.Name ?? null
-        };
+        var command = new UpdateListCommand(listId, request.Columns, request.Statuses, request.Transitions);
 
         try
         {

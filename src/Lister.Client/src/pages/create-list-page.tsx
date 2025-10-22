@@ -1,17 +1,16 @@
 import * as React from "react";
 
-import { Stack } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
-import { createNotificationRule } from "../api/notification-rules";
 import {
+  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
   Titlebar,
 } from "../components";
-import { ListItemDefinition } from "../models";
+import { ListItemDefinition, NotificationRuleInput } from "../models";
 
 const initialValue: ListEditorInitialValue = {
   id: null,
@@ -20,6 +19,36 @@ const initialValue: ListEditorInitialValue = {
   statuses: [],
   transitions: [],
   notificationRules: [],
+};
+
+const createNotificationRule = async (
+  listId: string,
+  input: NotificationRuleInput,
+) => {
+  const payload = {
+    listId,
+    trigger: input.trigger,
+    channels: input.channels,
+    schedule: input.schedule,
+    templateId: input.templateId,
+  };
+
+  const response = await fetch("/api/notifications/rules", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to create notification rule");
+    throw new Error(message);
+  }
+
+  await response.json();
 };
 
 const CreateListPage = () => {
@@ -78,38 +107,30 @@ const CreateListPage = () => {
     },
   });
 
-  const breadcrumbs = React.useMemo(
-    () => [
-      {
-        title: "Lists",
-        onClick: () => navigate("/"),
-      },
-    ],
-    [navigate],
-  );
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
 
   const handleSubmit = async (result: ListEditorSubmitResult) => {
     await createListMutation.mutateAsync(result);
   };
 
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: handleNavigateToLists,
+    },
+  ];
+
   return (
-    <Stack
-      sx={{
-        maxWidth: 1160,
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <EditorPageLayout>
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
       <ListEditor
-        mode="create"
         initialValue={initialValue}
         onSubmit={handleSubmit}
         isSubmitting={createListMutation.isPending}
       />
-    </Stack>
+    </EditorPageLayout>
   );
 };
 

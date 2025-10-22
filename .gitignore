@@ -1,8 +1,4 @@
-.vscode
 .idea
-.vs
-.fleet
-.claude
 .DS_Store
 
 bin
@@ -11,8 +7,3 @@ node_modules
 dist
 
 tsconfig.tsbuildinfo
-*storybook.log
-
-/src/Lister/wwwroot/favicon.ico
-/src/Lister/wwwroot/index.html
-/src/Lister/wwwroot/assets/

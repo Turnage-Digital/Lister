@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { AddCircle, History } from "@mui/icons-material";
-import { Stack, useMediaQuery, useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import {
   useMutation,
@@ -11,6 +11,8 @@ import {
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
+  DisplayPageLayout,
+  ConfirmDeleteDialog,
   ItemsDesktopView,
   ItemsMobileView,
   ListHistoryDrawer,
@@ -62,6 +64,14 @@ const ListItemsPage = () => {
   const search = getListSearch(searchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const [itemToDelete, setItemToDelete] = React.useState<{
+    listId: string;
+    itemId: number;
+  } | null>(null);
+
+  const deleteItemDialogMessage = itemToDelete
+    ? `Are you sure you want to delete item #${itemToDelete.itemId}? This action cannot be undone.`
+    : "Are you sure you want to delete this item? This action cannot be undone.";
 
   const listItemDefinitionQuery = useSuspenseQuery(
     listItemDefinitionQueryOptions(listId),
@@ -70,6 +80,8 @@ const ListItemsPage = () => {
   const pagedItemsQuery = useSuspenseQuery(
     pagedItemsQueryOptions(search, listId),
   );
+
+  const definition = listItemDefinitionQuery.data;
 
   const deleteItemMutation = useMutation({
     mutationFn: async ({
@@ -85,7 +97,13 @@ const ListItemsPage = () => {
           method: "DELETE",
         },
       );
-      await fetch(request);
+      const response = await fetch(request);
+      if (!response.ok) {
+        const message = await response
+          .text()
+          .catch(() => "Failed to delete item");
+        throw new Error(message);
+      }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -127,8 +145,24 @@ const ListItemsPage = () => {
     navigate(`/${currentListId}/${itemId}/edit`);
   };
 
-  const handleDeleteItem = async (currentListId: string, itemId: number) => {
-    await deleteItemMutation.mutateAsync({ listId: currentListId, itemId });
+  const handleDeleteItem = (currentListId: string, itemId: number) => {
+    setItemToDelete({ listId: currentListId, itemId });
+  };
+
+  const handleConfirmDeleteItem = async () => {
+    if (!itemToDelete) {
+      return;
+    }
+
+    try {
+      await deleteItemMutation.mutateAsync(itemToDelete);
+    } finally {
+      setItemToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteItem = () => {
+    setItemToDelete(null);
   };
 
   const handleMobilePageChange = (newPage: number) => {
@@ -139,11 +173,17 @@ const ListItemsPage = () => {
     );
   };
 
-  if (!listItemDefinitionQuery.isSuccess || !pagedItemsQuery.isSuccess) {
-    return null;
-  }
+  const handleCreateItem = () => {
+    navigate(`/${listId}/create`);
+  };
 
-  const definition = listItemDefinitionQuery.data;
+  const handleShowHistory = () => {
+    openDrawer("List history", <ListHistoryDrawer listId={listId} />);
+  };
+
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
 
   const paginationModel: GridPaginationModel = {
     page: search.page,
@@ -164,22 +204,21 @@ const ListItemsPage = () => {
     {
       title: "Create an Item",
       icon: <AddCircle />,
-      onClick: () => navigate(`/${listId}/create`),
+      onClick: handleCreateItem,
     },
     {
       title: "Show history",
       icon: <History />,
       variant: "outlined" as const,
       color: "secondary" as const,
-      onClick: () =>
-        openDrawer("List history", <ListHistoryDrawer listId={listId} />),
+      onClick: handleShowHistory,
     },
   ];
 
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate(`/`),
+      onClick: handleNavigateToLists,
     },
   ];
 
@@ -210,22 +249,22 @@ const ListItemsPage = () => {
   );
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 1400,
-        mx: "auto",
-        px: { xs: 3, md: 8 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <DisplayPageLayout>
       <Titlebar
         title={listItemDefinitionQuery.data.name}
         actions={actions}
         breadcrumbs={breadcrumbs}
       />
       {itemsView}
-    </Stack>
+      <ConfirmDeleteDialog
+        open={Boolean(itemToDelete)}
+        title="Delete item"
+        description={deleteItemDialogMessage}
+        confirmDisabled={deleteItemMutation.isPending}
+        onCancel={handleCancelDeleteItem}
+        onConfirm={handleConfirmDeleteItem}
+      />
+    </DisplayPageLayout>
   );
 };
 

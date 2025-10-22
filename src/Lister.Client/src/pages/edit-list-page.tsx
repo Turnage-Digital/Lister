@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { Stack } from "@mui/material";
 import {
   useMutation,
   useQueryClient,
@@ -9,11 +8,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  createNotificationRule,
-  deleteNotificationRule,
-  updateNotificationRule,
-} from "../api/notification-rules";
-import {
+  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -25,6 +20,80 @@ import {
   listItemDefinitionQueryOptions,
   notificationRulesQueryOptions,
 } from "../query-options";
+
+type NotificationRuleMutationInput = Pick<
+  NotificationRuleSubmission,
+  "trigger" | "channels" | "schedule" | "templateId"
+>;
+
+const buildNotificationRulePayload = (
+  input: NotificationRuleMutationInput,
+) => ({
+  trigger: input.trigger,
+  channels: input.channels,
+  schedule: input.schedule,
+  templateId: input.templateId,
+});
+
+const createNotificationRule = async (
+  listId: string,
+  input: NotificationRuleMutationInput,
+) => {
+  const payload = {
+    listId,
+    ...buildNotificationRulePayload(input),
+  };
+
+  const response = await fetch("/api/notifications/rules", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to create notification rule");
+    throw new Error(message);
+  }
+
+  await response.json();
+};
+
+const updateNotificationRule = async (
+  ruleId: string,
+  input: NotificationRuleMutationInput,
+) => {
+  const response = await fetch(`/api/notifications/rules/${ruleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(buildNotificationRulePayload(input)),
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to update notification rule");
+    throw new Error(message);
+  }
+};
+
+const deleteNotificationRule = async (ruleId: string) => {
+  const response = await fetch(`/api/notifications/rules/${ruleId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const message = await response
+      .text()
+      .catch(() => "Failed to delete notification rule");
+    throw new Error(message);
+  }
+};
 
 const EditListPage = () => {
   const { listId } = useParams<{ listId: string }>();
@@ -42,6 +111,8 @@ const EditListPage = () => {
   const notificationRulesQuery = useSuspenseQuery(
     notificationRulesQueryOptions(listId),
   );
+
+  const definition = listDefinitionQuery.data;
 
   const initialValue = React.useMemo<ListEditorInitialValue>(() => {
     const definition = listDefinitionQuery.data;
@@ -140,23 +211,17 @@ const EditListPage = () => {
           queryKey: ["list-names"],
         }),
       ]);
-      navigate(`/${listId}?page=0&pageSize=10`);
+      handleNavigateToList();
     },
   });
 
-  const breadcrumbs = React.useMemo(
-    () => [
-      {
-        title: "Lists",
-        onClick: () => navigate("/"),
-      },
-      {
-        title: listDefinitionQuery.data.name,
-        onClick: () => navigate(`/${listId}?page=0&pageSize=10`),
-      },
-    ],
-    [listDefinitionQuery.data.name, listId, navigate],
-  );
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}?page=0&pageSize=10`);
+  };
 
   const handleSubmit = async (result: ListEditorSubmitResult) => {
     await updateListMutation.mutateAsync(result);
@@ -166,31 +231,29 @@ const EditListPage = () => {
     navigate(-1);
   };
 
+  const breadcrumbs = [
+    {
+      title: "Lists",
+      onClick: handleNavigateToLists,
+    },
+    {
+      title: definition.name,
+      onClick: handleNavigateToList,
+    },
+  ];
+
   return (
-    <Stack
-      sx={{
-        maxWidth: 1160,
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
-      <Titlebar
-        title={`Edit ${listDefinitionQuery.data.name}`}
-        breadcrumbs={breadcrumbs}
-      />
+    <EditorPageLayout>
+      <Titlebar title={`Edit ${definition.name}`} breadcrumbs={breadcrumbs} />
       <ListEditor
         key={listId}
-        mode="edit"
         disableNameField
         initialValue={initialValue}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={updateListMutation.isPending}
-        submitLabel="Save changes"
       />
-    </Stack>
+    </EditorPageLayout>
   );
 };
 

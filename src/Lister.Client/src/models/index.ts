@@ -11,7 +11,7 @@ export type { StatusColor } from "./status-colors";
 export type { StatusTransition } from "./status-transition";
 export type {
   NotificationDetails,
-  NotificationListItem,
+  NotificationSummary,
   NotificationListPage,
   NotificationsSearch,
   DeliveryAttemptView,

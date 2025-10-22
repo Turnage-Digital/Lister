@@ -18,6 +18,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Stack,
   Tooltip,
   Typography,
   useTheme,
@@ -31,7 +32,7 @@ import {
 } from "../models";
 import StatusChip from "./status-chip";
 
-interface Props {
+interface ItemCardProps {
   item: ListItem;
   definition: ListItemDefinition;
   onViewItem?: (listId: string, itemId: number) => void;
@@ -45,7 +46,7 @@ const ItemCard = ({
   onViewItem,
   onEditItem,
   onDeleteItem,
-}: Props) => {
+}: ItemCardProps) => {
   const theme = useTheme();
   const rawStatus = item.bag.status;
   const status = getStatusFromName(definition.statuses, rawStatus);
@@ -130,7 +131,7 @@ const ItemCard = ({
         flexDirection: "column",
         gap: 3,
         p: 3,
-        minHeight: 240,
+        maxWidth: 500,
         borderColor: alpha(theme.palette.primary.main, 0.12),
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
@@ -139,12 +140,11 @@ const ItemCard = ({
         },
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-        }}
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        spacing={2}
       >
         <Box
           sx={{
@@ -160,19 +160,8 @@ const ItemCard = ({
         >
           <Receipt sx={{ fontSize: 22 }} />
         </Box>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{
-            letterSpacing: 0.4,
-            textTransform: "uppercase",
-            flexGrow: 1,
-          }}
-        >
-          Item
-        </Typography>
         {statusChipNode}
-      </Box>
+      </Stack>
 
       <Typography variant="h6" component="div">
         ID {item.id}
@@ -250,11 +239,7 @@ const ItemCard = ({
         </Grid>
       </Box>
 
-      {/* Action buttons */}
-      <CardActions
-        className="card-actions"
-        sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}
-      >
+      <CardActions sx={{ justifyContent: "flex-end", gap: 1, pt: 1 }}>
         {viewAction}
         {editAction}
         {deleteAction}

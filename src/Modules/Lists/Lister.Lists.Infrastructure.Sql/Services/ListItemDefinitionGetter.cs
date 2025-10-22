@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Domain.Views;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,7 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
                 Columns = list.Columns
                     .Select(column => new Column
                     {
+                        StorageKey = column.StorageKey,
                         Name = column.Name,
                         Type = column.Type,
                         Required = column.Required,

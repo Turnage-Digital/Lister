@@ -1,7 +1,7 @@
 using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;

@@ -1,8 +1,5 @@
 import * as React from "react";
 
-import { Save } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Box, Button, Divider, Stack } from "@mui/material";
 import {
   useMutation,
   useQueryClient,
@@ -10,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { FormBlock, ListItemEditor, Titlebar } from "../components";
+import { EditorPageLayout, ListItemEditor, Titlebar } from "../components";
 import { ListItem } from "../models";
 import {
   itemQueryOptions,
@@ -72,9 +69,21 @@ const EditListItemPage = () => {
           queryKey: ["list-item", listId, Number(itemId)],
         }),
       ]);
-      navigate(`/${listId}/${itemId}`);
+      handleNavigateToItemDetails();
     },
   });
+
+  const handleNavigateToLists = () => {
+    navigate("/");
+  };
+
+  const handleNavigateToList = () => {
+    navigate(`/${listId}`);
+  };
+
+  const handleNavigateToItemDetails = () => {
+    navigate(`/${listId}/${itemId}`);
+  };
 
   const handleBagChange = (nextBag: Record<string, unknown>) => {
     setFormState((prev) => ({ ...prev, bag: nextBag }));
@@ -92,66 +101,32 @@ const EditListItemPage = () => {
   const breadcrumbs = [
     {
       title: "Lists",
-      onClick: () => navigate("/"),
+      onClick: handleNavigateToLists,
     },
     {
       title: definition.name,
-      onClick: () => navigate(`/${listId}`),
+      onClick: handleNavigateToList,
     },
     {
       title: `ID ${item.id}`,
-      onClick: () => navigate(`/${listId}/${item.id}`),
+      onClick: handleNavigateToItemDetails,
     },
   ];
 
+  const isSubmitting = updateItemMutation.isPending;
+
   return (
-    <Stack
-      component="form"
-      divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
-      onSubmit={handleSubmit}
-      sx={{
-        maxWidth: 1180,
-        mx: "auto",
-        px: { xs: 3, md: 7 },
-        py: { xs: 4, md: 6 },
-      }}
-      spacing={{ xs: 6, md: 7 }}
-    >
+    <EditorPageLayout>
       <Titlebar title={`Edit Item ${item.id}`} breadcrumbs={breadcrumbs} />
-
-      <FormBlock
-        title="Item details"
-        subtitle="Update fields and status. Changes will be validated before saving."
-        content={
-          <ListItemEditor
-            definition={definition}
-            bag={formState.bag}
-            onBagChange={handleBagChange}
-          />
-        }
+      <ListItemEditor
+        definition={definition}
+        bag={formState.bag}
+        onBagChange={handleBagChange}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        onCancel={handleCancel}
       />
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: { xs: "center", md: "flex-end" },
-          gap: 2,
-        }}
-      >
-        <Button variant="text" onClick={handleCancel}>
-          Cancel
-        </Button>
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          startIcon={<Save />}
-          loading={updateItemMutation.isPending}
-          sx={{ width: { xs: "100%", md: "auto" } }}
-        >
-          Save changes
-        </LoadingButton>
-      </Box>
-    </Stack>
+    </EditorPageLayout>
   );
 };
 

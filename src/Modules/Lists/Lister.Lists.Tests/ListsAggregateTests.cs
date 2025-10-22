@@ -350,4 +350,42 @@ public class ListsAggregateTests
             Assert.That(bag["status"], Is.EqualTo("Active"));
         });
     }
+
+    [Test]
+    public async Task UpdateListAsync_AssignsStorageKeysToNewColumns()
+    {
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var existing = new[]
+        {
+            new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = true }
+        };
+
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+        _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<Status>());
+        _unitOfWork.Setup(x => x.ListsStore.GetStatusTransitionsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<StatusTransition>());
+
+        Column[]? persisted = null;
+        _listsStore.Setup(x => x.SetColumnsAsync(list, It.IsAny<IEnumerable<Column>>(), BY, It.IsAny<CancellationToken>()))
+            .Callback<ListDb, IEnumerable<Column>, string, CancellationToken>((_, cols, _, _) =>
+            {
+                persisted = cols.ToArray();
+            })
+            .Returns(Task.CompletedTask);
+
+        var update = new[]
+        {
+            new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = true },
+            new Column { Name = "Priority", Type = ColumnType.Number }
+        };
+
+        await _listsAggregate.UpdateListAsync(list, update, null, null, BY, CancellationToken.None);
+
+        Assert.That(persisted, Is.Not.Null);
+        var priority = persisted!.Single(c => c.Name == "Priority");
+        Assert.That(priority.StorageKey, Is.Not.Null.And.Not.Empty);
+        Assert.That(priority.StorageKey, Is.Not.EqualTo("prop1"));
+    }
 }

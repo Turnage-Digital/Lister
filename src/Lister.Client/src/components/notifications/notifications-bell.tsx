@@ -18,7 +18,7 @@ const NotificationsBell = () => {
 
   return (
     <Tooltip title="Notifications">
-      <IconButton onClick={onClick}>
+      <IconButton color="primary" onClick={onClick}>
         <Badge
           color="error"
           badgeContent={unreadCount}

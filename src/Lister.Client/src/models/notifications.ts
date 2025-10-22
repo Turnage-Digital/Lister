@@ -43,12 +43,11 @@ export interface NotificationDetails {
   deliveryAttempts: DeliveryAttemptView[];
 }
 
-export interface NotificationListItem {
+export interface NotificationSummary {
   id: string;
   title: string;
   body: string;
   isRead: boolean;
-  // ISO timestamp
   occurredOn: string;
   listId?: string | null;
   itemId?: number | null;
@@ -56,10 +55,10 @@ export interface NotificationListItem {
 }
 
 export interface NotificationListPage {
-  items: NotificationListItem[];
-  page: number;
-  pageSize: number;
-  total: number;
+  notifications: NotificationSummary[];
+  totalCount: number;
+  unreadCount: number;
+  hasMore: boolean;
 }
 
 export interface NotificationsSearch {

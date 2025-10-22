@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { Alert, Stack, Typography } from "@mui/material";
+import { Alert, Link, Stack, Typography } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { ResetPasswordForm } from "../components";
+import { AuthPageLayout, ResetPasswordForm } from "../components";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const ResetPasswordPage = () => {
   const email = searchParams.get("email") ?? undefined;
   const resetCode = searchParams.get("code") ?? undefined;
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!email || !resetCode) {
       setErrorMessage(
         "Invalid reset link. Please request a new password reset.",
@@ -21,7 +21,7 @@ const ResetPasswordPage = () => {
     }
   }, [email, resetCode]);
 
-  const handlePasswordReset = () => {
+  const handleNavigateToSignIn = () => {
     navigate("/sign-in");
   };
 
@@ -30,27 +30,43 @@ const ResetPasswordPage = () => {
       <ResetPasswordForm
         email={email}
         resetCode={resetCode}
-        onPasswordReset={handlePasswordReset}
+        onPasswordReset={handleNavigateToSignIn}
       />
     ) : null;
 
   return (
-    <Stack
-      sx={{
-        maxWidth: 420,
-        width: "100%",
-        mx: "auto",
-        px: { xs: 3, md: 4 },
-        py: { xs: 4, md: 5 },
-      }}
-      spacing={{ xs: 4, md: 5 }}
-    >
-      <Typography variant="h5">Reset Password</Typography>
+    <AuthPageLayout>
+      <Stack spacing={2} alignItems="center">
+        <Typography variant="h5" align="center" gutterBottom>
+          Reset Password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" align="center">
+          Choose a new password to get back into your account.
+        </Typography>
+      </Stack>
 
       {formContent}
 
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-    </Stack>
+
+      <Stack spacing={2} alignItems="center">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          component="div"
+        >
+          Already have an account?{" "}
+          <Link
+            component="button"
+            type="button"
+            onClick={handleNavigateToSignIn}
+          >
+            Sign in
+          </Link>
+        </Typography>
+      </Stack>
+    </AuthPageLayout>
   );
 };
 

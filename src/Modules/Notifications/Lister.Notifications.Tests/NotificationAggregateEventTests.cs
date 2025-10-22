@@ -3,6 +3,7 @@ using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
 using Lister.Notifications.Domain.Events;
+using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Domain.ValueObjects;
 using Moq;
 using INotification = MediatR.INotification;
@@ -50,7 +51,8 @@ public class NotificationAggregateEventTests
         Mock<INotificationsUnitOfWork<IWritableNotificationRule, IWritableNotification>> uow,
         TestQueue queue,
         Mock<INotificationRulesStore<IWritableNotificationRule>> rulesStore,
-        Mock<INotificationsStore<IWritableNotification>> notifStore) Create()
+        Mock<INotificationsStore<IWritableNotification>> notifStore,
+        Mock<INotificationTriggerEvaluator> evaluator) Create()
     {
         var uow = new Mock<INotificationsUnitOfWork<IWritableNotificationRule, IWritableNotification>>();
         var rules = new Mock<INotificationRulesStore<IWritableNotificationRule>>();
@@ -59,14 +61,18 @@ public class NotificationAggregateEventTests
         uow.SetupGet(x => x.NotificationsStore).Returns(notifs.Object);
         uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
         var queue = new TestQueue();
-        var agg = new NotificationAggregate<IWritableNotificationRule, IWritableNotification>(uow.Object, queue);
-        return (agg, uow, queue, rules, notifs);
+        var triggerEvaluator = new Mock<INotificationTriggerEvaluator>();
+        var agg = new NotificationAggregate<IWritableNotificationRule, IWritableNotification>(
+            uow.Object,
+            queue,
+            triggerEvaluator.Object);
+        return (agg, uow, queue, rules, notifs, triggerEvaluator);
     }
 
     [Test]
     public async Task CreateNotificationRule_Enqueues_Event()
     {
-        var (agg, _, queue, rules, _) = Create();
+        var (agg, _, queue, rules, _, _) = Create();
         var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
         rules.Setup(s => s.InitAsync(_user, _listId, It.IsAny<CancellationToken>())).ReturnsAsync(rule);
         rules.Setup(s => s.SetTriggerAsync(rule, It.IsAny<NotificationTrigger>(), It.IsAny<CancellationToken>()))
@@ -90,7 +96,7 @@ public class NotificationAggregateEventTests
     [Test]
     public async Task UpdateNotificationRule_Enqueues_Event()
     {
-        var (agg, _, queue, rules, _) = Create();
+        var (agg, _, queue, rules, _, _) = Create();
         var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
         rules.Setup(s => s.UpdateAsync(rule, _user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         rules.Setup(s => s.SetActiveStatusAsync(rule, true, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -100,9 +106,25 @@ public class NotificationAggregateEventTests
     }
 
     [Test]
+    public async Task UpdateNotificationRule_WithTemplate_Updates_Store()
+    {
+        var (agg, _, queue, rules, _, _) = Create();
+        var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
+        const string templateId = "tpl-123";
+        rules.Setup(s => s.UpdateAsync(rule, _user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        rules.Setup(s => s.SetTemplateAsync(rule, templateId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        await agg.UpdateNotificationRuleAsync(rule, _user, templateId: templateId);
+
+        rules.Verify(s => s.SetTemplateAsync(rule, templateId, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.That(queue.Events.OfType<NotificationRuleUpdatedEvent>().Any(), Is.True);
+    }
+
+    [Test]
     public async Task DeleteNotificationRule_Enqueues_Event()
     {
-        var (agg, _, queue, rules, _) = Create();
+        var (agg, _, queue, rules, _, _) = Create();
         var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
         rules.Setup(s => s.DeleteAsync(rule, _user, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
@@ -113,7 +135,7 @@ public class NotificationAggregateEventTests
     [Test]
     public async Task CreateNotification_Enqueues_Event()
     {
-        var (agg, _, queue, _, notifs) = Create();
+        var (agg, _, queue, _, notifs, _) = Create();
         var n = new FakeNotification { UserId = _user, ListId = _listId };
         notifs.Setup(s => s.InitAsync(_user, _listId, It.IsAny<CancellationToken>())).ReturnsAsync(n);
         notifs.Setup(s => s.SetContentAsync(n, It.IsAny<NotificationContent>(), It.IsAny<CancellationToken>()))
@@ -130,7 +152,7 @@ public class NotificationAggregateEventTests
     [Test]
     public async Task MarkProcessed_Enqueues_Event()
     {
-        var (agg, _, queue, _, notifs) = Create();
+        var (agg, _, queue, _, notifs, _) = Create();
         var n = new FakeNotification { UserId = _user, ListId = _listId };
         notifs.Setup(s => s.MarkAsProcessedAsync(n, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -142,7 +164,7 @@ public class NotificationAggregateEventTests
     [Test]
     public async Task RecordDeliveryAttempt_Enqueues_Event_And_Marks_Delivered_On_Success()
     {
-        var (agg, _, queue, _, notifs) = Create();
+        var (agg, _, queue, _, notifs, _) = Create();
         var n = new FakeNotification { UserId = _user, ListId = _listId };
         var email = NotificationChannel.Email("user@example.com");
         notifs.Setup(s => s.GetDeliveryAttemptCountAsync(n, email, It.IsAny<CancellationToken>()))
@@ -162,7 +184,7 @@ public class NotificationAggregateEventTests
     [Test]
     public async Task MarkRead_And_AllRead_Enqueue_Events()
     {
-        var (agg, _, queue, _, notifs) = Create();
+        var (agg, _, queue, _, notifs, _) = Create();
         var n = new FakeNotification { UserId = _user, ListId = _listId };
         notifs.Setup(s => s.MarkAsReadAsync(n, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);

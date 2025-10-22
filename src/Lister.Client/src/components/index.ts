@@ -1,8 +1,11 @@
 export { default as EditListColumnsContent } from "./edit-list-columns-content";
 export { default as EditListNameContent } from "./edit-list-name-content";
 export { default as EditListStatusesContent } from "./edit-list-statuses-content";
-export { default as ForgotPasswordDialog } from "./forgot-password-dialog";
+export { default as AuthPageLayout } from "./auth-page-layout";
+export { default as DisplayPageLayout } from "./display-page-layout";
+export { default as EditorPageLayout } from "./editor-page-layout";
 export { default as FormBlock } from "./form-block";
+export { default as ForgotPasswordForm } from "./forgot-password-form";
 export { default as ItemCard } from "./item-card";
 export { default as ListCard } from "./list-card";
 export { default as Loading } from "./loading";
@@ -12,6 +15,7 @@ export { default as SignUpForm } from "./sign-up-form";
 export { default as SmartPasteDialog } from "./smart-paste-dialog";
 export { default as Titlebar } from "./titlebar";
 export { default as UserMenu } from "./user-menu";
+export { default as ConfirmDeleteDialog } from "./confirm-delete-dialog";
 export { ListEditor } from "./list-editor";
 
 export { getGridColDefs } from "./col-defs";

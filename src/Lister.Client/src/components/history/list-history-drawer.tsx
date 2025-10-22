@@ -1,18 +1,18 @@
 import * as React from "react";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+
 import HistoryDrawer from "./history-drawer";
-import { fetchListHistory } from "../../api/history";
+import { listHistoryInfiniteQueryOptions } from "../../query-options";
 
 interface ListHistoryDrawerProps {
   listId: string;
 }
 
-const ListHistoryDrawer = ({ listId }: ListHistoryDrawerProps) => (
-  <HistoryDrawer
-    subtitle="Latest changes to this list."
-    queryKey={["list-history", listId]}
-    fetchPage={(page) => fetchListHistory(listId, page)}
-  />
-);
+const ListHistoryDrawer = ({ listId }: ListHistoryDrawerProps) => {
+  const query = useInfiniteQuery(listHistoryInfiniteQueryOptions(listId));
+
+  return <HistoryDrawer subtitle="Latest list updates" query={query} />;
+};
 
 export default ListHistoryDrawer;

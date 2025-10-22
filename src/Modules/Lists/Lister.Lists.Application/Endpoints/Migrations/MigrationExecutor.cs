@@ -95,9 +95,9 @@ public class MigrationExecutor<TList, TItem>(
                     done++;
                     if (done % 50 == 0)
                     {
-                        var pct = 10 + (int)Math.Round(70.0 * done / Math.Max(1, total));
+                        var percent = 10 + (int)Math.Round(70.0 * done / Math.Max(1, total));
                         await mediator.Publish(new ListMigrationProgressIntegrationEvent(listId, correlationId,
-                            $"Converting '{op.Key}' {done}/{total}", pct), ct);
+                            $"Converting '{op.Key}' {done}/{total}", percent), ct);
                     }
                 }
 

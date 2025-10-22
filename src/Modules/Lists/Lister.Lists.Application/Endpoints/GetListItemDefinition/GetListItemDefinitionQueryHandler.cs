@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Lister.Lists.Domain.Services;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.Views;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;

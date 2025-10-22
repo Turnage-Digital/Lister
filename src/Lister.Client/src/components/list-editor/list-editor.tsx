@@ -37,11 +37,9 @@ const createClientId = () => {
 };
 
 interface Props {
-  mode: "create" | "edit";
   initialValue: ListEditorInitialValue;
   onSubmit: (result: ListEditorSubmitResult) => Promise<void> | void;
   isSubmitting?: boolean;
-  submitLabel?: string;
   onCancel?: () => void;
   disableNameField?: boolean;
 }
@@ -103,10 +101,8 @@ export const createEmptyRuleFormValue = (): NotificationRuleFormValue => ({
 
 const ListEditor = ({
   initialValue,
-  mode,
   onSubmit,
   isSubmitting,
-  submitLabel = mode === "create" ? "Create list" : "Save changes",
   onCancel,
   disableNameField = false,
 }: Props) => {
@@ -311,8 +307,9 @@ const ListEditor = ({
           variant="contained"
           startIcon={<Save />}
           disabled={isSubmitting}
+          fullWidth
         >
-          {submitLabel}
+          Submit
         </Button>
       </Box>
     </Stack>

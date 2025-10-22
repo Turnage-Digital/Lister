@@ -1,12 +1,13 @@
 using Lister.Core.Domain.ValueObjects;
 using Lister.Lists.Domain.Enums;
 
-namespace Lister.Lists.Domain.Services;
+namespace Lister.Lists.Domain.Queries;
 
-public interface IGetListHistory
+public interface IGetItemHistory
 {
-    Task<HistoryPage<ListHistoryType>> GetAsync(
+    Task<HistoryPage<ItemHistoryType>> GetAsync(
         Guid listId,
+        int itemId,
         int page,
         int pageSize,
         CancellationToken cancellationToken
