@@ -1,5 +1,6 @@
 using Lister.Core.Domain;
 using Lister.Lists.Domain;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using MediatR;
@@ -13,9 +14,11 @@ public class StatusTransitionTests
     [SetUp]
     public void SetUp()
     {
-        _uow = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
+        _uow = new Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>>();
         _lists = new Mock<IListsStore<ListDb>>();
         _items = new Mock<IItemsStore<ItemDb>>();
+        _itemStream = new Mock<IGetListItemStream>();
+        _migrationJobGetter = new Mock<IGetListMigrationJob>();
         _items
             .Setup(x => x.SetBagAsync(
                 It.IsAny<ItemDb>(),
@@ -26,14 +29,21 @@ public class StatusTransitionTests
         _uow.SetupGet(x => x.ListsStore).Returns(_lists.Object);
         _uow.SetupGet(x => x.ItemsStore).Returns(_items.Object);
         _uow.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(0);
-        var bagValidator = new ListItemBagValidator<ListDb, ItemDb>(_uow.Object);
-        _agg = new ListsAggregate<ListDb, ItemDb>(_uow.Object, new NoopQueue(), bagValidator);
+        var bagValidator = new ListItemBagValidator<ListDb, ItemDb, ListMigrationJobDb>(_uow.Object);
+        _agg = new ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>(
+            _uow.Object,
+            new NoopQueue(),
+            bagValidator,
+            _itemStream.Object,
+            _migrationJobGetter.Object);
     }
 
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;
+    private Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>> _uow = null!;
     private Mock<IListsStore<ListDb>> _lists = null!;
     private Mock<IItemsStore<ItemDb>> _items = null!;
-    private ListsAggregate<ListDb, ItemDb> _agg = null!;
+    private Mock<IGetListItemStream> _itemStream = null!;
+    private Mock<IGetListMigrationJob> _migrationJobGetter = null!;
+    private ListsAggregate<ListDb, ItemDb, ListMigrationJobDb> _agg = null!;
 
     private class NoopQueue : IDomainEventQueue
     {

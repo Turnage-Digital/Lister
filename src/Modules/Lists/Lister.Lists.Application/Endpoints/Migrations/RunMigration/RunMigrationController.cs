@@ -1,15 +1,16 @@
+using Lister.Lists.Application.Endpoints.Migrations.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace Lister.Lists.Application.Endpoints.Migrations;
+namespace Lister.Lists.Application.Endpoints.Migrations.RunMigration;
 
 [ApiController]
 [Authorize]
 [Tags("Lists")]
 [Route("api/lists/{listId:guid}/migrations")]
-public class MigrationsController(IMediator mediator) : Controller
+public class RunMigrationController(IMediator mediator) : Controller
 {
     [HttpPost]
     [ProducesResponseType(Status200OK)]
@@ -31,7 +32,6 @@ public class MigrationsController(IMediator mediator) : Controller
             : MigrationMode.DryRun;
 
         var command = new RunMigrationCommand(listId, request.Plan, mode);
-
         var result = await mediator.Send(command, ct);
         return Ok(result);
     }

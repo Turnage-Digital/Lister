@@ -7,9 +7,13 @@ public interface IListsStore<TList>
     where TList : IWritableList
 {
     Task<TList> InitAsync(string name, string createdBy, CancellationToken cancellationToken);
+
     Task<TList?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
     Task<TList?> GetByNameAsync(string name, CancellationToken cancellationToken);
+
     Task CreateAsync(TList list, CancellationToken cancellationToken);
+
     Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken);
 
     Task SetColumnsAsync(

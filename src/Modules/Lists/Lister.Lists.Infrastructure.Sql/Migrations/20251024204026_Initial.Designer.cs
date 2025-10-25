@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Lists.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ListsDbContext))]
-    [Migration("20251019205854_Initial")]
+    [Migration("20251024204026_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -74,6 +74,91 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                         .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
 
                     b.ToTable("Lists", (string)null);
+                });
+
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ListMigrationJobDb", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("BackupCompletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("BackupListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("BackupListName")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("CancelRequested")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("CancelRequestedByUserId")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("CancelRequestedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("CanceledOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("CompletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CurrentMessage")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<DateTime?>("FailedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(1024)
+                        .HasColumnType("varchar(1024)");
+
+                    b.Property<DateTime?>("LastProgressOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("PlanJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProcessedItems")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProgressPercent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequestedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("RequestedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("StartedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalItems")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_ListMigrationJobs_Status");
+
+                    b.HasIndex("ListId", "Status")
+                        .HasDatabaseName("IX_ListMigrationJobs_ListId_Status");
+
+                    b.ToTable("ListMigrationJobs", (string)null);
                 });
 
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ColumnDb", b =>
@@ -204,6 +289,44 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.ToTable("ListHistory", (string)null);
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ListMigrationJobHistoryEntryDb", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<string>("Bag")
+                        .HasColumnType("JSON")
+                        .HasAnnotation("Relational:JsonPropertyName", "bag");
+
+                    b.Property<string>("By")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasAnnotation("Relational:JsonPropertyName", "by");
+
+                    b.Property<Guid?>("MigrationJobId")
+                        .IsRequired()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("On")
+                        .HasColumnType("datetime(6)")
+                        .HasAnnotation("Relational:JsonPropertyName", "on");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "type");
+
+                    b.HasKey("Id")
+                        .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+
+                    b.HasIndex("MigrationJobId");
+
+                    b.ToTable("ListMigrationJobHistory", (string)null);
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusDb", b =>
                 {
                     b.Property<int?>("Id")
@@ -309,6 +432,17 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Navigation("List");
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ListMigrationJobHistoryEntryDb", b =>
+                {
+                    b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListMigrationJobDb", "MigrationJob")
+                        .WithMany("History")
+                        .HasForeignKey("MigrationJobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MigrationJob");
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.StatusDb", b =>
                 {
                     b.HasOne("Lister.Lists.Infrastructure.Sql.Entities.ListDb", "ListDb")
@@ -349,6 +483,11 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Navigation("StatusTransitions");
 
                     b.Navigation("Statuses");
+                });
+
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ListMigrationJobDb", b =>
+                {
+                    b.Navigation("History");
                 });
 #pragma warning restore 612, 618
         }

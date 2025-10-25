@@ -6,10 +6,14 @@ using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.CreateListItem;
 
-public class CreateListItemCommandHandler<TList, TItem>(ListsAggregate<TList, TItem> listsAggregate, IMapper mapper)
+public class CreateListItemCommandHandler<TList, TItem, TMigrationJob>(
+    ListsAggregate<TList, TItem, TMigrationJob> listsAggregate,
+    IMapper mapper
+)
     : IRequestHandler<CreateListItemCommand, ListItem>
     where TList : IWritableList
     where TItem : IWritableItem
+    where TMigrationJob : IWritableListMigrationJob
 {
     public async Task<ListItem> Handle(CreateListItemCommand request, CancellationToken cancellationToken)
     {

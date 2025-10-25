@@ -1,6 +1,7 @@
 using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Domain;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
 
@@ -12,11 +13,13 @@ public class DeleteListCommandHandlerTests
     [SetUp]
     public void SetUp()
     {
-        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
+        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>>();
         _mediator = new Mock<IDomainEventQueue>();
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _itemStream = new Mock<IGetListItemStream>();
+        _migrationJobGetter = new Mock<IGetListMigrationJob>();
         itemsStore
             .Setup(x => x.SetBagAsync(
                 It.IsAny<ItemDb>(),
@@ -32,15 +35,22 @@ public class DeleteListCommandHandlerTests
         bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
-        _handler = new DeleteListCommandHandler<ListDb, ItemDb>(_listsAggregate);
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>(
+            _unitOfWork.Object,
+            _mediator.Object,
+            bagValidator.Object,
+            _itemStream.Object,
+            _migrationJobGetter.Object);
+        _handler = new DeleteListCommandHandler<ListDb, ItemDb, ListMigrationJobDb>(_listsAggregate);
     }
 
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
+    private Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>> _unitOfWork;
     private Mock<IDomainEventQueue> _mediator;
-    private ListsAggregate<ListDb, ItemDb> _listsAggregate;
-    private DeleteListCommandHandler<ListDb, ItemDb> _handler;
+    private ListsAggregate<ListDb, ItemDb, ListMigrationJobDb> _listsAggregate;
+    private DeleteListCommandHandler<ListDb, ItemDb, ListMigrationJobDb> _handler;
     private Mock<IListsStore<ListDb>> _listsStore;
+    private Mock<IGetListItemStream> _itemStream = null!;
+    private Mock<IGetListMigrationJob> _migrationJobGetter = null!;
 
     [Test]
     public void Handle_ThrowsArgumentNullException_WhenUserIdIsNull()

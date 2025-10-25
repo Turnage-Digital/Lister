@@ -1,20 +1,27 @@
 using System.Dynamic;
+using System.Text.Json;
 using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 
 namespace Lister.Lists.Domain;
 
-public class ListsAggregate<TList, TItem>(
-    IListsUnitOfWork<TList, TItem> unitOfWork,
+public class ListsAggregate<TList, TItem, TMigrationJob>(
+    IListsUnitOfWork<TList, TItem, TMigrationJob> unitOfWork,
     IDomainEventQueue events,
-    IValidateListItemBag<TList> bagValidator
+    IValidateListItemBag<TList> bagValidator,
+    IGetListItemStream itemStream,
+    IGetListMigrationJob migrationJobGetter
 )
     where TList : IWritableList
     where TItem : IWritableItem
+    where TMigrationJob : IWritableListMigrationJob
 {
+    private const string PreparingBackupMessage = "Preparing backup";
+
     public async Task<TList?> GetListByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var retval = await unitOfWork.ListsStore.GetByIdAsync(id, cancellationToken);
@@ -93,6 +100,275 @@ public class ListsAggregate<TList, TItem>(
         await unitOfWork.ListsStore.DeleteAsync(list, deletedBy, cancellationToken);
         events.Enqueue(new ListDeletedEvent(list, deletedBy), EventPhase.AfterSave);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<(Guid JobId, bool Created)> EnsureMigrationJobQueuedAsync(
+        Guid listId,
+        string requestedByUserId,
+        string planJson,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var activeJob = await unitOfWork.MigrationJobsStore.GetActiveJobAsync(listId, cancellationToken);
+        if (activeJob is not null)
+        {
+            return (activeJob.Id, false);
+        }
+
+        var job = await unitOfWork.MigrationJobsStore.InitAsync(
+            listId,
+            requestedByUserId,
+            planJson,
+            cancellationToken);
+        await unitOfWork.MigrationJobsStore.CreateAsync(job, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return (job.Id, true);
+    }
+
+    public async Task<TMigrationJob?> TryStartNextMigrationJobAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        while (true)
+        {
+            var job = await unitOfWork.MigrationJobsStore.GetNextQueuedAsync(cancellationToken);
+            if (job is null)
+            {
+                return job;
+            }
+
+            var now = DateTime.UtcNow;
+            var claimed = await unitOfWork.MigrationJobsStore.TryUpdateStatusAsync(
+                job,
+                ListMigrationJobStatus.Queued,
+                ListMigrationJobStatus.PreparingBackup,
+                cancellationToken);
+
+            if (!claimed)
+            {
+                continue;
+            }
+
+            await unitOfWork.MigrationJobsStore.SetStartedOnAsync(job, now, cancellationToken);
+            await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, now, cancellationToken);
+            await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, PreparingBackupMessage, cancellationToken);
+            await unitOfWork.MigrationJobsStore.SetProgressPercentAsync(job, 10, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return job;
+        }
+    }
+
+    public async Task MarkMigrationJobRunningAsync(
+        TMigrationJob job,
+        string message,
+        DateTime timestamp,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await unitOfWork.MigrationJobsStore.SetStatusAsync(job, ListMigrationJobStatus.Running, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, message, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, timestamp, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task MarkMigrationJobBackupCompletedAsync(
+        TMigrationJob job,
+        Guid backupListId,
+        string backupListName,
+        DateTime completedOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await unitOfWork.MigrationJobsStore.SetBackupListAsync(job, backupListId, backupListName, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetBackupCompletedOnAsync(job, completedOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, "Backup completed", cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, completedOn, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<(Guid BackupListId, string BackupListName)> CreateMigrationBackupAsync(
+        Guid listId,
+        string requestedByUserId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var list = await unitOfWork.ListsStore.GetByIdAsync(listId, cancellationToken)
+                   ?? throw new InvalidOperationException($"List {listId} not found");
+
+        var backupName = $"{list.Name} (pre-migration {DateTime.UtcNow:yyyyMMdd-HHmmss})";
+
+        var columns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
+        var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
+        var transitions = await unitOfWork.ListsStore.GetStatusTransitionsAsync(list, cancellationToken);
+
+        var backupList = await unitOfWork.ListsStore.InitAsync(backupName, requestedByUserId, cancellationToken);
+        await unitOfWork.ListsStore.SetColumnsAsync(backupList, columns, requestedByUserId, cancellationToken);
+        await unitOfWork.ListsStore.SetStatusesAsync(backupList, statuses, requestedByUserId, cancellationToken);
+        await unitOfWork.ListsStore.SetStatusTransitionsAsync(backupList, transitions, requestedByUserId,
+            cancellationToken);
+        await unitOfWork.ListsStore.CreateAsync(backupList, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        if (!backupList.Id.HasValue)
+        {
+            throw new InvalidOperationException("Backup list identifier not generated");
+        }
+
+        var buffer = new List<int>(200);
+        await foreach (var itemId in itemStream.StreamAsync(listId, cancellationToken))
+        {
+            buffer.Add(itemId);
+            if (buffer.Count >= 200)
+            {
+                await CloneItemsAsync(buffer, listId, backupList.Id.Value, requestedByUserId, cancellationToken);
+                buffer.Clear();
+            }
+        }
+
+        if (buffer.Count > 0)
+        {
+            await CloneItemsAsync(buffer, listId, backupList.Id.Value, requestedByUserId, cancellationToken);
+            buffer.Clear();
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return (backupList.Id.Value, backupName);
+    }
+
+    public async Task UpdateMigrationJobProgressAsync(
+        TMigrationJob job,
+        int processedItems,
+        int totalItems,
+        int percent,
+        string message,
+        DateTime progressOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await unitOfWork.MigrationJobsStore.SetProgressCountsAsync(job, processedItems, totalItems, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetProgressPercentAsync(job, percent, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, message, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, progressOn, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CompleteMigrationJobAsync(
+        TMigrationJob job,
+        int processedItems,
+        int totalItems,
+        DateTime completedOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        await unitOfWork.MigrationJobsStore.SetStatusAsync(job, ListMigrationJobStatus.Completed, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCompletedOnAsync(job, completedOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetProgressCountsAsync(job, processedItems, totalItems, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetProgressPercentAsync(job, 100, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, "Migration completed", cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetFailureReasonAsync(job, null, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, completedOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCancelRequestedAsync(job, false, null, null, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task FailMigrationJobAsync(
+        TMigrationJob job,
+        string failureReason,
+        DateTime failedOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var message = string.IsNullOrWhiteSpace(failureReason) ? "Migration failed" : failureReason;
+        await unitOfWork.MigrationJobsStore.SetStatusAsync(job, ListMigrationJobStatus.Failed, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetFailureReasonAsync(job, failureReason, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetFailedOnAsync(job, failedOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, message, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, failedOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCancelRequestedAsync(job, false, null, null, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> RequestMigrationCancellationAsync(
+        Guid listId,
+        Guid jobId,
+        string requestedByUserId,
+        DateTime requestedOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var jobView = await migrationJobGetter.GetAsync(listId, jobId, cancellationToken);
+        if (jobView is null ||
+            jobView.Status is ListMigrationJobStatus.Completed or ListMigrationJobStatus.Failed
+                or ListMigrationJobStatus.Canceled)
+        {
+            return false;
+        }
+
+        var job = await unitOfWork.MigrationJobsStore.GetByIdAsync(jobId, cancellationToken);
+        if (job is null)
+        {
+            return false;
+        }
+
+        await unitOfWork.MigrationJobsStore.SetCancelRequestedAsync(job, true, requestedByUserId, requestedOn,
+            cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task CancelMigrationJobAsync(
+        TMigrationJob job,
+        string? message,
+        DateTime canceledOn,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var cancelMessage = message ?? "Migration canceled";
+        await unitOfWork.MigrationJobsStore.SetStatusAsync(job, ListMigrationJobStatus.Canceled, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCanceledOnAsync(job, canceledOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCurrentMessageAsync(job, cancelMessage, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetLastProgressOnAsync(job, canceledOn, cancellationToken);
+        await unitOfWork.MigrationJobsStore.SetCancelRequestedAsync(job, false, null, null, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> IsMigrationCancellationRequestedAsync(
+        TMigrationJob job,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var jobView = await migrationJobGetter.GetAsync(job.ListId, job.Id, cancellationToken);
+        return jobView?.CancelRequested ?? false;
+    }
+
+    private async Task CloneItemsAsync(
+        IReadOnlyCollection<int> itemIds,
+        Guid sourceListId,
+        Guid backupListId,
+        string requestedByUserId,
+        CancellationToken cancellationToken
+    )
+    {
+        foreach (var id in itemIds)
+        {
+            var source = await unitOfWork.ItemsStore.GetByIdAsync(id, sourceListId, cancellationToken);
+            if (source is null)
+            {
+                continue;
+            }
+
+            var bag = await unitOfWork.ItemsStore.GetBagAsync(source, cancellationToken);
+            var clone = await unitOfWork.ItemsStore.InitAsync(backupListId, requestedByUserId, cancellationToken);
+            await unitOfWork.ItemsStore.SetBagAsync(clone, CloneBag(bag), requestedByUserId, cancellationToken);
+            await unitOfWork.ItemsStore.CreateAsync(clone, cancellationToken);
+        }
+    }
+
+    private static object CloneBag(object bag)
+    {
+        var json = JsonSerializer.Serialize(bag);
+        return JsonSerializer.Deserialize<object>(json) ?? new Dictionary<string, object?>();
     }
 
     public async Task UpdateListAsync(

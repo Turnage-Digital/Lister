@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Lister.Lists.Domain.Enums;
 
-namespace Lister.Lists.Application.Endpoints.Migrations;
+namespace Lister.Lists.Application.Endpoints.Migrations.Shared;
 
 public class MigrationPlan
 {

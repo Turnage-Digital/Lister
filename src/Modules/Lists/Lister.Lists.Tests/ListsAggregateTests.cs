@@ -2,6 +2,7 @@ using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
@@ -14,11 +15,13 @@ public class ListsAggregateTests
     [SetUp]
     public void SetUp()
     {
-        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
+        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>>();
         _mediator = new Mock<IDomainEventQueue>();
 
         _listsStore = new Mock<IListsStore<ListDb>>();
         _itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _itemStream = new Mock<IGetListItemStream>();
+        _migrationJobGetter = new Mock<IGetListMigrationJob>();
         _itemsStore
             .Setup(x => x.SetBagAsync(
                 It.IsAny<ItemDb>(),
@@ -30,15 +33,22 @@ public class ListsAggregateTests
         _unitOfWork.SetupGet(x => x.ListsStore).Returns(_listsStore.Object);
         _unitOfWork.SetupGet(x => x.ItemsStore).Returns(_itemsStore.Object);
 
-        var bagValidator = new ListItemBagValidator<ListDb, ItemDb>(_unitOfWork.Object);
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator);
+        var bagValidator = new ListItemBagValidator<ListDb, ItemDb, ListMigrationJobDb>(_unitOfWork.Object);
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>(
+            _unitOfWork.Object,
+            _mediator.Object,
+            bagValidator,
+            _itemStream.Object,
+            _migrationJobGetter.Object);
     }
 
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
+    private Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>> _unitOfWork;
     private Mock<IDomainEventQueue> _mediator;
     private Mock<IListsStore<ListDb>> _listsStore = null!;
     private Mock<IItemsStore<ItemDb>> _itemsStore = null!;
-    private ListsAggregate<ListDb, ItemDb> _listsAggregate;
+    private Mock<IGetListItemStream> _itemStream = null!;
+    private Mock<IGetListMigrationJob> _migrationJobGetter = null!;
+    private ListsAggregate<ListDb, ItemDb, ListMigrationJobDb> _listsAggregate;
 
     private const string BY = "heath";
 
@@ -368,7 +378,8 @@ public class ListsAggregateTests
             .ReturnsAsync(Array.Empty<StatusTransition>());
 
         Column[]? persisted = null;
-        _listsStore.Setup(x => x.SetColumnsAsync(list, It.IsAny<IEnumerable<Column>>(), BY, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x =>
+                x.SetColumnsAsync(list, It.IsAny<IEnumerable<Column>>(), BY, It.IsAny<CancellationToken>()))
             .Callback<ListDb, IEnumerable<Column>, string, CancellationToken>((_, cols, _, _) =>
             {
                 persisted = cols.ToArray();

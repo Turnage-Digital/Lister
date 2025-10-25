@@ -58,7 +58,7 @@ public class ItemsStore(ListsDbContext dbContext)
     public Task SetBagAsync(
         ItemDb item,
         object bag,
-        string actedBy,
+        string updatedBy,
         CancellationToken cancellationToken
     )
     {
@@ -73,7 +73,7 @@ public class ItemsStore(ListsDbContext dbContext)
             {
                 Type = ItemHistoryType.Updated,
                 On = DateTime.UtcNow,
-                By = actedBy,
+                By = updatedBy,
                 Item = item
             });
         }
@@ -84,14 +84,5 @@ public class ItemsStore(ListsDbContext dbContext)
     public Task<object> GetBagAsync(ItemDb item, CancellationToken cancellationToken)
     {
         return Task.FromResult(item.Bag);
-    }
-
-    public async Task<int[]> GetItemIdsAsync(Guid listId, CancellationToken cancellationToken)
-    {
-        var ids = await dbContext.Items
-            .Where(i => i.ListId == listId)
-            .Select(i => i.Id!.Value)
-            .ToArrayAsync(cancellationToken);
-        return ids;
     }
 }

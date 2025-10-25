@@ -1,6 +1,6 @@
 using Lister.Lists.Domain.Queries;
 
-namespace Lister.Lists.Application.Endpoints.Migrations;
+namespace Lister.Lists.Application.Endpoints.Migrations.Shared;
 
 public interface IMigrationValidator
 {

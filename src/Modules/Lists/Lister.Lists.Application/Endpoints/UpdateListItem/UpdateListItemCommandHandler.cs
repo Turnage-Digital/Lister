@@ -4,11 +4,12 @@ using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.UpdateListItem;
 
-public class UpdateListItemCommandHandler<TList, TItem>(
-    ListsAggregate<TList, TItem> lists
+public class UpdateListItemCommandHandler<TList, TItem, TMigrationJob>(
+    ListsAggregate<TList, TItem, TMigrationJob> lists
 ) : IRequestHandler<UpdateListItemCommand>
     where TList : IWritableList
     where TItem : IWritableItem
+    where TMigrationJob : IWritableListMigrationJob
 {
     public async Task Handle(UpdateListItemCommand request, CancellationToken cancellationToken)
     {

@@ -7,13 +7,14 @@ using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 
-public class ConvertTextToListItemCommandHandler<TList, TItem>(
-    ListsAggregate<TList, TItem> listsAggregate,
+public class ConvertTextToListItemCommandHandler<TList, TItem, TMigrationJob>(
+    ListsAggregate<TList, TItem, TMigrationJob> listsAggregate,
     IGetCompletedJson completedJsonGetter,
-    ILogger<ConvertTextToListItemCommandHandler<TList, TItem>> logger
+    ILogger<ConvertTextToListItemCommandHandler<TList, TItem, TMigrationJob>> logger
 ) : IRequestHandler<ConvertTextToListItemCommand, ListItem>
     where TList : IWritableList
     where TItem : IWritableItem
+    where TMigrationJob : IWritableListMigrationJob
 {
     public async Task<ListItem> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
     {

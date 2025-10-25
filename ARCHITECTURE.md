@@ -84,7 +84,7 @@ Example registrations:
 ```csharp
 // Lists
 services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
-    typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
+    typeof(CreateListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
 
 // Notifications
 services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateNotificationRuleResponse>),
@@ -99,6 +99,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - New modules follow: Domain + Application + Infrastructure.Sql; wire in Host.
 - Access stores exclusively via their unit of work abstractions; do not inject `IListsStore`, `IItemsStore`, etc.
   directly into handlers or services.
+- Endpoint controllers in `*.Application` are single-purpose: define one controller per MediatR command/query to avoid
+  accumulating "fat controllers" over time.
 
 ## Persistence & Mutation Flow
 
@@ -119,6 +121,13 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - Store `Get*` methods exist strictly for mutation paths—use read services for projections or listings.
 - Stores append history entries for their entities (create/update/delete/etc.) so aggregates stay focused on invariants
   while the persistence layer maintains audit trails consistently.
+- Example: `ListMigrationJobStore` mirrors `ListsStore` by exposing init/create helpers and targeted setter methods
+  (status, progress, backup metadata). `ListsAggregate` is the only consumer, coordinating all migration job
+  mutations while callers observe via query services.
+- Derived projections needed during mutations should live in query services rather than stores. For example,
+  migrations rely on `IGetListItemStream` / `IGetListItemCount` to surface item identifiers/counts while leaving
+  `ItemsStore` focused on bag
+  mutation for individual items.
 
 ### Aggregates
 
@@ -183,6 +192,9 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - Writable vs read-only contracts separate mutation from projection.
     - `IWritableItem : IItem`, `IWritableList : IList` — implemented by persistence entities for write paths.
     - Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
+- Migration jobs follow the same pattern: `IListMigrationJob` exposes identifiers; marker interfaces
+  `IReadOnlyListMigrationJob` / `IWritableListMigrationJob` distinguish read vs write usage while the actual entity
+  (`ListMigrationJobDb`) provides the full state.
 - Persistence entities implement writable interfaces and add storage-specific shape.
     - Lists: `ListDb : IWritableList` with navigation collections and flags (e.g., `IsDeleted`).
     - Items: `ItemDb : IWritableItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
@@ -334,7 +346,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 Goals
 
 - Safely evolve list schemas without breaking items or client contracts.
-- Provide dry-run validation, explicit execution, durable eventing (Outbox), and real-time progress (SSE).
+- Provide dry-run validation, explicit execution, durable eventing (Outbox), real-time progress (SSE), and resumable
+  job orchestration.
 
 Key Concepts
 
@@ -349,31 +362,56 @@ Key Concepts
     - RenameStorageKey(from, to)
     - RemoveStatus(name, mapTo?)
 
+- Migration Jobs: Every execution request persists a `ListMigrationJob` row (queued → running → completed/failed)
+  together with the serialized plan, progress metrics, and backup metadata. Only one active job per list is allowed.
+  Write-side access flows through `IListMigrationJobStore`; read-side projections are served by dedicated query
+  services (`IGetListMigrationJobs`, `IGetListMigrationJob`, `IGetActiveListMigrationJob`) to keep CQRS boundaries
+  clear.
+- Timeline entries: `ListMigrationJobHistoryEntryDb : Entry<ListMigrationJobHistoryType>` is appended by the store for
+  every status transition, progress update, backup completion, and cancel-request toggle. Store methods accept the
+  acting user and timestamp so the aggregate can orchestrate operations while persistence handles audit trails.
+- Aggregate coordination: `ListsAggregate` is the sole consumer of `IListMigrationJobStore`, issuing setters (e.g.,
+  start, progress, cancel, complete) and cloning backups. Application layers and background workers call aggregate
+  methods rather than manipulating the entity or store directly.
+
 - Validation (Dry-Run):
     - Checks existence, collisions, converter presence, and constraint tightening safety.
     - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
 
-- Execution (with SSE):
-    - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status
-      mapping).
-    - Publishes progress via integration events routed through the Outbox and SSE feed (see Migration Events).
+- Execution Pipeline:
+    - A background `ListMigrationWorker` polls queued jobs, creates a timestamped backup copy of the list (metadata +
+      items), then drives the `MigrationExecutor` in batched, cancellable passes.
+    - `MigrationExecutor` streams item identifiers (no giant materialization), commits between batches, and invokes a
+      progress callback instead of publishing directly.
+    - The worker records progress/heartbeat fields on the job row and publishes integration events routed through the
+      change feed. Cancellation requests simply flip a flag the worker checks between batches.
 
 Migration Events
 
-- `ListMigrationStartedIntegrationEvent`: marks the migration request as executing.
-- `ListMigrationProgressIntegrationEvent`: emits progress percentage and contextual messages.
-- `ListMigrationCompletedIntegrationEvent`: signals all operations succeeded.
-- `ListMigrationFailedIntegrationEvent`: signals execution stopped with errors; payload should guide remediation.
+- `ListMigrationStartedIntegrationEvent`: marks the migration request as executing (now includes `JobId`).
+- `ListMigrationProgressIntegrationEvent`: emits progress percentage and contextual messages (includes `JobId`).
+- `ListMigrationCompletedIntegrationEvent`: signals all operations succeeded (includes `JobId`).
+- `ListMigrationFailedIntegrationEvent`: signals execution stopped with errors or cancellation (includes `JobId`).
 
 Contracts & Endpoints
 
 - POST `/api/lists/{listId}/migrations`
     - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
-    - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
-    - UI subscribes to SSE to reflect live progress.
+    - Returns `{ dryRun, job, enqueued }`; when `mode = execute` and validation succeeds, the job is queued.
+- GET `/api/lists/{listId}/migrations`
+    - Returns the job history for the list (latest first).
+- GET `/api/lists/{listId}/migrations/{jobId}`
+    - Returns detailed job state plus the original plan.
+- POST `/api/lists/{listId}/migrations/{jobId}/cancel`
+    - Requests cancellation; worker marks the job canceled at the next safe checkpoint.
+
+- UI subscribes to SSE to reflect live progress and status updates (job events share type names with the integration
+  events above).
 
 Durability & Delivery
 
+- Job Table: `ListMigrationJobs` lives in the Lists module schema; background workers read/update this table for
+  orchestration, and job rows are retained for historical audits.
 - Outbox: All migration events are persisted and dispatched independently with exponential backoff and retention
   cleanup.
 - SSE: Host streams typed envelopes `{ type, data, occurredOn }`; client routes by `type` (including the migration
@@ -408,6 +446,9 @@ Future Enhancements
 ## Config
 
 - Greenfield dev may keep simple credentials checked in; production uses secrets/env vars.
+- `ef-reset.ps1` can target individual modules (`-Module Lists`), add migrations without dropping existing ones
+  (`-KeepExistingMigrations`), skip database updates (`-SkipDatabaseUpdate`), and skip dropping the core database
+  (`-SkipDropCoreDatabase`).
 
 ## Performance considerations
 

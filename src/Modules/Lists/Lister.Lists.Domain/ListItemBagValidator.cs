@@ -4,10 +4,13 @@ using Lister.Lists.Domain.Enums;
 
 namespace Lister.Lists.Domain;
 
-public class ListItemBagValidator<TList, TItem>(IListsUnitOfWork<TList, TItem> unitOfWork)
+public class ListItemBagValidator<TList, TItem, TMigrationJob>(
+    IListsUnitOfWork<TList, TItem, TMigrationJob> unitOfWork
+)
     : IValidateListItemBag<TList>
     where TList : IWritableList
     where TItem : IWritableItem
+    where TMigrationJob : IWritableListMigrationJob
 {
     public async Task ValidateAsync(TList list, object bag, CancellationToken cancellationToken)
     {

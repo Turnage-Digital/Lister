@@ -16,6 +16,45 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ListMigrationJobs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BackupListId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    BackupListName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RequestedByUserId = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RequestedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    PlanJson = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    StartedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CompletedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    FailedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CanceledOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    BackupCompletedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    LastProgressOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ProgressPercent = table.Column<int>(type: "int", nullable: true),
+                    TotalItems = table.Column<int>(type: "int", nullable: false),
+                    ProcessedItems = table.Column<int>(type: "int", nullable: false),
+                    CurrentMessage = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FailureReason = table.Column<string>(type: "varchar(1024)", maxLength: 1024, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CancelRequested = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CancelRequestedByUserId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CancelRequestedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ListMigrationJobs", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Lists",
                 columns: table => new
                 {
@@ -27,6 +66,32 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lists", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ListMigrationJobHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    MigrationJobId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    On = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    By = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Bag = table.Column<string>(type: "JSON", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ListMigrationJobHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ListMigrationJobHistory_ListMigrationJobs_MigrationJobId",
+                        column: x => x.MigrationJobId,
+                        principalTable: "ListMigrationJobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -207,6 +272,21 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 column: "ListId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ListMigrationJobHistory_MigrationJobId",
+                table: "ListMigrationJobHistory",
+                column: "MigrationJobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ListMigrationJobs_ListId_Status",
+                table: "ListMigrationJobs",
+                columns: new[] { "ListId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ListMigrationJobs_Status",
+                table: "ListMigrationJobs",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Statuses_ListId",
                 table: "Statuses",
                 column: "ListId");
@@ -235,6 +315,9 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 name: "ListHistory");
 
             migrationBuilder.DropTable(
+                name: "ListMigrationJobHistory");
+
+            migrationBuilder.DropTable(
                 name: "Statuses");
 
             migrationBuilder.DropTable(
@@ -242,6 +325,9 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "ListMigrationJobs");
 
             migrationBuilder.DropTable(
                 name: "Lists");

@@ -54,9 +54,9 @@ public static class SeedData
             }
 
             var listAggregate = scope.ServiceProvider
-                .GetRequiredService<ListsAggregate<ListDb, ItemDb>>();
+                .GetRequiredService<ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>>();
             var listsUow = scope.ServiceProvider
-                .GetRequiredService<IListsUnitOfWork<ListDb, ItemDb>>();
+                .GetRequiredService<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>>();
             var notifAggregate = scope.ServiceProvider
                 .GetRequiredService<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
 

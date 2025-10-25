@@ -1,15 +1,12 @@
-using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetStatusTransitions;
 
-public class GetStatusTransitionsQueryHandler<TList, TItem>(
+public class GetStatusTransitionsQueryHandler(
     IGetListItemDefinition definitionGetter
 ) : IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>
-    where TList : IWritableList
-    where TItem : IWritableItem
 {
     public async Task<StatusTransition[]> Handle(GetStatusTransitionsQuery request, CancellationToken cancellationToken)
     {

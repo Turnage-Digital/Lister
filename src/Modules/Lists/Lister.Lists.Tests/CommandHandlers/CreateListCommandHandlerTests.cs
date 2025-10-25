@@ -14,11 +14,13 @@ public class CreateListCommandHandlerTests
     [SetUp]
     public void SetUp()
     {
-        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb>>();
+        _unitOfWork = new Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>>();
         _mediator = new Mock<IDomainEventQueue>();
 
         var listsStore = new Mock<IListsStore<ListDb>>();
         var itemsStore = new Mock<IItemsStore<ItemDb>>();
+        _itemStream = new Mock<IGetListItemStream>();
+        _migrationJobGetter = new Mock<IGetListMigrationJob>();
         itemsStore
             .Setup(x => x.SetBagAsync(
                 It.IsAny<ItemDb>(),
@@ -40,16 +42,24 @@ public class CreateListCommandHandlerTests
         bagValidator.Setup(v => v.ValidateAsync(It.IsAny<ListDb>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _listsAggregate = new ListsAggregate<ListDb, ItemDb>(_unitOfWork.Object, _mediator.Object, bagValidator.Object);
+        _listsAggregate = new ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>(
+            _unitOfWork.Object,
+            _mediator.Object,
+            bagValidator.Object,
+            _itemStream.Object,
+            _migrationJobGetter.Object);
         _definitionGetter = new Mock<IGetListItemDefinition>();
-        _handler = new CreateListCommandHandler<ListDb, ItemDb>(_listsAggregate, _definitionGetter.Object);
+        _handler = new CreateListCommandHandler<ListDb, ItemDb, ListMigrationJobDb>(_listsAggregate,
+            _definitionGetter.Object);
     }
 
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _unitOfWork;
+    private Mock<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>> _unitOfWork;
     private Mock<IDomainEventQueue> _mediator;
-    private ListsAggregate<ListDb, ItemDb> _listsAggregate;
+    private ListsAggregate<ListDb, ItemDb, ListMigrationJobDb> _listsAggregate;
     private Mock<IGetListItemDefinition> _definitionGetter;
-    private CreateListCommandHandler<ListDb, ItemDb> _handler;
+    private CreateListCommandHandler<ListDb, ItemDb, ListMigrationJobDb> _handler;
+    private Mock<IGetListItemStream> _itemStream = null!;
+    private Mock<IGetListMigrationJob> _migrationJobGetter = null!;
 
     [Test]
     public void Handle_ThrowsArgumentNullException_WhenUserIdIsNull()

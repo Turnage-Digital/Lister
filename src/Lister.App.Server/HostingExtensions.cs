@@ -13,13 +13,13 @@ using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Application.Endpoints.DeleteList;
 using Lister.Lists.Application.Endpoints.DeleteListItem;
 using Lister.Lists.Application.Endpoints.GetItemDetails;
-using Lister.Lists.Application.Endpoints.GetStatusTransitions;
-using Lister.Lists.Application.Endpoints.Migrations;
+using Lister.Lists.Application.Endpoints.Migrations.CancelMigrationJob;
+using Lister.Lists.Application.Endpoints.Migrations.RunMigration;
+using Lister.Lists.Application.Endpoints.Migrations.Shared;
 using Lister.Lists.Application.Endpoints.UpdateList;
 using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Configuration;
@@ -205,7 +205,7 @@ internal static class HostingExtensions
 
         /* Lists */
         services.AddDbContextWithMigrations<ListsDbContext>(connectionString, serverVersion);
-        services.AddScoped<IListsUnitOfWork<ListDb, ItemDb>, ListsUnitOfWork>();
+        services.AddScoped<IListsUnitOfWork<ListDb, ItemDb, ListMigrationJobDb>, ListsUnitOfWork>();
         services.AddScoped<IGetCompletedJson, CompletedJsonGetter>();
         services.AddScoped<IGetItemDetails, ItemDetailsGetter>();
         services.AddScoped<IGetListItemDefinition, ListItemDefinitionGetter>();
@@ -213,6 +213,10 @@ internal static class HostingExtensions
         services.AddScoped<IGetListNames, ListNamesGetter>();
         services.AddScoped<IGetListHistory, ListHistoryGetter>();
         services.AddScoped<IGetItemHistory, ItemHistoryGetter>();
+        services.AddScoped<IGetListMigrationJobs, ListMigrationJobsGetter>();
+        services.AddScoped<IGetListMigrationJob, ListMigrationJobsGetter>();
+        services.AddScoped<IGetListItemStream, ListItemStream>();
+        services.AddScoped<IGetListItemCount, ListItemCountGetter>();
 
         /* Notifications */
         services.AddDbContextWithMigrations<NotificationsDbContext>(connectionString, serverVersion);
@@ -233,8 +237,8 @@ internal static class HostingExtensions
 
     private static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb, ItemDb>>();
-        services.AddScoped<ListsAggregate<ListDb, ItemDb>>();
+        services.AddScoped<IValidateListItemBag<ListDb>, ListItemBagValidator<ListDb, ItemDb, ListMigrationJobDb>>();
+        services.AddScoped<ListsAggregate<ListDb, ItemDb, ListMigrationJobDb>>();
         services.AddScoped<INotificationTriggerEvaluator, NotificationTriggerEvaluator>();
         services.AddScoped<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
         return services;
@@ -254,29 +258,29 @@ internal static class HostingExtensions
             typeof(LoggingBehavior<,>));
 
         services.AddScoped<IMigrationValidator, MigrationValidator>();
-        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
+        services.AddScoped<MigrationExecutor<ListDb, ItemDb, ListMigrationJobDb>>();
 
         // Lists - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
-            typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
+            typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
-            typeof(CreateListCommandHandler<ListDb, ItemDb>));
+            typeof(CreateListCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
-            typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
+            typeof(CreateListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
-            typeof(DeleteListCommandHandler<ListDb, ItemDb>));
+            typeof(DeleteListCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListItemCommand>),
-            typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
+            typeof(DeleteListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
-            typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationDryRunResult>),
-            typeof(RunMigrationCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
-            typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
+            typeof(UpdateListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
+        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, RunMigrationResponse>),
+            typeof(RunMigrationCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
+        services.AddScoped(typeof(IRequestHandler<CancelMigrationJobCommand, bool>),
+            typeof(CancelMigrationJobCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListCommand>),
-            typeof(UpdateListCommandHandler<ListDb, ItemDb>));
+            typeof(UpdateListCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
-            typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
+            typeof(UpdateListItemCommandHandler<ListDb, ItemDb, ListMigrationJobDb>));
 
         // Notifications - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),
@@ -299,6 +303,7 @@ internal static class HostingExtensions
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();
         services.AddHostedService<OutboxDispatcherService>();
+        services.AddHostedService<ListMigrationWorker>();
         return services;
     }
 

@@ -8,8 +8,8 @@ import {
   CircularProgress,
   List,
   ListItem,
-  Stack,
   Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
@@ -112,10 +112,10 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
   const infiniteData = query.data as InfiniteData<HistoryPage> | undefined;
 
   const pages = React.useMemo<HistoryPage[]>(() => {
-    if (!infiniteData) {
-      return [];
+    if (infiniteData) {
+      return [...infiniteData.pages];
     }
-    return [...infiniteData.pages];
+    return [];
   }, [infiniteData]);
 
   const entries = React.useMemo(() => {
@@ -267,20 +267,21 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
   const contentNode = isInitialLoading ? <HistoryListSkeleton /> : listContent;
 
   const headerActions =
-    totalEntries !== undefined ? (
+    totalEntries === undefined ? undefined : (
       <Chip
         size="small"
         label={`${totalEntries} entr${totalEntries === 1 ? "y" : "ies"}`}
         color="default"
       />
-    ) : undefined;
+    );
 
   const hasNextPage = Boolean(query.hasNextPage);
-  const footerJustify = hasNextPage
-    ? isInitialLoading
-      ? "center"
-      : "flex-end"
-    : "center";
+  let footerJustify: "center" | "flex-end";
+  if (hasNextPage) {
+    footerJustify = isInitialLoading ? "center" : "flex-end";
+  } else {
+    footerJustify = "center";
+  }
 
   return (
     <SideDrawerContainer>
