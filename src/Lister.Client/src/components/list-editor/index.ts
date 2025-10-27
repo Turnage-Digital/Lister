@@ -2,10 +2,10 @@ export { default as ListEditor } from "./list-editor";
 export {
   createEmptyRuleFormValue,
   toNotificationRuleFormValue,
-} from "./list-editor";
+} from "./notification-rules.helpers";
 export type {
   ListEditorInitialValue,
   ListEditorSubmitResult,
   NotificationRuleFormValue,
   NotificationRuleSubmission,
-} from "./types";
+} from "./list-editor.types";
