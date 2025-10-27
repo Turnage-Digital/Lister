@@ -31,6 +31,7 @@ const createNotificationRule = async (
     channels: input.channels,
     schedule: input.schedule,
     templateId: input.templateId,
+    isActive: input.isActive,
   };
 
   const response = await fetch("/api/notifications/rules", {
@@ -90,6 +91,7 @@ const CreateListPage = () => {
                 channels: rule.channels,
                 schedule: rule.schedule,
                 templateId: rule.templateId,
+                isActive: rule.isActive,
               }),
             ),
         );

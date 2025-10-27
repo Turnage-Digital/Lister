@@ -32,7 +32,8 @@ public class UpdateNotificationRuleController(IMediator mediator) : Controller
             request.Trigger,
             request.Channels,
             request.Schedule,
-            request.TemplateId);
+            request.TemplateId,
+            request.IsActive);
 
         await mediator.Send(command, cancellationToken);
         return Ok();

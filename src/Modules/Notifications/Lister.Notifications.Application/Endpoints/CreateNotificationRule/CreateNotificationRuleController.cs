@@ -31,7 +31,8 @@ public class CreateNotificationRuleController(IMediator mediator) : Controller
             request.Trigger,
             request.Channels,
             request.Schedule,
-            request.TemplateId);
+            request.TemplateId,
+            request.IsActive);
 
         var result = await mediator.Send(command, cancellationToken);
         return Created($"/api/notifications/rules/{result.Id}", result);

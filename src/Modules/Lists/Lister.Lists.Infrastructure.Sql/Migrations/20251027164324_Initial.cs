@@ -137,11 +137,11 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ListDbId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     From = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    To = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ListDbId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    AllowedNext = table.Column<string>(type: "json", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -219,7 +219,8 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_StatusTransitions_ListId_From",
                 table: "StatusTransitions",
-                columns: new[] { "ListId", "From" });
+                columns: new[] { "ListId", "From" },
+                unique: true);
         }
 
         /// <inheritdoc />

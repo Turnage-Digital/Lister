@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Lists.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ListsDbContext))]
-    [Migration("20251019205854_Initial")]
+    [Migration("20251027164324_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -243,10 +243,17 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AllowedNext")
+                        .IsRequired()
+                        .HasColumnType("json")
+                        .HasColumnName("AllowedNext")
+                        .HasAnnotation("Relational:JsonPropertyName", "to");
+
                     b.Property<string>("From")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(50)")
+                        .HasAnnotation("Relational:JsonPropertyName", "from");
 
                     b.Property<Guid?>("ListDbId")
                         .HasColumnType("char(36)");
@@ -254,17 +261,13 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Property<Guid>("ListId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("To")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.HasKey("Id")
                         .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
 
                     b.HasIndex("ListDbId");
 
-                    b.HasIndex("ListId", "From");
+                    b.HasIndex("ListId", "From")
+                        .IsUnique();
 
                     b.ToTable("StatusTransitions", (string)null);
                 });

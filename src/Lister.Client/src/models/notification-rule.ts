@@ -62,4 +62,5 @@ export interface NotificationRuleInput {
   channels: NotificationChannel[];
   schedule: NotificationSchedule;
   templateId?: string | null;
+  isActive: boolean;
 }

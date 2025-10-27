@@ -256,6 +256,7 @@ public class ListerApiClient
         NotificationChannel[] channels,
         NotificationSchedule schedule,
         string? templateId,
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -265,7 +266,8 @@ public class ListerApiClient
             trigger,
             channels,
             schedule,
-            templateId
+            templateId,
+            isActive
         };
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8);
@@ -285,10 +287,11 @@ public class ListerApiClient
         NotificationChannel[] channels,
         NotificationSchedule schedule,
         string? templateId,
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
-        var body = new { trigger, channels, schedule, templateId };
+        var body = new { trigger, channels, schedule, templateId, isActive };
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

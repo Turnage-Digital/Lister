@@ -21,6 +21,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Switch,
 } from "@mui/material";
 
 import {
@@ -193,6 +194,16 @@ const NotificationRulesEditor = ({
     }));
   };
 
+  const handleActiveChange = (
+    rule: NotificationRuleFormValue,
+    active: boolean,
+  ) => {
+    onUpdateRule(rule.clientId, (prev) => ({
+      ...prev,
+      isActive: active,
+    }));
+  };
+
   const rulesView =
     rules.length === 0 ? (
       <Typography color="text.secondary">
@@ -208,6 +219,9 @@ const NotificationRulesEditor = ({
           const emailChannel = channels.find(
             (channel) => channel.type === "Email",
           );
+
+          const isActive = rule.isActive;
+          const activeLabel = isActive ? "Active" : "Inactive";
 
           const emailField = emailChannel ? (
             <TextField
@@ -245,14 +259,30 @@ const NotificationRulesEditor = ({
                   sx={{ pb: 0.5 }}
                 >
                   <Typography fontWeight={600}>Rule {index + 1}</Typography>
-                  <Button
-                    color="error"
-                    startIcon={<Delete />}
-                    onClick={() => onRemoveRule(rule)}
-                    size="small"
-                  >
-                    Remove
-                  </Button>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isActive}
+                          onChange={(event) =>
+                            handleActiveChange(rule, event.target.checked)
+                          }
+                          inputProps={{
+                            "aria-label": `Toggle rule ${index + 1} active`,
+                          }}
+                        />
+                      }
+                      label={activeLabel}
+                    />
+                    <Button
+                      color="error"
+                      startIcon={<Delete />}
+                      onClick={() => onRemoveRule(rule)}
+                      size="small"
+                    >
+                      Remove
+                    </Button>
+                  </Stack>
                 </Stack>
 
                 <FormControl fullWidth>

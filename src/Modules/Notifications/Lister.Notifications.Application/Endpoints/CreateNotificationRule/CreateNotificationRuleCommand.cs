@@ -9,5 +9,6 @@ public record CreateNotificationRuleCommand(
     NotificationTrigger Trigger,
     NotificationChannel[] Channels,
     NotificationSchedule Schedule,
-    string? TemplateId
+    string? TemplateId,
+    bool IsActive
 ) : RequestBase<NotificationRuleDto>;

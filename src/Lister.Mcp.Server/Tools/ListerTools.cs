@@ -137,6 +137,7 @@ public class ListerTools
         [Description("Channels JSON array")] string channelsJson,
         [Description("Schedule JSON")] string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
+        [Description("Whether the rule is active")] bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -156,7 +157,7 @@ public class ListerTools
                            ?? NotificationSchedule.Immediate();
 
             await apiClient.UpdateNotificationRuleAsync(rid, trigger, channels, schedule, templateId,
-                cancellationToken);
+                isActive, cancellationToken);
             return JsonSerializer.Serialize(new { success = true }, JsonOptions);
         }
         catch (Exception ex)
@@ -205,6 +206,7 @@ public class ListerTools
         [Description("Schedule JSON (e.g., {\"type\":\"Immediate\"})")]
         string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
+        [Description("Whether the rule should start active")] bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -224,7 +226,7 @@ public class ListerTools
                            ?? NotificationSchedule.Immediate();
 
             var rule = await apiClient.CreateNotificationRuleAsync(lid, trigger, channels, schedule, templateId,
-                cancellationToken);
+                isActive, cancellationToken);
             return JsonSerializer.Serialize(new { success = true, rule }, JsonOptions);
         }
         catch (Exception ex)

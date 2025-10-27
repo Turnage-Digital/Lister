@@ -78,6 +78,7 @@ const stripClientFields = (
   channels: rule.channels,
   schedule: rule.schedule,
   templateId: rule.templateId,
+  isActive: rule.isActive,
 });
 
 export const toNotificationRuleFormValue = (
@@ -89,6 +90,7 @@ export const toNotificationRuleFormValue = (
   channels: rule.channels,
   schedule: rule.schedule,
   templateId: rule.templateId ?? undefined,
+  isActive: rule.isActive ?? true,
   clientId: createClientId(),
 });
 
@@ -97,6 +99,7 @@ export const createEmptyRuleFormValue = (): NotificationRuleFormValue => ({
   trigger: { type: "ItemCreated" },
   channels: [{ type: "InApp" }],
   schedule: { type: "Immediate" },
+  isActive: true,
 });
 
 const ListEditor = ({
