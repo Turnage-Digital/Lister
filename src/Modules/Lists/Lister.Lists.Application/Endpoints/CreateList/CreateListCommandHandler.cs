@@ -1,14 +1,13 @@
+using Lister.Lists.Application.Mappings;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.CreateList;
 
 public class CreateListCommandHandler<TList, TItem>(
-    ListsAggregate<TList, TItem> listsAggregate,
-    IGetListItemDefinition definitionGetter
+    ListsAggregate<TList, TItem> listsAggregate
 ) : IRequestHandler<CreateListCommand, ListItemDefinitionDto>
     where TList : IWritableList
     where TItem : IWritableItem
@@ -31,8 +30,10 @@ public class CreateListCommandHandler<TList, TItem>(
             request.Transitions,
             cancellationToken);
 
-        var retval = await definitionGetter.GetAsync(created.Id!.Value, cancellationToken)
-                     ?? throw new InvalidOperationException("Created list definition not found");
-        return retval;
+        return ListDefinitionWriteContextMap.ToDto(
+            created,
+            await listsAggregate.GetColumnsAsync(created, cancellationToken),
+            await listsAggregate.GetStatusesAsync(created, cancellationToken),
+            await listsAggregate.GetStatusTransitionsAsync(created, cancellationToken));
     }
 }

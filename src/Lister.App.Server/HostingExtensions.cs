@@ -22,7 +22,6 @@ using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.Infrastructure.Sql;
-using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
 using Lister.Notifications.Application.Endpoints.CreateNotificationRule;
@@ -224,10 +223,6 @@ internal static class HostingExtensions
         services.AddScoped<IGetUnreadNotificationCount, UnreadNotificationCountGetter>();
         services.AddScoped<IGetActiveNotificationRules, ActiveNotificationRulesGetter>();
         services.AddScoped<IGetPendingNotifications, PendingNotificationsGetter>();
-
-        /* Automapper */
-        services.AddAutoMapper(config =>
-            config.AddProfile<ListsMappingProfile>());
 
         return services;
     }

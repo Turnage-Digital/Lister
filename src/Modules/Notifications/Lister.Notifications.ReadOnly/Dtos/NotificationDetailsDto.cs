@@ -37,7 +37,7 @@ public record NotificationDetailsDto
     public Entry<NotificationHistoryType>[] History { get; init; } = [];
 
     [JsonPropertyName("deliveryAttempts")]
-    public List<DeliveryAttemptDto> DeliveryAttempts { get; init; } = new();
+    public List<DeliveryAttemptDto> DeliveryAttempts { get; init; } = [];
 }
 
 public record DeliveryAttemptDto
