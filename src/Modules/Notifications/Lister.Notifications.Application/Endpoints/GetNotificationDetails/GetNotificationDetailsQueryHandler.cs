@@ -1,6 +1,6 @@
 using Lister.Notifications.Domain.Entities;
-using Lister.Notifications.Domain.Queries;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
@@ -8,11 +8,11 @@ namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 public class GetNotificationDetailsQueryHandler<TRule, TNotification>(
     IGetNotificationDetails getter
 )
-    : IRequestHandler<GetNotificationDetailsQuery, NotificationDetails?>
+    : IRequestHandler<GetNotificationDetailsQuery, NotificationDetailsDto?>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    public async Task<NotificationDetails?> Handle(
+    public async Task<NotificationDetailsDto?> Handle(
         GetNotificationDetailsQuery request,
         CancellationToken cancellationToken
     )

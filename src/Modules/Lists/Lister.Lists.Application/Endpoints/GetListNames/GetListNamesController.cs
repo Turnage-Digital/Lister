@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +13,12 @@ namespace Lister.Lists.Application.Endpoints.GetListNames;
 public class GetListNamesController(IMediator mediator) : Controller
 {
     [HttpGet("names")]
-    [ProducesResponseType(typeof(ListName[]), Status200OK)]
+    [ProducesResponseType(typeof(ListNameDto[]), Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(CancellationToken cancellationToken)
     {
-        GetListNamesQuery query = new();
+        var query = new GetListNamesQuery();
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }

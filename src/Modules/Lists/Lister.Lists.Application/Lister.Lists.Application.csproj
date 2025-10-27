@@ -16,6 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Core\Lister.Core.Application\Lister.Core.Application.csproj"/>
         <ProjectReference Include="..\Lister.Lists.Domain\Lister.Lists.Domain.csproj"/>
+        <ProjectReference Include="..\Lister.Lists.ReadOnly\Lister.Lists.ReadOnly.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
+using System.Linq;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.Domain.Queries;
+using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.Domain.ValueObjects;
 using MediatR;
 
@@ -15,6 +16,13 @@ public class GetStatusTransitionsQueryHandler<TList, TItem>(
     {
         var def = await definitionGetter.GetAsync(request.ListId, cancellationToken)
                   ?? throw new InvalidOperationException($"List {request.ListId} not found");
-        return def.Transitions;
+
+        return def.Transitions
+            .Select(t => new StatusTransition
+            {
+                From = t.From,
+                AllowedNext = t.AllowedNext
+            })
+            .ToArray();
     }
 }

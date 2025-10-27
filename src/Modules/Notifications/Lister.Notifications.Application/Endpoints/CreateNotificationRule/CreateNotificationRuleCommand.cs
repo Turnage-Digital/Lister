@@ -1,6 +1,6 @@
 using Lister.Core.Application;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 
 namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
@@ -10,4 +10,4 @@ public record CreateNotificationRuleCommand(
     NotificationChannel[] Channels,
     NotificationSchedule Schedule,
     string? TemplateId
-) : RequestBase<NotificationRule>;
+) : RequestBase<NotificationRuleDto>;

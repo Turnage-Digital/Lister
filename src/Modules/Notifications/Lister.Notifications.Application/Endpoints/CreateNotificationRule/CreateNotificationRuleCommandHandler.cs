@@ -1,17 +1,18 @@
+using System.Linq;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
 public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate
-) : IRequestHandler<CreateNotificationRuleCommand, NotificationRule>
+) : IRequestHandler<CreateNotificationRuleCommand, NotificationRuleDto>
     where TNotificationRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    public async Task<NotificationRule> Handle(
+    public async Task<NotificationRuleDto> Handle(
         CreateNotificationRuleCommand request,
         CancellationToken cancellationToken
     )
@@ -31,16 +32,38 @@ public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotificati
         var channels = request.Channels;
         var schedule = request.Schedule;
 
-        return new NotificationRule
+        return new NotificationRuleDto
         {
             Id = rule.Id,
             UserId = request.UserId!,
             ListId = request.ListId,
             IsActive = true,
             TemplateId = request.TemplateId,
-            Trigger = trigger,
-            Channels = channels,
-            Schedule = schedule
+            Trigger = new NotificationTriggerDto
+            {
+                Type = trigger.Type,
+                FromValue = trigger.FromValue,
+                ToValue = trigger.ToValue,
+                ColumnName = trigger.ColumnName,
+                Operator = trigger.Operator,
+                Value = trigger.Value
+            },
+            Channels = channels
+                .Select(channel => new NotificationChannelDto
+                {
+                    Type = channel.Type,
+                    Address = channel.Address,
+                    Settings = channel.Settings
+                })
+                .ToArray(),
+            Schedule = new NotificationScheduleDto
+            {
+                Type = schedule.Type,
+                Delay = schedule.Delay,
+                CronExpression = schedule.CronExpression,
+                DailyAt = schedule.DailyAt,
+                DaysOfWeek = schedule.DaysOfWeek
+            }
         };
     }
 }

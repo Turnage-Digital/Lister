@@ -1,4 +1,4 @@
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 public class GetNotificationDetailsController(IMediator mediator) : Controller
 {
     [HttpGet]
-    [ProducesResponseType(typeof(NotificationDetails), Status200OK)]
+    [ProducesResponseType(typeof(NotificationDetailsDto), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]

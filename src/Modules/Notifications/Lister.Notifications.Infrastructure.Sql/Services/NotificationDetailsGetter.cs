@@ -1,9 +1,10 @@
+using System.Linq;
 using System.Text.Json;
 using Lister.Core.Domain.ValueObjects;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
@@ -11,14 +12,12 @@ namespace Lister.Notifications.Infrastructure.Sql.Services;
 public class NotificationDetailsGetter(NotificationsDbContext context)
     : IGetNotificationDetails
 {
-    public async Task<NotificationDetails?> GetAsync(
+    public async Task<NotificationDetailsDto?> GetAsync(
         string userId,
         Guid notificationId,
         CancellationToken cancellationToken
     )
     {
-        NotificationDetails? retval = null;
-
         var entity = await context.Notifications
             .AsNoTracking()
             .AsSplitQuery()
@@ -26,62 +25,66 @@ public class NotificationDetailsGetter(NotificationsDbContext context)
             .Include(n => n.DeliveryAttempts)
             .FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId, cancellationToken);
 
-        if (entity is not null)
+        if (entity is null)
         {
-            var title = string.Empty;
-            var body = string.Empty;
-            object? metadata = null;
-            if (!string.IsNullOrEmpty(entity.ContentJson))
+            return null;
+        }
+
+        var title = string.Empty;
+        var body = string.Empty;
+        object? metadata = null;
+        if (!string.IsNullOrWhiteSpace(entity.ContentJson))
+        {
+            var content = JsonSerializer.Deserialize<NotificationContent>(entity.ContentJson);
+            if (content is not null)
             {
-                var content = JsonSerializer.Deserialize<NotificationContent>(entity.ContentJson);
-                if (content is not null)
-                {
-                    title = content.Subject;
-                    body = content.Body;
-                    metadata = content.Data;
-                }
+                title = content.Subject;
+                body = content.Body;
+                metadata = content.Data.Count > 0 ? content.Data : null;
             }
+        }
 
-            var history = entity.History
-                .OrderBy(h => h.On)
-                .Select(h => new Entry<NotificationHistoryType>
-                {
-                    On = h.On,
-                    By = h.By,
-                    Type = h.Type,
-                    Bag = h.Bag
-                })
-                .ToArray();
+        var history = entity.History
+            .OrderBy(h => h.On)
+            .Select(h => new Entry<NotificationHistoryType>
+            {
+                On = h.On,
+                By = h.By,
+                Type = h.Type,
+                Bag = h.Bag
+            })
+            .ToArray();
 
-            var attempts = entity.DeliveryAttempts
-                .OrderBy(a => a.AttemptedOn)
-                .Select(a => new DeliveryAttemptView
+        var attempts = entity.DeliveryAttempts
+            .OrderBy(a => a.AttemptedOn)
+            .Select(a =>
+            {
+                var channel = JsonSerializer.Deserialize<NotificationChannel>(a.ChannelJson);
+                return new DeliveryAttemptDto
                 {
-                    Channel = JsonSerializer
-                        .Deserialize<NotificationChannel>(a.ChannelJson)
-                        ?.Type.ToString() ?? "",
+                    Channel = channel?.Type.ToString() ?? string.Empty,
                     AttemptedOn = a.AttemptedOn,
                     Status = ((DeliveryStatus)a.Status).ToString(),
                     FailureReason = a.FailureReason,
                     AttemptNumber = a.AttemptNumber
-                })
-                .ToList();
+                };
+            })
+            .ToList();
 
-            retval = new NotificationDetails
-            {
-                Id = entity.Id!.Value,
-                NotificationRuleId = entity.NotificationRuleId,
-                UserId = entity.UserId,
-                ListId = entity.ListId,
-                ItemId = entity.ItemId,
-                Title = title,
-                Body = body,
-                Metadata = metadata,
-                IsRead = entity.ReadOn.HasValue,
-                History = history,
-                DeliveryAttempts = attempts
-            };
-        }
+        var retval = new NotificationDetailsDto
+        {
+            Id = entity.Id!.Value,
+            NotificationRuleId = entity.NotificationRuleId,
+            UserId = entity.UserId,
+            ListId = entity.ListId,
+            ItemId = entity.ItemId,
+            Title = title,
+            Body = body,
+            Metadata = metadata,
+            IsRead = entity.ReadOn.HasValue,
+            History = history,
+            DeliveryAttempts = attempts
+        };
 
         return retval;
     }

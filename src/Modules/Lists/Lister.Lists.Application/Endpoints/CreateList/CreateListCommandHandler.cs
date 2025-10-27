@@ -1,7 +1,7 @@
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Queries;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.CreateList;
@@ -9,11 +9,11 @@ namespace Lister.Lists.Application.Endpoints.CreateList;
 public class CreateListCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
     IGetListItemDefinition definitionGetter
-) : IRequestHandler<CreateListCommand, ListItemDefinition>
+) : IRequestHandler<CreateListCommand, ListItemDefinitionDto>
     where TList : IWritableList
     where TItem : IWritableItem
 {
-    public async Task<ListItemDefinition> Handle(
+    public async Task<ListItemDefinitionDto> Handle(
         CreateListCommand request,
         CancellationToken cancellationToken
     )

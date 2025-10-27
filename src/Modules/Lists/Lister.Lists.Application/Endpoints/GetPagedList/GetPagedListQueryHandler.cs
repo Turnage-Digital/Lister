@@ -1,13 +1,13 @@
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Queries;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetPagedList;
 
 public class GetPagedListQueryHandler(IGetPagedList pagedListGetter)
-    : IRequestHandler<GetPagedListQuery, PagedList>
+    : IRequestHandler<GetPagedListQuery, PagedListDto>
 {
-    public async Task<PagedList> Handle(
+    public async Task<PagedListDto> Handle(
         GetPagedListQuery request,
         CancellationToken cancellationToken
     )

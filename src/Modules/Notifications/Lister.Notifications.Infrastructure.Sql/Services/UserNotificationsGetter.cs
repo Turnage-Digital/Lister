@@ -1,7 +1,8 @@
+using System.Linq;
 using System.Text.Json;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
@@ -9,7 +10,7 @@ namespace Lister.Notifications.Infrastructure.Sql.Services;
 public class UserNotificationsGetter(NotificationsDbContext context)
     : IGetUserNotifications
 {
-    public async Task<NotificationListPage> GetAsync(
+    public async Task<NotificationListPageDto> GetAsync(
         string userId,
         DateTime? since,
         Guid? listId,
@@ -57,45 +58,38 @@ public class UserNotificationsGetter(NotificationsDbContext context)
             .ToListAsync(cancellationToken);
 
         var items = pageRows.Select(r =>
+        {
+            var title = string.Empty;
+            var body = string.Empty;
+            object? metadata = null;
+            var occurredOn = r.CreatedOn;
+
+            if (!string.IsNullOrWhiteSpace(r.ContentJson))
             {
-                var title = string.Empty;
-                var body = string.Empty;
-                object? metadata = null;
-                var occurredOn = r.CreatedOn;
-                if (!string.IsNullOrEmpty(r.ContentJson))
+                var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
+                if (content is not null)
                 {
-                    var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
-                    if (content is not null)
-                    {
-                        title = content.Subject;
-                        body = content.Body;
-                        if (content.Data is { Count: > 0 })
-                        {
-                            metadata = content.Data;
-                        }
-
-                        if (content.OccurredOn != default)
-                        {
-                            occurredOn = content.OccurredOn;
-                        }
-                    }
+                    title = content.Subject;
+                    body = content.Body;
+                    metadata = content.Data.Count > 0 ? content.Data : null;
+                    occurredOn = content.OccurredOn != default ? content.OccurredOn : occurredOn;
                 }
+            }
 
-                return new NotificationSummary
-                {
-                    Id = r.Id!.Value,
-                    ListId = r.ListId,
-                    ItemId = r.ItemId,
-                    Title = title,
-                    Body = body,
-                    Metadata = metadata,
-                    IsRead = r.ReadOn.HasValue,
-                    OccurredOn = occurredOn
-                };
-            })
-            .ToList();
+            return new NotificationSummaryDto
+            {
+                Id = r.Id!.Value,
+                ListId = r.ListId,
+                ItemId = r.ItemId,
+                Title = title,
+                Body = body,
+                Metadata = metadata,
+                IsRead = r.ReadOn.HasValue,
+                OccurredOn = occurredOn
+            };
+        }).ToList();
 
-        var retval = new NotificationListPage
+        var retval = new NotificationListPageDto
         {
             Notifications = items,
             TotalCount = total,

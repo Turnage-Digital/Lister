@@ -546,7 +546,7 @@ public class ListerTools
 
     [McpServerTool]
     [Description("Get detailed information about a specific item including its history")]
-    public static async Task<string> GetItemDetails(
+    public static async Task<string> GetItemDetailsDto(
         ListerApiClient apiClient,
         [Description("The ID of the list containing the item")]
         string listId,
@@ -555,7 +555,7 @@ public class ListerTools
         CancellationToken cancellationToken = default
     )
     {
-        Log.Information("GetItemDetails called with {Request}", new { listId, itemId });
+        Log.Information("GetItemDetailsDto called with {Request}", new { listId, itemId });
         try
         {
             if (!Guid.TryParse(listId, out var guid))
@@ -563,7 +563,7 @@ public class ListerTools
                 return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
             }
 
-            var itemDetails = await apiClient.GetItemDetailsAsync(guid, itemId, cancellationToken);
+            var itemDetails = await apiClient.GetItemDetailsDtoAsync(guid, itemId, cancellationToken);
             Log.Information("Successfully retrieved item details with {Result}", new { listId, itemId });
 
             var result = new

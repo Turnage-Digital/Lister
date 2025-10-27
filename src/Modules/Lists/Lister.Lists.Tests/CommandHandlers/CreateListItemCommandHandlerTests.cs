@@ -3,7 +3,7 @@ using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
 
@@ -75,7 +75,7 @@ public class CreateListItemCommandHandlerTests
     }
 
     [Test]
-    public async Task Handle_CreatesListItemSuccessfully_WhenValidRequest()
+    public async Task Handle_CreatesListItemDtoSuccessfully_WhenValidRequest()
     {
         // Arrange
         var command = new CreateListItemCommand(Guid.NewGuid(), new { })
@@ -86,11 +86,11 @@ public class CreateListItemCommandHandlerTests
         {
             Id = Guid.NewGuid()
         };
-        var listItem = new ListItem();
+        var listItem = new ListItemDto();
 
         _listsStore.Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(list);
-        _mapper.Setup(x => x.Map<ListItem>(It.IsAny<IWritableItem>()))
+        _mapper.Setup(x => x.Map<ListItemDto>(It.IsAny<IWritableItem>()))
             .Returns(listItem);
 
         // Act

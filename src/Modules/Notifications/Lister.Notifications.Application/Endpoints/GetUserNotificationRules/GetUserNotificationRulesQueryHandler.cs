@@ -1,13 +1,14 @@
-using Lister.Notifications.Domain.Queries;
-using Lister.Notifications.Domain.Views;
+using System.Linq;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
 
 public class GetUserNotificationRulesQueryHandler(IGetUserNotificationRules getter)
-    : IRequestHandler<GetUserNotificationRulesQuery, NotificationRule[]>
+    : IRequestHandler<GetUserNotificationRulesQuery, NotificationRuleDto[]>
 {
-    public async Task<NotificationRule[]> Handle(
+    public async Task<NotificationRuleDto[]> Handle(
         GetUserNotificationRulesQuery request,
         CancellationToken cancellationToken
     )

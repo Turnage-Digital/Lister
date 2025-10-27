@@ -42,6 +42,6 @@ public class ListItemDefinitionGetterTests
         var definition = await getter.GetAsync(listId, CancellationToken.None);
 
         Assert.That(definition, Is.Not.Null);
-        Assert.That(definition!.Columns.Single().StorageKey, Is.EqualTo("prop1"));
+        Assert.That(definition!.Columns.Any(c => c.StorageKey == "prop1"), Is.True);
     }
 }

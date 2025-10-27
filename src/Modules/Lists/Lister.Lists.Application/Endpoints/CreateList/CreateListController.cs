@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Lists.Application.Endpoints.CreateList;
 public class CreateListController(IMediator mediator) : Controller
 {
     [HttpPost]
-    [ProducesResponseType(typeof(ListItemDefinition), Status201Created)]
+    [ProducesResponseType(typeof(ListItemDefinitionDto), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(

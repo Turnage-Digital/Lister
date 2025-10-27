@@ -1,16 +1,16 @@
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Queries;
+using Lister.Lists.ReadOnly.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;
 
 public class ListNamesGetter(ListsDbContext dbContext) : IGetListNames
 {
-    public async Task<ListName[]> GetAsync(CancellationToken cancellationToken)
+    public async Task<ListNameDto[]> GetAsync(CancellationToken cancellationToken)
     {
         var retval = await dbContext.Lists
             .Where(list => list.IsDeleted == false)
-            .Select(list => new ListName
+            .Select(list => new ListNameDto
             {
                 Id = list.Id,
                 Name = list.Name,

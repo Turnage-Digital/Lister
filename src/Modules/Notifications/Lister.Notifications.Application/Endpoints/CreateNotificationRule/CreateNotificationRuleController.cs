@@ -1,4 +1,4 @@
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 public class CreateNotificationRuleController(IMediator mediator) : Controller
 {
     [HttpPost]
-    [ProducesResponseType(typeof(NotificationRule), Status201Created)]
+    [ProducesResponseType(typeof(NotificationRuleDto), Status201Created)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(

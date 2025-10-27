@@ -1,6 +1,6 @@
 using Lister.Core.Application;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 
 namespace Lister.Lists.Application.Endpoints.GetListNames;
 
-public record GetListNamesQuery : RequestBase<ListName[]>;
+public record GetListNamesQuery : RequestBase<ListNameDto[]>;

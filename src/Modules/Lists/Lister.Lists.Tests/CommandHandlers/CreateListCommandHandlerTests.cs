@@ -1,8 +1,8 @@
 using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Queries;
+using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
 
@@ -69,7 +69,7 @@ public class CreateListCommandHandlerTests
         {
             UserId = "user"
         };
-        var listItemDefinition = new ListItemDefinition();
+        var listItemDefinition = new ListItemDefinitionDto();
         _definitionGetter
             .Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(listItemDefinition);

@@ -21,7 +21,7 @@ public class DeleteListItemController(IMediator mediator) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        DeleteListItemCommand command = new(listId, itemId);
+        var command = new DeleteListItemCommand(listId, itemId);
         await mediator.Send(command, cancellationToken);
         return NoContent();
     }

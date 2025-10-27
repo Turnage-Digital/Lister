@@ -66,6 +66,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{9B
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Lists.ReadOnly", "src\Modules\Lists\Lister.Lists.ReadOnly\Lister.Lists.ReadOnly.csproj", "{FA447A25-ACFE-49A1-9953-4BA1AB022085}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lister.Notifications.ReadOnly", "src\Modules\Notifications\Lister.Notifications.ReadOnly\Lister.Notifications.ReadOnly.csproj", "{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +159,14 @@ Global
 		{28A3E6A2-B34E-4CF0-AB75-C5732984F921}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28A3E6A2-B34E-4CF0-AB75-C5732984F921}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28A3E6A2-B34E-4CF0-AB75-C5732984F921}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA447A25-ACFE-49A1-9953-4BA1AB022085}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA447A25-ACFE-49A1-9953-4BA1AB022085}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA447A25-ACFE-49A1-9953-4BA1AB022085}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA447A25-ACFE-49A1-9953-4BA1AB022085}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EB882824-A298-4D02-B71E-53A53B0208FC} = {E108D4BC-6408-4E99-A3A0-49D25081432A}
@@ -182,5 +194,7 @@ Global
 		{CA2C036C-33FD-4F11-91AA-B2BB6F5429E2} = {A12EF810-ABC6-440B-8D08-409D2FC581C9}
 		{CC1FC4E0-0876-4945-9DDD-3E082B49D5C1} = {E108D4BC-6408-4E99-A3A0-49D25081432A}
 		{28A3E6A2-B34E-4CF0-AB75-C5732984F921} = {E108D4BC-6408-4E99-A3A0-49D25081432A}
+		{FA447A25-ACFE-49A1-9953-4BA1AB022085} = {B6503A75-1164-4635-ACC6-6A4DF0AB0854}
+		{BA0721D0-537A-4D7B-8CCF-5BCDEA3CE81D} = {A12EF810-ABC6-440B-8D08-409D2FC581C9}
 	EndGlobalSection
 EndGlobal

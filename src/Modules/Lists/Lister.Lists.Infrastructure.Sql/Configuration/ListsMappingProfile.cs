@@ -1,5 +1,5 @@
 using AutoMapper;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.Infrastructure.Sql.Entities;
 
 namespace Lister.Lists.Infrastructure.Sql.Configuration;
@@ -8,11 +8,11 @@ public class ListsMappingProfile : Profile
 {
     public ListsMappingProfile()
     {
-        CreateMap<ListDb, ListItemDefinition>()
+        CreateMap<ListDb, ListItemDefinitionDto>()
             .ReverseMap();
-        CreateMap<ItemDb, ListItem>()
+        CreateMap<ItemDb, ListItemDto>()
             .ReverseMap();
-        CreateMap<ItemDb, ItemDetails>()
+        CreateMap<ItemDb, ItemDetailsDto>()
             .ReverseMap();
     }
 }

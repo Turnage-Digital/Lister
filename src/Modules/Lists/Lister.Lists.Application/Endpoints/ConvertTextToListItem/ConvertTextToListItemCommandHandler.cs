@@ -2,7 +2,7 @@ using System.Text.Json;
 using Lister.Core.Domain.Services;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
@@ -11,11 +11,11 @@ public class ConvertTextToListItemCommandHandler<TList, TItem>(
     ListsAggregate<TList, TItem> listsAggregate,
     IGetCompletedJson completedJsonGetter,
     ILogger<ConvertTextToListItemCommandHandler<TList, TItem>> logger
-) : IRequestHandler<ConvertTextToListItemCommand, ListItem>
+) : IRequestHandler<ConvertTextToListItemCommand, ListItemDto>
     where TList : IWritableList
     where TItem : IWritableItem
 {
-    public async Task<ListItem> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
+    public async Task<ListItemDto> Handle(ConvertTextToListItemCommand request, CancellationToken cancellationToken)
     {
         var list = await listsAggregate.GetListByIdAsync(request.ListId, cancellationToken);
         if (list is null)
@@ -34,7 +34,7 @@ public class ConvertTextToListItemCommandHandler<TList, TItem>(
             completedBag = JsonSerializer.Deserialize<object>(completedJson);
         }
 
-        var retval = new ListItem { Bag = completedBag ?? new object() };
+        var retval = new ListItemDto { Bag = completedBag ?? new object() };
         return retval;
     }
 }
