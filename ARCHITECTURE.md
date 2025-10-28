@@ -176,14 +176,17 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 ## Entity Design
 
 - Interfaces define identifiers used for selection and hydration.
-    - `IItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a specific
+    - `IWritableItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a specific
       item within a list.
-    - `IList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
+    - `IWritableList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
       convenience queries (e.g., `GetByNameAsync`).
-- Persistence entities implement the domain interfaces and add storage-specific shape.
-    - Lists: `ListDb : IList` with navigation collections and flags (e.g., `IsDeleted`).
-    - Items: `ItemDb : IItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
+    - `IWritableNotification` / `IWritableNotificationRule`: encapsulate notification identifiers and ownership fields.
+- Persistence entities implement the writable interfaces and add storage-specific shape.
+    - Lists: `ListDb : IWritableList` with navigation collections and flags (e.g., `IsDeleted`).
+    - Items: `ItemDb : IWritableItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
       serializer.
+    - Notifications: `NotificationRuleDb : IWritableNotificationRule` and `NotificationDb : IWritableNotification`
+      add persistence-only columns (e.g., JSON payloads, delivery attempts) while still satisfying the domain contracts.
 - Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
 - Identifier usage rules in repositories/aggregates.
     - Lists: selection by `Id` or by `Name` (`GetListByIdAsync`, `GetListByNameAsync`).
@@ -205,8 +208,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - Mapping between write models and views.
     - Application-layer context maps project aggregates and value objects into DTO records; infrastructure query
       services return tailored projections for reads.
-    - Commands continue to operate on the domain interfaces (e.g., `IList`, `IItem`, `INotificationRule`) via aggregates
-      to keep write logic inside the domain.
+    - Commands continue to operate on the writable domain interfaces (e.g., `IWritableList`, `IWritableItem`,
+      `IWritableNotification`, `IWritableNotificationRule`) via aggregates to keep write logic inside the domain.
 
 ## Value Objects & Serialization
 
