@@ -1,17 +1,18 @@
+using Lister.Notifications.Application.Mappings;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 
 public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotification>(
     NotificationAggregate<TNotificationRule, TNotification> aggregate
-) : IRequestHandler<CreateNotificationRuleCommand, NotificationRule>
+) : IRequestHandler<CreateNotificationRuleCommand, NotificationRuleDto>
     where TNotificationRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    public async Task<NotificationRule> Handle(
+    public async Task<NotificationRuleDto> Handle(
         CreateNotificationRuleCommand request,
         CancellationToken cancellationToken
     )
@@ -23,24 +24,21 @@ public class CreateNotificationRuleCommandHandler<TNotificationRule, TNotificati
             request.Channels,
             request.Schedule,
             request.TemplateId,
+            request.IsActive,
             cancellationToken);
 
-        // Build view from created rule
-        // The concrete rule may store JSON strings; deserialize to typed value objects
-        var trigger = request.Trigger;
-        var channels = request.Channels;
-        var schedule = request.Schedule;
+        var trigger = await aggregate.GetNotificationRuleTriggerAsync(rule, cancellationToken);
+        var channels = await aggregate.GetNotificationRuleChannelsAsync(rule, cancellationToken);
+        var schedule = await aggregate.GetNotificationRuleScheduleAsync(rule, cancellationToken);
+        var templateId = await aggregate.GetNotificationRuleTemplateAsync(rule, cancellationToken);
+        var isActive = await aggregate.GetNotificationRuleIsActiveAsync(rule, cancellationToken);
 
-        return new NotificationRule
-        {
-            Id = rule.Id,
-            UserId = request.UserId!,
-            ListId = request.ListId,
-            IsActive = true,
-            TemplateId = request.TemplateId,
-            Trigger = trigger,
-            Channels = channels,
-            Schedule = schedule
-        };
+        return NotificationRuleWriteContextMap.ToDto(
+            rule,
+            trigger,
+            channels,
+            schedule,
+            templateId,
+            isActive);
     }
 }

@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Lists.Application.Endpoints.GetPagedList;
 public class GetPagedListController(IMediator mediator) : Controller
 {
     [HttpGet("{listId:guid}/items")]
-    [ProducesResponseType(typeof(PagedList), Status200OK)]
+    [ProducesResponseType(typeof(PagedListDto), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
@@ -26,7 +26,7 @@ public class GetPagedListController(IMediator mediator) : Controller
         CancellationToken cancellationToken
     )
     {
-        GetPagedListQuery query = new(listId, page, pageSize, field, sort);
+        var query = new GetPagedListQuery(listId, page, pageSize, field, sort);
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }

@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 public class GetListItemDefinitionController(IMediator mediator) : Controller
 {
     [HttpGet("{listId:guid}/itemDefinition")]
-    [ProducesResponseType(typeof(ListItemDefinition), Status200OK)]
+    [ProducesResponseType(typeof(ListItemDefinitionDto), Status200OK)]
     [ProducesResponseType(Status404NotFound)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
@@ -22,7 +22,7 @@ public class GetListItemDefinitionController(IMediator mediator) : Controller
         CancellationToken cancellationToken
     )
     {
-        GetListItemDefinitionQuery query = new(listId);
+        var query = new GetListItemDefinitionQuery(listId);
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }

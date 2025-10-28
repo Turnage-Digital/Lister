@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Queries;
+using Lister.Lists.ReadOnly.Queries;
 
 namespace Lister.Lists.Application.Endpoints.Migrations;
 

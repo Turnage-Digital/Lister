@@ -15,9 +15,7 @@ const ItemHistoryDrawer = ({ listId, itemId }: ItemHistoryDrawerProps) => {
     itemHistoryInfiniteQueryOptions(listId, itemId),
   );
 
-  return (
-    <HistoryDrawer subtitle="Recent changes" query={query} />
-  );
+  return <HistoryDrawer subtitle="Recent changes" query={query} />;
 };
 
 export default ItemHistoryDrawer;

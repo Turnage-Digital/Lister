@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;
@@ -9,7 +9,7 @@ namespace Lister.Notifications.Infrastructure.Sql.Services;
 public class UserNotificationsGetter(NotificationsDbContext context)
     : IGetUserNotifications
 {
-    public async Task<NotificationListPage> GetAsync(
+    public async Task<NotificationListPageDto> GetAsync(
         string userId,
         DateTime? since,
         Guid? listId,
@@ -62,26 +62,20 @@ public class UserNotificationsGetter(NotificationsDbContext context)
                 var body = string.Empty;
                 object? metadata = null;
                 var occurredOn = r.CreatedOn;
-                if (!string.IsNullOrEmpty(r.ContentJson))
+
+                if (!string.IsNullOrWhiteSpace(r.ContentJson))
                 {
                     var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
                     if (content is not null)
                     {
                         title = content.Subject;
                         body = content.Body;
-                        if (content.Data is { Count: > 0 })
-                        {
-                            metadata = content.Data;
-                        }
-
-                        if (content.OccurredOn != default)
-                        {
-                            occurredOn = content.OccurredOn;
-                        }
+                        metadata = content.Data.Count > 0 ? content.Data : null;
+                        occurredOn = content.OccurredOn != default ? content.OccurredOn : occurredOn;
                     }
                 }
 
-                return new NotificationSummary
+                return new NotificationSummaryDto
                 {
                     Id = r.Id!.Value,
                     ListId = r.ListId,
@@ -95,7 +89,7 @@ public class UserNotificationsGetter(NotificationsDbContext context)
             })
             .ToList();
 
-        var retval = new NotificationListPage
+        var retval = new NotificationListPageDto
         {
             Notifications = items,
             TotalCount = total,

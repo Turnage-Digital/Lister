@@ -9,4 +9,5 @@ public class CreateNotificationRuleRequest
     public NotificationChannel[] Channels { get; set; } = null!;
     public NotificationSchedule Schedule { get; set; } = null!;
     public string? TemplateId { get; set; }
+    public bool IsActive { get; set; } = true;
 }

@@ -141,4 +141,14 @@ public class NotificationRulesStore(NotificationsDbContext context)
         rule.IsActive = isActive;
         return Task.CompletedTask;
     }
+
+    public Task<string?> GetTemplateAsync(NotificationRuleDb rule, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(rule.TemplateId);
+    }
+
+    public Task<bool> GetIsActiveAsync(NotificationRuleDb rule, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(rule.IsActive);
+    }
 }

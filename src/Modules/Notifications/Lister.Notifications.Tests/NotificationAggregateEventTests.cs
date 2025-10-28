@@ -94,6 +94,34 @@ public class NotificationAggregateEventTests
     }
 
     [Test]
+    public async Task CreateNotificationRule_WithInactiveFlag_SetsActiveStatus()
+    {
+        var (agg, _, _, rules, _, _) = Create();
+        var rule = new FakeRule { Id = Guid.NewGuid(), ListId = _listId, UserId = _user };
+        rules.Setup(s => s.InitAsync(_user, _listId, It.IsAny<CancellationToken>())).ReturnsAsync(rule);
+        rules.Setup(s => s.SetTriggerAsync(rule, It.IsAny<NotificationTrigger>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        rules.Setup(s => s.SetChannelsAsync(rule, It.IsAny<NotificationChannel[]>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        rules.Setup(s => s.SetScheduleAsync(rule, It.IsAny<NotificationSchedule>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        rules.Setup(s => s.SetActiveStatusAsync(rule, false, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        rules.Setup(s => s.CreateAsync(rule, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        await agg.CreateNotificationRuleAsync(
+            _user,
+            _listId,
+            NotificationTrigger.ItemCreated(),
+            [NotificationChannel.InApp()],
+            new NotificationSchedule(),
+            null,
+            false);
+
+        rules.Verify(s => s.SetActiveStatusAsync(rule, false, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
     public async Task UpdateNotificationRule_Enqueues_Event()
     {
         var (agg, _, queue, rules, _, _) = Create();

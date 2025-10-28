@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -11,14 +11,14 @@ public class GetListItemDefinitionQueryHandler(
     IDistributedCache cache,
     ILogger<GetListItemDefinitionQueryHandler> logger
 )
-    : IRequestHandler<GetListItemDefinitionQuery, ListItemDefinition?>
+    : IRequestHandler<GetListItemDefinitionQuery, ListItemDefinitionDto?>
 {
-    public async Task<ListItemDefinition?> Handle(
+    public async Task<ListItemDefinitionDto?> Handle(
         GetListItemDefinitionQuery request,
         CancellationToken cancellationToken
     )
     {
-        ListItemDefinition? retval;
+        ListItemDefinitionDto? retval;
 
         var cacheKey = $"ListItemDefinition-{request.ListId}";
         var cacheValue = await cache.GetStringAsync(cacheKey, cancellationToken);
@@ -26,7 +26,7 @@ public class GetListItemDefinitionQueryHandler(
         if (cacheValue != null)
         {
             logger.LogInformation("Cache hit for {cacheKey}", cacheKey);
-            retval = JsonSerializer.Deserialize<ListItemDefinition>(cacheValue);
+            retval = JsonSerializer.Deserialize<ListItemDefinitionDto>(cacheValue);
         }
         else
         {
@@ -40,7 +40,7 @@ public class GetListItemDefinitionQueryHandler(
 
     private async Task CacheDatabaseResultAsync(
         string key,
-        ListItemDefinition? value,
+        ListItemDefinitionDto? value,
         CancellationToken cancellationToken
     )
     {

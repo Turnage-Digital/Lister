@@ -6,7 +6,6 @@ import { Box, Button, Divider, Stack } from "@mui/material";
 import {
   Column,
   ListItemDefinition,
-  NotificationRule,
   Status,
   StatusTransition,
 } from "../../models";
@@ -15,28 +14,19 @@ import EditListNameContent from "../edit-list-name-content";
 import EditListStatusesContent from "../edit-list-statuses-content";
 import FormBlock from "../form-block";
 import NotificationRulesEditor from "./notification-rules-editor";
+import {
+  createEmptyRuleFormValue,
+  stripClientFields,
+} from "./notification-rules.helpers";
 import StatusTransitionsEditor from "./status-transitions-editor";
 
 import type {
   ListEditorInitialValue,
   ListEditorSubmitResult,
   NotificationRuleFormValue,
-  NotificationRuleSubmission,
-} from "./types";
+} from "./list-editor.types";
 
-const createClientId = () => {
-  const cryptoApi = globalThis.crypto;
-  const hasRandomUuid =
-    typeof cryptoApi !== "undefined" &&
-    typeof cryptoApi.randomUUID === "function";
-
-  if (hasRandomUuid) {
-    return cryptoApi.randomUUID();
-  }
-  return Math.random().toString(36).slice(2);
-};
-
-interface Props {
+interface ListEditorProps {
   initialValue: ListEditorInitialValue;
   onSubmit: (result: ListEditorSubmitResult) => Promise<void> | void;
   isSubmitting?: boolean;
@@ -69,43 +59,13 @@ const sanitizeTransitions = (
     .filter((transition) => transition.allowedNext.length > 0);
 };
 
-const stripClientFields = (
-  rule: NotificationRuleFormValue,
-): NotificationRuleSubmission => ({
-  id: rule.id,
-  listId: rule.listId,
-  trigger: rule.trigger,
-  channels: rule.channels,
-  schedule: rule.schedule,
-  templateId: rule.templateId,
-});
-
-export const toNotificationRuleFormValue = (
-  rule: NotificationRule,
-): NotificationRuleFormValue => ({
-  id: rule.id ?? undefined,
-  listId: rule.listId,
-  trigger: rule.trigger,
-  channels: rule.channels,
-  schedule: rule.schedule,
-  templateId: rule.templateId ?? undefined,
-  clientId: createClientId(),
-});
-
-export const createEmptyRuleFormValue = (): NotificationRuleFormValue => ({
-  clientId: createClientId(),
-  trigger: { type: "ItemCreated" },
-  channels: [{ type: "InApp" }],
-  schedule: { type: "Immediate" },
-});
-
 const ListEditor = ({
   initialValue,
   onSubmit,
   isSubmitting,
   onCancel,
   disableNameField = false,
-}: Props) => {
+}: ListEditorProps) => {
   const [state, setState] = React.useState<InternalState>(() => ({
     id: initialValue.id ?? null,
     name: initialValue.name,
@@ -307,7 +267,6 @@ const ListEditor = ({
           variant="contained"
           startIcon={<Save />}
           disabled={isSubmitting}
-          fullWidth
         >
           Submit
         </Button>

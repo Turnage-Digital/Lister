@@ -28,7 +28,7 @@ public class UpdateListItemController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        UpdateListItemCommand command = new(listId, itemId, bag);
+        var command = new UpdateListItemCommand(listId, itemId, bag);
         await mediator.Send(command, cancellationToken);
         return Ok();
     }

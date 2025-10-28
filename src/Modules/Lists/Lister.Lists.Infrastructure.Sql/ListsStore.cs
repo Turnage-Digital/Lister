@@ -144,15 +144,12 @@ public class ListsStore(ListsDbContext dbContext)
         listDb.StatusTransitions.Clear();
         foreach (var t in transitions)
         {
-            foreach (var next in t.AllowedNext)
+            listDb.StatusTransitions.Add(new StatusTransitionDb
             {
-                listDb.StatusTransitions.Add(new StatusTransitionDb
-                {
-                    From = t.From,
-                    To = next,
-                    ListDb = listDb
-                });
-            }
+                From = t.From,
+                AllowedNext = t.AllowedNext,
+                ListDb = listDb
+            });
         }
 
         TouchUpdatedHistory(listDb, actedBy);
@@ -161,12 +158,12 @@ public class ListsStore(ListsDbContext dbContext)
 
     public Task<StatusTransition[]> GetStatusTransitionsAsync(ListDb listDb, CancellationToken cancellationToken)
     {
-        var rows = listDb.StatusTransitions
-            .Where(x => x.ListId == listDb.Id)
-            .ToList();
-        var groups = rows.GroupBy(r => r.From);
-        var retval = groups.Select(g => new StatusTransition
-                { From = g.Key, AllowedNext = g.Select(r => r.To).ToArray() })
+        var retval = listDb.StatusTransitions
+            .Select(st => new StatusTransition
+            {
+                From = st.From,
+                AllowedNext = st.AllowedNext
+            })
             .ToArray();
         return Task.FromResult(retval);
     }

@@ -9,42 +9,45 @@ $migrationOutputDir = "Migrations"
 
 $modules = @(
     @{
-        Name    = "Lists"
+        Name = "Lists"
         Project = "src/Modules/Lists/Lister.Lists.Infrastructure.Sql/Lister.Lists.Infrastructure.Sql.csproj"
         Context = "Lister.Lists.Infrastructure.Sql.ListsDbContext"
     },
     @{
-        Name    = "Users"
+        Name = "Users"
         Project = "src/Modules/Users/Lister.Users.Infrastructure.Sql/Lister.Users.Infrastructure.Sql.csproj"
         Context = "Lister.Users.Infrastructure.Sql.UsersDbContext"
     },
     @{
-        Name    = "Core"
+        Name = "Core"
         Project = "src/Modules/Core/Lister.Core.Infrastructure.Sql/Lister.Core.Infrastructure.Sql.csproj"
         Context = "Lister.Core.Infrastructure.Sql.CoreDbContext"
     },
     @{
-        Name    = "Notifications"
+        Name = "Notifications"
         Project = "src/Modules/Notifications/Lister.Notifications.Infrastructure.Sql/Lister.Notifications.Infrastructure.Sql.csproj"
         Context = "Lister.Notifications.Infrastructure.Sql.NotificationsDbContext"
     }
 )
 
-function Invoke-DotNetEf {
+function Invoke-DotNetEf
+{
     param(
         [Parameter(Mandatory = $true)]
         [string[]]$Arguments
     )
 
-    Write-Host "dotnet ef $($Arguments -join ' ')" -ForegroundColor Cyan
+    Write-Host "dotnet ef $( $Arguments -join ' ' )" -ForegroundColor Cyan
     & dotnet ef @Arguments
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($LASTEXITCODE -ne 0)
+    {
         throw "dotnet ef exited with code $LASTEXITCODE."
     }
 }
 
-function Get-EfCommonArgs {
+function Get-EfCommonArgs
+{
     param(
         [Parameter(Mandatory = $true)]
         [hashtable]$Module
@@ -59,7 +62,8 @@ function Get-EfCommonArgs {
     )
 }
 
-function Reset-ModuleMigrations {
+function Reset-ModuleMigrations
+{
     param(
         [Parameter(Mandatory = $true)]
         [hashtable]$Module
@@ -74,7 +78,8 @@ function Reset-ModuleMigrations {
     Invoke-DotNetEf -Arguments $addArgs
 }
 
-function Update-ModuleDatabase {
+function Update-ModuleDatabase
+{
     param(
         [Parameter(Mandatory = $true)]
         [hashtable]$Module
@@ -86,7 +91,8 @@ function Update-ModuleDatabase {
     Invoke-DotNetEf -Arguments $updateArgs
 }
 
-function Remove-ModuleDatabase {
+function Remove-ModuleDatabase
+{
     param(
         [Parameter(Mandatory = $true)]
         [hashtable]$Module
@@ -100,16 +106,19 @@ function Remove-ModuleDatabase {
 
 $coreModule = $modules | Where-Object { $_.Name -eq "Core" }
 
-if (-not $coreModule) {
+if (-not $coreModule)
+{
     throw "Core module configuration not found."
 }
 
 Remove-ModuleDatabase -Module $coreModule
 
-foreach ($module in $modules) {
+foreach ($module in $modules)
+{
     Reset-ModuleMigrations -Module $module
 }
 
-foreach ($module in $modules) {
+foreach ($module in $modules)
+{
     Update-ModuleDatabase -Module $module
 }

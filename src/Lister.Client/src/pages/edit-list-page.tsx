@@ -23,7 +23,7 @@ import {
 
 type NotificationRuleMutationInput = Pick<
   NotificationRuleSubmission,
-  "trigger" | "channels" | "schedule" | "templateId"
+  "trigger" | "channels" | "schedule" | "isActive"
 >;
 
 const buildNotificationRulePayload = (
@@ -32,7 +32,7 @@ const buildNotificationRulePayload = (
   trigger: input.trigger,
   channels: input.channels,
   schedule: input.schedule,
-  templateId: input.templateId,
+  isActive: input.isActive,
 });
 
 const createNotificationRule = async (
@@ -172,7 +172,7 @@ const EditListPage = () => {
               trigger: rule.trigger,
               channels: rule.channels,
               schedule: rule.schedule,
-              templateId: rule.templateId,
+              isActive: rule.isActive,
             }),
           ),
         );
@@ -185,7 +185,7 @@ const EditListPage = () => {
               trigger: rule.trigger,
               channels: rule.channels,
               schedule: rule.schedule,
-              templateId: rule.templateId,
+              isActive: rule.isActive,
             }),
           ),
         );

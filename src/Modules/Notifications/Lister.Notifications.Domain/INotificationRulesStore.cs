@@ -22,5 +22,8 @@ public interface INotificationRulesStore<TRule>
     Task<NotificationSchedule> GetScheduleAsync(TRule rule, CancellationToken cancellationToken);
 
     Task SetTemplateAsync(TRule rule, string templateId, CancellationToken cancellationToken);
+    Task<string?> GetTemplateAsync(TRule rule, CancellationToken cancellationToken);
+
     Task SetActiveStatusAsync(TRule rule, bool isActive, CancellationToken cancellationToken);
+    Task<bool> GetIsActiveAsync(TRule rule, CancellationToken cancellationToken);
 }

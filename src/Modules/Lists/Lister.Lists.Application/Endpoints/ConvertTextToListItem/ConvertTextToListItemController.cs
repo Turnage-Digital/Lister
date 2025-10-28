@@ -1,4 +1,4 @@
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace Lister.Lists.Application.Endpoints.ConvertTextToListItem;
 public class ConvertTextToListItemController(IMediator mediator) : Controller
 {
     [HttpPost("{listId:guid}/items/convert-text-to-list-item")]
-    [ProducesResponseType(typeof(ListItem), 200)]
+    [ProducesResponseType(typeof(ListItemDto), Status200OK)]
     [ProducesResponseType(Status401Unauthorized)]
     [ProducesResponseType(Status500InternalServerError)]
     public async Task<IActionResult> PostAsync(
@@ -27,7 +27,7 @@ public class ConvertTextToListItemController(IMediator mediator) : Controller
             return BadRequest(ModelState);
         }
 
-        ConvertTextToListItemCommand command = new(listId, request.Text);
+        var command = new ConvertTextToListItemCommand(listId, request.Text);
         var result = await mediator.Send(command, cancellationToken);
         return Ok(result);
     }

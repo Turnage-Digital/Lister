@@ -368,7 +368,8 @@ public class ListsAggregateTests
             .ReturnsAsync(Array.Empty<StatusTransition>());
 
         Column[]? persisted = null;
-        _listsStore.Setup(x => x.SetColumnsAsync(list, It.IsAny<IEnumerable<Column>>(), BY, It.IsAny<CancellationToken>()))
+        _listsStore.Setup(x =>
+                x.SetColumnsAsync(list, It.IsAny<IEnumerable<Column>>(), BY, It.IsAny<CancellationToken>()))
             .Callback<ListDb, IEnumerable<Column>, string, CancellationToken>((_, cols, _, _) =>
             {
                 persisted = cols.ToArray();

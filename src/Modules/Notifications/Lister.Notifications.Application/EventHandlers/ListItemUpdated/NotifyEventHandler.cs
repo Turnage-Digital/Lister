@@ -4,8 +4,8 @@ using Lister.Core.Domain.IntegrationEvents;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.EventHandlers.ListItemUpdated;
@@ -27,12 +27,12 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
             TriggerType.CustomCondition
         };
 
-        var rules = await queryService.GetAsync(
+        var ruleDtos = (await queryService.GetAsync(
             notification.ListId,
             targetTriggers,
-            cancellationToken);
+            cancellationToken)).ToArray();
 
-        if (!rules.Any())
+        if (ruleDtos.Length == 0)
         {
             return;
         }
@@ -42,8 +42,14 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
         var context = BuildContext(notification, previousBag, newBag);
         var actualTriggers = BuildActualTriggers(previousBag, newBag);
 
-        foreach (var rule in rules)
+        foreach (var ruleDto in ruleDtos)
         {
+            if (ruleDto.Id is null)
+            {
+                continue;
+            }
+
+            var rule = await aggregate.GetNotificationRuleByIdAsync(ruleDto.Id.Value, cancellationToken);
             if (rule is not TNotificationRule r)
             {
                 continue;

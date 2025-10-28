@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using Lister.Lists.Infrastructure.Sql.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,13 +19,17 @@ public class StatusTransitionDbConfiguration : IEntityTypeConfiguration<StatusTr
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(e => e.To)
-            .HasMaxLength(50)
-            .IsRequired();
-
         builder.Property(e => e.ListId).IsRequired();
 
-        builder.HasIndex(e => new { e.ListId, e.From });
+        builder.Property(e => e.AllowedNext)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                v => JsonSerializer.Deserialize<string[]>(v, JsonSerializerOptions.Default) ?? Array.Empty<string>())
+            .HasColumnType("json")
+            .HasColumnName("AllowedNext");
+
+        builder.HasIndex(e => new { e.ListId, e.From })
+            .IsUnique();
 
         builder.HasOne(d => d.ListDb)
             .WithMany()

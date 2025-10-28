@@ -22,16 +22,11 @@ public class MarkNotificationAsReadCommandHandler<TRule, TNotification>(
             request.UserId!,
             cancellationToken);
 
-        if (notification == null)
+        if (notification is null)
         {
             throw new InvalidOperationException(
                 $"Notification {request.NotificationId} not found for user {request.UserId}");
         }
-
-        // if (notification.ReadOn.HasValue)
-        // {
-        //     return; // Already read
-        // }
 
         await aggregate.MarkNotificationAsReadAsync(
             notification,

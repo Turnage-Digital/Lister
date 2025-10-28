@@ -2,8 +2,8 @@ using Lister.Core.Domain.IntegrationEvents;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.EventHandlers.ListDeleted;

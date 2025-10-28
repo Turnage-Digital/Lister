@@ -1,4 +1,4 @@
-using Lister.Notifications.Domain.Queries;
+using Lister.Notifications.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Notifications.Infrastructure.Sql.Services;

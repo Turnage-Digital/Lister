@@ -145,6 +145,7 @@ public static class SeedData
                         [NotificationChannel.InApp(), NotificationChannel.Email("heath@email.com")],
                         NotificationSchedule.Immediate(),
                         null,
+                        true,
                         CancellationToken.None
                     )
                     .Result;

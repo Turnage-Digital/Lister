@@ -1,6 +1,6 @@
 using Lister.Core.Application;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 
 namespace Lister.Lists.Application.Endpoints.GetListItemDefinition;
 
-public record GetListItemDefinitionQuery(Guid ListId) : RequestBase<ListItemDefinition?>;
+public record GetListItemDefinitionQuery(Guid ListId) : RequestBase<ListItemDefinitionDto?>;

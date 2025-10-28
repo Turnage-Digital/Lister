@@ -1,5 +1,5 @@
 using Lister.Notifications.Domain.Entities;
-using Lister.Notifications.Domain.Queries;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
@@ -12,11 +12,8 @@ public class GetUnreadNotificationCountQueryHandler<TRule, TNotification>(
 {
     public async Task<int> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
     {
-        var retval = await getter.GetAsync(
-            request.UserId!,
-            request.ListId,
-            cancellationToken);
-
+        var retval = await getter
+            .GetAsync(request.UserId!, request.ListId, cancellationToken);
         return retval;
     }
 }

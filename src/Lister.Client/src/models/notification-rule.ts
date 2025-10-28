@@ -53,7 +53,6 @@ export interface NotificationRule {
   trigger: NotificationTrigger;
   channels: NotificationChannel[];
   schedule: NotificationSchedule;
-  templateId?: string | null;
   isActive?: boolean;
 }
 
@@ -61,5 +60,5 @@ export interface NotificationRuleInput {
   trigger: NotificationTrigger;
   channels: NotificationChannel[];
   schedule: NotificationSchedule;
-  templateId?: string | null;
+  isActive: boolean;
 }

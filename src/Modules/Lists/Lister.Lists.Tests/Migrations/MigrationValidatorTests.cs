@@ -1,8 +1,7 @@
 using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Domain.Enums;
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.ValueObjects;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using Moq;
 
 namespace Lister.Lists.Tests.Migrations;
@@ -17,19 +16,25 @@ public class MigrationValidatorTests
         _getter = new Mock<IGetListItemDefinition>();
         _validator = new MigrationValidator(_getter.Object);
 
-        var def = new ListItemDefinition
+        var def = new ListItemDefinitionDto
         {
             Id = _listId,
             Name = "Test",
             Columns =
             [
-                new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = false },
-                new Column { StorageKey = "prop2", Name = "Count", Type = ColumnType.Number, Required = false }
+                new ColumnDto
+                {
+                    StorageKey = "prop1", Name = "Title", Property = "title", Type = ColumnType.Text, Required = false
+                },
+                new ColumnDto
+                {
+                    StorageKey = "prop2", Name = "Count", Property = "count", Type = ColumnType.Number, Required = false
+                }
             ],
             Statuses =
             [
-                new Status { Name = "Open", Color = "green" },
-                new Status { Name = "Closed", Color = "gray" }
+                new StatusDto { Name = "Open", Color = "green" },
+                new StatusDto { Name = "Closed", Color = "gray" }
             ],
             Transitions = []
         };

@@ -1,22 +1,22 @@
 using Lister.Notifications.Domain.Entities;
-using Lister.Notifications.Domain.Queries;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.Endpoints.GetUserNotifications;
 
 public class GetUserNotificationsQueryHandler<TRule, TNotification>(
     IGetUserNotifications getter
-) : IRequestHandler<GetUserNotificationsQuery, NotificationListPage>
+) : IRequestHandler<GetUserNotificationsQuery, NotificationListPageDto>
     where TRule : IWritableNotificationRule
     where TNotification : IWritableNotification
 {
-    public async Task<NotificationListPage> Handle(
+    public async Task<NotificationListPageDto> Handle(
         GetUserNotificationsQuery request,
         CancellationToken cancellationToken
     )
     {
-        var page = await getter.GetAsync(
+        var retval = await getter.GetAsync(
             request.UserId!,
             request.Since,
             request.ListId,
@@ -24,6 +24,6 @@ public class GetUserNotificationsQueryHandler<TRule, TNotification>(
             request.PageSize,
             request.Page,
             cancellationToken);
-        return page;
+        return retval;
     }
 }

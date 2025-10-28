@@ -1,9 +1,9 @@
 using Lister.Notifications.Domain;
-using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.Infrastructure.Sql.Entities;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 
 namespace Lister.App.Server.Services;
 
@@ -28,7 +28,7 @@ public class NotificationDeliveryService(
                     .GetRequiredService<NotificationAggregate<NotificationRuleDb, NotificationDb>>();
 
                 var pending = await pendingGetter.GetAsync(50, cancellationToken);
-                var notifications = pending as IWritableNotification[] ?? pending.ToArray();
+                var notifications = pending as PendingNotificationDto[] ?? pending.ToArray();
                 if (notifications.Length is 0)
                 {
                     logger.LogInformation("NotificationDelivery: no pending notifications due at {Now}",
@@ -45,17 +45,8 @@ public class NotificationDeliveryService(
 
                 foreach (var notification in notifications)
                 {
-                    if (notification.Id is null)
-                    {
-                        logger.LogWarning(
-                            "NotificationDelivery: encountered pending notification with null Id {@Notification}",
-                            new { notification.UserId, notification.ListId, notification.ItemId }
-                        );
-                        continue;
-                    }
-
                     // Reload concrete entity so aggregate operations work
-                    var dbNotification = await aggregate.GetNotificationByIdAsync(notification.Id.Value,
+                    var dbNotification = await aggregate.GetNotificationByIdAsync(notification.Id,
                         notification.UserId, cancellationToken);
                     if (dbNotification is null)
                     {

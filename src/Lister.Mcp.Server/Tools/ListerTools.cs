@@ -137,6 +137,8 @@ public class ListerTools
         [Description("Channels JSON array")] string channelsJson,
         [Description("Schedule JSON")] string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
+        [Description("Whether the rule is active")]
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -156,7 +158,7 @@ public class ListerTools
                            ?? NotificationSchedule.Immediate();
 
             await apiClient.UpdateNotificationRuleAsync(rid, trigger, channels, schedule, templateId,
-                cancellationToken);
+                isActive, cancellationToken);
             return JsonSerializer.Serialize(new { success = true }, JsonOptions);
         }
         catch (Exception ex)
@@ -205,6 +207,8 @@ public class ListerTools
         [Description("Schedule JSON (e.g., {\"type\":\"Immediate\"})")]
         string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
+        [Description("Whether the rule should start active")]
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -224,7 +228,7 @@ public class ListerTools
                            ?? NotificationSchedule.Immediate();
 
             var rule = await apiClient.CreateNotificationRuleAsync(lid, trigger, channels, schedule, templateId,
-                cancellationToken);
+                isActive, cancellationToken);
             return JsonSerializer.Serialize(new { success = true, rule }, JsonOptions);
         }
         catch (Exception ex)
@@ -546,7 +550,7 @@ public class ListerTools
 
     [McpServerTool]
     [Description("Get detailed information about a specific item including its history")]
-    public static async Task<string> GetItemDetails(
+    public static async Task<string> GetItemDetailsDto(
         ListerApiClient apiClient,
         [Description("The ID of the list containing the item")]
         string listId,
@@ -555,7 +559,7 @@ public class ListerTools
         CancellationToken cancellationToken = default
     )
     {
-        Log.Information("GetItemDetails called with {Request}", new { listId, itemId });
+        Log.Information("GetItemDetailsDto called with {Request}", new { listId, itemId });
         try
         {
             if (!Guid.TryParse(listId, out var guid))
@@ -563,7 +567,7 @@ public class ListerTools
                 return JsonSerializer.Serialize(new { success = false, error = "Invalid list ID format" }, JsonOptions);
             }
 
-            var itemDetails = await apiClient.GetItemDetailsAsync(guid, itemId, cancellationToken);
+            var itemDetails = await apiClient.GetItemDetailsDtoAsync(guid, itemId, cancellationToken);
             Log.Information("Successfully retrieved item details with {Result}", new { listId, itemId });
 
             var result = new

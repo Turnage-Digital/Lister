@@ -1,13 +1,13 @@
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetListNames;
 
 public class GetListNamesQueryHandler(IGetListNames listNamesGetter)
-    : IRequestHandler<GetListNamesQuery, ListName[]>
+    : IRequestHandler<GetListNamesQuery, ListNameDto[]>
 {
-    public async Task<ListName[]> Handle(
+    public async Task<ListNameDto[]> Handle(
         GetListNamesQuery request,
         CancellationToken cancellationToken
     )

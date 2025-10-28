@@ -289,7 +289,6 @@ export const ListItemEditor = ({
           variant="contained"
           startIcon={submitStartIcon}
           disabled={isSubmitting}
-          fullWidth
         >
           Submit
         </Button>

@@ -6,9 +6,9 @@ using System.Text.Json.Serialization;
 using Lister.Lists.Application.Endpoints.CreateList;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Domain.ValueObjects;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
 using Lister.Notifications.Domain.ValueObjects;
-using Lister.Notifications.Domain.Views;
+using Lister.Notifications.ReadOnly.Dtos;
 
 namespace Lister.Mcp.Server.Services;
 
@@ -51,7 +51,7 @@ public class ListerApiClient
         return request;
     }
 
-    public async Task<ListName[]> GetListsAsync(CancellationToken cancellationToken = default)
+    public async Task<ListNameDto[]> GetListsAsync(CancellationToken cancellationToken = default)
     {
         using var request =
             await CreateAuthenticatedRequestAsync(HttpMethod.Get, "/api/lists/names", cancellationToken);
@@ -59,10 +59,13 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ListName[]>(json, _jsonOptions) ?? [];
+        return JsonSerializer.Deserialize<ListNameDto[]>(json, _jsonOptions) ?? [];
     }
 
-    public async Task<ListItemDefinition> GetListSchemaAsync(Guid listId, CancellationToken cancellationToken = default)
+    public async Task<ListItemDefinitionDto> GetListSchemaAsync(
+        Guid listId,
+        CancellationToken cancellationToken = default
+    )
     {
         using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, $"/api/lists/{listId}/itemDefinition",
             cancellationToken);
@@ -70,10 +73,10 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ListItemDefinition>(json, _jsonOptions) ?? new ListItemDefinition();
+        return JsonSerializer.Deserialize<ListItemDefinitionDto>(json, _jsonOptions) ?? new ListItemDefinitionDto();
     }
 
-    public async Task<PagedList> GetListItemsAsync(
+    public async Task<PagedListDto> GetListItemsAsync(
         Guid listId,
         int page = 1,
         int pageSize = 20,
@@ -107,10 +110,10 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<PagedList>(json, _jsonOptions) ?? new PagedList();
+        return JsonSerializer.Deserialize<PagedListDto>(json, _jsonOptions) ?? new PagedListDto();
     }
 
-    public async Task<ItemDetails> GetItemDetailsAsync(
+    public async Task<ItemDetailsDto> GetItemDetailsDtoAsync(
         Guid listId,
         int itemId,
         CancellationToken cancellationToken = default
@@ -122,7 +125,7 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ItemDetails>(json, _jsonOptions) ?? new ItemDetails();
+        return JsonSerializer.Deserialize<ItemDetailsDto>(json, _jsonOptions) ?? new ItemDetailsDto();
     }
 
     public async Task UpdateListItemAsync(
@@ -162,7 +165,7 @@ public class ListerApiClient
     }
 
     // Notifications
-    public async Task<NotificationListPage> GetUserNotificationsAsync(
+    public async Task<NotificationListPageDto> GetUserNotificationsAsync(
         DateTime? since = null,
         bool? unread = null,
         Guid? listId = null,
@@ -192,10 +195,10 @@ public class ListerApiClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<NotificationListPage>(json, _jsonOptions) ?? new NotificationListPage();
+        return JsonSerializer.Deserialize<NotificationListPageDto>(json, _jsonOptions) ?? new NotificationListPageDto();
     }
 
-    public async Task<NotificationDetails?> GetNotificationDetailsAsync(
+    public async Task<NotificationDetailsDto?> GetNotificationDetailsAsync(
         Guid notificationId,
         CancellationToken cancellationToken = default
     )
@@ -210,7 +213,7 @@ public class ListerApiClient
 
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<NotificationDetails>(json, _jsonOptions);
+        return JsonSerializer.Deserialize<NotificationDetailsDto>(json, _jsonOptions);
     }
 
     public async Task<int> GetUnreadNotificationCountAsync(
@@ -250,12 +253,13 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<NotificationRule> CreateNotificationRuleAsync(
+    public async Task<NotificationRuleDto> CreateNotificationRuleAsync(
         Guid listId,
         NotificationTrigger trigger,
         NotificationChannel[] channels,
         NotificationSchedule schedule,
         string? templateId,
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -265,7 +269,8 @@ public class ListerApiClient
             trigger,
             channels,
             schedule,
-            templateId
+            templateId,
+            isActive
         };
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8);
@@ -276,7 +281,7 @@ public class ListerApiClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<NotificationRule>(responseJson, _jsonOptions) ?? new NotificationRule();
+        return JsonSerializer.Deserialize<NotificationRuleDto>(responseJson, _jsonOptions) ?? new NotificationRuleDto();
     }
 
     public async Task UpdateNotificationRuleAsync(
@@ -285,10 +290,11 @@ public class ListerApiClient
         NotificationChannel[] channels,
         NotificationSchedule schedule,
         string? templateId,
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
-        var body = new { trigger, channels, schedule, templateId };
+        var body = new { trigger, channels, schedule, templateId, isActive };
         var json = JsonSerializer.Serialize(body, _jsonOptions);
         var content = new StringContent(json, Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -349,7 +355,7 @@ public class ListerApiClient
         return events.ToArray();
     }
 
-    public async Task<ListItem> CreateListItemAsync(
+    public async Task<ListItemDto> CreateListItemAsync(
         Guid listId,
         Dictionary<string, object?> data,
         CancellationToken cancellationToken = default
@@ -367,10 +373,10 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ListItem>(responseJson, _jsonOptions) ?? new ListItem();
+        return JsonSerializer.Deserialize<ListItemDto>(responseJson, _jsonOptions) ?? new ListItemDto();
     }
 
-    public async Task<ListName> CreateListAsync(
+    public async Task<ListNameDto> CreateListAsync(
         string name,
         Column[] columns,
         Status[] statuses,
@@ -394,7 +400,7 @@ public class ListerApiClient
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-        return JsonSerializer.Deserialize<ListName>(responseJson, _jsonOptions) ?? new ListName();
+        return JsonSerializer.Deserialize<ListNameDto>(responseJson, _jsonOptions) ?? new ListNameDto();
     }
 
     public async Task DeleteListItemAsync(Guid listId, int itemId, CancellationToken cancellationToken = default)

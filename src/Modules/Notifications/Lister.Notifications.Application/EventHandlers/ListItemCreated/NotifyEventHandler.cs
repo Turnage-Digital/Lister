@@ -2,8 +2,8 @@ using Lister.Core.Domain.IntegrationEvents;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.ValueObjects;
+using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Notifications.Application.EventHandlers.ListItemCreated;
@@ -25,7 +25,7 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
             },
             cancellationToken);
 
-        foreach (var rule in rules)
+        foreach (var ruleDto in rules)
         {
             var trigger = NotificationTrigger.ItemCreated();
             var context = new Dictionary<string, object>
@@ -34,8 +34,19 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
                 ["CreatedBy"] = notification.CreatedBy
             };
 
-            if (rule is TNotificationRule r &&
-                await aggregate.ShouldTriggerNotificationAsync(r, trigger, context, cancellationToken))
+            if (ruleDto.Id is null)
+            {
+                continue;
+            }
+
+            var rule = await aggregate.GetNotificationRuleByIdAsync(ruleDto.Id.Value, cancellationToken);
+            if (rule is null)
+            {
+                continue;
+            }
+
+            if (rule is TNotificationRule typedRule &&
+                await aggregate.ShouldTriggerNotificationAsync(typedRule, trigger, context, cancellationToken))
             {
                 var content = new NotificationContent
                 {

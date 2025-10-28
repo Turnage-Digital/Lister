@@ -1,6 +1,6 @@
 using Lister.Core.Domain.ValueObjects;
 using Lister.Lists.Domain.Enums;
-using Lister.Lists.Domain.Queries;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetItemHistory;

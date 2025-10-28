@@ -31,6 +31,7 @@ public class NotificationAggregate<TRule, TNotification>(
         NotificationChannel[] channels,
         NotificationSchedule schedule,
         string? templateId = null,
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -42,6 +43,11 @@ public class NotificationAggregate<TRule, TNotification>(
         if (!string.IsNullOrEmpty(templateId))
         {
             await unitOfWork.RulesStore.SetTemplateAsync(retval, templateId, cancellationToken);
+        }
+
+        if (!isActive)
+        {
+            await unitOfWork.RulesStore.SetActiveStatusAsync(retval, isActive, cancellationToken);
         }
 
         await unitOfWork.RulesStore.CreateAsync(retval, cancellationToken);
@@ -232,5 +238,45 @@ public class NotificationAggregate<TRule, TNotification>(
             actualTrigger,
             context,
             cancellationToken);
+    }
+
+    public Task<NotificationTrigger> GetNotificationRuleTriggerAsync(
+        TRule rule,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return unitOfWork.RulesStore.GetTriggerAsync(rule, cancellationToken);
+    }
+
+    public Task<NotificationChannel[]> GetNotificationRuleChannelsAsync(
+        TRule rule,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return unitOfWork.RulesStore.GetChannelsAsync(rule, cancellationToken);
+    }
+
+    public Task<NotificationSchedule> GetNotificationRuleScheduleAsync(
+        TRule rule,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return unitOfWork.RulesStore.GetScheduleAsync(rule, cancellationToken);
+    }
+
+    public Task<string?> GetNotificationRuleTemplateAsync(
+        TRule rule,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return unitOfWork.RulesStore.GetTemplateAsync(rule, cancellationToken);
+    }
+
+    public Task<bool> GetNotificationRuleIsActiveAsync(
+        TRule rule,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return unitOfWork.RulesStore.GetIsActiveAsync(rule, cancellationToken);
     }
 }

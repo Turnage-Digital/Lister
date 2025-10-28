@@ -1,13 +1,13 @@
-using Lister.Lists.Domain.Queries;
-using Lister.Lists.Domain.Views;
+using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetItemDetails;
 
 public class GetItemDetailsQueryHandler(IGetItemDetails itemDetailsGetter)
-    : IRequestHandler<GetItemDetailsQuery, ItemDetails?>
+    : IRequestHandler<GetItemDetailsQuery, ItemDetailsDto?>
 {
-    public async Task<ItemDetails?> Handle(GetItemDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<ItemDetailsDto?> Handle(GetItemDetailsQuery request, CancellationToken cancellationToken)
     {
         var retval = await itemDetailsGetter.GetAsync(request.ListId, request.ItemId, cancellationToken);
         return retval;

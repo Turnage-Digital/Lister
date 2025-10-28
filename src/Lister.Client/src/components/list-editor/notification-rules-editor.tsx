@@ -1,24 +1,23 @@
 import * as React from "react";
 
-import {
-  Add,
-  Delete,
-  MailOutline,
-  Notifications as NotificationsIcon,
-} from "@mui/icons-material";
+import { Add, Delete, MailOutline, Sms as SmsIcon } from "@mui/icons-material";
 import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormHelperText,
   InputLabel,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
   Paper,
   Select,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -33,7 +32,17 @@ import {
   Status,
 } from "../../models";
 
-import type { NotificationRuleFormValue } from "./types";
+import type { NotificationRuleFormValue } from "./list-editor.types";
+
+const weekDayOptions = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+] as const;
 
 interface Props {
   rules: NotificationRuleFormValue[];
@@ -46,36 +55,76 @@ interface Props {
   onRemoveRule: (rule: NotificationRuleFormValue) => void;
 }
 
-const triggerOptions: { label: string; value: NotificationTriggerType }[] = [
+interface TriggerOption {
+  value: Exclude<NotificationTriggerType, "CustomCondition">;
+  label: string;
+}
+
+const triggerOptions: TriggerOption[] = [
   { label: "Item created", value: "ItemCreated" },
   { label: "Item updated", value: "ItemUpdated" },
   { label: "Item deleted", value: "ItemDeleted" },
   { label: "Status changed", value: "StatusChanged" },
+  { label: "Column value changed", value: "ColumnValueChanged" },
+  { label: "List updated", value: "ListUpdated" },
+  { label: "List deleted", value: "ListDeleted" },
 ];
 
-const channelOptions: {
-  label: string;
+const triggerDescriptions: Partial<Record<NotificationTriggerType, string>> = {
+  StatusChanged: "Watch items when they move between workflow statuses.",
+  ColumnValueChanged:
+    "Monitor a specific column for changes between optional from/to values.",
+  ListUpdated: "Capture edits to the list itself, including metadata changes.",
+  ListDeleted: "Alert when the entire list is removed.",
+};
+
+interface ChannelOption {
   value: NotificationChannelType;
+  label: string;
   icon: React.ReactNode;
   requiresAddress: boolean;
-}[] = [
-  {
-    label: "In-app",
-    value: "InApp",
-    icon: <NotificationsIcon fontSize="small" />,
-    requiresAddress: false,
-  },
+  addressLabel?: string;
+  addressPlaceholder?: string;
+  addressHelperText?: string;
+}
+
+const channelOptions: ChannelOption[] = [
   {
     label: "Email",
     value: "Email",
     icon: <MailOutline fontSize="small" />,
     requiresAddress: true,
+    addressLabel: "Email address",
+    addressPlaceholder: "name@example.com",
+  },
+  {
+    label: "SMS",
+    value: "Sms",
+    icon: <SmsIcon fontSize="small" />,
+    requiresAddress: true,
+    addressLabel: "Phone number",
+    addressPlaceholder: "+1 555-0100",
+    addressHelperText: "Use an E.164 formatted number.",
   },
 ];
 
-const scheduleOptions: { label: string; value: NotificationScheduleType }[] = [
+const scheduleOptions: {
+  label: string;
+  value: NotificationScheduleType;
+}[] = [
   { label: "Immediately", value: "Immediate" },
+  { label: "Delayed", value: "Delayed" },
+  { label: "Daily", value: "Daily" },
+  { label: "Weekly", value: "Weekly" },
 ];
+
+const scheduleDescriptions: Partial<Record<NotificationScheduleType, string>> =
+  {
+    Immediate: "Send notifications as soon as the trigger fires.",
+    Delayed: "Wait for a delay before sending.",
+    Daily: "Send once per day at the specified time.",
+    Weekly: "Send on specific days each week.",
+  };
 
 const ensureSettings = (channel: NotificationChannel): NotificationChannel => ({
   ...channel,
@@ -97,11 +146,15 @@ const NotificationRulesEditor = ({
     rule: NotificationRuleFormValue,
     nextType: NotificationTriggerType,
   ) => {
-    const nextTrigger: NotificationTrigger = {
-      type: nextType,
-    };
+    const nextTrigger: NotificationTrigger = { type: nextType };
 
     if (nextType === "StatusChanged") {
+      nextTrigger.fromValue = null;
+      nextTrigger.toValue = null;
+    }
+
+    if (nextType === "ColumnValueChanged") {
+      nextTrigger.columnName = "";
       nextTrigger.fromValue = null;
       nextTrigger.toValue = null;
     }
@@ -126,6 +179,27 @@ const NotificationRulesEditor = ({
     }));
   };
 
+  const handleTriggerColumnChange = (
+    rule: NotificationRuleFormValue,
+    field: "columnName" | "fromValue" | "toValue",
+    value: string,
+  ) => {
+    const trimmed = value.trim();
+    let nextValue: string | null;
+    if (trimmed === "") {
+      nextValue = field === "columnName" ? "" : null;
+    } else {
+      nextValue = trimmed;
+    }
+    onUpdateRule(rule.clientId, (prev) => ({
+      ...prev,
+      trigger: {
+        ...prev.trigger,
+        [field]: nextValue,
+      },
+    }));
+  };
+
   const handleChannelToggle = (
     rule: NotificationRuleFormValue,
     channelType: NotificationChannelType,
@@ -137,11 +211,14 @@ const NotificationRulesEditor = ({
         if (existing.some((channel) => channel.type === channelType)) {
           return prev;
         }
+        const option = channelOptions.find(
+          (item) => item.value === channelType,
+        );
         const nextChannel: NotificationChannel = ensureSettings({
           type: channelType,
           address: undefined,
         });
-        if (channelType === "Email") {
+        if (option?.requiresAddress) {
           nextChannel.address = "";
         }
         return {
@@ -170,27 +247,324 @@ const NotificationRulesEditor = ({
     }));
   };
 
+  const updateSchedule = (
+    rule: NotificationRuleFormValue,
+    updates: Partial<NotificationSchedule>,
+  ) => {
+    onUpdateRule(rule.clientId, (prev) => ({
+      ...prev,
+      schedule: {
+        ...prev.schedule,
+        ...updates,
+      },
+    }));
+  };
+
   const handleScheduleChange = (
     rule: NotificationRuleFormValue,
     scheduleType: NotificationScheduleType,
   ) => {
-    const nextSchedule: NotificationSchedule = {
-      type: scheduleType,
-    };
-    onUpdateRule(rule.clientId, (prev) => ({
-      ...prev,
-      schedule: nextSchedule,
-    }));
+    onUpdateRule(rule.clientId, (prev) => {
+      const previous = prev.schedule;
+      const nextSchedule: NotificationSchedule = { type: scheduleType };
+
+      if (scheduleType === "Delayed") {
+        nextSchedule.delay =
+          previous.type === "Delayed" ? previous.delay : undefined;
+      }
+
+      if (scheduleType === "Daily") {
+        nextSchedule.dailyAt =
+          previous.type === "Daily" ? previous.dailyAt : undefined;
+      }
+
+      if (scheduleType === "Weekly") {
+        nextSchedule.daysOfWeek =
+          previous.type === "Weekly" ? previous.daysOfWeek : [];
+        nextSchedule.dailyAt =
+          previous.type === "Weekly" ? previous.dailyAt : undefined;
+      }
+
+      return {
+        ...prev,
+        schedule: nextSchedule,
+      };
+    });
   };
 
-  const handleTemplateChange = (
+  const handleActiveChange = (
     rule: NotificationRuleFormValue,
-    templateId: string,
+    active: boolean,
   ) => {
     onUpdateRule(rule.clientId, (prev) => ({
       ...prev,
-      templateId: templateId || undefined,
+      isActive: active,
     }));
+  };
+
+  const handleWeeklyDaysChange = (
+    rule: NotificationRuleFormValue,
+    days: string[],
+  ) => {
+    updateSchedule(rule, {
+      daysOfWeek: days,
+    });
+  };
+
+  const renderTriggerDetails = (rule: NotificationRuleFormValue) => {
+    const triggerType = rule.trigger.type;
+
+    if (triggerType === "StatusChanged") {
+      return (
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={{ xs: 2, md: 3 }}
+        >
+          <FormControl fullWidth>
+            <InputLabel id={`from-${rule.clientId}`}>From status</InputLabel>
+            <Select
+              labelId={`from-${rule.clientId}`}
+              label="From status"
+              value={rule.trigger.fromValue ?? ""}
+              onChange={(event) =>
+                handleTriggerStatusChange(
+                  rule,
+                  "fromValue",
+                  event.target.value === ""
+                    ? null
+                    : (event.target.value as string),
+                )
+              }
+              sx={{ backgroundColor: "background.paper" }}
+            >
+              <MenuItem value="">
+                <em>Any</em>
+              </MenuItem>
+              {statusNames.map((name) => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              Leave as Any to match all starting statuses.
+            </FormHelperText>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel id={`to-${rule.clientId}`}>To status</InputLabel>
+            <Select
+              labelId={`to-${rule.clientId}`}
+              label="To status"
+              value={rule.trigger.toValue ?? ""}
+              onChange={(event) =>
+                handleTriggerStatusChange(
+                  rule,
+                  "toValue",
+                  event.target.value === ""
+                    ? null
+                    : (event.target.value as string),
+                )
+              }
+              sx={{ backgroundColor: "background.paper" }}
+            >
+              <MenuItem value="">
+                <em>Any</em>
+              </MenuItem>
+              {statusNames.map((name) => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              Choose a destination status to watch for, or Any.
+            </FormHelperText>
+          </FormControl>
+        </Stack>
+      );
+    }
+
+    if (triggerType === "ColumnValueChanged") {
+      return (
+        <Stack spacing={2}>
+          <TextField
+            label="Column name"
+            value={rule.trigger.columnName ?? ""}
+            onChange={(event) =>
+              handleTriggerColumnChange(rule, "columnName", event.target.value)
+            }
+            placeholder="Enter a column key or name"
+            fullWidth
+            InputProps={{
+              sx: { backgroundColor: "background.paper" },
+            }}
+          />
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={{ xs: 2, md: 3 }}
+          >
+            <TextField
+              label="From value (optional)"
+              value={rule.trigger.fromValue ?? ""}
+              onChange={(event) =>
+                handleTriggerColumnChange(rule, "fromValue", event.target.value)
+              }
+              placeholder="Previous value"
+              fullWidth
+              InputProps={{
+                sx: { backgroundColor: "background.paper" },
+              }}
+            />
+            <TextField
+              label="To value (optional)"
+              value={rule.trigger.toValue ?? ""}
+              onChange={(event) =>
+                handleTriggerColumnChange(rule, "toValue", event.target.value)
+              }
+              placeholder="New value"
+              fullWidth
+              InputProps={{
+                sx: { backgroundColor: "background.paper" },
+              }}
+            />
+          </Stack>
+          <FormHelperText>
+            Leave either field blank to match any previous or next value.
+          </FormHelperText>
+        </Stack>
+      );
+    }
+
+    if (triggerType === "ListUpdated" || triggerType === "ListDeleted") {
+      return (
+        <Typography color="text.secondary">
+          Applies to list-level events. No additional filters are required.
+        </Typography>
+      );
+    }
+
+    return null;
+  };
+
+  const renderScheduleDetails = (rule: NotificationRuleFormValue) => {
+    const scheduleType = rule.schedule.type;
+
+    if (scheduleType === "Delayed") {
+      const rawDelay = rule.schedule.delay;
+      const parsedDelay = Number.parseInt(String(rawDelay ?? ""), 10);
+      const delayMinutes =
+        Number.isFinite(parsedDelay) && parsedDelay >= 0
+          ? parsedDelay
+          : undefined;
+      const delayValue = delayMinutes == null ? "" : String(delayMinutes);
+      return (
+        <TextField
+          label="Delay (minutes)"
+          type="number"
+          value={delayValue}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            const numeric = Number.parseInt(nextValue, 10);
+            updateSchedule(rule, {
+              delay:
+                Number.isFinite(numeric) && numeric >= 0
+                  ? String(numeric)
+                  : undefined,
+            });
+          }}
+          placeholder="15"
+          InputProps={{
+            sx: { backgroundColor: "background.paper" },
+            inputProps: { min: 0 },
+          }}
+        />
+      );
+    }
+
+    if (scheduleType === "Batched") {
+      return (
+        <Typography color="text.secondary" variant="body2">
+          Existing batched schedules can be viewed here but not created from the
+          editor yet.
+        </Typography>
+      );
+    }
+
+    if (scheduleType === "Daily") {
+      return (
+        <TextField
+          label="Send at"
+          type="time"
+          value={rule.schedule.dailyAt ?? ""}
+          onChange={(event) =>
+            updateSchedule(rule, {
+              dailyAt: event.target.value ? event.target.value : undefined,
+            })
+          }
+          helperText="Choose a time of day (HH:mm)."
+          InputLabelProps={{ shrink: true }}
+          InputProps={{ sx: { backgroundColor: "background.paper" } }}
+        />
+      );
+    }
+
+    if (scheduleType === "Weekly") {
+      const selectedDays = rule.schedule.daysOfWeek ?? [];
+      return (
+        <Stack spacing={2}>
+          <FormControl fullWidth>
+            <InputLabel id={`weekly-days-${rule.clientId}`}>
+              Days of week
+            </InputLabel>
+            <Select
+              labelId={`weekly-days-${rule.clientId}`}
+              multiple
+              value={selectedDays}
+              onChange={(event) => {
+                const value = event.target.value;
+                const normalized = Array.isArray(value)
+                  ? value
+                  : value
+                      .split(",")
+                      .map((day) => day.trim())
+                      .filter(Boolean);
+                handleWeeklyDaysChange(rule, normalized as string[]);
+              }}
+              input={<OutlinedInput label="Days of week" />}
+              renderValue={(selected) =>
+                (selected as string[]).length > 0
+                  ? (selected as string[]).join(", ")
+                  : "Select days"
+              }
+              sx={{ backgroundColor: "background.paper" }}
+            >
+              {weekDayOptions.map((day) => (
+                <MenuItem key={day} value={day}>
+                  <Checkbox checked={selectedDays.includes(day)} />
+                  <ListItemText primary={day} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Send at"
+            type="time"
+            value={rule.schedule.dailyAt ?? ""}
+            onChange={(event) =>
+              updateSchedule(rule, {
+                dailyAt: event.target.value ? event.target.value : undefined,
+              })
+            }
+            helperText="Time of day to send (HH:mm)."
+            InputLabelProps={{ shrink: true }}
+            InputProps={{ sx: { backgroundColor: "background.paper" } }}
+          />
+        </Stack>
+      );
+    }
+
+    return null;
   };
 
   const rulesView =
@@ -201,248 +575,217 @@ const NotificationRulesEditor = ({
     ) : (
       <Stack spacing={3.5}>
         {rules.map((rule, index) => {
-          const channels = rule.channels;
-          const hasChannel = (type: NotificationChannelType) =>
-            channels.some((channel) => channel.type === type);
-
-          const emailChannel = channels.find(
-            (channel) => channel.type === "Email",
+          const enabledChannels = new Set(
+            rule.channels.map((channel) => channel.type),
           );
+          const triggerDetail = renderTriggerDetails(rule);
+          const scheduleDetail = renderScheduleDetails(rule);
+          const triggerDescription = triggerDescriptions[rule.trigger.type];
+          const scheduleDescription = scheduleDescriptions[rule.schedule.type];
+          const isActive = rule.isActive;
+          const activeLabel = isActive ? "Active" : "Inactive";
 
-          const emailField = emailChannel ? (
-            <TextField
-              label="Email address"
-              value={emailChannel.address ?? ""}
-              onChange={(event) =>
-                handleChannelAddressChange(rule, "Email", event.target.value)
+          const addressableChannels = rule.channels
+            .map((channel) => {
+              const option = channelOptions.find(
+                (candidate) => candidate.value === channel.type,
+              );
+              if (!option || !option.requiresAddress) {
+                return null;
               }
-              placeholder="name@example.com"
-              fullWidth
-              InputProps={{
-                sx: {
-                  backgroundColor: "background.paper",
-                },
-              }}
-            />
-          ) : null;
+              return { channel, option };
+            })
+            .filter(
+              (
+                value,
+              ): value is {
+                channel: NotificationChannel;
+                option: ChannelOption;
+              } => Boolean(value),
+            );
 
           return (
             <Paper
               key={rule.clientId}
               variant="outlined"
               sx={{
-                p: { xs: 2.5, md: 3 },
-                m: 3,
+                p: { xs: 3, md: 3.5 },
+                borderRadius: 3,
                 boxShadow: "none",
                 borderColor: (theme) => theme.palette.divider,
               }}
             >
-              <Stack spacing={3}>
+              <Stack spacing={3} divider={<Divider flexItem />}>
                 <Stack
-                  direction="row"
-                  alignItems="center"
+                  direction={{ xs: "column", md: "row" }}
+                  spacing={2}
+                  alignItems={{ xs: "flex-start", md: "center" }}
                   justifyContent="space-between"
-                  sx={{ pb: 0.5 }}
                 >
                   <Typography fontWeight={600}>Rule {index + 1}</Typography>
-                  <Button
-                    color="error"
-                    startIcon={<Delete />}
-                    onClick={() => onRemoveRule(rule)}
-                    size="small"
-                  >
-                    Remove
-                  </Button>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={isActive}
+                          onChange={(event) =>
+                            handleActiveChange(rule, event.target.checked)
+                          }
+                          inputProps={{
+                            "aria-label": `Toggle rule ${index + 1} active`,
+                          }}
+                        />
+                      }
+                      label={activeLabel}
+                    />
+                    <Button
+                      color="error"
+                      startIcon={<Delete />}
+                      onClick={() => onRemoveRule(rule)}
+                      size="small"
+                    >
+                      Remove
+                    </Button>
+                  </Stack>
                 </Stack>
 
-                <FormControl fullWidth>
-                  <InputLabel id={`trigger-${rule.clientId}`}>
-                    Trigger
-                  </InputLabel>
-                  <Select
-                    labelId={`trigger-${rule.clientId}`}
-                    label="Trigger"
-                    value={rule.trigger.type}
-                    onChange={(event) =>
-                      handleTriggerTypeChange(
-                        rule,
-                        event.target.value as NotificationTriggerType,
-                      )
-                    }
-                    sx={{
-                      backgroundColor: "background.paper",
-                    }}
-                  >
-                    {triggerOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {rule.trigger.type === "StatusChanged" && (
-                  <Stack
-                    direction={{ xs: "column", md: "row" }}
-                    spacing={{ xs: 2, md: 3 }}
-                  >
-                    <FormControl fullWidth>
-                      <InputLabel id={`from-${rule.clientId}`}>
-                        From status
-                      </InputLabel>
-                      <Select
-                        labelId={`from-${rule.clientId}`}
-                        label="From status"
-                        value={rule.trigger.fromValue ?? ""}
-                        onChange={(event) =>
-                          handleTriggerStatusChange(
-                            rule,
-                            "fromValue",
-                            event.target.value === ""
-                              ? null
-                              : (event.target.value as string),
-                          )
-                        }
-                        sx={{
-                          backgroundColor: "background.paper",
-                        }}
-                      >
-                        <MenuItem value="">
-                          <em>Any</em>
+                <Stack spacing={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id={`trigger-${rule.clientId}`}>
+                      Trigger
+                    </InputLabel>
+                    <Select
+                      labelId={`trigger-${rule.clientId}`}
+                      label="Trigger"
+                      value={rule.trigger.type}
+                      onChange={(event) =>
+                        handleTriggerTypeChange(
+                          rule,
+                          event.target.value as NotificationTriggerType,
+                        )
+                      }
+                      sx={{ backgroundColor: "background.paper" }}
+                    >
+                      {triggerOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
                         </MenuItem>
-                        {statusNames.map((name) => (
-                          <MenuItem key={name} value={name}>
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Leave as Any to match all starting statuses.
-                      </FormHelperText>
-                    </FormControl>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  {triggerDescription && (
+                    <Typography color="text.secondary" variant="body2">
+                      {triggerDescription}
+                    </Typography>
+                  )}
+                  {triggerDetail}
+                </Stack>
 
-                    <FormControl fullWidth>
-                      <InputLabel id={`to-${rule.clientId}`}>
-                        To status
-                      </InputLabel>
-                      <Select
-                        labelId={`to-${rule.clientId}`}
-                        label="To status"
-                        value={rule.trigger.toValue ?? ""}
-                        onChange={(event) =>
-                          handleTriggerStatusChange(
-                            rule,
-                            "toValue",
-                            event.target.value === ""
-                              ? null
-                              : (event.target.value as string),
-                          )
-                        }
-                        sx={{
-                          backgroundColor: "background.paper",
-                        }}
-                      >
-                        <MenuItem value="">
-                          <em>Any</em>
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography fontWeight={600} gutterBottom>
+                      Channels
+                    </Typography>
+                    <FormGroup
+                      row
+                      sx={{
+                        gap: 2,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {channelOptions.map((option) => (
+                        <FormControlLabel
+                          key={option.value}
+                          control={
+                            <Checkbox
+                              checked={enabledChannels.has(option.value)}
+                              onChange={(event) =>
+                                handleChannelToggle(
+                                  rule,
+                                  option.value,
+                                  event.target.checked,
+                                )
+                              }
+                            />
+                          }
+                          label={
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              alignItems="center"
+                            >
+                              {option.icon}
+                              <span>{option.label}</span>
+                            </Stack>
+                          }
+                        />
+                      ))}
+                    </FormGroup>
+                  </Box>
+                  {addressableChannels.length > 0 && (
+                    <Stack spacing={2}>
+                      {addressableChannels.map(({ channel, option }) => (
+                        <TextField
+                          key={`${rule.clientId}-${option.value}`}
+                          label={
+                            option.addressLabel ?? `${option.label} details`
+                          }
+                          value={channel.address ?? ""}
+                          onChange={(event) =>
+                            handleChannelAddressChange(
+                              rule,
+                              channel.type,
+                              event.target.value,
+                            )
+                          }
+                          placeholder={option.addressPlaceholder}
+                          helperText={option.addressHelperText}
+                          InputProps={{
+                            sx: { backgroundColor: "background.paper" },
+                          }}
+                        />
+                      ))}
+                    </Stack>
+                  )}
+                </Stack>
+
+                <Stack spacing={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id={`schedule-${rule.clientId}`}>
+                      Schedule
+                    </InputLabel>
+                    <Select
+                      labelId={`schedule-${rule.clientId}`}
+                      label="Schedule"
+                      value={rule.schedule.type}
+                      onChange={(event) =>
+                        handleScheduleChange(
+                          rule,
+                          event.target.value as NotificationScheduleType,
+                        )
+                      }
+                      sx={{ backgroundColor: "background.paper" }}
+                    >
+                      {scheduleOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
                         </MenuItem>
-                        {statusNames.map((name) => (
-                          <MenuItem key={name} value={name}>
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>
-                        Choose a destination status to watch for, or Any.
-                      </FormHelperText>
-                    </FormControl>
-                  </Stack>
-                )}
-
-                <Box>
-                  <Typography fontWeight={600} gutterBottom>
-                    Channels
-                  </Typography>
-                  <FormGroup row sx={{ gap: 2.5 }}>
-                    {channelOptions.map((option) => (
-                      <FormControlLabel
-                        key={option.value}
-                        control={
-                          <Checkbox
-                            checked={hasChannel(option.value)}
-                            onChange={(event) =>
-                              handleChannelToggle(
-                                rule,
-                                option.value,
-                                event.target.checked,
-                              )
-                            }
-                          />
-                        }
-                        label={
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            alignItems="center"
-                          >
-                            {option.icon}
-                            <span>{option.label}</span>
-                          </Stack>
-                        }
-                      />
-                    ))}
-                  </FormGroup>
-                  {emailField}
-                </Box>
-
-                <FormControl fullWidth>
-                  <InputLabel id={`schedule-${rule.clientId}`}>
-                    Schedule
-                  </InputLabel>
-                  <Select
-                    labelId={`schedule-${rule.clientId}`}
-                    label="Schedule"
-                    value={rule.schedule.type}
-                    onChange={(event) =>
-                      handleScheduleChange(
-                        rule,
-                        event.target.value as NotificationScheduleType,
-                      )
-                    }
-                    sx={{
-                      backgroundColor: "background.paper",
-                    }}
-                  >
-                    {scheduleOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>
-                    Notifications are sent immediately by default.
-                  </FormHelperText>
-                </FormControl>
-
-                <TextField
-                  label="Template ID (optional)"
-                  value={rule.templateId ?? ""}
-                  onChange={(event) =>
-                    handleTemplateChange(rule, event.target.value)
-                  }
-                  placeholder="Enter a template identifier"
-                  InputProps={{
-                    sx: {
-                      backgroundColor: "background.paper",
-                    },
-                  }}
-                />
+                      ))}
+                    </Select>
+                  </FormControl>
+                  {scheduleDescription && (
+                    <Typography color="text.secondary" variant="body2">
+                      {scheduleDescription}
+                    </Typography>
+                  )}
+                  {scheduleDetail}
+                </Stack>
               </Stack>
             </Paper>
           );
         })}
       </Stack>
     );
-
   return (
     <Stack spacing={2.5}>
       <Box>

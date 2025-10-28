@@ -18,28 +18,28 @@ using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Application.Endpoints.UpdateList;
 using Lister.Lists.Application.Endpoints.UpdateListItem;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Queries;
 using Lister.Lists.Domain.ValueObjects;
-using Lister.Lists.Domain.Views;
 using Lister.Lists.Infrastructure.Sql;
-using Lister.Lists.Infrastructure.Sql.Configuration;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
+using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using Lister.Notifications.Application.Endpoints.CreateNotificationRule;
 using Lister.Notifications.Application.Endpoints.DeleteNotificationRule;
 using Lister.Notifications.Application.Endpoints.GetNotificationDetails;
 using Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
+using Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
 using Lister.Notifications.Application.Endpoints.GetUserNotifications;
 using Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
 using Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
 using Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
 using Lister.Notifications.Domain;
-using Lister.Notifications.Domain.Queries;
 using Lister.Notifications.Domain.Services;
-using Lister.Notifications.Domain.Views;
 using Lister.Notifications.Infrastructure.Sql;
 using Lister.Notifications.Infrastructure.Sql.Entities;
 using Lister.Notifications.Infrastructure.Sql.Services;
+using Lister.Notifications.ReadOnly.Dtos;
+using Lister.Notifications.ReadOnly.Queries;
 using Lister.Users.Application.Behaviors;
 using Lister.Users.Domain.Entities;
 using Lister.Users.Domain.Services;
@@ -224,10 +224,6 @@ internal static class HostingExtensions
         services.AddScoped<IGetActiveNotificationRules, ActiveNotificationRulesGetter>();
         services.AddScoped<IGetPendingNotifications, PendingNotificationsGetter>();
 
-        /* Automapper */
-        services.AddAutoMapper(config =>
-            config.AddProfile<ListsMappingProfile>());
-
         return services;
     }
 
@@ -257,11 +253,11 @@ internal static class HostingExtensions
         services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
 
         // Lists - close generic handlers in composition root
-        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItem>),
+        services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItemDto>),
             typeof(ConvertTextToListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinition>),
+        services.AddScoped(typeof(IRequestHandler<CreateListCommand, ListItemDefinitionDto>),
             typeof(CreateListCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItem>),
+        services.AddScoped(typeof(IRequestHandler<CreateListItemCommand, ListItemDto>),
             typeof(CreateListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<DeleteListCommand>),
             typeof(DeleteListCommandHandler<ListDb, ItemDb>));
@@ -279,7 +275,7 @@ internal static class HostingExtensions
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
 
         // Notifications - close generic handlers in composition root
-        services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRule>),
+        services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, NotificationRuleDto>),
             typeof(CreateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateNotificationRuleCommand>),
             typeof(UpdateNotificationRuleCommandHandler<NotificationRuleDb, NotificationDb>));
@@ -289,10 +285,12 @@ internal static class HostingExtensions
             typeof(MarkNotificationAsReadCommandHandler<NotificationRuleDb, NotificationDb>));
         services.AddScoped(typeof(IRequestHandler<MarkAllNotificationsAsReadCommand>),
             typeof(MarkAllNotificationsAsReadCommandHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<GetNotificationDetailsQuery, NotificationDetails?>),
+        services.AddScoped(typeof(IRequestHandler<GetNotificationDetailsQuery, NotificationDetailsDto?>),
             typeof(GetNotificationDetailsQueryHandler<NotificationRuleDb, NotificationDb>));
-        services.AddScoped(typeof(IRequestHandler<GetUserNotificationsQuery, NotificationListPage>),
+        services.AddScoped(typeof(IRequestHandler<GetUserNotificationsQuery, NotificationListPageDto>),
             typeof(GetUserNotificationsQueryHandler<NotificationRuleDb, NotificationDb>));
+        services.AddScoped<IRequestHandler<GetUserNotificationRulesQuery, NotificationRuleDto[]>,
+            GetUserNotificationRulesQueryHandler>();
         services.AddScoped(typeof(IRequestHandler<GetUnreadNotificationCountQuery, int>),
             typeof(GetUnreadNotificationCountQueryHandler<NotificationRuleDb, NotificationDb>));
 
