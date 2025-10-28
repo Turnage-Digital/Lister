@@ -1,3 +1,4 @@
+using System;
 using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
@@ -68,6 +69,23 @@ public class ListsStore(ListsDbContext dbContext)
             By = deletedBy,
             List = listDb
         });
+        return Task.CompletedTask;
+    }
+
+    public Task RenameAsync(
+        ListDb listDb,
+        string newName,
+        string actedBy,
+        CancellationToken cancellationToken
+    )
+    {
+        if (string.Equals(listDb.Name, newName, StringComparison.Ordinal))
+        {
+            return Task.CompletedTask;
+        }
+
+        listDb.Name = newName;
+        TouchUpdatedHistory(listDb, actedBy);
         return Task.CompletedTask;
     }
 

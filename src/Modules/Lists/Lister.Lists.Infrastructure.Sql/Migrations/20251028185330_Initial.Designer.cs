@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Lists.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ListsDbContext))]
-    [Migration("20251027164324_Initial")]
+    [Migration("20251028185330_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -76,6 +76,74 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.ToTable("Lists", (string)null);
                 });
 
+            modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.Entities.ListMigrationJobDb", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("AvailableAfter")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("BackupExpiresOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("BackupListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("BackupRemovedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("CompletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("NewListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("PlanJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RequestedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("SourceListId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<DateTime?>("StartedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorrelationId")
+                        .IsUnique();
+
+                    b.HasIndex("Stage", "AvailableAfter");
+
+                    b.ToTable("ListMigrationJobs", (string)null);
+                });
+
             modelBuilder.Entity("Lister.Lists.Infrastructure.Sql.ValueObjects.ColumnDb", b =>
                 {
                     b.Property<int?>("Id")
@@ -85,40 +153,33 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("AllowedValues")
-                        .HasColumnType("JSON")
-                        .HasAnnotation("Relational:JsonPropertyName", "allowedValues");
+                        .HasColumnType("JSON");
 
                     b.Property<Guid?>("ListId")
                         .HasColumnType("char(36)");
 
                     b.Property<decimal?>("MaxNumber")
-                        .HasColumnType("DECIMAL(18,4)")
-                        .HasAnnotation("Relational:JsonPropertyName", "maxNumber");
+                        .HasColumnType("DECIMAL(18,4)");
 
                     b.Property<decimal?>("MinNumber")
-                        .HasColumnType("DECIMAL(18,4)")
-                        .HasAnnotation("Relational:JsonPropertyName", "minNumber");
+                        .HasColumnType("DECIMAL(18,4)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasAnnotation("Relational:JsonPropertyName", "name");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Regex")
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
-                        .HasAnnotation("Relational:JsonPropertyName", "regex");
+                        .HasColumnType("varchar(200)");
 
                     b.Property<bool>("Required")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false)
-                        .HasAnnotation("Relational:JsonPropertyName", "required");
+                        .HasDefaultValue(false);
 
                     b.Property<int>("Type")
-                        .HasColumnType("int")
-                        .HasAnnotation("Relational:JsonPropertyName", "type");
+                        .HasColumnType("int");
 
                     b.HasKey("Id")
                         .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
@@ -215,8 +276,7 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasAnnotation("Relational:JsonPropertyName", "color");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<Guid?>("ListId")
                         .HasColumnType("char(36)");
@@ -224,8 +284,7 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasAnnotation("Relational:JsonPropertyName", "name");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
                         .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
@@ -246,14 +305,12 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                     b.Property<string>("AllowedNext")
                         .IsRequired()
                         .HasColumnType("json")
-                        .HasColumnName("AllowedNext")
-                        .HasAnnotation("Relational:JsonPropertyName", "to");
+                        .HasColumnName("AllowedNext");
 
                     b.Property<string>("From")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasAnnotation("Relational:JsonPropertyName", "from");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<Guid?>("ListDbId")
                         .HasColumnType("char(36)");

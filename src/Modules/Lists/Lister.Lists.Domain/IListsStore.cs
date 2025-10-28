@@ -11,6 +11,7 @@ public interface IListsStore<TList>
     Task<TList?> GetByNameAsync(string name, CancellationToken cancellationToken);
     Task CreateAsync(TList list, CancellationToken cancellationToken);
     Task DeleteAsync(TList list, string deletedBy, CancellationToken cancellationToken);
+    Task RenameAsync(TList list, string newName, string actedBy, CancellationToken cancellationToken);
 
     Task SetColumnsAsync(
         TList list,

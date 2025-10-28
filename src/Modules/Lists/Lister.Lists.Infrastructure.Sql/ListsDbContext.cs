@@ -10,6 +10,8 @@ public class ListsDbContext(DbContextOptions<ListsDbContext> options)
 
     public virtual DbSet<ItemDb> Items { get; set; } = null!;
 
+    public virtual DbSet<ListMigrationJobDb> ListMigrationJobs { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

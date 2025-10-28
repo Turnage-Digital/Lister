@@ -52,6 +52,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using MySqlConnector;
 
 namespace Lister.App.Server;
 
@@ -193,7 +194,15 @@ internal static class HostingExtensions
         string connectionString
     )
     {
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
+        ServerVersion serverVersion;
+        try
+        {
+            serverVersion = ServerVersion.AutoDetect(connectionString);
+        }
+        catch (MySqlException)
+        {
+            serverVersion = new MySqlServerVersion(new Version(8, 0, 34));
+        }
 
         /* Core */
         services.AddDbContextWithMigrations<CoreDbContext>(connectionString, serverVersion);

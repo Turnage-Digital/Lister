@@ -16,6 +16,37 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ListMigrationJobs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    SourceListId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RequestedBy = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PlanJson = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    StartedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CompletedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    BackupRemovedOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    LastError = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AvailableAfter = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CorrelationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BackupListId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    NewListId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    BackupExpiresOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Stage = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false, defaultValue: "Pending")
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ListMigrationJobs", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Lists",
                 columns: table => new
                 {
@@ -207,6 +238,17 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                 column: "ListId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ListMigrationJobs_CorrelationId",
+                table: "ListMigrationJobs",
+                column: "CorrelationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ListMigrationJobs_Stage_AvailableAfter",
+                table: "ListMigrationJobs",
+                columns: new[] { "Stage", "AvailableAfter" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Statuses_ListId",
                 table: "Statuses",
                 column: "ListId");
@@ -234,6 +276,9 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "ListHistory");
+
+            migrationBuilder.DropTable(
+                name: "ListMigrationJobs");
 
             migrationBuilder.DropTable(
                 name: "Statuses");

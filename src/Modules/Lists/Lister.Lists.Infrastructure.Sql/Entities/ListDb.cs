@@ -16,7 +16,7 @@ public class ListDb : IWritableList
     public ICollection<ItemDb> Items { get; init; } = new HashSet<ItemDb>();
 
     public ICollection<ListHistoryEntryDb> History { get; init; } = new HashSet<ListHistoryEntryDb>();
-    public string Name { get; init; } = null!;
+    public string Name { get; set; } = null!;
 
     public Guid? Id { get; set; }
 }
