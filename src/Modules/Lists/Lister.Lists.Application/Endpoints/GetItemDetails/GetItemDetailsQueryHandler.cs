@@ -1,5 +1,5 @@
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetItemDetails;

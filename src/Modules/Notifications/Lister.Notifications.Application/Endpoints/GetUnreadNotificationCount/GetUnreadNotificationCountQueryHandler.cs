@@ -12,11 +12,8 @@ public class GetUnreadNotificationCountQueryHandler<TRule, TNotification>(
 {
     public async Task<int> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
     {
-        var retval = await getter.GetAsync(
-            request.UserId!,
-            request.ListId,
-            cancellationToken);
-
+        var retval = await getter
+            .GetAsync(request.UserId!, request.ListId, cancellationToken);
         return retval;
     }
 }

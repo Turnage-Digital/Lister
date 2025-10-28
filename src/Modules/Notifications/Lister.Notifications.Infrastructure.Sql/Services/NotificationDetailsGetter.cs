@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 using Lister.Core.Domain.ValueObjects;
 using Lister.Notifications.Domain.Enums;

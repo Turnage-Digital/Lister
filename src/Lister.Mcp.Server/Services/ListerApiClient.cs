@@ -62,7 +62,10 @@ public class ListerApiClient
         return JsonSerializer.Deserialize<ListNameDto[]>(json, _jsonOptions) ?? [];
     }
 
-    public async Task<ListItemDefinitionDto> GetListSchemaAsync(Guid listId, CancellationToken cancellationToken = default)
+    public async Task<ListItemDefinitionDto> GetListSchemaAsync(
+        Guid listId,
+        CancellationToken cancellationToken = default
+    )
     {
         using var request = await CreateAuthenticatedRequestAsync(HttpMethod.Get, $"/api/lists/{listId}/itemDefinition",
             cancellationToken);

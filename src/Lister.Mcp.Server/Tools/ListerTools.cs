@@ -137,7 +137,8 @@ public class ListerTools
         [Description("Channels JSON array")] string channelsJson,
         [Description("Schedule JSON")] string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
-        [Description("Whether the rule is active")] bool isActive = true,
+        [Description("Whether the rule is active")]
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -206,7 +207,8 @@ public class ListerTools
         [Description("Schedule JSON (e.g., {\"type\":\"Immediate\"})")]
         string scheduleJson,
         [Description("Optional template ID")] string? templateId = null,
-        [Description("Whether the rule should start active")] bool isActive = true,
+        [Description("Whether the rule should start active")]
+        bool isActive = true,
         CancellationToken cancellationToken = default
     )
     {

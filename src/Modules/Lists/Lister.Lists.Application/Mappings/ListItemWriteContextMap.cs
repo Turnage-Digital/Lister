@@ -5,11 +5,13 @@ namespace Lister.Lists.Application.Mappings;
 
 internal static class ListItemWriteContextMap
 {
-    public static ListItemDto ToDto(IWritableItem item, object bag) =>
-        new()
+    public static ListItemDto ToDto(IWritableItem item, object bag)
+    {
+        return new ListItemDto
         {
             Id = item.Id,
             ListId = item.ListId,
             Bag = bag
         };
+    }
 }

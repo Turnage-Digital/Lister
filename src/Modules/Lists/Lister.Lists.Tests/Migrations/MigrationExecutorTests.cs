@@ -12,14 +12,6 @@ namespace Lister.Lists.Tests.Migrations;
 [TestFixture]
 public class MigrationExecutorTests
 {
-    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;
-    private Mock<IListsStore<ListDb>> _listsStore = null!;
-    private Mock<IItemsStore<ItemDb>> _itemsStore = null!;
-    private Mock<IMediator> _mediator = null!;
-    private ListDb _list = null!;
-    private Guid _listId;
-    private const string User = "tester";
-
     [SetUp]
     public void SetUp()
     {
@@ -69,8 +61,18 @@ public class MigrationExecutorTests
             .Returns(Task.CompletedTask);
     }
 
-    private MigrationExecutor<ListDb, ItemDb> CreateExecutor() =>
-        new(_uow.Object, _mediator.Object);
+    private Mock<IListsUnitOfWork<ListDb, ItemDb>> _uow = null!;
+    private Mock<IListsStore<ListDb>> _listsStore = null!;
+    private Mock<IItemsStore<ItemDb>> _itemsStore = null!;
+    private Mock<IMediator> _mediator = null!;
+    private ListDb _list = null!;
+    private Guid _listId;
+    private const string User = "tester";
+
+    private MigrationExecutor<ListDb, ItemDb> CreateExecutor()
+    {
+        return new MigrationExecutor<ListDb, ItemDb>(_uow.Object, _mediator.Object);
+    }
 
     [Test]
     public async Task ExecuteAsync_TightenConstraints_UpdatesMetadata_AndPublishesEvents()

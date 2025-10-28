@@ -243,25 +243,40 @@ public class NotificationAggregate<TRule, TNotification>(
     public Task<NotificationTrigger> GetNotificationRuleTriggerAsync(
         TRule rule,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.RulesStore.GetTriggerAsync(rule, cancellationToken);
+    )
+    {
+        return unitOfWork.RulesStore.GetTriggerAsync(rule, cancellationToken);
+    }
 
     public Task<NotificationChannel[]> GetNotificationRuleChannelsAsync(
         TRule rule,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.RulesStore.GetChannelsAsync(rule, cancellationToken);
+    )
+    {
+        return unitOfWork.RulesStore.GetChannelsAsync(rule, cancellationToken);
+    }
 
     public Task<NotificationSchedule> GetNotificationRuleScheduleAsync(
         TRule rule,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.RulesStore.GetScheduleAsync(rule, cancellationToken);
+    )
+    {
+        return unitOfWork.RulesStore.GetScheduleAsync(rule, cancellationToken);
+    }
 
     public Task<string?> GetNotificationRuleTemplateAsync(
         TRule rule,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.RulesStore.GetTemplateAsync(rule, cancellationToken);
+    )
+    {
+        return unitOfWork.RulesStore.GetTemplateAsync(rule, cancellationToken);
+    }
 
     public Task<bool> GetNotificationRuleIsActiveAsync(
         TRule rule,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.RulesStore.GetIsActiveAsync(rule, cancellationToken);
+    )
+    {
+        return unitOfWork.RulesStore.GetIsActiveAsync(rule, cancellationToken);
+    }
 }

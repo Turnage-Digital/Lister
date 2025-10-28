@@ -1,4 +1,3 @@
-using System.Linq;
 using Lister.Notifications.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 

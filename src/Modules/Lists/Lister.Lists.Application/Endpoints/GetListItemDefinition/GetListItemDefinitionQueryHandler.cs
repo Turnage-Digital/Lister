@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 

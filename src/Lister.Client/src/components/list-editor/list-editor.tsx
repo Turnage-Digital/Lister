@@ -17,7 +17,6 @@ import NotificationRulesEditor from "./notification-rules-editor";
 import {
   createEmptyRuleFormValue,
   stripClientFields,
-  toNotificationRuleFormValue,
 } from "./notification-rules.helpers";
 import StatusTransitionsEditor from "./status-transitions-editor";
 
@@ -25,7 +24,6 @@ import type {
   ListEditorInitialValue,
   ListEditorSubmitResult,
   NotificationRuleFormValue,
-  NotificationRuleSubmission,
 } from "./list-editor.types";
 
 interface ListEditorProps {

@@ -1,4 +1,3 @@
-using System.Linq;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Dtos;
@@ -12,8 +11,9 @@ internal static class ListDefinitionWriteContextMap
         Column[] columns,
         Status[] statuses,
         StatusTransition[] transitions
-    ) =>
-        new()
+    )
+    {
+        return new ListItemDefinitionDto
         {
             Id = list.Id,
             Name = list.Name,
@@ -21,9 +21,11 @@ internal static class ListDefinitionWriteContextMap
             Statuses = statuses.Select(ToDto).ToArray(),
             Transitions = transitions.Select(ToDto).ToArray()
         };
+    }
 
-    private static ColumnDto ToDto(Column column) =>
-        new()
+    private static ColumnDto ToDto(Column column)
+    {
+        return new ColumnDto
         {
             StorageKey = column.StorageKey,
             Name = column.Name,
@@ -35,18 +37,23 @@ internal static class ListDefinitionWriteContextMap
             MaxNumber = column.MaxNumber,
             Regex = column.Regex
         };
+    }
 
-    private static StatusDto ToDto(Status status) =>
-        new()
+    private static StatusDto ToDto(Status status)
+    {
+        return new StatusDto
         {
             Name = status.Name,
             Color = status.Color
         };
+    }
 
-    private static StatusTransitionDto ToDto(StatusTransition transition) =>
-        new()
+    private static StatusTransitionDto ToDto(StatusTransition transition)
+    {
+        return new StatusTransitionDto
         {
             From = transition.From,
             AllowedNext = transition.AllowedNext
         };
+    }
 }

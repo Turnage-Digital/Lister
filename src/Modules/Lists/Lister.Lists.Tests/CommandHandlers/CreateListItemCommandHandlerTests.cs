@@ -1,8 +1,6 @@
 using Lister.Core.Domain;
 using Lister.Lists.Application.Endpoints.CreateListItem;
 using Lister.Lists.Domain;
-using Lister.Lists.Domain.Entities;
-using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
 

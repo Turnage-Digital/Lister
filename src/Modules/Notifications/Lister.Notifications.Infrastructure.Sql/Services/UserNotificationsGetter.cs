@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.ReadOnly.Dtos;
@@ -58,36 +57,37 @@ public class UserNotificationsGetter(NotificationsDbContext context)
             .ToListAsync(cancellationToken);
 
         var items = pageRows.Select(r =>
-        {
-            var title = string.Empty;
-            var body = string.Empty;
-            object? metadata = null;
-            var occurredOn = r.CreatedOn;
-
-            if (!string.IsNullOrWhiteSpace(r.ContentJson))
             {
-                var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
-                if (content is not null)
+                var title = string.Empty;
+                var body = string.Empty;
+                object? metadata = null;
+                var occurredOn = r.CreatedOn;
+
+                if (!string.IsNullOrWhiteSpace(r.ContentJson))
                 {
-                    title = content.Subject;
-                    body = content.Body;
-                    metadata = content.Data.Count > 0 ? content.Data : null;
-                    occurredOn = content.OccurredOn != default ? content.OccurredOn : occurredOn;
+                    var content = JsonSerializer.Deserialize<NotificationContent>(r.ContentJson);
+                    if (content is not null)
+                    {
+                        title = content.Subject;
+                        body = content.Body;
+                        metadata = content.Data.Count > 0 ? content.Data : null;
+                        occurredOn = content.OccurredOn != default ? content.OccurredOn : occurredOn;
+                    }
                 }
-            }
 
-            return new NotificationSummaryDto
-            {
-                Id = r.Id!.Value,
-                ListId = r.ListId,
-                ItemId = r.ItemId,
-                Title = title,
-                Body = body,
-                Metadata = metadata,
-                IsRead = r.ReadOn.HasValue,
-                OccurredOn = occurredOn
-            };
-        }).ToList();
+                return new NotificationSummaryDto
+                {
+                    Id = r.Id!.Value,
+                    ListId = r.ListId,
+                    ItemId = r.ItemId,
+                    Title = title,
+                    Body = body,
+                    Metadata = metadata,
+                    IsRead = r.ReadOn.HasValue,
+                    OccurredOn = occurredOn
+                };
+            })
+            .ToList();
 
         var retval = new NotificationListPageDto
         {

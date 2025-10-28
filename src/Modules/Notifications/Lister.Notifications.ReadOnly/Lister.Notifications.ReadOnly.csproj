@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Lister.Notifications.Domain\Lister.Notifications.Domain.csproj" />
-        <ProjectReference Include="..\..\Core\Lister.Core.Domain\Lister.Core.Domain.csproj" />
+        <ProjectReference Include="..\Lister.Notifications.Domain\Lister.Notifications.Domain.csproj"/>
+        <ProjectReference Include="..\..\Core\Lister.Core.Domain\Lister.Core.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Dapper;
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lister.Lists.Infrastructure.Sql.Services;

@@ -1,7 +1,6 @@
-using System.Linq;
 using Lister.Lists.Domain.Entities;
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.Domain.ValueObjects;
+using Lister.Lists.ReadOnly.Queries;
 using MediatR;
 
 namespace Lister.Lists.Application.Endpoints.GetStatusTransitions;

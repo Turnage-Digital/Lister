@@ -1,4 +1,3 @@
-using System.Linq;
 using Lister.Notifications.ReadOnly.Dtos;
 using Lister.Notifications.ReadOnly.Queries;
 using MediatR;
@@ -13,7 +12,8 @@ public class GetUserNotificationRulesQueryHandler(IGetUserNotificationRules gett
         CancellationToken cancellationToken
     )
     {
-        var rules = await getter.GetAsync(request.UserId!, request.ListId, cancellationToken);
+        var rules = await getter
+            .GetAsync(request.UserId!, request.ListId, cancellationToken);
         return rules.ToArray();
     }
 }

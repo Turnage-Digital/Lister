@@ -16,7 +16,7 @@ public class GetUserNotificationsQueryHandler<TRule, TNotification>(
         CancellationToken cancellationToken
     )
     {
-        var page = await getter.GetAsync(
+        var retval = await getter.GetAsync(
             request.UserId!,
             request.Since,
             request.ListId,
@@ -24,6 +24,6 @@ public class GetUserNotificationsQueryHandler<TRule, TNotification>(
             request.PageSize,
             request.Page,
             cancellationToken);
-        return page;
+        return retval;
     }
 }

@@ -205,7 +205,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
     - Notifications: `NotificationTrigger`, `NotificationChannel`, `NotificationSchedule`, `NotificationContent`;
       persisted as JSON blobs for flexibility, with denormalized `TriggerType` for efficient filtering.
 - Mapping between write models and views.
-    - Application-layer context maps project aggregates and value objects into DTO records; infrastructure query services return tailored projections for reads.
+    - Application-layer context maps project aggregates and value objects into DTO records; infrastructure query
+      services return tailored projections for reads.
     - Commands continue to operate on `IWritable*` abstractions via aggregates to keep write logic inside the domain.
 
 ## Value Objects & Serialization

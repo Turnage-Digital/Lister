@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.ReadOnly.Dtos;

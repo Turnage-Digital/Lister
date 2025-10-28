@@ -1,5 +1,4 @@
 using Lister.Notifications.Domain;
-using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.Enums;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.Infrastructure.Sql.Entities;

@@ -8,8 +8,8 @@ import {
   CircularProgress,
   List,
   ListItem,
-  Stack,
   Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
@@ -27,7 +27,7 @@ import {
 } from "../side-drawer";
 
 const formatTimestamp = (isoString: string | undefined) => {
-  if (!isoString) {
+  if (isoString === undefined || isoString === "") {
     return "";
   }
   const date = new Date(isoString);
@@ -112,7 +112,7 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
   const infiniteData = query.data as InfiniteData<HistoryPage> | undefined;
 
   const pages = React.useMemo<HistoryPage[]>(() => {
-    if (!infiniteData) {
+    if (infiniteData === undefined) {
       return [];
     }
     return [...infiniteData.pages];
@@ -266,21 +266,22 @@ const HistoryDrawer = ({ subtitle, query }: HistoryDrawerProps) => {
 
   const contentNode = isInitialLoading ? <HistoryListSkeleton /> : listContent;
 
-  const headerActions =
-    totalEntries !== undefined ? (
+  let headerActions: React.ReactNode;
+  if (typeof totalEntries === "number") {
+    headerActions = (
       <Chip
         size="small"
         label={`${totalEntries} entr${totalEntries === 1 ? "y" : "ies"}`}
         color="default"
       />
-    ) : undefined;
+    );
+  }
 
   const hasNextPage = Boolean(query.hasNextPage);
-  const footerJustify = hasNextPage
-    ? isInitialLoading
-      ? "center"
-      : "flex-end"
-    : "center";
+  let footerJustify: "center" | "flex-end" = "center";
+  if (hasNextPage) {
+    footerJustify = isInitialLoading ? "center" : "flex-end";
+  }
 
   return (
     <SideDrawerContainer>

@@ -1,7 +1,7 @@
 using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Domain.Enums;
-using Lister.Lists.ReadOnly.Queries;
 using Lister.Lists.ReadOnly.Dtos;
+using Lister.Lists.ReadOnly.Queries;
 using Moq;
 
 namespace Lister.Lists.Tests.Migrations;
@@ -22,8 +22,14 @@ public class MigrationValidatorTests
             Name = "Test",
             Columns =
             [
-                new ColumnDto { StorageKey = "prop1", Name = "Title", Property = "title", Type = ColumnType.Text, Required = false },
-                new ColumnDto { StorageKey = "prop2", Name = "Count", Property = "count", Type = ColumnType.Number, Required = false }
+                new ColumnDto
+                {
+                    StorageKey = "prop1", Name = "Title", Property = "title", Type = ColumnType.Text, Required = false
+                },
+                new ColumnDto
+                {
+                    StorageKey = "prop2", Name = "Count", Property = "count", Type = ColumnType.Number, Required = false
+                }
             ],
             Statuses =
             [

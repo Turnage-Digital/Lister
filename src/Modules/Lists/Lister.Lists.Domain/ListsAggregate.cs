@@ -367,19 +367,28 @@ public class ListsAggregate<TList, TItem>(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<object> GetItemBagAsync(TItem item, CancellationToken cancellationToken = default) =>
-        unitOfWork.ItemsStore.GetBagAsync(item, cancellationToken);
+    public Task<object> GetItemBagAsync(TItem item, CancellationToken cancellationToken = default)
+    {
+        return unitOfWork.ItemsStore.GetBagAsync(item, cancellationToken);
+    }
 
-    public Task<Column[]> GetColumnsAsync(TList list, CancellationToken cancellationToken = default) =>
-        unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
+    public Task<Column[]> GetColumnsAsync(TList list, CancellationToken cancellationToken = default)
+    {
+        return unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
+    }
 
-    public Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken = default) =>
-        unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
+    public Task<Status[]> GetStatusesAsync(TList list, CancellationToken cancellationToken = default)
+    {
+        return unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
+    }
 
     public Task<StatusTransition[]> GetStatusTransitionsAsync(
         TList list,
         CancellationToken cancellationToken = default
-    ) => unitOfWork.ListsStore.GetStatusTransitionsAsync(list, cancellationToken);
+    )
+    {
+        return unitOfWork.ListsStore.GetStatusTransitionsAsync(list, cancellationToken);
+    }
 
     public async Task<object> CreateExampleBagAsync(TList list, CancellationToken cancellationToken = default)
     {
