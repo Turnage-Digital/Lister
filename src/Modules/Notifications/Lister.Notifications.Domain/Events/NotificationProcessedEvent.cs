@@ -1,12 +1,15 @@
+using Lister.Notifications.Domain.Entities;
+using MediatR;
+
 namespace Lister.Notifications.Domain.Events;
 
 public class NotificationProcessedEvent
-    : MediatR.INotification
+    : INotification
 {
-    public NotificationProcessedEvent(INotification notification)
+    public NotificationProcessedEvent(IWritableNotification notification)
     {
         Notification = notification;
     }
 
-    public INotification Notification { get; }
+    public IWritableNotification Notification { get; }
 }

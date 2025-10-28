@@ -1,10 +1,11 @@
+using Lister.Lists.Domain.Entities;
 using MediatR;
 
 namespace Lister.Lists.Domain.Events;
 
 public class ListItemUpdatedEvent : INotification
 {
-    public ListItemUpdatedEvent(IItem item, string updatedBy, object? previousBag, object newBag)
+    public ListItemUpdatedEvent(IWritableItem item, string updatedBy, object? previousBag, object newBag)
     {
         Item = item;
         UpdatedBy = updatedBy;
@@ -12,7 +13,7 @@ public class ListItemUpdatedEvent : INotification
         NewBag = newBag;
     }
 
-    public IItem Item { get; }
+    public IWritableItem Item { get; }
 
     public string UpdatedBy { get; }
 

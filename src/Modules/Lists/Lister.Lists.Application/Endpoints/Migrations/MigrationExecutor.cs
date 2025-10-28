@@ -11,7 +11,9 @@ namespace Lister.Lists.Application.Endpoints.Migrations;
 public class MigrationExecutor<TList, TItem>(
     IListsUnitOfWork<TList, TItem> unitOfWork,
     IMediator mediator
-) where TList : IWritableList where TItem : IWritableItem
+)
+    where TList : IWritableList
+    where TItem : IWritableItem
 {
     public async Task<MigrationDryRunResult> ExecuteAsync(
         Guid listId,

@@ -1,4 +1,4 @@
-using Lister.Lists.Domain;
+using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Dtos;
 
@@ -7,7 +7,7 @@ namespace Lister.Lists.Application.Mappings;
 internal static class ListDefinitionWriteContextMap
 {
     public static ListItemDefinitionDto ToDto(
-        IList list,
+        IWritableList list,
         Column[] columns,
         Status[] statuses,
         StatusTransition[] transitions

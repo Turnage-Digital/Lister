@@ -180,13 +180,11 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
       item within a list.
     - `IList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
       convenience queries (e.g., `GetByNameAsync`).
-- Writable vs read-only contracts separate mutation from projection.
-    - `IWritableItem : IItem`, `IWritableList : IList` — implemented by persistence entities for write paths.
-    - Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
-- Persistence entities implement writable interfaces and add storage-specific shape.
-    - Lists: `ListDb : IWritableList` with navigation collections and flags (e.g., `IsDeleted`).
-    - Items: `ItemDb : IWritableItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
+- Persistence entities implement the domain interfaces and add storage-specific shape.
+    - Lists: `ListDb : IList` with navigation collections and flags (e.g., `IsDeleted`).
+    - Items: `ItemDb : IItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
       serializer.
+- Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
 - Identifier usage rules in repositories/aggregates.
     - Lists: selection by `Id` or by `Name` (`GetListByIdAsync`, `GetListByNameAsync`).
     - Items: selection by `(itemId, listId)` pair to ensure list scoping.
@@ -207,7 +205,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - Mapping between write models and views.
     - Application-layer context maps project aggregates and value objects into DTO records; infrastructure query
       services return tailored projections for reads.
-    - Commands continue to operate on `IWritable*` abstractions via aggregates to keep write logic inside the domain.
+    - Commands continue to operate on the domain interfaces (e.g., `IList`, `IItem`, `INotificationRule`) via aggregates
+      to keep write logic inside the domain.
 
 ## Value Objects & Serialization
 

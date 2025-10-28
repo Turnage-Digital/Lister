@@ -1,6 +1,8 @@
+using MediatR;
+
 namespace Lister.Notifications.Domain.Events;
 
-public class AllNotificationsReadEvent : MediatR.INotification
+public class AllNotificationsReadEvent : INotification
 {
     public AllNotificationsReadEvent(string userId, DateTime readOn, DateTime? before = null)
     {
