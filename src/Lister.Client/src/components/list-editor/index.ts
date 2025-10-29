@@ -9,3 +9,4 @@ export type {
   NotificationRuleFormValue,
   NotificationRuleSubmission,
 } from "./list-editor.types";
+export { ListMigrationRequiredError } from "./list-editor.types";

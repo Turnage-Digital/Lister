@@ -1,6 +1,7 @@
 import {
   Column,
   ListItemDefinition,
+  MigrationPlan,
   NotificationRuleInput,
   Status,
   StatusTransition,
@@ -32,4 +33,16 @@ export interface ListEditorSubmitResult {
     upserts: NotificationRuleSubmission[];
     deletes: string[];
   };
+}
+
+export class ListMigrationRequiredError extends Error {
+  public readonly reasons: string[];
+  public readonly plan?: MigrationPlan;
+
+  constructor(message: string, reasons: string[], plan?: MigrationPlan) {
+    super(message);
+    this.name = "ListMigrationRequiredError";
+    this.reasons = reasons;
+    this.plan = plan;
+  }
 }

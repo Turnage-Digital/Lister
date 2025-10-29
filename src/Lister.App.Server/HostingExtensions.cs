@@ -50,9 +50,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 using Serilog;
 using Serilog.Events;
-using MySqlConnector;
 
 namespace Lister.App.Server;
 
@@ -94,7 +94,7 @@ internal static class HostingExtensions
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
@@ -222,6 +222,7 @@ internal static class HostingExtensions
         services.AddScoped<IGetListNames, ListNamesGetter>();
         services.AddScoped<IGetListHistory, ListHistoryGetter>();
         services.AddScoped<IGetItemHistory, ItemHistoryGetter>();
+        services.AddScoped<IGetMigrationJobStatus, MigrationJobStatusGetter>();
 
         /* Notifications */
         services.AddDbContextWithMigrations<NotificationsDbContext>(connectionString, serverVersion);
@@ -251,6 +252,7 @@ internal static class HostingExtensions
         {
             config.RegisterServicesFromAssemblyContaining<GetItemDetailsQuery>();
             config.RegisterServicesFromAssemblyContaining<GetNotificationDetailsQuery>();
+            config.RegisterServicesFromAssemblyContaining<ChangeFeed>();
         });
 
         services.AddTransient(typeof(IPipelineBehavior<,>),
@@ -259,7 +261,7 @@ internal static class HostingExtensions
             typeof(LoggingBehavior<,>));
 
         services.AddScoped<IMigrationValidator, MigrationValidator>();
-        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
+        services.AddScoped<ListMigrationJobRunner>();
 
         // Lists - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItemDto>),
@@ -274,7 +276,7 @@ internal static class HostingExtensions
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationDryRunResult>),
+        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationResult>),
             typeof(RunMigrationCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
             typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
@@ -306,6 +308,7 @@ internal static class HostingExtensions
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();
         services.AddHostedService<OutboxDispatcherService>();
+        services.AddHostedService<ListMigrationDispatcherService>();
         return services;
     }
 

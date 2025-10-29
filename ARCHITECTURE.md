@@ -176,7 +176,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 ## Entity Design
 
 - Interfaces define identifiers used for selection and hydration.
-    - `IWritableItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a specific
+    - `IWritableItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a
+      specific
       item within a list.
     - `IWritableList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
       convenience queries (e.g., `GetByNameAsync`).
@@ -354,7 +355,7 @@ Key Concepts
 
 - Validation (Dry-Run):
     - Checks existence, collisions, converter presence, and constraint tightening safety.
-    - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
+- Returns `MigrationResult { IsSafe, Messages[] }` without modifying data.
 
 - Execution (with SSE):
     - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status
@@ -372,7 +373,7 @@ Contracts & Endpoints
 
 - POST `/api/lists/{listId}/migrations`
     - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
-    - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
+- Returns `MigrationResult` (for both dry-run and execute initiation).
     - UI subscribes to SSE to reflect live progress.
 
 Durability & Delivery

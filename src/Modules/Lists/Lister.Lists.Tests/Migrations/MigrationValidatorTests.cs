@@ -1,5 +1,6 @@
 using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Domain.Enums;
+using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.ReadOnly.Queries;
 using Moq;

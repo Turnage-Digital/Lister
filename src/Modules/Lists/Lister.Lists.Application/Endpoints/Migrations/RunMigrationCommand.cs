@@ -1,4 +1,5 @@
 using Lister.Core.Application;
+using Lister.Lists.Domain.ValueObjects;
 
 namespace Lister.Lists.Application.Endpoints.Migrations;
 
@@ -12,4 +13,4 @@ public record RunMigrationCommand(
     Guid ListId,
     MigrationPlan Plan,
     MigrationMode Mode
-) : RequestBase<MigrationDryRunResult>;
+) : RequestBase<MigrationResult>;

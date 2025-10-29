@@ -1,4 +1,3 @@
-using System;
 using Lister.Core.Infrastructure.Sql;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;

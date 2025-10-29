@@ -1,3 +1,4 @@
+using Lister.Lists.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,15 @@ public class UpdateListController(IMediator mediator) : Controller
         {
             await mediator.Send(command, cancellationToken);
             return Ok();
+        }
+        catch (ListMigrationRequiredException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message,
+                reasons = ex.Reasons,
+                plan = ex.Plan
+            });
         }
         catch (InvalidOperationException ex)
         {

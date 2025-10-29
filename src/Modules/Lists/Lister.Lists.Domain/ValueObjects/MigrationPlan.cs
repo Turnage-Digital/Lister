@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Lister.Lists.Domain.Enums;
 
-namespace Lister.Lists.Application.Endpoints.Migrations;
+namespace Lister.Lists.Domain.ValueObjects;
 
 public class MigrationPlan
 {
@@ -24,12 +24,12 @@ public class MigrationPlan
 public record ChangeColumnTypeOp(
     string Key,
     ColumnType TargetType,
-    string Converter // e.g. "text->number:parseInt"; opaque to server for now
+    string Converter
 );
 
 public record RemoveColumnOp(
     string Key,
-    string Policy // e.g. "drop" | "archive" (server policy handled elsewhere)
+    string Policy
 );
 
 public record TightenConstraintsOp(
@@ -48,11 +48,5 @@ public record RenameStorageKeyOp(
 
 public record RemoveStatusOp(
     string Name,
-    string? MapTo // where existing items should map
+    string? MapTo
 );
-
-public class MigrationDryRunResult
-{
-    public bool IsSafe { get; init; }
-    public string[] Messages { get; init; } = [];
-}

@@ -6,6 +6,7 @@ import {
   ListItemDefinition,
   ListName,
   ListSearch,
+  MigrationProgressRecord,
   NotificationDetails,
   NotificationListPage,
   NotificationRule,
@@ -218,5 +219,64 @@ export const notificationRulesQueryOptions = (listId?: string) =>
       }
       await throwIfNotOk(response, "Failed to load notification rules");
       return (await response.json()) as NotificationRule[];
+    },
+  });
+
+interface MigrationJobStatusResponse {
+  jobId: string;
+  sourceListId: string;
+  correlationId: string;
+  stage: string;
+  requestedBy?: string;
+  createdOn?: string;
+  startedOn?: string;
+  completedOn?: string;
+  backupExpiresOn?: string;
+  backupRemovedOn?: string;
+  attempts?: number;
+  lastError?: string;
+}
+
+export const migrationProgressQueryOptions = (
+  listId: string,
+  correlationId: string,
+) =>
+  queryOptions<MigrationProgressRecord | null>({
+    queryKey: ["list-migration-progress", listId, correlationId],
+    enabled: Boolean(listId) && Boolean(correlationId),
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/lists/${listId}/migrations/${correlationId}`,
+        { method: "GET" },
+      );
+
+      if (response.status === 404) {
+        return null;
+      }
+
+      await throwIfNotOk(response, "Failed to load migration status");
+      const dto = (await response.json()) as MigrationJobStatusResponse;
+      const stage = dto.stage as MigrationProgressRecord["stage"];
+
+      return {
+        listId: dto.sourceListId,
+        correlationId: dto.correlationId,
+        stage,
+        requestedBy: dto.requestedBy,
+        createdOn: dto.createdOn,
+        startedOn: dto.startedOn,
+        completedOn: dto.completedOn,
+        backupExpiresOn: dto.backupExpiresOn,
+        backupRemovedOn: dto.backupRemovedOn,
+        attempts: dto.attempts,
+        lastError: dto.lastError,
+        updatedAt: dto.completedOn ?? dto.startedOn ?? dto.createdOn,
+        percent:
+          stage === "Completed" || stage === "Archived"
+            ? 100
+            : stage === "Failed"
+              ? 0
+              : undefined,
+      } satisfies MigrationProgressRecord;
     },
   });
