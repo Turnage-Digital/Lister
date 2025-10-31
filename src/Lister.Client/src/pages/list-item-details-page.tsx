@@ -79,7 +79,7 @@ const ListItemDetailsPage = () => {
   ];
 
   return (
-    <DisplayPageLayout>
+    <>
       <Titlebar
         title={`ID ${item.id}`}
         breadcrumbs={breadcrumbs}
@@ -92,7 +92,7 @@ const ListItemDetailsPage = () => {
         onEditItem={handleEditItem}
         onViewItem={handleViewItem}
       />
-    </DisplayPageLayout>
+    </>
   );
 };
 

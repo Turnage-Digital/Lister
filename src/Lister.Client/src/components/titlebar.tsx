@@ -83,7 +83,7 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
               color: "text.secondary",
               transition: "color 0.2s ease-in-out",
               "&:hover": {
-                color: "primary.main",
+                color: "text.primary",
               },
             }}
           >
@@ -94,7 +94,7 @@ const Titlebar = ({ title, actions, breadcrumbs }: TitlebarProps) => {
           sx={{
             fontSize: "0.875rem",
             fontWeight: 500,
-            color: "primary.main",
+            color: "text.primary",
           }}
         >
           {title}

@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Queries.Migrations.GetMigrationJobStatus;
+using Lister.Lists.Application.Queries.Migrations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

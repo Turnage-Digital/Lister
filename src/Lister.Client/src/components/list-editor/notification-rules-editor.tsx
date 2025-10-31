@@ -610,7 +610,7 @@ const NotificationRulesEditor = ({
               variant="outlined"
               sx={{
                 p: { xs: 3, md: 3.5 },
-                borderRadius: 3,
+                borderRadius: (theme) => theme.shape.borderRadius,
                 boxShadow: "none",
                 borderColor: (theme) => theme.palette.divider,
               }}

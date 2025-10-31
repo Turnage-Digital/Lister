@@ -116,7 +116,7 @@ const EditListItemPage = () => {
   const isSubmitting = updateItemMutation.isPending;
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title={`Edit Item ${item.id}`} breadcrumbs={breadcrumbs} />
       <ListItemEditor
         definition={definition}
@@ -126,7 +126,7 @@ const EditListItemPage = () => {
         isSubmitting={isSubmitting}
         onCancel={handleCancel}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

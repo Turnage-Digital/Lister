@@ -1,4 +1,4 @@
-using Lister.Notifications.Application.Endpoints.Queries.GetUserNotifications;
+using Lister.Notifications.Application.Queries.GetUserNotifications;
 using Lister.Notifications.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -123,14 +123,14 @@ const CreateListPage = () => {
   ];
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
       <ListEditor
         initialValue={initialValue}
         onSubmit={handleSubmit}
         isSubmitting={createListMutation.isPending}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

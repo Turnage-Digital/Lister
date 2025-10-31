@@ -79,7 +79,7 @@ const ListsPage = () => {
   ];
 
   return (
-    <DisplayPageLayout>
+    <>
       <Titlebar title="Lists" actions={actions} />
 
       <Grid container spacing={3}>
@@ -98,7 +98,7 @@ const ListsPage = () => {
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
       />
-    </DisplayPageLayout>
+    </>
   );
 };
 

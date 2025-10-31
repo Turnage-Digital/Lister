@@ -143,20 +143,18 @@ const CreateListItemPage = () => {
 
   return (
     <>
-      <EditorPageLayout>
-        <Titlebar
-          title="Create an Item"
-          actions={actions}
-          breadcrumbs={breadcrumbs}
-        />
-        <ListItemEditor
-          definition={definition}
-          bag={formState.bag}
-          onBagChange={handleBagChange}
-          onSubmit={handleSubmit}
-          isSubmitting={createItemMutation.isPending}
-        />
-      </EditorPageLayout>
+      <Titlebar
+        title="Create an Item"
+        actions={actions}
+        breadcrumbs={breadcrumbs}
+      />
+      <ListItemEditor
+        definition={definition}
+        bag={formState.bag}
+        onBagChange={handleBagChange}
+        onSubmit={handleSubmit}
+        isSubmitting={createItemMutation.isPending}
+      />
       <SmartPasteDialog
         open={smartPasteOpen}
         onClose={handleCloseSmartPaste}

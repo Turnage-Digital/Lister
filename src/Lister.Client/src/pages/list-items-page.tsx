@@ -249,7 +249,7 @@ const ListItemsPage = () => {
   );
 
   return (
-    <DisplayPageLayout>
+    <>
       <Titlebar
         title={listItemDefinitionQuery.data.name}
         actions={actions}
@@ -264,7 +264,7 @@ const ListItemsPage = () => {
         onCancel={handleCancelDeleteItem}
         onConfirm={handleConfirmDeleteItem}
       />
-    </DisplayPageLayout>
+    </>
   );
 };
 

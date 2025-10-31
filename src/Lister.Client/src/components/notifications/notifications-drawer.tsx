@@ -537,7 +537,7 @@ const NotificationDetailsDrawer = ({
         sx={{
           px: "1rem",
           py: "0.9rem",
-          borderRadius: 2,
+          borderRadius: (theme) => theme.shape.borderRadius,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,
         }}
@@ -580,7 +580,7 @@ const NotificationDetailsDrawer = ({
         sx={{
           px: "1rem",
           py: "0.9rem",
-          borderRadius: 2,
+          borderRadius: (theme) => theme.shape.borderRadius,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,
         }}
@@ -608,7 +608,7 @@ const NotificationDetailsDrawer = ({
         sx={{
           px: "1rem",
           py: "0.9rem",
-          borderRadius: 2,
+          borderRadius: (theme) => theme.shape.borderRadius,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,
         }}
@@ -626,7 +626,7 @@ const NotificationDetailsDrawer = ({
               ? {
                   px: "0.75rem",
                   py: "0.5rem",
-                  borderRadius: 1.5,
+                  borderRadius: (theme: any) => theme.shape.borderRadius,
                   border: (theme: any) =>
                     `1px solid ${theme.palette.error.light}`,
                   backgroundColor: (theme: any) =>
@@ -676,7 +676,7 @@ const NotificationDetailsDrawer = ({
           <Box
             sx={{
               p: 2,
-              borderRadius: 2,
+              borderRadius: (theme) => theme.shape.borderRadius,
               border: (theme) => `1px solid ${theme.palette.divider}`,
               backgroundColor: (theme) => theme.palette.background.paper,
             }}

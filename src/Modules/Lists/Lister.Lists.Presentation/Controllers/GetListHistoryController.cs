@@ -1,5 +1,5 @@
 using Lister.Core.Domain.ValueObjects;
-using Lister.Lists.Application.Endpoints.Queries.GetListHistory;
+using Lister.Lists.Application.Queries.GetListHistory;
 using Lister.Lists.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,4 +1,4 @@
-using Lister.Notifications.Application.Endpoints.Commands.MarkAllNotificationsAsRead;
+using Lister.Notifications.Application.Commands.MarkAllNotificationsAsRead;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

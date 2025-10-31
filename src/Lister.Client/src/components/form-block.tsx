@@ -19,7 +19,7 @@ const FormBlock = ({ title, subtitle, content }: Props) => {
     >
       <Grid size={{ xs: 12, md: 4 }}>
         <Stack spacing={1.5} sx={{ pb: { xs: 2, md: 1 } }}>
-          <Typography color="primary" variant="h6" fontWeight={600}>
+          <Typography color="text.primary" variant="h6" fontWeight={600}>
             {title}
           </Typography>
           {subtitle && (

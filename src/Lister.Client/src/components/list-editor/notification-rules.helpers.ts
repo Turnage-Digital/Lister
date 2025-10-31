@@ -1,4 +1,10 @@
-import { NotificationRule } from "../../models";
+import {
+  type NotificationChannel,
+  NotificationChannelType,
+  NotificationRule,
+  NotificationScheduleType,
+  NotificationTriggerType,
+} from "../../models";
 
 import type {
   NotificationRuleFormValue,
@@ -28,14 +34,121 @@ export const stripClientFields = (
   isActive: rule.isActive,
 });
 
+const triggerTypes: ReadonlyArray<NotificationTriggerType> = [
+  "ItemCreated",
+  "ItemDeleted",
+  "ItemUpdated",
+  "StatusChanged",
+  "ColumnValueChanged",
+  "ListDeleted",
+  "ListUpdated",
+  "CustomCondition",
+] as const;
+
+const scheduleTypes: ReadonlyArray<NotificationScheduleType> = [
+  "Immediate",
+  "Delayed",
+  "Daily",
+  "Weekly",
+  "Batched",
+  "Custom",
+] as const;
+
+const channelTypes: ReadonlyArray<NotificationChannelType> = [
+  "Email",
+  "Sms",
+  "InApp",
+  "Push",
+  "Webhook",
+] as const;
+
+const weekDayOptions = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+] as const;
+
+const normalizeEnumValue = <T extends string>(
+  value: string | null | undefined,
+  allowed: ReadonlyArray<T>,
+): T | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const direct = allowed.find((option) => option === value);
+  if (direct) {
+    return direct;
+  }
+
+  const lower = value.toLowerCase();
+  const lowerMatch = allowed.find((option) => option.toLowerCase() === lower);
+  if (lowerMatch) {
+    return lowerMatch;
+  }
+
+  const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
+  return allowed.find((option) => option === capitalized);
+};
+
 export const toNotificationRuleFormValue = (
   rule: NotificationRule,
 ): NotificationRuleFormValue => ({
   id: rule.id ?? undefined,
   listId: rule.listId,
-  trigger: rule.trigger,
-  channels: rule.channels,
-  schedule: rule.schedule,
+  trigger: {
+    ...rule.trigger,
+    type: normalizeEnumValue(rule.trigger.type, triggerTypes) ?? "ItemCreated",
+  },
+  channels: (() => {
+    const channelMap = new Map<NotificationChannelType, NotificationChannel>();
+
+    for (const channel of rule.channels) {
+      const normalizedType =
+        normalizeEnumValue(channel.type as string, channelTypes) ??
+        channel.type;
+
+      const nextChannel: NotificationChannel = {
+        ...channel,
+        type: normalizedType,
+      };
+
+      const existing = channelMap.get(normalizedType);
+      if (!existing) {
+        channelMap.set(normalizedType, nextChannel);
+        continue;
+      }
+
+      const prefersNext =
+        (existing.address ?? "").trim() === "" &&
+        (nextChannel.address ?? "").trim() !== "";
+      if (prefersNext) {
+        channelMap.set(normalizedType, nextChannel);
+      }
+    }
+
+    return Array.from(channelMap.values());
+  })(),
+  schedule: (() => {
+    const normalizedType =
+      normalizeEnumValue(rule.schedule.type as string, scheduleTypes) ??
+      "Immediate";
+    const normalizedDays = Array.isArray(rule.schedule.daysOfWeek)
+      ? rule.schedule.daysOfWeek.map(
+          (day) => normalizeEnumValue(day, weekDayOptions) ?? day,
+        )
+      : undefined;
+
+    return {
+      ...rule.schedule,
+      type: normalizedType,
+      daysOfWeek: normalizedDays,
+    };
+  })(),
   isActive: rule.isActive ?? true,
   clientId: createClientId(),
 });

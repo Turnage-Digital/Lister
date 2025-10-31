@@ -1,5 +1,5 @@
 using Lister.Core.Domain;
-using Lister.Lists.Application.Endpoints.Commands.CreateListItem;
+using Lister.Lists.Application.Commands.CreateListItem;
 using Lister.Lists.Domain;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;

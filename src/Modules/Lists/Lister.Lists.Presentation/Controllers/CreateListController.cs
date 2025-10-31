@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.CreateList;
+using Lister.Lists.Application.Commands.CreateList;
 using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

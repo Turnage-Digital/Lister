@@ -397,9 +397,8 @@ const EditListPage = () => {
         }),
       ]);
     },
-    onError: (error: unknown) => {
+    onError: () => {
       setActiveMigration(null);
-      console.error(error);
     },
   });
 
@@ -436,7 +435,7 @@ const EditListPage = () => {
   ];
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title={`Edit ${definition.name}`} breadcrumbs={breadcrumbs} />
       <ListEditor
         key={listId}
@@ -449,7 +448,7 @@ const EditListPage = () => {
         migrationStatus={migrationStatus}
         onRequestMigration={handleRequestMigration}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

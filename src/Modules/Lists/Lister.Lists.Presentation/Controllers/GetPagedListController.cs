@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Queries.GetPagedList;
+using Lister.Lists.Application.Queries.GetPagedList;
 using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

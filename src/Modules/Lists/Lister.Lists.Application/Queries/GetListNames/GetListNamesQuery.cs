@@ -1,0 +1,6 @@
+using Lister.Core.Application;
+using Lister.Lists.ReadOnly.Dtos;
+
+namespace Lister.Lists.Application.Queries.GetListNames;
+
+public record GetListNamesQuery : RequestBase<ListNameDto[]>;

@@ -8,7 +8,6 @@ interface AuthPageLayoutProps {
 
 const AuthPageLayout = ({ children }: AuthPageLayoutProps) => (
   <Stack
-    spacing={4}
     sx={{
       maxWidth: 440,
       mx: "auto",
@@ -17,7 +16,13 @@ const AuthPageLayout = ({ children }: AuthPageLayoutProps) => (
       pb: 4,
     }}
   >
-    <Paper elevation={1} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 2 }}>
+    <Paper
+      elevation={1}
+      sx={{
+        p: { xs: 3, sm: 4 },
+        borderRadius: (theme) => theme.shape.borderRadius,
+      }}
+    >
       <Stack spacing={4}>{children}</Stack>
     </Paper>
   </Stack>

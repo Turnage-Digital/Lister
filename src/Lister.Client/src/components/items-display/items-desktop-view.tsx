@@ -42,14 +42,7 @@ const ItemsDesktopView = ({
   }));
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: { xs: 1.5, md: 2.5 },
-        backgroundColor: "background.paper",
-        boxShadow: "none",
-      }}
-    >
+    <Paper variant="outlined">
       <DataGrid
         columns={gridColDefs}
         rows={rows}
@@ -72,13 +65,14 @@ const ItemsDesktopView = ({
         disableColumnSelector
         disableRowSelectionOnClick
         sx={{
-          backgroundColor: "background.paper",
           border: "none",
+          backgroundColor: "background.paper",
           "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "grey.100",
             borderBottomColor: "divider",
           },
-          "& .MuiDataGrid-row": {
-            transition: "background-color 0.2s ease",
+          "& .MuiDataGrid-cell": {
+            borderBottomColor: "divider",
           },
         }}
       />

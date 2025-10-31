@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Queries.GetListNames;
+using Lister.Lists.Application.Queries.GetListNames;
 using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.ConvertTextToListItem;
+using Lister.Lists.Application.Commands.ConvertTextToListItem;
 using Lister.Lists.ReadOnly.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
