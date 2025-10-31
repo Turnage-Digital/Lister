@@ -2,6 +2,7 @@ using Lister.Core.Domain;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Exceptions;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql.Entities;
 using Moq;
@@ -274,7 +275,7 @@ public class ListsAggregateTests
         var newBag = new Dictionary<string, object?> { { "title", "new" } };
 
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Column>());
+            .ReturnsAsync([]);
         _unitOfWork.Setup(x => x.ItemsStore.GetBagAsync(item, It.IsAny<CancellationToken>()))
             .ReturnsAsync(oldBag);
         _unitOfWork.Setup(x => x.ItemsStore.SetBagAsync(item, newBag, BY, It.IsAny<CancellationToken>()))
@@ -363,9 +364,9 @@ public class ListsAggregateTests
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existing);
         _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Status>());
+            .ReturnsAsync([]);
         _unitOfWork.Setup(x => x.ListsStore.GetStatusTransitionsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<StatusTransition>());
+            .ReturnsAsync([]);
 
         Column[]? persisted = null;
         _listsStore.Setup(x =>
@@ -388,5 +389,78 @@ public class ListsAggregateTests
         var priority = persisted!.Single(c => c.Name == "Priority");
         Assert.That(priority.StorageKey, Is.Not.Null.And.Not.Empty);
         Assert.That(priority.StorageKey, Is.Not.EqualTo("prop1"));
+    }
+
+    [Test]
+    public void UpdateListAsync_WhenRemovingColumn_ThrowsListMigrationRequiredException()
+    {
+        var list = new ListDb { Id = Guid.NewGuid() };
+        var existing = new[]
+        {
+            new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = true },
+            new Column { StorageKey = "prop2", Name = "Legacy", Type = ColumnType.Text, Required = false }
+        };
+
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+        _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        var update = new[]
+        {
+            new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = true }
+        };
+
+        var ex = Assert.ThrowsAsync<ListMigrationRequiredException>(() =>
+            _listsAggregate.UpdateListAsync(list, update, null, null, BY, CancellationToken.None));
+
+        Assert.That(ex, Is.Not.Null);
+        Assert.That(ex!.Reasons.Any(r => r.Contains("Legacy")), Is.True);
+        Assert.That(ex.Plan, Is.Not.Null);
+        Assert.That(ex.Plan!.RemoveColumns, Is.Not.Null);
+        Assert.That(
+            ex.Plan!.RemoveColumns!.Any(op => string.Equals(op.Key, "prop2", StringComparison.OrdinalIgnoreCase)),
+            Is.True);
+        _listsStore.Verify(x => x.SetColumnsAsync(
+                It.IsAny<ListDb>(),
+                It.IsAny<IEnumerable<Column>>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Test]
+    public void UpdateListAsync_WhenRemovingStatus_ThrowsListMigrationRequiredException()
+    {
+        var list = new ListDb { Id = Guid.NewGuid() };
+        _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+        _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new Status { Name = "Active" },
+                new Status { Name = "Closed" }
+            ]);
+
+        var updatedStatuses = new[]
+        {
+            new Status { Name = "Closed" }
+        };
+
+        var ex = Assert.ThrowsAsync<ListMigrationRequiredException>(() =>
+            _listsAggregate.UpdateListAsync(list, null, updatedStatuses, null, BY, CancellationToken.None));
+
+        Assert.That(ex, Is.Not.Null);
+        Assert.That(ex!.Reasons.Any(r => r.Contains("Active")), Is.True);
+        Assert.That(ex.Plan, Is.Not.Null);
+        Assert.That(ex.Plan!.RemoveStatuses, Is.Not.Null);
+        Assert.That(
+            ex.Plan!.RemoveStatuses!.Any(op => string.Equals(op.Name, "Active", StringComparison.OrdinalIgnoreCase)),
+            Is.True);
+        _listsStore.Verify(x => x.SetStatusesAsync(
+                It.IsAny<ListDb>(),
+                It.IsAny<IEnumerable<Status>>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

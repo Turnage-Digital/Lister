@@ -1,14 +1,17 @@
+using Lister.Notifications.Domain.Entities;
+using MediatR;
+
 namespace Lister.Notifications.Domain.Events;
 
 public class NotificationRuleUpdatedEvent
-    : MediatR.INotification
+    : INotification
 {
-    public NotificationRuleUpdatedEvent(INotificationRule rule, string updatedBy)
+    public NotificationRuleUpdatedEvent(IWritableNotificationRule rule, string updatedBy)
     {
         Rule = rule;
         UpdatedBy = updatedBy;
     }
 
-    public INotificationRule Rule { get; }
+    public IWritableNotificationRule Rule { get; }
     public string UpdatedBy { get; }
 }

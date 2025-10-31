@@ -1,5 +1,32 @@
 namespace Lister.Core.Domain.IntegrationEvents;
 
+public class ListMigrationRequestedIntegrationEvent : IIntegrationEvent
+{
+    public ListMigrationRequestedIntegrationEvent(
+        Guid listId,
+        Guid correlationId,
+        string requestedBy,
+        string planJson
+    )
+    {
+        EventId = Guid.NewGuid();
+        OccurredOn = DateTime.UtcNow;
+        EventType = nameof(ListMigrationRequestedIntegrationEvent);
+        ListId = listId;
+        CorrelationId = correlationId;
+        RequestedBy = requestedBy;
+        PlanJson = planJson;
+    }
+
+    public Guid ListId { get; }
+    public Guid CorrelationId { get; }
+    public string RequestedBy { get; }
+    public string PlanJson { get; }
+    public Guid EventId { get; }
+    public DateTime OccurredOn { get; }
+    public string EventType { get; }
+}
+
 public class ListMigrationStartedIntegrationEvent : IIntegrationEvent
 {
     public ListMigrationStartedIntegrationEvent(Guid listId, Guid correlationId, string startedBy)

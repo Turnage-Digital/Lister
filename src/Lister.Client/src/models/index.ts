@@ -28,6 +28,18 @@ export type {
 } from "./notification-rule";
 export type { HistoryEntry, HistoryPage } from "./history";
 export type { ChangeFeedMessage, ChangeFeedHandler } from "./change-feed";
+export type {
+  MigrationPlan,
+  ChangeColumnTypeOp,
+  RemoveColumnOp,
+  TightenConstraintsOp,
+  RenameStorageKeyOp,
+  RemoveStatusOp,
+} from "./migration-plan";
+export type {
+  MigrationProgressRecord,
+  MigrationJobStage,
+} from "./migration-progress";
 
 export { ColumnType } from "./column-type";
 export { getStatusFromName } from "./status";

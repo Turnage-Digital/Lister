@@ -19,10 +19,9 @@ public class NotifyEventHandler<TNotificationRule, TNotification>(
     {
         var rules = await queryService.GetAsync(
             notification.ListId,
-            new[]
-            {
+            [
                 TriggerType.ListUpdated
-            },
+            ],
             cancellationToken);
 
         foreach (var ruleDto in rules)

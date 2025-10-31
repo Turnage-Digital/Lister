@@ -1,11 +1,22 @@
 import * as React from "react";
 
-import { Save, Undo } from "@mui/icons-material";
-import { Box, Button, Divider, Stack } from "@mui/material";
+import { PlayArrow, Save, Undo } from "@mui/icons-material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Divider,
+  LinearProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 import {
   Column,
   ListItemDefinition,
+  MigrationJobStage,
+  MigrationPlan,
   Status,
   StatusTransition,
 } from "../../models";
@@ -13,6 +24,12 @@ import EditListColumnsContent from "../edit-list-columns-content";
 import EditListNameContent from "../edit-list-name-content";
 import EditListStatusesContent from "../edit-list-statuses-content";
 import FormBlock from "../form-block";
+import {
+  type ListEditorInitialValue,
+  type ListEditorSubmitResult,
+  ListMigrationRequiredError,
+  type NotificationRuleFormValue,
+} from "./list-editor.types";
 import NotificationRulesEditor from "./notification-rules-editor";
 import {
   createEmptyRuleFormValue,
@@ -20,18 +37,21 @@ import {
 } from "./notification-rules.helpers";
 import StatusTransitionsEditor from "./status-transitions-editor";
 
-import type {
-  ListEditorInitialValue,
-  ListEditorSubmitResult,
-  NotificationRuleFormValue,
-} from "./list-editor.types";
-
 interface ListEditorProps {
   initialValue: ListEditorInitialValue;
   onSubmit: (result: ListEditorSubmitResult) => Promise<void> | void;
   isSubmitting?: boolean;
+  isMigrationPending?: boolean;
+  onRequestMigration?: (plan: MigrationPlan) => Promise<void> | void;
+  migrationStatus?: MigrationStatusBanner | null;
   onCancel?: () => void;
   disableNameField?: boolean;
+}
+
+interface MigrationStatusBanner {
+  stage: MigrationJobStage;
+  message: string;
+  percent?: number;
 }
 
 interface InternalState {
@@ -63,6 +83,9 @@ const ListEditor = ({
   initialValue,
   onSubmit,
   isSubmitting,
+  isMigrationPending,
+  onRequestMigration,
+  migrationStatus,
   onCancel,
   disableNameField = false,
 }: ListEditorProps) => {
@@ -82,11 +105,17 @@ const ListEditor = ({
 
   const [deletedRuleIds, setDeletedRuleIds] = React.useState<string[]>([]);
   const [error, setError] = React.useState<string | null>(null);
+  const [serverFeedback, setServerFeedback] = React.useState<{
+    message: string;
+    reasons?: string[];
+    plan?: MigrationPlan;
+  } | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedName = state.name.trim();
     if (!trimmedName) {
+      setServerFeedback(null);
       setError("List name is required.");
       return;
     }
@@ -113,7 +142,25 @@ const ListEditor = ({
     };
 
     setError(null);
-    await onSubmit(result);
+    setServerFeedback(null);
+    try {
+      await onSubmit(result);
+    } catch (err) {
+      if (err instanceof ListMigrationRequiredError) {
+        setServerFeedback({
+          message: err.message,
+          reasons: err.reasons,
+          plan: err.plan,
+        });
+        return;
+      }
+
+      if (err instanceof Error) {
+        setServerFeedback({ message: err.message });
+      } else {
+        setServerFeedback({ message: "Failed to update list." });
+      }
+    }
   };
 
   const handleNameChange = (name: string) => {
@@ -172,7 +219,88 @@ const ListEditor = ({
   };
 
   const errorBanner = error ? (
-    <Box sx={{ mr: "auto", color: "error.main" }}>{error}</Box>
+    <Alert severity="error" sx={{ maxWidth: 720 }}>
+      {error}
+    </Alert>
+  ) : null;
+
+  const serverFeedbackBanner = serverFeedback ? (
+    <Alert severity="warning" sx={{ maxWidth: 720 }}>
+      <AlertTitle>{serverFeedback.message}</AlertTitle>
+      {serverFeedback.reasons && serverFeedback.reasons.length > 0 ? (
+        <Box component="ul" sx={{ pl: 3, mb: 0 }}>
+          {serverFeedback.reasons.map((reason) => (
+            <Box component="li" key={reason} sx={{ mt: 0.5 }}>
+              {reason}
+            </Box>
+          ))}
+        </Box>
+      ) : null}
+      {serverFeedback.plan && onRequestMigration ? (
+        <Box sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<PlayArrow />}
+            onClick={async () => {
+              if (!onRequestMigration || !serverFeedback.plan) {
+                return;
+              }
+
+              try {
+                await onRequestMigration(serverFeedback.plan);
+                setServerFeedback(null);
+              } catch (error) {
+                if (error instanceof Error) {
+                  setServerFeedback({
+                    message: error.message,
+                    reasons: serverFeedback.reasons,
+                    plan: serverFeedback.plan,
+                  });
+                }
+              }
+            }}
+            disabled={Boolean(isMigrationPending)}
+          >
+            Run migration
+          </Button>
+        </Box>
+      ) : null}
+    </Alert>
+  ) : null;
+
+  const migrationMessageBanner = migrationStatus ? (
+    <Alert
+      severity={
+        migrationStatus.stage === "Failed"
+          ? "error"
+          : migrationStatus.stage === "Completed" ||
+              migrationStatus.stage === "Archived"
+            ? "success"
+            : "info"
+      }
+      sx={{ maxWidth: 720 }}
+    >
+      <AlertTitle>{migrationStatus.stage}</AlertTitle>
+      <Typography component="div" variant="body2">
+        {migrationStatus.message}
+      </Typography>
+      {typeof migrationStatus.percent === "number" ? (
+        <Box sx={{ mt: 2 }}>
+          <LinearProgress
+            variant="determinate"
+            value={Math.max(0, Math.min(100, migrationStatus.percent))}
+          />
+          <Typography
+            component="div"
+            variant="caption"
+            sx={{ display: "block", textAlign: "right", mt: 0.5 }}
+          >
+            {Math.round(migrationStatus.percent)}%
+          </Typography>
+        </Box>
+      ) : null}
+    </Alert>
   ) : null;
 
   return (
@@ -182,6 +310,10 @@ const ListEditor = ({
       divider={<Divider sx={{ my: { xs: 5, md: 6 } }} />}
       spacing={{ xs: 6, md: 7 }}
     >
+      {errorBanner}
+      {serverFeedbackBanner}
+      {migrationMessageBanner}
+
       <FormBlock
         title="Name"
         subtitle="Give this list a clear, human-friendly name so everyone knows what lives here."
@@ -266,7 +398,7 @@ const ListEditor = ({
           type="submit"
           variant="contained"
           startIcon={<Save />}
-          disabled={isSubmitting}
+          disabled={isSubmitting || Boolean(isMigrationPending)}
         >
           Submit
         </Button>

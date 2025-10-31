@@ -176,17 +176,19 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 ## Entity Design
 
 - Interfaces define identifiers used for selection and hydration.
-    - `IItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a specific
+    - `IWritableItem`: `int? Id`, `Guid? ListId` — the composite identifiers used by stores and aggregates to load a
+      specific
       item within a list.
-    - `IList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
+    - `IWritableList`: `Guid? Id`, `string Name` — lists are addressed by Id; Name is also treated as an identifier for
       convenience queries (e.g., `GetByNameAsync`).
-- Writable vs read-only contracts separate mutation from projection.
-    - `IWritableItem : IItem`, `IWritableList : IList` — implemented by persistence entities for write paths.
-    - Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
-- Persistence entities implement writable interfaces and add storage-specific shape.
+    - `IWritableNotification` / `IWritableNotificationRule`: encapsulate notification identifiers and ownership fields.
+- Persistence entities implement the writable interfaces and add storage-specific shape.
     - Lists: `ListDb : IWritableList` with navigation collections and flags (e.g., `IsDeleted`).
     - Items: `ItemDb : IWritableItem` with `Bag` object stored as a MySQL `JSON` column; configured with a camelCase
       serializer.
+    - Notifications: `NotificationRuleDb : IWritableNotificationRule` and `NotificationDb : IWritableNotification`
+      add persistence-only columns (e.g., JSON payloads, delivery attempts) while still satisfying the domain contracts.
+- Read models (e.g., `IReadOnlyList`, DTOs) are returned by query services without mutation concerns.
 - Identifier usage rules in repositories/aggregates.
     - Lists: selection by `Id` or by `Name` (`GetListByIdAsync`, `GetListByNameAsync`).
     - Items: selection by `(itemId, listId)` pair to ensure list scoping.
@@ -207,7 +209,8 @@ services.AddScoped(typeof(IRequestHandler<CreateNotificationRuleCommand, CreateN
 - Mapping between write models and views.
     - Application-layer context maps project aggregates and value objects into DTO records; infrastructure query
       services return tailored projections for reads.
-    - Commands continue to operate on `IWritable*` abstractions via aggregates to keep write logic inside the domain.
+    - Commands continue to operate on the writable domain interfaces (e.g., `IWritableList`, `IWritableItem`,
+      `IWritableNotification`, `IWritableNotificationRule`) via aggregates to keep write logic inside the domain.
 
 ## Value Objects & Serialization
 
@@ -352,7 +355,7 @@ Key Concepts
 
 - Validation (Dry-Run):
     - Checks existence, collisions, converter presence, and constraint tightening safety.
-    - Returns `MigrationDryRunResult { IsSafe, Messages[] }` without modifying data.
+- Returns `MigrationResult { IsSafe, Messages[] }` without modifying data.
 
 - Execution (with SSE):
     - Applies metadata changes and iterates items for data transformations (e.g., type conversion, field removal, status
@@ -370,7 +373,7 @@ Contracts & Endpoints
 
 - POST `/api/lists/{listId}/migrations`
     - Body: `{ plan, mode }` where mode is `dryRun` or `execute`.
-    - Returns `MigrationDryRunResult` (for both dry-run and execute initiation).
+- Returns `MigrationResult` (for both dry-run and execute initiation).
     - UI subscribes to SSE to reflect live progress.
 
 Durability & Delivery

@@ -7,16 +7,18 @@ using Lister.Core.Domain.Services;
 using Lister.Core.Infrastructure.OpenAi;
 using Lister.Core.Infrastructure.OpenAi.Services;
 using Lister.Core.Infrastructure.Sql;
-using Lister.Lists.Application.Endpoints.ConvertTextToListItem;
-using Lister.Lists.Application.Endpoints.CreateList;
-using Lister.Lists.Application.Endpoints.CreateListItem;
-using Lister.Lists.Application.Endpoints.DeleteList;
-using Lister.Lists.Application.Endpoints.DeleteListItem;
-using Lister.Lists.Application.Endpoints.GetItemDetails;
-using Lister.Lists.Application.Endpoints.GetStatusTransitions;
-using Lister.Lists.Application.Endpoints.Migrations;
-using Lister.Lists.Application.Endpoints.UpdateList;
-using Lister.Lists.Application.Endpoints.UpdateListItem;
+using Lister.Lists.Application.Endpoints.Commands.ConvertTextToListItem;
+using Lister.Lists.Application.Endpoints.Commands.CreateList;
+using Lister.Lists.Application.Endpoints.Commands.CreateListItem;
+using Lister.Lists.Application.Endpoints.Commands.DeleteList;
+using Lister.Lists.Application.Endpoints.Commands.DeleteListItem;
+using Lister.Lists.Application.Endpoints.Commands.Migrations;
+using Lister.Lists.Application.Endpoints.Commands.Migrations.RunMigration;
+using Lister.Lists.Application.Endpoints.Commands.UpdateList;
+using Lister.Lists.Application.Endpoints.Commands.UpdateListItem;
+using Lister.Lists.Application.Endpoints.Queries.GetItemDetails;
+using Lister.Lists.Application.Endpoints.Queries.GetStatusTransitions;
+using Lister.Lists.Application.Migrations.Services;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql;
@@ -24,15 +26,15 @@ using Lister.Lists.Infrastructure.Sql.Entities;
 using Lister.Lists.Infrastructure.Sql.Services;
 using Lister.Lists.ReadOnly.Dtos;
 using Lister.Lists.ReadOnly.Queries;
-using Lister.Notifications.Application.Endpoints.CreateNotificationRule;
-using Lister.Notifications.Application.Endpoints.DeleteNotificationRule;
-using Lister.Notifications.Application.Endpoints.GetNotificationDetails;
-using Lister.Notifications.Application.Endpoints.GetUnreadNotificationCount;
-using Lister.Notifications.Application.Endpoints.GetUserNotificationRules;
-using Lister.Notifications.Application.Endpoints.GetUserNotifications;
-using Lister.Notifications.Application.Endpoints.MarkAllNotificationsAsRead;
-using Lister.Notifications.Application.Endpoints.MarkNotificationAsRead;
-using Lister.Notifications.Application.Endpoints.UpdateNotificationRule;
+using Lister.Notifications.Application.Endpoints.Commands.CreateNotificationRule;
+using Lister.Notifications.Application.Endpoints.Commands.DeleteNotificationRule;
+using Lister.Notifications.Application.Endpoints.Commands.MarkAllNotificationsAsRead;
+using Lister.Notifications.Application.Endpoints.Commands.MarkNotificationAsRead;
+using Lister.Notifications.Application.Endpoints.Commands.UpdateNotificationRule;
+using Lister.Notifications.Application.Endpoints.Queries.GetNotificationDetails;
+using Lister.Notifications.Application.Endpoints.Queries.GetUnreadNotificationCount;
+using Lister.Notifications.Application.Endpoints.Queries.GetUserNotificationRules;
+using Lister.Notifications.Application.Endpoints.Queries.GetUserNotifications;
 using Lister.Notifications.Domain;
 using Lister.Notifications.Domain.Services;
 using Lister.Notifications.Infrastructure.Sql;
@@ -50,6 +52,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 using Serilog;
 using Serilog.Events;
 
@@ -93,7 +96,7 @@ internal static class HostingExtensions
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
             });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
@@ -193,7 +196,15 @@ internal static class HostingExtensions
         string connectionString
     )
     {
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
+        ServerVersion serverVersion;
+        try
+        {
+            serverVersion = ServerVersion.AutoDetect(connectionString);
+        }
+        catch (MySqlException)
+        {
+            serverVersion = new MySqlServerVersion(new Version(8, 0, 34));
+        }
 
         /* Core */
         services.AddDbContextWithMigrations<CoreDbContext>(connectionString, serverVersion);
@@ -213,6 +224,7 @@ internal static class HostingExtensions
         services.AddScoped<IGetListNames, ListNamesGetter>();
         services.AddScoped<IGetListHistory, ListHistoryGetter>();
         services.AddScoped<IGetItemHistory, ItemHistoryGetter>();
+        services.AddScoped<IGetMigrationJobStatus, MigrationJobStatusGetter>();
 
         /* Notifications */
         services.AddDbContextWithMigrations<NotificationsDbContext>(connectionString, serverVersion);
@@ -242,6 +254,7 @@ internal static class HostingExtensions
         {
             config.RegisterServicesFromAssemblyContaining<GetItemDetailsQuery>();
             config.RegisterServicesFromAssemblyContaining<GetNotificationDetailsQuery>();
+            config.RegisterServicesFromAssemblyContaining<ChangeFeed>();
         });
 
         services.AddTransient(typeof(IPipelineBehavior<,>),
@@ -250,7 +263,7 @@ internal static class HostingExtensions
             typeof(LoggingBehavior<,>));
 
         services.AddScoped<IMigrationValidator, MigrationValidator>();
-        services.AddScoped<MigrationExecutor<ListDb, ItemDb>>();
+        services.AddScoped<ListMigrationJobRunner>();
 
         // Lists - close generic handlers in composition root
         services.AddScoped(typeof(IRequestHandler<ConvertTextToListItemCommand, ListItemDto>),
@@ -265,7 +278,7 @@ internal static class HostingExtensions
             typeof(DeleteListItemCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<UpdateListItemCommand>),
             typeof(UpdateListItemCommandHandler<ListDb, ItemDb>));
-        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationDryRunResult>),
+        services.AddScoped(typeof(IRequestHandler<RunMigrationCommand, MigrationResult>),
             typeof(RunMigrationCommandHandler<ListDb, ItemDb>));
         services.AddScoped(typeof(IRequestHandler<GetStatusTransitionsQuery, StatusTransition[]>),
             typeof(GetStatusTransitionsQueryHandler<ListDb, ItemDb>));
@@ -297,6 +310,7 @@ internal static class HostingExtensions
         // Background workers
         services.AddHostedService<NotificationDeliveryService>();
         services.AddHostedService<OutboxDispatcherService>();
+        services.AddHostedService<ListMigrationDispatcherService>();
         return services;
     }
 

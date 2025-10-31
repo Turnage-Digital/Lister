@@ -3,6 +3,8 @@ using Lister.Core.Domain;
 using Lister.Lists.Domain.Entities;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.Events;
+using Lister.Lists.Domain.Exceptions;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.ValueObjects;
 
 namespace Lister.Lists.Domain;
@@ -113,10 +115,41 @@ public class ListsAggregate<TList, TItem>(
         var currentColumns = await unitOfWork.ListsStore.GetColumnsAsync(list, cancellationToken);
         var currentStatuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
 
+        string KeyOf(Column column)
+        {
+            return string.IsNullOrWhiteSpace(column.StorageKey)
+                ? column.Property
+                : column.StorageKey!;
+        }
+
+        var changeColumnTypes = new Dictionary<string, ChangeColumnTypeOp>(StringComparer.OrdinalIgnoreCase);
+        var removeColumns = new Dictionary<string, RemoveColumnOp>(StringComparer.OrdinalIgnoreCase);
+        var tightenBuilders = new Dictionary<string, TightenConstraintsBuilder>(StringComparer.OrdinalIgnoreCase);
+        var removeStatuses = new Dictionary<string, RemoveStatusOp>(StringComparer.OrdinalIgnoreCase);
+        List<Column>? requestedColumns = null;
+
+        static TightenConstraintsBuilder GetTightenBuilder(
+            string key,
+            IDictionary<string, TightenConstraintsBuilder> builders
+        )
+        {
+            if (!builders.TryGetValue(key, out var builder))
+            {
+                builder = new TightenConstraintsBuilder(key);
+                builders[key] = builder;
+            }
+
+            return builder;
+        }
+
+        var migrationReasons = new List<string>();
+
+        List<Column>? normalizedColumns = null;
+
         if (columns is not null)
         {
             var incomingColumns = columns.ToList();
-            // Guardrails: disallow removals or type changes
+            requestedColumns = incomingColumns;
             var currentByName = currentColumns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
             var nextByName = incomingColumns.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
 
@@ -124,19 +157,43 @@ public class ListsAggregate<TList, TItem>(
             var removed = currentByName.Keys.Where(k => !nextByName.ContainsKey(k)).ToArray();
             if (removed.Length > 0)
             {
-                throw new InvalidOperationException(
-                    $"Update would remove columns: {string.Join(", ", removed)} — migration required");
+                migrationReasons.Add(
+                    $"Update would remove columns: {string.Join(", ", removed)}. Removing columns requires a migration.");
+
+                foreach (var name in removed)
+                {
+                    if (!currentByName.TryGetValue(name, out var column))
+                    {
+                        continue;
+                    }
+
+                    var key = KeyOf(column);
+                    removeColumns[key] = new RemoveColumnOp(key, "drop");
+                }
             }
 
             // Type changes
             var typeChanges = currentByName
                 .Where(kv => nextByName.TryGetValue(kv.Key, out var next) && next.Type != kv.Value.Type)
-                .Select(kv => kv.Key)
+                .Select(kv => new { Column = kv.Key, From = kv.Value.Type, To = nextByName[kv.Key].Type })
                 .ToArray();
             if (typeChanges.Length > 0)
             {
-                throw new InvalidOperationException(
-                    $"Update would change types for: {string.Join(", ", typeChanges)} — migration required");
+                foreach (var change in typeChanges)
+                {
+                    migrationReasons.Add(
+                        $"Column '{change.Column}' type change from {change.From} to {change.To} requires a migration.");
+
+                    if (currentByName.TryGetValue(change.Column, out var column) &&
+                        nextByName.TryGetValue(change.Column, out var nextColumn))
+                    {
+                        var key = KeyOf(column);
+                        if (!changeColumnTypes.ContainsKey(key))
+                        {
+                            changeColumnTypes[key] = new ChangeColumnTypeOp(key, nextColumn.Type, "auto");
+                        }
+                    }
+                }
             }
 
             // Tightening constraints heuristics
@@ -150,8 +207,15 @@ public class ListsAggregate<TList, TItem>(
                 // Required: false -> true is breaking
                 if (!cur.Required && next.Required)
                 {
-                    throw new InvalidOperationException(
-                        $"Column '{key}': making required is breaking — migration required");
+                    migrationReasons.Add(
+                        $"Column '{key}': switching from optional to required requires a migration.");
+
+                    if (currentByName.TryGetValue(key, out var column))
+                    {
+                        var storageKey = KeyOf(column);
+                        var builder = GetTightenBuilder(storageKey, tightenBuilders);
+                        builder.Required = true;
+                    }
                 }
 
                 // AllowedValues: ensure next is superset (if both non-null)
@@ -160,60 +224,90 @@ public class ListsAggregate<TList, TItem>(
                     var curSet = new HashSet<string>(cur.AllowedValues, StringComparer.OrdinalIgnoreCase);
                     if (!next.AllowedValues.All(v => curSet.Contains(v)))
                     {
-                        throw new InvalidOperationException(
-                            $"Column '{key}': allowedValues shrinking — migration required");
+                        migrationReasons.Add(
+                            $"Column '{key}': shrinking allowedValues requires a migration.");
+
+                        if (currentByName.TryGetValue(key, out var column))
+                        {
+                            var storageKey = KeyOf(column);
+                            var builder = GetTightenBuilder(storageKey, tightenBuilders);
+                            builder.AllowedValues = next.AllowedValues?.ToArray();
+                        }
                     }
                 }
 
                 // Range tightening
                 if (cur.MinNumber is not null && next.MinNumber is not null && next.MinNumber > cur.MinNumber)
                 {
-                    throw new InvalidOperationException(
-                        $"Column '{key}': increasing minimum is breaking — migration required");
+                    migrationReasons.Add(
+                        $"Column '{key}': increasing the minimum value requires a migration.");
+
+                    if (currentByName.TryGetValue(key, out var column))
+                    {
+                        var storageKey = KeyOf(column);
+                        var builder = GetTightenBuilder(storageKey, tightenBuilders);
+                        builder.MinNumber = next.MinNumber;
+                    }
                 }
 
                 if (cur.MaxNumber is not null && next.MaxNumber is not null && next.MaxNumber < cur.MaxNumber)
                 {
-                    throw new InvalidOperationException(
-                        $"Column '{key}': decreasing maximum is breaking — migration required");
+                    migrationReasons.Add(
+                        $"Column '{key}': decreasing the maximum value requires a migration.");
+
+                    if (currentByName.TryGetValue(key, out var column))
+                    {
+                        var storageKey = KeyOf(column);
+                        var builder = GetTightenBuilder(storageKey, tightenBuilders);
+                        builder.MaxNumber = next.MaxNumber;
+                    }
                 }
 
                 // Regex: any change treated as breaking
                 if (!string.Equals(cur.Regex, next.Regex, StringComparison.Ordinal))
                 {
-                    throw new InvalidOperationException(
-                        $"Column '{key}': regex change is breaking — migration required");
+                    migrationReasons.Add(
+                        $"Column '{key}': regex changes require a migration.");
+
+                    if (currentByName.TryGetValue(key, out var column))
+                    {
+                        var storageKey = KeyOf(column);
+                        var builder = GetTightenBuilder(storageKey, tightenBuilders);
+                        builder.Regex = next.Regex;
+                    }
                 }
             }
 
-            var normalizedColumns = incomingColumns
-                .Select(c => new Column
-                {
-                    StorageKey = c.StorageKey,
-                    Name = c.Name,
-                    Type = c.Type,
-                    Required = c.Required,
-                    AllowedValues = c.AllowedValues,
-                    MinNumber = c.MinNumber,
-                    MaxNumber = c.MaxNumber,
-                    Regex = c.Regex
-                })
-                .ToList();
-
-            foreach (var column in normalizedColumns.Where(c => string.IsNullOrWhiteSpace(c.StorageKey)))
+            if (!migrationReasons.Any())
             {
-                if (currentByName.TryGetValue(column.Name, out var existing) &&
-                    !string.IsNullOrWhiteSpace(existing.StorageKey))
+                normalizedColumns = incomingColumns
+                    .Select(c => new Column
+                    {
+                        StorageKey = c.StorageKey,
+                        Name = c.Name,
+                        Type = c.Type,
+                        Required = c.Required,
+                        AllowedValues = c.AllowedValues,
+                        MinNumber = c.MinNumber,
+                        MaxNumber = c.MaxNumber,
+                        Regex = c.Regex
+                    })
+                    .ToList();
+
+                foreach (var column in normalizedColumns.Where(c => string.IsNullOrWhiteSpace(c.StorageKey)))
                 {
-                    column.StorageKey = existing.StorageKey;
+                    if (currentByName.TryGetValue(column.Name, out var existing) &&
+                        !string.IsNullOrWhiteSpace(existing.StorageKey))
+                    {
+                        column.StorageKey = existing.StorageKey;
+                    }
                 }
+
+                normalizedColumns = AssignStorageKeys(normalizedColumns);
             }
-
-            normalizedColumns = AssignStorageKeys(normalizedColumns);
-
-            await unitOfWork.ListsStore.SetColumnsAsync(list, normalizedColumns, updatedBy, cancellationToken);
         }
 
+        Status[]? statusesToPersist = null;
         if (statuses is not null)
         {
             // Disallow deletions or renames (by name)
@@ -223,12 +317,46 @@ public class ListsAggregate<TList, TItem>(
             var deletedStatuses = currentNames.Where(n => !nextNames.Contains(n)).ToArray();
             if (deletedStatuses.Length > 0)
             {
-                throw new InvalidOperationException(
-                    $"Removing statuses [{string.Join(", ", deletedStatuses)}] is breaking — migration required");
-            }
+                migrationReasons.Add(
+                    $"Removing statuses [{string.Join(", ", deletedStatuses)}] requires a migration.");
 
+                foreach (var statusName in deletedStatuses)
+                {
+                    if (!removeStatuses.ContainsKey(statusName))
+                    {
+                        removeStatuses[statusName] = new RemoveStatusOp(statusName, null);
+                    }
+                }
+            }
+            else
+            {
+                statusesToPersist = statuses.ToArray();
+            }
+        }
+
+        if (migrationReasons.Count > 0)
+        {
+            var nextColumnsForPlan = normalizedColumns ?? requestedColumns ?? currentColumns.ToList();
+            var nextStatusesForPlan = statusesToPersist ?? currentStatuses;
+
+            var plan = MigrationPlanBuilder.Build(
+                currentColumns,
+                nextColumnsForPlan,
+                nextStatusesForPlan,
+                migrationReasons);
+
+            throw new ListMigrationRequiredException(migrationReasons, plan);
+        }
+
+        if (normalizedColumns is not null)
+        {
+            await unitOfWork.ListsStore.SetColumnsAsync(list, normalizedColumns, updatedBy, cancellationToken);
+        }
+
+        if (statusesToPersist is not null)
+        {
             // Color changes and additions are allowed
-            await unitOfWork.ListsStore.SetStatusesAsync(list, statuses, updatedBy, cancellationToken);
+            await unitOfWork.ListsStore.SetStatusesAsync(list, statusesToPersist, updatedBy, cancellationToken);
         }
 
         if (transitions is not null)
@@ -411,5 +539,30 @@ public class ListsAggregate<TList, TItem>(
         var statuses = await unitOfWork.ListsStore.GetStatusesAsync(list, cancellationToken);
         retval.status = statuses.FirstOrDefault()?.Name;
         return retval;
+    }
+
+    private sealed class TightenConstraintsBuilder
+    {
+        public TightenConstraintsBuilder(string key)
+        {
+            Key = key;
+        }
+
+        public string Key { get; }
+
+        public bool? Required { get; set; }
+
+        public string[]? AllowedValues { get; set; }
+
+        public decimal? MinNumber { get; set; }
+
+        public decimal? MaxNumber { get; set; }
+
+        public string? Regex { get; set; }
+
+        public TightenConstraintsOp ToOp()
+        {
+            return new TightenConstraintsOp(Key, Required, AllowedValues, MinNumber, MaxNumber, Regex);
+        }
     }
 }

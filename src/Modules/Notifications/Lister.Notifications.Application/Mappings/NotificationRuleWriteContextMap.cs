@@ -1,4 +1,4 @@
-using Lister.Notifications.Domain;
+using Lister.Notifications.Domain.Entities;
 using Lister.Notifications.Domain.ValueObjects;
 using Lister.Notifications.ReadOnly.Dtos;
 
@@ -7,7 +7,7 @@ namespace Lister.Notifications.Application.Mappings;
 internal static class NotificationRuleWriteContextMap
 {
     public static NotificationRuleDto ToDto(
-        INotificationRule rule,
+        IWritableNotificationRule rule,
         NotificationTrigger trigger,
         NotificationChannel[] channels,
         NotificationSchedule schedule,

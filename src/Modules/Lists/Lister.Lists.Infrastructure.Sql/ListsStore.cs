@@ -71,6 +71,23 @@ public class ListsStore(ListsDbContext dbContext)
         return Task.CompletedTask;
     }
 
+    public Task RenameAsync(
+        ListDb listDb,
+        string newName,
+        string actedBy,
+        CancellationToken cancellationToken
+    )
+    {
+        if (string.Equals(listDb.Name, newName, StringComparison.Ordinal))
+        {
+            return Task.CompletedTask;
+        }
+
+        listDb.Name = newName;
+        TouchUpdatedHistory(listDb, actedBy);
+        return Task.CompletedTask;
+    }
+
     public Task SetColumnsAsync(
         ListDb listDb,
         IEnumerable<Column> columns,

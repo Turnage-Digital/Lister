@@ -57,6 +57,15 @@ public class ListDeletedOutboxHandler(CoreDbContext dbContext)
     }
 }
 
+public class ListMigrationRequestedOutboxHandler(CoreDbContext dbContext)
+    : ListOutboxBase(dbContext), INotificationHandler<ListMigrationRequestedIntegrationEvent>
+{
+    public async Task Handle(ListMigrationRequestedIntegrationEvent notification, CancellationToken cancellationToken)
+    {
+        await EnqueueAsync(notification, cancellationToken);
+    }
+}
+
 public class ListMigrationStartedOutboxHandler(CoreDbContext dbContext)
     : ListOutboxBase(dbContext), INotificationHandler<ListMigrationStartedIntegrationEvent>
 {

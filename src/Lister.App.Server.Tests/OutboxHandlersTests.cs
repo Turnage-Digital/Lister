@@ -23,17 +23,17 @@ public class OutboxHandlersTests
     {
         await using var db = CreateInMemoryDb();
         var handler = new ListItemCreatedOutboxHandler(db);
-        var evt = new ListItemCreatedIntegrationEvent(Guid.NewGuid(), 123, "tester");
+        var integrationEvent = new ListItemCreatedIntegrationEvent(Guid.NewGuid(), 123, "tester");
 
-        await handler.Handle(evt, CancellationToken.None);
+        await handler.Handle(integrationEvent, CancellationToken.None);
 
-        var msg = db.OutboxMessages.Single();
+        var message = db.OutboxMessages.Single();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(msg.Type, Is.EqualTo(typeof(ListItemCreatedIntegrationEvent).FullName));
-            Assert.That(msg.PayloadJson, Does.Contain("\"EventType\":\"ListItemCreatedIntegrationEvent\""));
-            Assert.That(msg.Attempts, Is.EqualTo(0));
-            Assert.That(msg.ProcessedOn, Is.Null);
+            Assert.That(message.Type, Is.EqualTo(typeof(ListItemCreatedIntegrationEvent).FullName));
+            Assert.That(message.PayloadJson, Does.Contain("\"EventType\":\"ListItemCreatedIntegrationEvent\""));
+            Assert.That(message.Attempts, Is.EqualTo(0));
+            Assert.That(message.ProcessedOn, Is.Null);
         }
     }
 
@@ -51,15 +51,15 @@ public class OutboxHandlersTests
     {
         await using var db = CreateInMemoryDb();
         var handler = new NotificationCreatedOutboxHandler(db);
-        var evt = new NotificationCreatedEvent(new FakeNotification(), "tester");
+        var createdEvent = new NotificationCreatedEvent(new FakeNotification(), "tester");
 
-        await handler.Handle(evt, CancellationToken.None);
+        await handler.Handle(createdEvent, CancellationToken.None);
 
-        var msg = db.OutboxMessages.Single();
+        var message = db.OutboxMessages.Single();
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(msg.Type, Is.EqualTo(typeof(NotificationCreatedEvent).FullName));
-            Assert.That(msg.PayloadJson, Does.Contain("\"CreatedBy\":\"tester\""));
+            Assert.That(message.Type, Is.EqualTo(typeof(NotificationCreatedEvent).FullName));
+            Assert.That(message.PayloadJson, Does.Contain("\"CreatedBy\":\"tester\""));
         }
     }
 }
