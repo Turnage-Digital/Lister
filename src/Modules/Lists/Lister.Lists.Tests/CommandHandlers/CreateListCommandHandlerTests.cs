@@ -1,5 +1,5 @@
 using Lister.Core.Domain;
-using Lister.Lists.Application.Endpoints.CreateList;
+using Lister.Lists.Application.Endpoints.Commands.CreateList;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
@@ -92,7 +92,7 @@ public class CreateListCommandHandlerTests
     public void Handle_ThrowsArgumentNullException_WhenUserIdIsNull()
     {
         // Arrange
-        var command = new CreateListCommand("Sample List", Array.Empty<Status>(), Array.Empty<Column>(), null);
+        var command = new CreateListCommand("Sample List", [], [], null);
 
         // Act & Assert
         Assert.ThrowsAsync<ArgumentNullException>(async () => await _handler.Handle(command, CancellationToken.None));

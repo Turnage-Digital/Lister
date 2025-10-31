@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Migrations;
+using Lister.Lists.Application.Migrations.Services;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Dtos;

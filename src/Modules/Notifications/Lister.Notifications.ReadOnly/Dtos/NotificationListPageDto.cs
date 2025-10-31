@@ -5,7 +5,7 @@ namespace Lister.Notifications.ReadOnly.Dtos;
 public record NotificationListPageDto
 {
     [JsonPropertyName("notifications")]
-    public List<NotificationSummaryDto> Notifications { get; init; } = new();
+    public List<NotificationSummaryDto> Notifications { get; init; } = [];
 
     [JsonPropertyName("totalCount")]
     public int TotalCount { get; init; }

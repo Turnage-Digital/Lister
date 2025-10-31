@@ -7,7 +7,7 @@ public class ListMigrationRequiredException : InvalidOperationException
     public ListMigrationRequiredException(IEnumerable<string> reasons, MigrationPlan? plan)
         : base("This update requires a list migration.")
     {
-        Reasons = reasons?.ToArray() ?? Array.Empty<string>();
+        Reasons = reasons?.ToArray() ?? [];
         Plan = plan;
     }
 

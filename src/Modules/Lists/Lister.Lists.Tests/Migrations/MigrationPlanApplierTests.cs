@@ -1,5 +1,5 @@
-using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Domain.Enums;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.ValueObjects;
 
 namespace Lister.Lists.Tests.Migrations;
@@ -41,7 +41,7 @@ public class MigrationPlanApplierTests
         };
 
         var context =
-            MigrationPlanApplier.Prepare(plan, columns, Array.Empty<Status>(), Array.Empty<StatusTransition>());
+            MigrationPlanApplier.Prepare(plan, columns, [], []);
 
         Assert.That(context.Columns.Single().Type, Is.EqualTo(ColumnType.Number));
         Assert.That(context.ColumnTypeChanges.Single().Key, Is.EqualTo("prop1"));
@@ -56,9 +56,9 @@ public class MigrationPlanApplierTests
         };
         var context = MigrationPlanApplier.Prepare(
             plan,
-            new[] { new Column { StorageKey = "prop1", Name = "Total", Type = ColumnType.Text } },
-            Array.Empty<Status>(),
-            Array.Empty<StatusTransition>());
+            [new Column { StorageKey = "prop1", Name = "Total", Type = ColumnType.Text }],
+            [],
+            []);
 
         var bag = MigrationPlanApplier.ApplyToItem(context, new Dictionary<string, object?> { ["prop1"] = "42" });
 
@@ -74,13 +74,12 @@ public class MigrationPlanApplierTests
         };
         var context = MigrationPlanApplier.Prepare(
             plan,
-            new[]
-            {
+            [
                 new Column { StorageKey = "prop1", Name = "Title", Type = ColumnType.Text, Required = true },
                 new Column { StorageKey = "prop2", Name = "Obsolete", Type = ColumnType.Text, Required = false }
-            },
-            Array.Empty<Status>(),
-            Array.Empty<StatusTransition>());
+            ],
+            [],
+            []);
 
         var bag = MigrationPlanApplier.ApplyToItem(context,
             new Dictionary<string, object?> { ["prop1"] = "keep", ["prop2"] = "remove" });
@@ -98,13 +97,12 @@ public class MigrationPlanApplierTests
         };
         var context = MigrationPlanApplier.Prepare(
             plan,
-            Array.Empty<Column>(),
-            new[] { new Status { Name = "Active", Color = "green" }, new Status { Name = "Closed", Color = "gray" } },
-            new[]
-            {
+            [],
+            [new Status { Name = "Active", Color = "green" }, new Status { Name = "Closed", Color = "gray" }],
+            [
                 new StatusTransition { From = "Active", AllowedNext = ["Closed"] },
                 new StatusTransition { From = "Closed", AllowedNext = [] }
-            });
+            ]);
 
         var bag = MigrationPlanApplier.ApplyToItem(context,
             new Dictionary<string, object?> { ["status"] = "Active" });

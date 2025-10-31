@@ -275,7 +275,7 @@ public class ListsAggregateTests
         var newBag = new Dictionary<string, object?> { { "title", "new" } };
 
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Column>());
+            .ReturnsAsync([]);
         _unitOfWork.Setup(x => x.ItemsStore.GetBagAsync(item, It.IsAny<CancellationToken>()))
             .ReturnsAsync(oldBag);
         _unitOfWork.Setup(x => x.ItemsStore.SetBagAsync(item, newBag, BY, It.IsAny<CancellationToken>()))
@@ -364,9 +364,9 @@ public class ListsAggregateTests
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existing);
         _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Status>());
+            .ReturnsAsync([]);
         _unitOfWork.Setup(x => x.ListsStore.GetStatusTransitionsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<StatusTransition>());
+            .ReturnsAsync([]);
 
         Column[]? persisted = null;
         _listsStore.Setup(x =>
@@ -404,7 +404,7 @@ public class ListsAggregateTests
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existing);
         _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Status>());
+            .ReturnsAsync([]);
 
         var update = new[]
         {
@@ -434,13 +434,12 @@ public class ListsAggregateTests
     {
         var list = new ListDb { Id = Guid.NewGuid() };
         _listsStore.Setup(x => x.GetColumnsAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Array.Empty<Column>());
+            .ReturnsAsync([]);
         _listsStore.Setup(x => x.GetStatusesAsync(list, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new[]
-            {
+            .ReturnsAsync([
                 new Status { Name = "Active" },
                 new Status { Name = "Closed" }
-            });
+            ]);
 
         var updatedStatuses = new[]
         {

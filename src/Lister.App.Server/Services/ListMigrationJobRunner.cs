@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Lister.Core.Domain.IntegrationEvents;
-using Lister.Lists.Application.Endpoints.Migrations;
 using Lister.Lists.Domain;
+using Lister.Lists.Domain.Services;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.Infrastructure.Sql;
 using Lister.Lists.Infrastructure.Sql.Entities;

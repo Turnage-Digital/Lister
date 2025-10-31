@@ -72,7 +72,7 @@ public class ListMigrationJobRunnerTests
         var domainEvents = new Mock<IDomainEventQueue>();
         domainEvents
             .Setup(q => q.Dequeue(It.IsAny<EventPhase>()))
-            .Returns(Array.Empty<INotification>());
+            .Returns([]);
         var unitOfWork = new ListsUnitOfWork(dbContext, mediator.Object, domainEvents.Object);
         var runner = new ListMigrationJobRunner(unitOfWork, dbContext, mediator.Object,
             NullLogger<ListMigrationJobRunner>.Instance);
@@ -141,7 +141,7 @@ public class ListMigrationJobRunnerTests
         var domainEvents = new Mock<IDomainEventQueue>();
         domainEvents
             .Setup(q => q.Dequeue(It.IsAny<EventPhase>()))
-            .Returns(Array.Empty<INotification>());
+            .Returns([]);
         var unitOfWork = new ListsUnitOfWork(dbContext, mediator.Object, domainEvents.Object);
 
         var job = new ListMigrationJobDb
@@ -163,14 +163,13 @@ public class ListMigrationJobRunnerTests
             .GetMethod("CleanupExpiredBackupsAsync", BindingFlags.NonPublic | BindingFlags.Static);
         Assert.That(cleanupMethod, Is.Not.Null);
 
-        await (Task)cleanupMethod!.Invoke(null, new object[]
-        {
+        await (Task)cleanupMethod!.Invoke(null, [
             dbContext,
             unitOfWork,
             mediator.Object,
             NullLogger<ListMigrationDispatcherService>.Instance,
             CancellationToken.None
-        })!;
+        ])!;
 
         await dbContext.Entry(job).ReloadAsync();
         await dbContext.Entry(backupList).ReloadAsync();
