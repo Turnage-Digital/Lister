@@ -3,7 +3,12 @@ import * as React from "react";
 import { Delete, Edit, Visibility } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 
-import { Column, getStatusFromName, ListItemDefinition } from "../models";
+import {
+  Column,
+  ColumnType,
+  getStatusFromName,
+  ListItemDefinition,
+} from "../models";
 import StatusChip from "./status-chip";
 
 export const getGridColDefs = (
@@ -29,7 +34,7 @@ export const getGridColDefs = (
       flex: 1,
     };
 
-    if (column.type === "Date") {
+    if (column.type === ColumnType.Date) {
       retval.valueFormatter = (params) => {
         const date = new Date(params);
         const retval = date.toLocaleDateString();

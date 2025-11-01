@@ -9,7 +9,6 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -148,12 +147,13 @@ const EditListPage = () => {
     }
 
     if (!message) {
-      message =
-        stage === "Running"
-          ? "Migration in progress."
-          : stage === "Pending"
-            ? "Migration queued."
-            : `Migration ${stage.toLowerCase()}.`;
+      if (stage === "Running") {
+        message = "Migration in progress.";
+      } else if (stage === "Pending") {
+        message = "Migration queued.";
+      } else {
+        message = `Migration ${stage.toLowerCase()}.`;
+      }
     }
 
     return {
@@ -354,13 +354,11 @@ const EditListPage = () => {
       return (await response.json()) as MigrationRequestResponse;
     },
     onSuccess: async (result) => {
-      const messages = Array.isArray(result?.messages) ? result.messages : [];
+      const messages = Array.isArray(result.messages) ? result.messages : [];
       const message =
-        messages && messages.length > 0
-          ? messages[0]
-          : "Migration queued successfully.";
+        messages.length > 0 ? messages[0] : "Migration queued successfully.";
       const correlationId =
-        typeof result?.correlationId === "string"
+        typeof result.correlationId === "string"
           ? result.correlationId
           : undefined;
 
@@ -397,9 +395,8 @@ const EditListPage = () => {
         }),
       ]);
     },
-    onError: (error: unknown) => {
+    onError: () => {
       setActiveMigration(null);
-      console.error(error);
     },
   });
 
@@ -436,7 +433,7 @@ const EditListPage = () => {
   ];
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title={`Edit ${definition.name}`} breadcrumbs={breadcrumbs} />
       <ListEditor
         key={listId}
@@ -449,7 +446,7 @@ const EditListPage = () => {
         migrationStatus={migrationStatus}
         onRequestMigration={handleRequestMigration}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

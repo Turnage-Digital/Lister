@@ -1,4 +1,4 @@
-using Lister.Notifications.Application.Endpoints.Commands.UpdateNotificationRule;
+using Lister.Notifications.Application.Commands.UpdateNotificationRule;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

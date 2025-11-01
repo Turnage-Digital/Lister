@@ -1,5 +1,5 @@
 using Lister.Core.Domain;
-using Lister.Lists.Application.Endpoints.Commands.CreateList;
+using Lister.Lists.Application.Commands.CreateList;
 using Lister.Lists.Domain;
 using Lister.Lists.Domain.Enums;
 using Lister.Lists.Domain.ValueObjects;

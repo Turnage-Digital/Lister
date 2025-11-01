@@ -39,11 +39,12 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
         minHeight: 220,
         p: 3,
         gap: 3,
-        borderColor: alpha(theme.palette.primary.main, 0.08),
+        borderColor: theme.palette.divider,
+        boxShadow: "none",
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
-          borderColor: alpha(theme.palette.primary.main, 0.3),
-          boxShadow: theme.shadows[3],
+          borderColor: alpha(theme.palette.primary.main, 0.24),
+          boxShadow: theme.shadows[2],
         },
       }}
     >
@@ -60,9 +61,9 @@ const ListCard = ({ listName, onDeleteClick }: Props) => {
             justifyContent: "center",
             width: 44,
             height: 44,
-            borderRadius: 2,
-            backgroundColor: alpha(theme.palette.primary.main, 0.1),
-            color: "primary.main",
+            borderRadius: (theme) => theme.shape.borderRadius,
+            backgroundColor: theme.palette.grey[100],
+            color: theme.palette.primary.dark,
           }}
         >
           <ListIcon sx={{ fontSize: 22 }} />

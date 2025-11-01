@@ -132,11 +132,12 @@ const ItemCard = ({
         gap: 3,
         p: 3,
         maxWidth: 500,
-        borderColor: alpha(theme.palette.primary.main, 0.12),
+        borderColor: theme.palette.divider,
+        boxShadow: "none",
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         "&:hover": {
-          borderColor: alpha(theme.palette.primary.main, 0.3),
-          boxShadow: theme.shadows[3],
+          borderColor: alpha(theme.palette.primary.main, 0.24),
+          boxShadow: theme.shadows[2],
         },
       }}
     >
@@ -153,9 +154,9 @@ const ItemCard = ({
             justifyContent: "center",
             width: 44,
             height: 44,
-            borderRadius: 2,
-            backgroundColor: alpha(theme.palette.primary.main, 0.1),
-            color: "primary.main",
+            borderRadius: (theme) => theme.shape.borderRadius,
+            backgroundColor: theme.palette.grey[100],
+            color: theme.palette.primary.dark,
           }}
         >
           <Receipt sx={{ fontSize: 22 }} />
@@ -168,7 +169,7 @@ const ItemCard = ({
       </Typography>
 
       <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={{ xs: 3, md: 3.5 }}>
+        <Grid container>
           {definition.columns.map((column, index) => {
             const key = column.property ?? column.name;
             const rawValue = item.bag[key];
@@ -228,7 +229,7 @@ const ItemCard = ({
                     <Divider
                       sx={{
                         mx: -3,
-                        borderColor: alpha(theme.palette.divider, 0.6),
+                        borderColor: theme.palette.divider,
                       }}
                     />
                   </Grid>

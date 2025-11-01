@@ -5,7 +5,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  DisplayPageLayout,
   ItemCard,
   ItemHistoryDrawer,
   Titlebar,
@@ -79,7 +78,7 @@ const ListItemDetailsPage = () => {
   ];
 
   return (
-    <DisplayPageLayout>
+    <>
       <Titlebar
         title={`ID ${item.id}`}
         breadcrumbs={breadcrumbs}
@@ -92,7 +91,7 @@ const ListItemDetailsPage = () => {
         onEditItem={handleEditItem}
         onViewItem={handleViewItem}
       />
-    </DisplayPageLayout>
+    </>
   );
 };
 

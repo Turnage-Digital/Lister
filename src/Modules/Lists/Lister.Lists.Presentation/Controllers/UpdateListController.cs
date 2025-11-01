@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.UpdateList;
+using Lister.Lists.Application.Commands.UpdateList;
 using Lister.Lists.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

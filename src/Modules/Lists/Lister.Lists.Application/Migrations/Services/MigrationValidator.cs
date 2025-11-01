@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.Migrations;
+using Lister.Lists.Application.Commands.Migrations;
 using Lister.Lists.Domain.ValueObjects;
 using Lister.Lists.ReadOnly.Queries;
 

@@ -258,6 +258,13 @@ export const migrationProgressQueryOptions = (
       const dto = (await response.json()) as MigrationJobStatusResponse;
       const stage = dto.stage as MigrationProgressRecord["stage"];
 
+      let percent: number | undefined;
+      if (stage === "Completed" || stage === "Archived") {
+        percent = 100;
+      } else if (stage === "Failed") {
+        percent = 0;
+      }
+
       return {
         listId: dto.sourceListId,
         correlationId: dto.correlationId,
@@ -271,12 +278,7 @@ export const migrationProgressQueryOptions = (
         attempts: dto.attempts,
         lastError: dto.lastError,
         updatedAt: dto.completedOn ?? dto.startedOn ?? dto.createdOn,
-        percent:
-          stage === "Completed" || stage === "Archived"
-            ? 100
-            : stage === "Failed"
-              ? 0
-              : undefined,
+        percent,
       } satisfies MigrationProgressRecord;
     },
   });

@@ -85,7 +85,6 @@ interface ChannelOption {
   requiresAddress: boolean;
   addressLabel?: string;
   addressPlaceholder?: string;
-  addressHelperText?: string;
 }
 
 const channelOptions: ChannelOption[] = [
@@ -104,7 +103,6 @@ const channelOptions: ChannelOption[] = [
     requiresAddress: true,
     addressLabel: "Phone number",
     addressPlaceholder: "+1 555-0100",
-    addressHelperText: "Use an E.164 formatted number.",
   },
 ];
 
@@ -610,7 +608,7 @@ const NotificationRulesEditor = ({
               variant="outlined"
               sx={{
                 p: { xs: 3, md: 3.5 },
-                borderRadius: 3,
+                borderRadius: (theme) => theme.shape.borderRadius,
                 boxShadow: "none",
                 borderColor: (theme) => theme.palette.divider,
               }}
@@ -739,7 +737,6 @@ const NotificationRulesEditor = ({
                             )
                           }
                           placeholder={option.addressPlaceholder}
-                          helperText={option.addressHelperText}
                           InputProps={{
                             sx: { backgroundColor: "background.paper" },
                           }}

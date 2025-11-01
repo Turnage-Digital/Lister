@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
 import {
-  EditorPageLayout,
   ListEditor,
   type ListEditorInitialValue,
   type ListEditorSubmitResult,
@@ -123,14 +122,14 @@ const CreateListPage = () => {
   ];
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title="Create a List" breadcrumbs={breadcrumbs} />
       <ListEditor
         initialValue={initialValue}
         onSubmit={handleSubmit}
         isSubmitting={createListMutation.isPending}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

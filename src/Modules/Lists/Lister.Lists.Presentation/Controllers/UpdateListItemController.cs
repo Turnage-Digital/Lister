@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.UpdateListItem;
+using Lister.Lists.Application.Commands.UpdateListItem;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

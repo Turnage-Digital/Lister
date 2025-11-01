@@ -1,4 +1,4 @@
-using Lister.Notifications.Application.Endpoints.Commands.DeleteNotificationRule;
+using Lister.Notifications.Application.Commands.DeleteNotificationRule;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

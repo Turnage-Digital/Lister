@@ -1,4 +1,4 @@
-using Lister.Notifications.Application.Endpoints.Queries.GetUnreadNotificationCount;
+using Lister.Notifications.Application.Queries.GetUnreadNotificationCount;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

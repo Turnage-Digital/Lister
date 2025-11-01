@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { EditorPageLayout, ListItemEditor, Titlebar } from "../components";
+import { ListItemEditor, Titlebar } from "../components";
 import { ListItem } from "../models";
 import {
   itemQueryOptions,
@@ -116,7 +116,7 @@ const EditListItemPage = () => {
   const isSubmitting = updateItemMutation.isPending;
 
   return (
-    <EditorPageLayout>
+    <>
       <Titlebar title={`Edit Item ${item.id}`} breadcrumbs={breadcrumbs} />
       <ListItemEditor
         definition={definition}
@@ -126,7 +126,7 @@ const EditListItemPage = () => {
         isSubmitting={isSubmitting}
         onCancel={handleCancel}
       />
-    </EditorPageLayout>
+    </>
   );
 };
 

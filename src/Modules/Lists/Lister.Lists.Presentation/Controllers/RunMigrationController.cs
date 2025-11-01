@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.Migrations.RunMigration;
+using Lister.Lists.Application.Commands.Migrations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

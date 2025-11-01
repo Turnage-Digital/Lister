@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Commands.DeleteListItem;
+using Lister.Lists.Application.Commands.DeleteListItem;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

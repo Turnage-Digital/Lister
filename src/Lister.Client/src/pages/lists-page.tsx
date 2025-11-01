@@ -9,12 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import {
-  ConfirmDeleteDialog,
-  DisplayPageLayout,
-  ListCard,
-  Titlebar,
-} from "../components";
+import { ConfirmDeleteDialog, ListCard, Titlebar } from "../components";
 import { ListName } from "../models";
 import { listNamesQueryOptions } from "../query-options";
 
@@ -79,7 +74,7 @@ const ListsPage = () => {
   ];
 
   return (
-    <DisplayPageLayout>
+    <>
       <Titlebar title="Lists" actions={actions} />
 
       <Grid container spacing={3}>
@@ -98,7 +93,7 @@ const ListsPage = () => {
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
       />
-    </DisplayPageLayout>
+    </>
   );
 };
 

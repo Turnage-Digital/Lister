@@ -1,4 +1,4 @@
-using Lister.Lists.Application.Endpoints.Queries.GetStatusTransitions;
+using Lister.Lists.Application.Queries.GetStatusTransitions;
 using Lister.Lists.Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

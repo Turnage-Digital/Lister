@@ -224,82 +224,105 @@ const ListEditor = ({
     </Alert>
   ) : null;
 
+  const serverFeedbackPlan = serverFeedback?.plan ?? null;
+  const serverFeedbackReasonsList = serverFeedback?.reasons ?? [];
+  const canRequestMigration = Boolean(serverFeedbackPlan && onRequestMigration);
+
+  const handleRunMigrationClick = async () => {
+    if (!onRequestMigration || !serverFeedbackPlan) {
+      return;
+    }
+
+    try {
+      await onRequestMigration(serverFeedbackPlan);
+      setServerFeedback(null);
+    } catch (caughtError) {
+      if (caughtError instanceof Error) {
+        setServerFeedback({
+          message: caughtError.message,
+          reasons: serverFeedbackReasonsList,
+          plan: serverFeedbackPlan,
+        });
+      }
+    }
+  };
+
+  let serverFeedbackReasonsContent: React.ReactNode = null;
+  if (serverFeedbackReasonsList.length > 0) {
+    serverFeedbackReasonsContent = (
+      <Box component="ul" sx={{ pl: 3, mb: 0 }}>
+        {serverFeedbackReasonsList.map((reason) => (
+          <Box component="li" key={reason} sx={{ mt: 0.5 }}>
+            {reason}
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  let serverFeedbackActionContent: React.ReactNode = null;
+  if (canRequestMigration) {
+    serverFeedbackActionContent = (
+      <Box sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<PlayArrow />}
+          onClick={handleRunMigrationClick}
+          disabled={Boolean(isMigrationPending)}
+        >
+          Run migration
+        </Button>
+      </Box>
+    );
+  }
+
   const serverFeedbackBanner = serverFeedback ? (
     <Alert severity="warning" sx={{ maxWidth: 720 }}>
       <AlertTitle>{serverFeedback.message}</AlertTitle>
-      {serverFeedback.reasons && serverFeedback.reasons.length > 0 ? (
-        <Box component="ul" sx={{ pl: 3, mb: 0 }}>
-          {serverFeedback.reasons.map((reason) => (
-            <Box component="li" key={reason} sx={{ mt: 0.5 }}>
-              {reason}
-            </Box>
-          ))}
-        </Box>
-      ) : null}
-      {serverFeedback.plan && onRequestMigration ? (
-        <Box sx={{ mt: 2 }}>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<PlayArrow />}
-            onClick={async () => {
-              if (!onRequestMigration || !serverFeedback.plan) {
-                return;
-              }
-
-              try {
-                await onRequestMigration(serverFeedback.plan);
-                setServerFeedback(null);
-              } catch (error) {
-                if (error instanceof Error) {
-                  setServerFeedback({
-                    message: error.message,
-                    reasons: serverFeedback.reasons,
-                    plan: serverFeedback.plan,
-                  });
-                }
-              }
-            }}
-            disabled={Boolean(isMigrationPending)}
-          >
-            Run migration
-          </Button>
-        </Box>
-      ) : null}
+      {serverFeedbackReasonsContent}
+      {serverFeedbackActionContent}
     </Alert>
   ) : null;
 
+  let migrationSeverity: "error" | "info" | "success" | "warning" = "info";
+  if (migrationStatus?.stage === "Failed") {
+    migrationSeverity = "error";
+  } else if (
+    migrationStatus?.stage === "Completed" ||
+    migrationStatus?.stage === "Archived"
+  ) {
+    migrationSeverity = "success";
+  }
+
+  const migrationPercentValue =
+    typeof migrationStatus?.percent === "number"
+      ? Math.max(0, Math.min(100, migrationStatus.percent))
+      : null;
+
+  let migrationProgressContent: React.ReactNode = null;
+  if (typeof migrationPercentValue === "number") {
+    migrationProgressContent = (
+      <Box sx={{ mt: 2 }}>
+        <LinearProgress variant="determinate" value={migrationPercentValue} />
+        <Typography
+          component="div"
+          variant="caption"
+          sx={{ display: "block", textAlign: "right", mt: 0.5 }}
+        >
+          {Math.round(migrationPercentValue)}%
+        </Typography>
+      </Box>
+    );
+  }
+
   const migrationMessageBanner = migrationStatus ? (
-    <Alert
-      severity={
-        migrationStatus.stage === "Failed"
-          ? "error"
-          : migrationStatus.stage === "Completed" ||
-              migrationStatus.stage === "Archived"
-            ? "success"
-            : "info"
-      }
-      sx={{ maxWidth: 720 }}
-    >
+    <Alert severity={migrationSeverity} sx={{ maxWidth: 720 }}>
       <AlertTitle>{migrationStatus.stage}</AlertTitle>
       <Typography component="div" variant="body2">
         {migrationStatus.message}
       </Typography>
-      {typeof migrationStatus.percent === "number" ? (
-        <Box sx={{ mt: 2 }}>
-          <LinearProgress
-            variant="determinate"
-            value={Math.max(0, Math.min(100, migrationStatus.percent))}
-          />
-          <Typography
-            component="div"
-            variant="caption"
-            sx={{ display: "block", textAlign: "right", mt: 0.5 }}
-          >
-            {Math.round(migrationStatus.percent)}%
-          </Typography>
-        </Box>
-      ) : null}
+      {migrationProgressContent}
     </Alert>
   ) : null;
 
