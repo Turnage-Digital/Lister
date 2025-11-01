@@ -42,7 +42,7 @@ const ItemsDesktopView = ({
   }));
 
   return (
-    <Paper variant="outlined">
+    <Paper>
       <DataGrid
         columns={gridColDefs}
         rows={rows}

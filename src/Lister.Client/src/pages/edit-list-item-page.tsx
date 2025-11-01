@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { EditorPageLayout, ListItemEditor, Titlebar } from "../components";
+import { ListItemEditor, Titlebar } from "../components";
 import { ListItem } from "../models";
 import {
   itemQueryOptions,

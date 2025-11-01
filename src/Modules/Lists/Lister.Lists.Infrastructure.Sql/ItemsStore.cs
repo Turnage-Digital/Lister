@@ -85,13 +85,4 @@ public class ItemsStore(ListsDbContext dbContext)
     {
         return Task.FromResult(item.Bag);
     }
-
-    public async Task<int[]> GetItemIdsAsync(Guid listId, CancellationToken cancellationToken)
-    {
-        var ids = await dbContext.Items
-            .Where(i => i.ListId == listId)
-            .Select(i => i.Id!.Value)
-            .ToArrayAsync(cancellationToken);
-        return ids;
-    }
 }

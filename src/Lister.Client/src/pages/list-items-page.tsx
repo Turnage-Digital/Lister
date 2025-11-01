@@ -12,7 +12,6 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   ConfirmDeleteDialog,
-  DisplayPageLayout,
   ItemsDesktopView,
   ItemsMobileView,
   ListHistoryDrawer,

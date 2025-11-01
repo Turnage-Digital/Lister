@@ -1,3 +1,4 @@
+// csharp
 using System.Text.Json;
 using Dapper;
 using Lister.Lists.ReadOnly.Dtos;
@@ -17,11 +18,6 @@ public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
         CancellationToken cancellationToken
     )
     {
-        var listName = await dbContext.Lists
-            .Where(l => l.Id == listId)
-            .Select(l => l.Name)
-            .FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
-
         var builder = new SqlBuilder();
         const string sql = """
                            SELECT SQL_CALC_FOUND_ROWS
@@ -31,8 +27,9 @@ public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
                            WHERE
                                i.ListId = @listId AND i.IsDeleted = 0
                            /**orderby**/
-                           LIMIT @pageSize OFFSET @offset; 
+                           LIMIT @pageSize OFFSET @offset;
                            SELECT FOUND_ROWS();
+                           SELECT Name FROM Lists WHERE Id = @listId;
                            """;
 
         var parameters = new
@@ -60,7 +57,9 @@ public class PagedListGetter(ListsDbContext dbContext) : IGetPagedList
                 ListId = listId
             })
             .ToArray();
+
         var count = await multi.ReadSingleAsync<long>();
+        var listName = await multi.ReadSingleAsync<string?>() ?? string.Empty;
 
         var retval = new PagedListDto
         {

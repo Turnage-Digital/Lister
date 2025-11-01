@@ -169,7 +169,7 @@ const ItemCard = ({
       </Typography>
 
       <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={{ xs: 3, md: 3.5 }}>
+        <Grid container>
           {definition.columns.map((column, index) => {
             const key = column.property ?? column.name;
             const rawValue = item.bag[key];

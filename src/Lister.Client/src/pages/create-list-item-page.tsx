@@ -9,12 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
-import {
-  EditorPageLayout,
-  ListItemEditor,
-  SmartPasteDialog,
-  Titlebar,
-} from "../components";
+import { ListItemEditor, SmartPasteDialog, Titlebar } from "../components";
 import { ListItem } from "../models";
 import { listItemDefinitionQueryOptions } from "../query-options";
 

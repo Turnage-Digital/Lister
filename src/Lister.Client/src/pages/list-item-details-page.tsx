@@ -5,7 +5,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  DisplayPageLayout,
   ItemCard,
   ItemHistoryDrawer,
   Titlebar,

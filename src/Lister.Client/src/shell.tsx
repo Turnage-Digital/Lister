@@ -29,8 +29,13 @@ const Shell = () => {
       return undefined;
     }
 
-    const readValue = (data: Record<string, unknown>, key: string) =>
-      data?.[key] ?? data?.[key.charAt(0).toLowerCase() + key.slice(1)];
+    const readValue = (data: Record<string, unknown>, key: string) => {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        return data[key];
+      }
+      const fallbackKey = key.charAt(0).toLowerCase() + key.slice(1);
+      return data[fallbackKey];
+    };
 
     const readString = (data: Record<string, unknown>, key: string) => {
       const value = readValue(data, key);
@@ -359,10 +364,11 @@ const Shell = () => {
 
         <Container
           component="main"
-          maxWidth="xl"
+          maxWidth="lg"
           sx={{
             minHeight: "100vh",
             backgroundColor: theme.palette.background.default,
+            py: 4,
           }}
         >
           <Box sx={(muiTheme) => ({ ...muiTheme.mixins.toolbar })} />

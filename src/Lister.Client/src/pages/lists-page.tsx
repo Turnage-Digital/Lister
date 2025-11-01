@@ -9,12 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import {
-  ConfirmDeleteDialog,
-  DisplayPageLayout,
-  ListCard,
-  Titlebar,
-} from "../components";
+import { ConfirmDeleteDialog, ListCard, Titlebar } from "../components";
 import { ListName } from "../models";
 import { listNamesQueryOptions } from "../query-options";
 

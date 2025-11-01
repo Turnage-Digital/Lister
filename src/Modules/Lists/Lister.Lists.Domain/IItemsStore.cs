@@ -21,6 +21,4 @@ public interface IItemsStore<TItem>
     );
 
     Task<object> GetBagAsync(TItem item, CancellationToken cancellationToken);
-
-    Task<int[]> GetItemIdsAsync(Guid listId, CancellationToken cancellationToken);
 }
