@@ -27,7 +27,9 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
             {
                 StorageKey = column.StorageKey,
                 Name = column.Name,
-                Property = ComputeProperty(column.Name),
+                Property = string.IsNullOrWhiteSpace(column.StorageKey)
+                    ? column.Property
+                    : column.StorageKey,
                 Type = column.Type,
                 Required = column.Required,
                 AllowedValues = column.AllowedValues,
@@ -62,17 +64,5 @@ public class ListItemDefinitionGetter(ListsDbContext dbContext) : IGetListItemDe
             Transitions = transitions
         };
         return retval;
-
-        static string ComputeProperty(string name)
-        {
-            var nameWithoutSpaces = name.Replace(" ", string.Empty);
-            var filtered = new string(nameWithoutSpaces.Where(char.IsLetterOrDigit).ToArray());
-            if (string.IsNullOrEmpty(filtered))
-            {
-                return string.Empty;
-            }
-
-            return char.ToLowerInvariant(filtered[0]) + filtered[1..];
-        }
     }
 }

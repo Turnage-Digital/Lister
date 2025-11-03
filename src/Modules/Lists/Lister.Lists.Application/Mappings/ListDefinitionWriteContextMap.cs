@@ -29,7 +29,7 @@ internal static class ListDefinitionWriteContextMap
         {
             StorageKey = column.StorageKey,
             Name = column.Name,
-            Property = column.Property,
+            Property = column.StorageKey ?? column.Property,
             Type = column.Type,
             Required = column.Required,
             AllowedValues = column.AllowedValues,

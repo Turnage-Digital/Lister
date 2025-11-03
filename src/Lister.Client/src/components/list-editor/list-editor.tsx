@@ -65,17 +65,25 @@ interface InternalState {
 
 const sanitizeTransitions = (
   statuses: Status[],
-  transitions: StatusTransition[],
+  transitions?: StatusTransition[] | null,
 ): StatusTransition[] => {
   const allowedNames = new Set(statuses.map((status) => status.name));
-  return transitions
-    .filter((transition) => allowedNames.has(transition.from))
-    .map((transition) => ({
-      from: transition.from,
-      allowedNext: transition.allowedNext.filter((name) =>
-        allowedNames.has(name),
-      ),
-    }))
+  const safeTransitions = Array.isArray(transitions) ? transitions : [];
+  return safeTransitions
+    .filter(
+      (transition): transition is StatusTransition =>
+        Boolean(transition && transition.from) &&
+        allowedNames.has(String(transition.from)),
+    )
+    .map((transition) => {
+      const allowedNext = Array.isArray(transition.allowedNext)
+        ? transition.allowedNext
+        : [];
+      return {
+        from: transition.from,
+        allowedNext: allowedNext.filter((name) => allowedNames.has(name)),
+      };
+    })
     .filter((transition) => transition.allowedNext.length > 0);
 };
 

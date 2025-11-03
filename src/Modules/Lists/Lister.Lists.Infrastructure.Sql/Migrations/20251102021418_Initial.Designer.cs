@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lister.Lists.Infrastructure.Sql.Migrations
 {
     [DbContext(typeof(ListsDbContext))]
-    [Migration("20251028185330_Initial")]
+    [Migration("20251102021418_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -177,6 +177,11 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");

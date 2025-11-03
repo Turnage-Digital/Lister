@@ -70,7 +70,6 @@ public class ListsAggregate<TList, TItem>(
             })
             .ToList();
 
-        // Generate sequential keys for any missing StorageKey: prop1, prop2, ...
         var used = new HashSet<string>(retval.Where(c => !string.IsNullOrWhiteSpace(c.StorageKey))
             .Select(c => c.StorageKey!)
             .Select(s => s.ToLowerInvariant()));
@@ -123,7 +122,6 @@ public class ListsAggregate<TList, TItem>(
         }
 
         var changeColumnTypes = new Dictionary<string, ChangeColumnTypeOp>(StringComparer.OrdinalIgnoreCase);
-        var removeColumns = new Dictionary<string, RemoveColumnOp>(StringComparer.OrdinalIgnoreCase);
         var tightenBuilders = new Dictionary<string, TightenConstraintsBuilder>(StringComparer.OrdinalIgnoreCase);
         var removeStatuses = new Dictionary<string, RemoveStatusOp>(StringComparer.OrdinalIgnoreCase);
         List<Column>? requestedColumns = null;
@@ -160,16 +158,6 @@ public class ListsAggregate<TList, TItem>(
                 migrationReasons.Add(
                     $"Update would remove columns: {string.Join(", ", removed)}. Removing columns requires a migration.");
 
-                foreach (var name in removed)
-                {
-                    if (!currentByName.TryGetValue(name, out var column))
-                    {
-                        continue;
-                    }
-
-                    var key = KeyOf(column);
-                    removeColumns[key] = new RemoveColumnOp(key, "drop");
-                }
             }
 
             // Type changes
@@ -278,7 +266,7 @@ public class ListsAggregate<TList, TItem>(
                 }
             }
 
-            if (!migrationReasons.Any())
+            if (migrationReasons.Count is 0)
             {
                 normalizedColumns = incomingColumns
                     .Select(c => new Column

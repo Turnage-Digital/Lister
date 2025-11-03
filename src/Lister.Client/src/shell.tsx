@@ -364,7 +364,7 @@ const Shell = () => {
 
         <Container
           component="main"
-          maxWidth="lg"
+          maxWidth="xl"
           sx={{
             minHeight: "100vh",
             backgroundColor: theme.palette.background.default,

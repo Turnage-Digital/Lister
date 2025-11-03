@@ -175,6 +175,11 @@ namespace Lister.Lists.Infrastructure.Sql.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 

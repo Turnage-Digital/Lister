@@ -85,7 +85,7 @@ export const listHistoryInfiniteQueryOptions = (
     enabled: Boolean(listId),
     queryFn: ({ pageParam }) =>
       fetchHistoryPage(
-        `/api/lists/${listId}/history?page=${typeof pageParam === "number" ? pageParam : 0}&pageSize=${pageSize}`,
+        `/api/lists/${listId}/history?page=${pageParam}&pageSize=${pageSize}`,
       ),
     getNextPageParam: nextHistoryPageParam,
   });
